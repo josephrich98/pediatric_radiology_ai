@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pedrad_ai"
+version = "0.1.0"
+description = "Measuring the growth and landscape of radiology AI, with a focus on pediatric radiology"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Joseph Rich", email = "josephrich98@gmail.com" }]
+keywords = ["radiology", "artificial intelligence", "pediatrics", "bibliometrics", "scientometrics"]
+
+# The collectors deliberately rely only on the Python standard library
+# (urllib, json, xml) so the data pulls run anywhere. The dependencies below are
+# for analysis, plotting, and notebooks.
+dependencies = [
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+notebooks = ["jupyter>=1.0", "ipykernel>=6.0", "papermill>=2.0"]
+dev = ["pytest>=7.0", "doi2bib", "ruff>=0.5"]
+
+[project.scripts]
+pedrad-collect = "scripts.run_all:main"
+
+[tool.setuptools]
+packages = ["pedrad_ai"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

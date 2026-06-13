@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# HTTP cache and bulky raw pulls are regenerated; do not commit them.
+data/raw/cache/
+data/raw/*.json
+
+# Processed datasets and figures ARE committed — they are the evidence behind
+# the reports and let the deliverables be read directly on GitHub.
+
+# OS / editor
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# Pipeline run logs
+data/*.log
+
+# Claude Code harness state
+.claude/
