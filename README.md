@@ -31,7 +31,9 @@ Outputs land in:
 - `reports/01_landscape_players.md` — most-cited papers, most-starred tools
 - `reports/02_state_of_the_field.md` — does-well / bleeding-edge / unresolved
 - `reports/references.bib` — doi2bib output for cited papers
-- `figures/*.png` — trend plots
+- `figures/*.png` — trend and breakdown plots
+- `slides/pedrad_ai_slides.pdf` — Beamer deck summarizing the whole story
+  (regenerate with `python scripts/build_slides.py` then `latexmk -pdf` in `slides/`)
 
 ## How it works
 
@@ -41,11 +43,19 @@ API (no keys required, faster with them) and caches responses under
 range — edit there to retune scope. See `CLAUDE.md` for details, API-key
 options, and conventions.
 
+## Conferences and societies
+
+ML/CV venues (CVPR, ICCV, NeurIPS, ICML, ICLR) are pulled from DBLP and reported
+as the *radiology share* of each venue. Radiology societies (RSNA, ACR, ECR,
+SPR) have no machine-readable program, so their engagement with AI is proxied by
+the *AI share* of their flagship journals via PubMed, tracked 2016–2026.
+
 ## Caveats
 
 Counts reflect indexed records at collection time and **undercount the most
-recent year** (MEDLINE indexing and patent grants lag). Conference fractions use
-title-keyword labelling and are conservative lower bounds. Citation and star
+recent year** (MEDLINE indexing and patent grants lag). DBLP throttles automated
+access, so ML-venue coverage may be partial in a given run. Conference fractions
+use title-keyword labelling and are conservative lower bounds. Citation and star
 counts are snapshots. The reports state these caveats inline.
 
 ## License

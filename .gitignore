@@ -27,3 +27,17 @@ data/*.log
 
 # Claude Code harness state
 .claude/
+
+# LaTeX build artifacts (keep .tex and .pdf)
+slides/*.aux
+slides/*.log
+slides/*.nav
+slides/*.snm
+slides/*.toc
+slides/*.out
+slides/*.fls
+slides/*.fdb_latexmk
+slides/build.log
+
+# Conversation exports
+*-local-command-caveat*.txt

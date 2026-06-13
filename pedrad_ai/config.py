@@ -115,19 +115,67 @@ TASK_TERMS: dict[str, str] = {
 }
 
 # --------------------------------------------------------------------------- #
+# OpenAlex union queries for the "biggest players" tables
+# --------------------------------------------------------------------------- #
+# OpenAlex full-text search requires every word, so a single "radiology deep
+# learning" query misses papers whose title/abstract never say "radiology"
+# (e.g. TotalSegmentator, framed purely as CT segmentation). These modality- and
+# task-specific queries are run separately and unioned, recovering those papers.
+RADIOLOGY_AI_QUERIES = [
+    "radiology deep learning",
+    "medical imaging deep learning",
+    "CT deep learning segmentation",
+    "MRI deep learning",
+    "chest radiograph deep learning",
+    "chest x-ray deep learning",
+    "mammography deep learning",
+    "ultrasound deep learning diagnosis",
+    "radiomics machine learning",
+    "computer aided diagnosis convolutional",
+    "lung nodule deep learning",
+    "anatomical structures segmentation CT",
+]
+PEDIATRIC_RADIOLOGY_AI_QUERIES = [
+    "pediatric radiology deep learning",
+    "pediatric CT deep learning",
+    "pediatric MRI deep learning",
+    "bone age deep learning",
+    "children chest radiograph deep learning",
+    "pediatric pneumonia deep learning radiograph",
+    "fetal MRI deep learning segmentation",
+    "neonatal brain MRI deep learning",
+    "pediatric fracture deep learning radiograph",
+]
+
+# --------------------------------------------------------------------------- #
 # Conference venues (for the "fraction of conference papers" analyses)
 # --------------------------------------------------------------------------- #
-# DBLP venue stream keys and OpenReview venue ids are looked up by the
-# conference collector. RSNA does not publish a clean machine-readable program,
-# so we approximate its AI fraction through PubMed-indexed Radiology/RadioGraphics
-# articles plus the RSNA abstract archive where available.
-NEURIPS_OPENREVIEW_PREFIX = "NeurIPS.cc"  # e.g. NeurIPS.cc/2023/Conference
+# Conferences are tracked over a fixed recent window.
+CONF_START_YEAR = 2016
+CONF_END_YEAR = 2026
+
+# Machine-learning / computer-vision venues live in DBLP. For these the
+# interesting quantity is what *fraction is radiology / medical imaging* (they
+# are ~all "AI" by construction). ICCV is biennial (odd years); DBLP simply
+# returns nothing for the off years, which the collector skips.
 DBLP_VENUES: dict[str, str] = {
-    "NeurIPS": "conf/nips",
-    "MICCAI": "conf/miccai",
     "CVPR": "conf/cvpr",
     "ICCV": "conf/iccv",
-    "ISBI": "conf/isbi",  # IEEE Int. Symp. Biomedical Imaging
+    "NeurIPS": "conf/nips",
+    "ICML": "conf/icml",
+    "ICLR": "conf/iclr",
+}
+
+# Radiology society meetings (RSNA, ACR, ECR, SPR) do not publish
+# machine-readable programs, so their engagement with AI is approximated by the
+# AI fraction of their flagship journals in PubMed (matched by journal
+# abbreviation [ta]). For these venues the interesting quantity is the *AI
+# fraction* of an otherwise all-radiology body of work.
+SOCIETY_JOURNALS: dict[str, list[str]] = {
+    "RSNA": ["Radiology", "Radiographics", "Radiol Artif Intell"],
+    "ACR": ["J Am Coll Radiol"],
+    "ECR": ["Eur Radiol", "Insights Imaging", "Eur Radiol Exp"],
+    "SPR": ["Pediatr Radiol"],
 }
 
 # Keyword sets used to label a conference paper as "radiology / medical imaging"

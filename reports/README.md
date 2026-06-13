@@ -12,6 +12,11 @@ or rebuild just the prose from already-collected data with
 | [02_state_of_the_field.md](02_state_of_the_field.md) | Curated synthesis for clinical leadership: what radiology AI does well, the bleeding edge, what remains unresolved, and implications for a children's hospital. |
 | [references.bib](references.bib) | BibTeX for every cited paper, resolved through doi2bib. |
 
+A **Beamer slide deck** summarizing all of this (objectives, methods, results,
+implications) is generated separately at
+[`../slides/pedrad_ai_slides.pdf`](../slides/pedrad_ai_slides.pdf) — rebuild with
+`python scripts/build_slides.py && cd slides && latexmk -pdf pedrad_ai_slides.tex`.
+
 Figures referenced by the reports live in [`../figures/`](../figures). Underlying
 data tables are in [`../data/processed/`](../data/processed).
 

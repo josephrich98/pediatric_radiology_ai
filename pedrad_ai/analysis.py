@@ -57,12 +57,22 @@ def fractions_over_time(counts: dict[str, dict[Any, int]]) -> list[dict[str, Any
     return rows
 
 
-def breakdown_table(counts: dict[str, dict[Any, int]], prefix: str) -> list[dict[str, Any]]:
+def breakdown_table(
+    counts: dict[str, dict[Any, int]], prefix: str, denom_series: str | None = None
+) -> list[dict[str, Any]]:
     """Collapse a ``prefix::label`` family of series into total counts per label.
 
     Used for modality / task breakdowns. Returns rows sorted by total,
-    descending, with the most recent-year count and the cumulative total.
+    descending, with the most recent-year count and the cumulative total. If
+    ``denom_series`` is given (e.g. ``"radiology_ai"``), a ``fraction`` column is
+    added: the label's cumulative count divided by that series' cumulative count
+    over the same years. Labels overlap (a paper can be both CT and
+    segmentation), so fractions need not sum to one — each is "the share of
+    radiology-AI papers that mention this modality/task".
     """
+    denom_total = 0
+    if denom_series and denom_series in counts:
+        denom_total = sum(int(v) for v in counts[denom_series].values())
     rows: list[dict[str, Any]] = []
     for key, series in counts.items():
         if not key.startswith(prefix + "::"):
@@ -71,14 +81,15 @@ def breakdown_table(counts: dict[str, dict[Any, int]], prefix: str) -> list[dict
         clean = {int(k): int(v) for k, v in series.items()}
         total = sum(clean.values())
         recent = max(clean) if clean else None
-        rows.append(
-            {
-                "label": label,
-                "total": total,
-                "latest_year": recent,
-                "latest_count": clean.get(recent, 0) if recent else 0,
-            }
-        )
+        row = {
+            "label": label,
+            "total": total,
+            "latest_year": recent,
+            "latest_count": clean.get(recent, 0) if recent else 0,
+        }
+        if denom_total:
+            row["fraction"] = round(total / denom_total, 4)
+        rows.append(row)
     rows.sort(key=lambda r: r["total"], reverse=True)
     return rows
 

@@ -36,11 +36,87 @@ def _fmt_cagr(x: float | None) -> str:
     return f"{x:.0%}/yr" if isinstance(x, (int, float)) else "n/a"
 
 
+def _query_block(names: list[str]) -> list[str]:
+    """Render the exact PubMed boolean queries for the named series, for
+    transparency in the report."""
+    out = ["```text"]
+    for name in names:
+        q = config.QUERIES.get(name)
+        if q:
+            out.append(f"{name}:")
+            out.append(f"  {q}")
+    out.append("```\n")
+    return out
+
+
+def _pivot(rows: list[dict], value_key: str, col_key: str) -> tuple[list[str], list[int]]:
+    """Build a year x venue pivot of a fraction, returning (markdown_lines, years)."""
+    cols = sorted({r[col_key] for r in rows})
+    years = sorted({r["year"] for r in rows})
+    lines = ["| Year | " + " | ".join(cols) + " |", "|---:|" + "---:|" * len(cols)]
+    lookup = {(r[col_key], r["year"]): r.get(value_key) for r in rows}
+    for yr in years:
+        cells = []
+        for c in cols:
+            v = lookup.get((c, yr))
+            cells.append(_fmt_pct(v) if isinstance(v, (int, float)) else "–")
+        lines.append(f"| {yr} | " + " | ".join(cells) + " |")
+    lines.append("")
+    return lines, years
+
+
+def _conference_section() -> list[str]:
+    """The two-family conference analysis: ML venues (radiology share) and
+    radiology societies (AI share)."""
+    L: list[str] = []
+    ml = _load("conference_ml_venues.json", [])
+    soc = _load("conference_society_venues.json", [])
+
+    L.append("## Conference and society attention to the domain\n")
+    if ml:
+        L.append(
+            "### Machine-learning / computer-vision venues — radiology share\n"
+        )
+        L.append(
+            "**How obtained.** For each venue-year, a title sample (up to 100 "
+            "papers) was pulled from DBLP and labelled with radiology / "
+            "medical-imaging title keywords. The cell is the share of that "
+            "venue's papers that are about medical imaging — a conservative "
+            "lower bound, since title-only labelling misses papers that do not "
+            "name a modality. ICCV is biennial (odd years).\n"
+        )
+        L.append(
+            "_Coverage note: DBLP throttles automated access aggressively, so "
+            "this run captured only a subset of venue-years; re-running "
+            "`scripts/collect_conferences.py` while DBLP is idle fills in more. "
+            "The consistent finding across the years that did return is that "
+            "medical imaging is roughly 0-2% of these general ML/CV venues._\n"
+        )
+        lines, _ = _pivot(ml, "radiology_fraction", "venue")
+        L.extend(lines)
+        L.append("![Radiology share of ML venues](../figures/ml_venue_radiology_share.png)\n")
+    if soc:
+        L.append("### Radiology societies — AI share of their journals\n")
+        L.append(
+            "**How obtained.** RSNA, ACR, ECR, and SPR meetings have no "
+            "machine-readable program, so each society's engagement with AI is "
+            "proxied by the AI share of its flagship journals in PubMed "
+            "(RSNA: Radiology/RadioGraphics/Radiology:AI; ACR: JACR; ECR: "
+            "European Radiology/Insights into Imaging; SPR: Pediatric "
+            "Radiology).\n"
+        )
+        lines, _ = _pivot(soc, "ai_fraction", "society")
+        L.extend(lines)
+        L.append("![AI share of radiology societies](../figures/society_ai_share.png)\n")
+    if not ml and not soc:
+        L.append("_No conference data collected in this run._\n")
+    return L
+
+
 def build_popularity_report() -> list[str]:
     counts = _load("pubmed_yearly_counts.json", {})
     summary = _load("pubmed_summary.json", {})
     patents = _load("patent_yearly_counts.json", {})
-    conf = _load("conference_fractions.json", [])
     dois: list[str] = []
 
     L: list[str] = []
@@ -69,6 +145,14 @@ def build_popularity_report() -> list[str]:
     rows = analysis.fractions_over_time(counts) if counts else []
     if rows:
         L.append("## Publication trend (PubMed)\n")
+        L.append(
+            "**How obtained.** For each year 2008-2025, PubMed E-utilities "
+            "(`esearch`, `[pdat]` date facet) returned the record count for four "
+            "boolean queries: all radiology, radiology AND AI, pediatric "
+            "radiology, and pediatric radiology AND AI. The shares are ratios of "
+            "those counts. The exact query strings:\n"
+        )
+        L.extend(_query_block(["all_radiology", "radiology_ai", "pediatric_radiology_ai"]))
         L.append("| Year | All radiology | Radiology AI | AI share | Pediatric rad-AI | Pediatric share of rad-AI |")
         L.append("|---:|---:|---:|---:|---:|---:|")
         for r in rows:
@@ -82,49 +166,60 @@ def build_popularity_report() -> list[str]:
         L.append("![Pediatric share of radiology AI](../figures/pediatric_share.png)\n")
 
     if counts:
-        mod = analysis.breakdown_table(counts, "modality")
+        mod = analysis.breakdown_table(counts, "modality", denom_series="radiology_ai")
         if mod:
             L.append("## Where the AI work sits, by modality\n")
-            L.append("| Modality | Total radiology-AI records |")
-            L.append("|:--|---:|")
+            L.append(
+                "**How obtained.** The radiology-AI query above was intersected "
+                "with each modality's term group (PubMed, summed over 2008-2025). "
+                "Modalities overlap, so the fraction is the share of radiology-AI "
+                "records that mention that modality and need not sum to 100%.\n"
+            )
+            L.append("| Modality | Radiology-AI records | Share of radiology AI |")
+            L.append("|:--|---:|---:|")
             for r in mod:
-                L.append(f"| {r['label']} | {r['total']} |")
+                L.append(f"| {r['label']} | {r['total']} | {_fmt_pct(r.get('fraction'))} |")
             L.append("")
-        task = analysis.breakdown_table(counts, "task")
+            L.append("![Radiology AI by modality](../figures/modality_breakdown.png)\n")
+        task = analysis.breakdown_table(counts, "task", denom_series="radiology_ai")
         if task:
             L.append("## Where the AI work sits, by clinical task\n")
-            L.append("| Task | Total radiology-AI records |")
-            L.append("|:--|---:|")
+            L.append(
+                "**How obtained.** Same method as the modality table, "
+                "intersecting the radiology-AI query with each task's term group.\n"
+            )
+            L.append("| Task | Radiology-AI records | Share of radiology AI |")
+            L.append("|:--|---:|---:|")
             for r in task:
-                L.append(f"| {r['label']} | {r['total']} |")
+                L.append(f"| {r['label']} | {r['total']} | {_fmt_pct(r.get('fraction'))} |")
             L.append("")
-        ped_mod = analysis.breakdown_table(counts, "ped_modality")
+            L.append("![Radiology AI by clinical task](../figures/task_breakdown.png)\n")
+        ped_mod = analysis.breakdown_table(
+            counts, "ped_modality", denom_series="pediatric_radiology_ai"
+        )
         if ped_mod:
             L.append("## Pediatric radiology AI, by modality\n")
-            L.append("| Modality | Total pediatric radiology-AI records |")
-            L.append("|:--|---:|")
-            for r in ped_mod:
-                L.append(f"| {r['label']} | {r['total']} |")
-            L.append("")
-
-    if patents.get("radiology_ai") and sum(patents["radiology_ai"].values()) > 0:
-        L.append("## Patents (PatentsView, granted US patents)\n")
-        L.append("| Year | Radiology-AI patents | Pediatric |")
-        L.append("|---:|---:|---:|")
-        for yr in sorted(patents["radiology_ai"], key=int):
             L.append(
-                f"| {yr} | {patents['radiology_ai'][yr]} | "
-                f"{patents.get('pediatric_radiology_ai', {}).get(yr, 0)} |"
+                "**How obtained.** The pediatric-radiology-AI query intersected "
+                "with each modality's term group (PubMed, summed over 2008-2025). "
+                "Fraction is the share of pediatric radiology-AI records.\n"
             )
-        L.append("")
+            L.append("| Modality | Pediatric radiology-AI records | Share |")
+            L.append("|:--|---:|---:|")
+            for r in ped_mod:
+                L.append(f"| {r['label']} | {r['total']} | {_fmt_pct(r.get('fraction'))} |")
+            L.append("")
+            L.append("![Pediatric radiology AI by modality](../figures/ped_modality_breakdown.png)\n")
 
     rsna = _load("rsna_ai_fraction.json", [])
     if rsna:
         L.append("## How much of RSNA's own output is about AI?\n")
         L.append(
-            "_Share of articles in RSNA's flagship journals (Radiology, "
-            "RadioGraphics, Radiology: Artificial Intelligence) that match the AI "
-            "vocabulary — the most direct read on radiology's own engagement._\n"
+            "**How obtained.** Within RSNA's flagship journals (Radiology, "
+            "RadioGraphics, Radiology: Artificial Intelligence; matched by PubMed "
+            "journal abbreviation `[ta]`), the AI fraction is the share of each "
+            "year's articles that also match the AI vocabulary — the most direct "
+            "read on radiology's own engagement.\n"
         )
         L.append("| Year | RSNA-journal articles | AI articles | AI share |")
         L.append("|---:|---:|---:|---:|")
@@ -136,37 +231,22 @@ def build_popularity_report() -> list[str]:
         L.append("")
         L.append("![AI share of RSNA flagship journals](../figures/rsna_ai_share.png)\n")
 
-    # Only show the conference section when the DBLP pull is reasonably complete
-    # (DBLP throttles aggressively; a thin pull would be misleading).
-    venues = {}
-    for r in conf:
-        venues.setdefault(r["venue"], []).append(r)
-    if conf and len(conf) >= 8:
-        L.append("## Conference attention to the domain\n")
+    L.extend(_conference_section())
+
+    if patents.get("radiology_ai") and sum(patents["radiology_ai"].values()) > 0:
+        L.append("## Patents (PatentsView, granted US patents)\n")
         L.append(
-            "_Each cell is from a 100-paper title sample per venue-year (DBLP), so "
-            "the share is an estimate and the radiology share is a lower bound — "
-            "title-only labelling misses papers whose titles do not name the "
-            "modality._\n"
+            "**How obtained.** PatentsView counts of granted US patents whose "
+            "title/abstract match radiology-imaging and AI terms, per year.\n"
         )
-        L.append("| Venue | Year | Papers (true) | Radiology share | AI share |")
-        L.append("|:--|---:|---:|---:|---:|")
-        for venue, vr in venues.items():
-            latest = max(vr, key=lambda r: r["year"])
+        L.append("| Year | Radiology-AI patents | Pediatric |")
+        L.append("|---:|---:|---:|")
+        for yr in sorted(patents["radiology_ai"], key=int):
             L.append(
-                f"| {venue} | {latest['year']} | {latest['total_papers']} | "
-                f"{_fmt_pct(latest['radiology_fraction'])} | {_fmt_pct(latest['ai_fraction'])} |"
+                f"| {yr} | {patents['radiology_ai'][yr]} | "
+                f"{patents.get('pediatric_radiology_ai', {}).get(yr, 0)} |"
             )
         L.append("")
-    else:
-        L.append("## Conference attention to the domain\n")
-        L.append(
-            "_DBLP throttled the venue pull in this run, so the conference "
-            "fractions are incomplete and omitted here. Re-run "
-            "`python scripts/collect_conferences.py` when DBLP is reachable to "
-            "populate this section. The RSNA-journal AI share above is the more "
-            "direct measure of radiology's own engagement with AI._\n"
-        )
 
     L.append("## Method notes\n")
     L.append(
@@ -174,8 +254,9 @@ def build_popularity_report() -> list[str]:
         "- **PubMed** counts use the `[pdat]` publication-date facet via E-utilities.\n"
         "- **Recent-year undercount**: MEDLINE indexing and patent grants lag by "
         "months to years, so the final one or two years are low.\n"
-        "- **Title-only conference labelling** misses on-topic papers whose titles "
-        "do not name the modality; the conference fractions are conservative.\n"
+        "- **Conference labelling** of ML venues is title-only and conservative; "
+        "radiology-society engagement is proxied by the AI share of each society's "
+        "flagship journals (RSNA meetings have no machine-readable program).\n"
     )
     return L, dois
 

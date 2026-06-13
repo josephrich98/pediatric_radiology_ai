@@ -32,6 +32,15 @@ def test_breakdown_table_sorted_desc():
     assert labels == ["CT", "MRI"]  # CT total (330) > MRI total (190)
     assert rows[0]["total"] == 330
     assert rows[0]["latest_year"] == 2020
+    assert "fraction" not in rows[0]  # no denom -> no fraction column
+
+
+def test_breakdown_table_fraction():
+    counts = _synthetic_counts()
+    rows = analysis.breakdown_table(counts, "modality", denom_series="radiology_ai")
+    # radiology_ai total = 100+200+400 = 700; CT total = 330
+    ct = next(r for r in rows if r["label"] == "CT")
+    assert ct["fraction"] == round(330 / 700, 4)
 
 
 def test_cagr_and_summary():

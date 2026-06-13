@@ -10,6 +10,17 @@ _Auto-generated from PubMed, PatentsView, DBLP, GitHub, and OpenAlex pulls. Coun
 
 ## Publication trend (PubMed)
 
+**How obtained.** For each year 2008-2025, PubMed E-utilities (`esearch`, `[pdat]` date facet) returned the record count for four boolean queries: all radiology, radiology AND AI, pediatric radiology, and pediatric radiology AND AI. The shares are ratios of those counts. The exact query strings:
+
+```text
+all_radiology:
+  (radiology OR radiological OR radiograph* OR "medical imaging" OR tomography OR "magnetic resonance" OR MRI OR "computed tomography" OR CT OR ultrasound OR mammograph* OR "chest x-ray" OR radiograph)
+radiology_ai:
+  (radiology OR radiological OR radiograph* OR "medical imaging" OR tomography OR "magnetic resonance" OR MRI OR "computed tomography" OR CT OR ultrasound OR mammograph* OR "chest x-ray" OR radiograph) AND ("artificial intelligence" OR "machine learning" OR "deep learning" OR "convolutional neural network" OR "neural network" OR "computer-aided diagnosis" OR radiomics OR "computer vision")
+pediatric_radiology_ai:
+  (radiology OR radiological OR radiograph* OR "medical imaging" OR tomography OR "magnetic resonance" OR MRI OR "computed tomography" OR CT OR ultrasound OR mammograph* OR "chest x-ray" OR radiograph) AND ("artificial intelligence" OR "machine learning" OR "deep learning" OR "convolutional neural network" OR "neural network" OR "computer-aided diagnosis" OR radiomics OR "computer vision") AND (pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR "children's hospital")
+```
+
 | Year | All radiology | Radiology AI | AI share | Pediatric rad-AI | Pediatric share of rad-AI |
 |---:|---:|---:|---:|---:|---:|
 | 2008 | 99964 | 802 | 0.8% | 63 | 7.9% |
@@ -37,40 +48,52 @@ _Auto-generated from PubMed, PatentsView, DBLP, GitHub, and OpenAlex pulls. Coun
 
 ## Where the AI work sits, by modality
 
-| Modality | Total radiology-AI records |
-|:--|---:|
-| ultrasound | 75141 |
-| MRI | 39209 |
-| x-ray / radiography | 25911 |
-| CT | 20472 |
-| nuclear / PET | 10441 |
-| mammography | 7119 |
+**How obtained.** The radiology-AI query above was intersected with each modality's term group (PubMed, summed over 2008-2025). Modalities overlap, so the fraction is the share of radiology-AI records that mention that modality and need not sum to 100%.
+
+| Modality | Radiology-AI records | Share of radiology AI |
+|:--|---:|---:|
+| ultrasound | 75141 | 62.7% |
+| MRI | 39209 | 32.7% |
+| x-ray / radiography | 25911 | 21.6% |
+| CT | 20472 | 17.1% |
+| nuclear / PET | 10441 | 8.7% |
+| mammography | 7119 | 5.9% |
+
+![Radiology AI by modality](../figures/modality_breakdown.png)
 
 ## Where the AI work sits, by clinical task
 
-| Task | Total radiology-AI records |
-|:--|---:|
-| classification / diagnosis | 103130 |
-| detection / screening | 86092 |
-| prognosis / outcome | 32486 |
-| segmentation | 28458 |
-| image reconstruction / denoising | 4558 |
-| report generation | 774 |
+**How obtained.** Same method as the modality table, intersecting the radiology-AI query with each task's term group.
+
+| Task | Radiology-AI records | Share of radiology AI |
+|:--|---:|---:|
+| classification / diagnosis | 103130 | 86.1% |
+| detection / screening | 86092 | 71.9% |
+| prognosis / outcome | 32486 | 27.1% |
+| segmentation | 28458 | 23.8% |
+| image reconstruction / denoising | 4558 | 3.8% |
+| report generation | 774 | 0.7% |
+
+![Radiology AI by clinical task](../figures/task_breakdown.png)
 
 ## Pediatric radiology AI, by modality
 
-| Modality | Total pediatric radiology-AI records |
-|:--|---:|
-| ultrasound | 7806 |
-| MRI | 5026 |
-| x-ray / radiography | 2278 |
-| CT | 1205 |
-| nuclear / PET | 773 |
-| mammography | 278 |
+**How obtained.** The pediatric-radiology-AI query intersected with each modality's term group (PubMed, summed over 2008-2025). Fraction is the share of pediatric radiology-AI records.
+
+| Modality | Pediatric radiology-AI records | Share |
+|:--|---:|---:|
+| ultrasound | 7806 | 65.3% |
+| MRI | 5026 | 42.0% |
+| x-ray / radiography | 2278 | 19.1% |
+| CT | 1205 | 10.1% |
+| nuclear / PET | 773 | 6.5% |
+| mammography | 278 | 2.3% |
+
+![Pediatric radiology AI by modality](../figures/ped_modality_breakdown.png)
 
 ## How much of RSNA's own output is about AI?
 
-_Share of articles in RSNA's flagship journals (Radiology, RadioGraphics, Radiology: Artificial Intelligence) that match the AI vocabulary — the most direct read on radiology's own engagement._
+**How obtained.** Within RSNA's flagship journals (Radiology, RadioGraphics, Radiology: Artificial Intelligence; matched by PubMed journal abbreviation `[ta]`), the AI fraction is the share of each year's articles that also match the AI vocabulary — the most direct read on radiology's own engagement.
 
 | Year | RSNA-journal articles | AI articles | AI share |
 |---:|---:|---:|---:|
@@ -95,22 +118,46 @@ _Share of articles in RSNA's flagship journals (Radiology, RadioGraphics, Radiol
 
 ![AI share of RSNA flagship journals](../figures/rsna_ai_share.png)
 
-## Conference attention to the domain
+## Conference and society attention to the domain
 
-_Each cell is from a 100-paper title sample per venue-year (DBLP), so the share is an estimate and the radiology share is a lower bound — title-only labelling misses papers whose titles do not name the modality._
+### Machine-learning / computer-vision venues — radiology share
 
-| Venue | Year | Papers (true) | Radiology share | AI share |
-|:--|---:|---:|---:|---:|
-| NeurIPS | 2017 | 680 | 1.0% | 6.0% |
-| MICCAI | 2025 | 1723 | 44.0% | 46.0% |
-| CVPR | 2008 | 743 | 4.0% | 11.0% |
-| ICCV | 2017 | 994 | 0.0% | 22.0% |
-| ISBI | 2025 | 639 | 32.0% | 39.0% |
+**How obtained.** For each venue-year, a title sample (up to 100 papers) was pulled from DBLP and labelled with radiology / medical-imaging title keywords. The cell is the share of that venue's papers that are about medical imaging — a conservative lower bound, since title-only labelling misses papers that do not name a modality. ICCV is biennial (odd years).
+
+_Coverage note: DBLP throttles automated access aggressively, so this run captured only a subset of venue-years; re-running `scripts/collect_conferences.py` while DBLP is idle fills in more. The consistent finding across the years that did return is that medical imaging is roughly 0-2% of these general ML/CV venues._
+
+| Year | CVPR | ICCV | ICML | NeurIPS |
+|---:|---:|---:|---:|---:|
+| 2016 | 2.0% | – | 0.0% | 0.0% |
+| 2017 | 0.0% | 0.0% | – | 1.0% |
+| 2018 | 1.0% | – | – | – |
+
+![Radiology share of ML venues](../figures/ml_venue_radiology_share.png)
+
+### Radiology societies — AI share of their journals
+
+**How obtained.** RSNA, ACR, ECR, and SPR meetings have no machine-readable program, so each society's engagement with AI is proxied by the AI share of its flagship journals in PubMed (RSNA: Radiology/RadioGraphics/Radiology:AI; ACR: JACR; ECR: European Radiology/Insights into Imaging; SPR: Pediatric Radiology).
+
+| Year | ACR | ECR | RSNA | SPR |
+|---:|---:|---:|---:|---:|
+| 2016 | 1.0% | 0.6% | 1.4% | 0.4% |
+| 2017 | 2.5% | 2.0% | 3.5% | 0.3% |
+| 2018 | 7.5% | 7.5% | 9.0% | 0.3% |
+| 2019 | 9.8% | 13.5% | 15.8% | 1.4% |
+| 2020 | 8.0% | 18.9% | 19.1% | 1.6% |
+| 2021 | 8.7% | 22.8% | 19.5% | 4.6% |
+| 2022 | 6.6% | 30.2% | 21.4% | 9.0% |
+| 2023 | 13.1% | 31.7% | 21.8% | 7.8% |
+| 2024 | 11.3% | 30.3% | 24.2% | 7.5% |
+| 2025 | 16.2% | 30.3% | 24.4% | 9.4% |
+| 2026 | 18.8% | 32.4% | 25.6% | 16.3% |
+
+![AI share of radiology societies](../figures/society_ai_share.png)
 
 ## Method notes
 
 - **Queries** are defined in `pedrad_ai/config.py`; edit them to retune scope.
 - **PubMed** counts use the `[pdat]` publication-date facet via E-utilities.
 - **Recent-year undercount**: MEDLINE indexing and patent grants lag by months to years, so the final one or two years are low.
-- **Title-only conference labelling** misses on-topic papers whose titles do not name the modality; the conference fractions are conservative.
+- **Conference labelling** of ML venues is title-only and conservative; radiology-society engagement is proxied by the AI share of each society's flagship journals (RSNA meetings have no machine-readable program).
 

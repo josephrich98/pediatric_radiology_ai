@@ -58,9 +58,10 @@ def fetch_venue_titles(venue_key: str, year: int) -> tuple[list[str], int]:
         "c": 0,
     }
     try:
-        # max_retries=1: if DBLP throttles (it drops connections), skip this
-        # venue-year fast rather than stalling the whole run in backoff.
-        xml = utils.http_get(DBLP_PUBL_API, params, pause=DBLP_PAUSE, max_retries=1)
+        # max_retries=2: one retry recovers transient drops; cached successes
+        # persist, so running the collector several times accumulates coverage
+        # of the venue-years DBLP throttled on earlier passes.
+        xml = utils.http_get(DBLP_PUBL_API, params, pause=DBLP_PAUSE, max_retries=2)
         root = ET.fromstring(xml)
     except Exception:
         return [], 0
@@ -106,9 +107,36 @@ def venue_topic_fractions(venue_name: str, venue_key: str, start: int, end: int)
 
 
 def collect_all(start: int | None = None, end: int | None = None) -> list[dict[str, Any]]:
-    start = start or config.START_YEAR
-    end = end or config.END_YEAR
+    """Radiology/AI fractions for the DBLP ML venues over the conference window."""
+    start = start or config.CONF_START_YEAR
+    end = end or config.CONF_END_YEAR
     rows: list[dict[str, Any]] = []
     for venue_name, venue_key in config.DBLP_VENUES.items():
         rows.extend(venue_topic_fractions(venue_name, venue_key, start, end))
+    return rows
+
+
+def collect_societies(start: int | None = None, end: int | None = None) -> list[dict[str, Any]]:
+    """AI fraction of each radiology society's flagship journals, per year.
+
+    RSNA / ACR / ECR / SPR meetings have no machine-readable program, so their
+    engagement with AI is read from the AI share of their journals via PubMed.
+    """
+    from . import pubmed
+
+    start = start or config.CONF_START_YEAR
+    end = end or config.CONF_END_YEAR
+    rows: list[dict[str, Any]] = []
+    for society, journals in config.SOCIETY_JOURNALS.items():
+        for r in pubmed.journal_ai_fraction(journals, start, end):
+            rows.append(
+                {
+                    "society": society,
+                    "journals": "; ".join(journals),
+                    "year": r["year"],
+                    "total_articles": r["total"],
+                    "ai_articles": r["ai"],
+                    "ai_fraction": r["ai_fraction"],
+                }
+            )
     return rows

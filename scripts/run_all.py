@@ -41,7 +41,8 @@ def main() -> None:
     run("collect_patents.py")
     run("make_figures.py")
     run("build_reports.py")
-    print("\nPipeline complete. See reports/ and figures/.")
+    run("build_slides.py")
+    print("\nPipeline complete. See reports/, figures/, and slides/.")
 
 
 if __name__ == "__main__":

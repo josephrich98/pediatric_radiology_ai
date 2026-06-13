@@ -50,6 +50,28 @@ def top_cited(query: str, per_page: int = 50, min_year: int | None = None) -> li
     return [_clean_work(w) for w in data.get("results", [])]
 
 
+def top_cited_union(
+    queries: list[str], per_query: int = 80, min_year: int | None = None
+) -> list[dict[str, Any]]:
+    """Run several searches, union the results, dedupe, and rank by citations.
+
+    A single query like ``radiology deep learning`` misses landmark papers whose
+    title/abstract never use the literal word "radiology" (e.g. TotalSegmentator,
+    whose title is only about CT segmentation). Running modality- and
+    task-specific queries and unioning them recovers those papers. Deduped by
+    OpenAlex work id.
+    """
+    by_id: dict[str, dict[str, Any]] = {}
+    for q in queries:
+        for paper in top_cited(q, per_page=per_query, min_year=min_year):
+            wid = paper.get("openalex_id")
+            if wid and wid not in by_id:
+                by_id[wid] = paper
+    out = list(by_id.values())
+    out.sort(key=lambda r: r.get("citation_count", 0), reverse=True)
+    return out
+
+
 def yearly_counts(query: str) -> dict[int, int]:
     """Publication counts per year for ``query`` (OpenAlex ``group_by``)."""
     params = {

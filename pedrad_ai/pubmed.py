@@ -111,6 +111,34 @@ def rsna_ai_fraction(start: int | None = None, end: int | None = None) -> list[d
     return rows
 
 
+def journal_ai_fraction(
+    journals: list[str], start: int, end: int
+) -> list[dict[str, Any]]:
+    """Per-year AI fraction of articles in a set of journals (by [ta] abbrev).
+
+    Generalizes :func:`rsna_ai_fraction` to any society's flagship journals, so
+    the conference analysis can report the AI share of RSNA, ACR, ECR, and SPR
+    output on a common basis.
+    """
+    from . import config as _cfg
+
+    journal_clause = "(" + " OR ".join(f'"{j}"[ta]' for j in journals) + ")"
+    ai_clause = _cfg.QUERIES["all_ai"]
+    rows: list[dict[str, Any]] = []
+    for yr in range(start, end + 1):
+        total = count_for_query(journal_clause, yr)
+        ai = count_for_query(f"{journal_clause} AND {ai_clause}", yr)
+        rows.append(
+            {
+                "year": yr,
+                "total": total,
+                "ai": ai,
+                "ai_fraction": round(ai / total, 4) if total else 0.0,
+            }
+        )
+    return rows
+
+
 def top_articles(query: str, retmax: int = 200) -> list[dict[str, Any]]:
     """Fetch metadata for up to ``retmax`` recent articles matching ``query``.
 

@@ -6,56 +6,56 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 
 | Rank | Citations | Year | Title | Venue |
 |---:|---:|---:|:--|:--|
-| 1 | 3311 | 2017 | ChestX-Ray8: Hospital-Scale Chest X-Ray Database and Benchmarks on Weakly-Supervised Classification and Localization of Common Thorax Diseases |  |
-| 2 | 3147 | 2020 | COVID-Net: a tailored deep convolutional neural network design for detection of COVID-19 cases from chest X-ray images | Scientific Reports |
-| 3 | 2546 | 2019 | CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison |  |
-| 4 | 1383 | 2018 | Deep learning for chest radiograph diagnosis: A retrospective comparison of the CheXNeXt algorithm to practicing radiologists | PLoS Medicine |
-| 5 | 1344 | 2020 | CoroNet: A deep neural network for detection and diagnosis of COVID-19 from chest x-ray images | Computer Methods and Programs in Biomedicine |
-| 6 | 1079 | 2021 | A deep learning algorithm using CT images to screen for Corona virus disease (COVID-19) | European Radiology |
-| 7 | 989 | 2018 | Deep learning algorithms for detection of critical findings in head CT scans: a retrospective study | The Lancet |
-| 8 | 967 | 2018 | Detection and diagnosis of dental caries using a deep learning-based convolutional neural network algorithm | Journal of Dentistry |
-| 9 | 879 | 2020 | Application of deep learning technique to manage COVID-19 in routine clinical practice using CT images: Results of 10 convolutional neural networks | Computers in Biology and Medicine |
-| 10 | 820 | 2021 | High-resolution X-ray luminescence extension imaging | Nature |
-| 11 | 799 | 2020 | COVIDiagnosis-Net: Deep Bayes-SqueezeNet based diagnosis of the coronavirus disease 2019 (COVID-19) from X-ray images | Medical Hypotheses |
-| 12 | 707 | 2018 | Artificial Intelligence and Machine Learning in Radiology: Opportunities, Challenges, Pitfalls, and Criteria for Success | Journal of the American College of Radiology |
-| 13 | 661 | 2020 | AI in Medical Imaging Informatics: Current Challenges and Future Directions | IEEE Journal of Biomedical and Health Informatics |
-| 14 | 619 | 2018 | Automatic knee osteoarthritis diagnosis from plain radiographs:a deep learning-based approach | University of Oulu Repository (University of Oulu) |
-| 15 | 616 | 2020 | Classification of the COVID-19 infected patients using DenseNet201 based deep transfer learning | Journal of Biomolecular Structure and Dynamics |
-| 16 | 570 | 2018 | A Deep Learning Model to Predict a Diagnosis of Alzheimer Disease by Using <sup>18</sup>F-FDG PET of the Brain | Radiology |
-| 17 | 562 | 2018 | DeepLesion: automated mining of large-scale lesion annotations and universal lesion detection with deep learning | Journal of Medical Imaging |
-| 18 | 530 | 2020 | A deep learning and grad-CAM based color visualization approach for fast detection of COVID-19 cases using chest X-ray and CT-Scan images | Chaos Solitons & Fractals |
-| 19 | 499 | 2020 | A fully automatic deep learning system for COVID-19 diagnostic and prognostic analysis | European Respiratory Journal |
-| 20 | 492 | 2023 | How Artificial Intelligence Is Shaping Medical Imaging Technology: A Survey of Innovations and Applications | Bioengineering |
-| 21 | 454 | 2020 | CoroDet: A deep learning based classification for COVID-19 detection using chest X-ray images | Chaos Solitons & Fractals |
-| 22 | 453 | 2018 | The RSNA Pediatric Bone Age Machine Learning Challenge | Radiology |
-| 23 | 443 | 2018 | Advanced machine learning in action: identification of intracranial hemorrhage on computed tomography scans of the head with clinical workflow integration | npj Digital Medicine |
-| 24 | 421 | 2016 | Deep learning for automated skeletal bone age assessment in X-ray images | Medical Image Analysis |
-| 25 | 394 | 2021 | Pneumonia detection in chest X-ray images using an ensemble of deep learning models | PLoS ONE |
+| 1 | 8899 | 2018 | UNet++: A Nested U-Net Architecture for Medical Image Segmentation | Lecture notes in computer science |
+| 2 | 8445 | 2020 | nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation | Nature Methods |
+| 3 | 6454 | 2017 | Computational Radiomics System to Decode the Radiographic Phenotype | Cancer Research |
+| 4 | 4686 | 2018 | Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning | Cell |
+| 5 | 3311 | 2017 | ChestX-Ray8: Hospital-Scale Chest X-Ray Database and Benchmarks on Weakly-Supervised Classification and Localization of Common Thorax Diseases |  |
+| 6 | 3147 | 2020 | COVID-Net: a tailored deep convolutional neural network design for detection of COVID-19 cases from chest X-ray images | Scientific Reports |
+| 7 | 2664 | 2020 | UNet 3+: A Full-Scale Connected UNet for Medical Image Segmentation |  |
+| 8 | 2546 | 2019 | CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison |  |
+| 9 | 2396 | 2020 | Covid-19: automatic detection from X-ray images utilizing transfer learning with convolutional neural networks | Physical and Engineering Sciences in Medicine |
+| 10 | 2258 | 2019 | MultiResUNet : Rethinking the U-Net architecture for multimodal biomedical image segmentation | Neural Networks |
+| 11 | 2233 | 2018 | Deep Learning Techniques for Automatic MRI Cardiac Multi-Structures Segmentation and Diagnosis: Is the Problem Solved? | IEEE Transactions on Medical Imaging |
+| 12 | 2195 | 2019 | CE-Net: Context Encoder Network for 2D Medical Image Segmentation | IEEE Transactions on Medical Imaging |
+| 13 | 2164 | 2020 | A Survey on Explainable Artificial Intelligence (XAI): Toward Medical XAI | IEEE Transactions on Neural Networks and Learning Systems |
+| 14 | 2067 | 2019 | End-to-end lung cancer screening with three-dimensional deep learning on low-dose chest computed tomography | Nature Medicine |
+| 15 | 2044 | 2014 | Hepatic encephalopathy in chronic liver disease: 2014 Practice Guideline by the American Association for the Study Of Liver Diseases and the European Association for the Study of the Liver | Hepatology |
+| 16 | 1981 | 2018 | An overview of deep learning in medical imaging focusing on MRI | Zeitschrift für Medizinische Physik |
+| 17 | 1902 | 2018 | GAN-based synthetic medical image augmentation for increased CNN performance in liver lesion classification | Neurocomputing |
+| 18 | 1898 | 2020 | Can AI Help in Screening Viral and COVID-19 Pneumonia? | IEEE Access |
+| 19 | 1818 | 2017 | Low-Dose CT With a Residual Encoder-Decoder Convolutional Neural Network | IEEE Transactions on Medical Imaging |
+| 20 | 1697 | 2017 | Learning a variational network for reconstruction of accelerated MRI data | Magnetic Resonance in Medicine |
+| 21 | 1620 | 2017 | Deep convolutional neural network for the automated detection and diagnosis of seizure using EEG signals | Computers in Biology and Medicine |
+| 22 | 1612 | 2018 | Low-Dose CT Image Denoising Using a Generative Adversarial Network With Wasserstein Distance and Perceptual Loss | IEEE Transactions on Medical Imaging |
+| 23 | 1500 | 2018 | Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs: A cross-sectional study | PLoS Medicine |
+| 24 | 1473 | 2017 | Deep Learning Applications in Medical Image Analysis | IEEE Access |
+| 25 | 1383 | 2018 | Deep learning for chest radiograph diagnosis: A retrospective comparison of the CheXNeXt algorithm to practicing radiologists | PLoS Medicine |
 
 ## Most-cited pediatric radiology AI papers
 
 | Rank | Citations | Year | Title | Venue |
 |---:|---:|---:|:--|:--|
-| 1 | 453 | 2018 | The RSNA Pediatric Bone Age Machine Learning Challenge | Radiology |
-| 2 | 111 | 2018 | Classification of Bacterial and Viral Childhood Pneumonia Using Deep Learning in Chest Radiography |  |
-| 3 | 109 | 2019 | Deep learning, reusable and problem-based architectures for detection of consolidation on chest X-ray images | Computer Methods and Programs in Biomedicine |
-| 4 | 92 | 2019 | Binomial Classification of Pediatric Elbow Fractures Using a Deep Learning Multiview Approach Emulating Radiologist Decision Making | Radiology Artificial Intelligence |
-| 5 | 87 | 2018 | MABAL: a Novel Deep-Learning Architecture for Machine-Assisted Bone Age Labeling | Journal of Digital Imaging |
-| 6 | 76 | 2020 | Deep Learning for Pediatric Posterior Fossa Tumor Detection and Classification: A Multi-Institutional Study | American Journal of Neuroradiology |
-| 7 | 75 | 2020 | Deep Learning Measurement of Leg Length Discrepancy in Children Based on Radiographs | Radiology |
-| 8 | 54 | 2020 | Machine Learning and Artificial Intelligence in Pediatric Research: Current State, Future Prospects, and Examples in Perioperative and Critical Care | The Journal of Pediatrics |
-| 9 | 52 | 2019 | Automatic Catheter and Tube Detection in Pediatric X-ray Images Using a Scale-Recurrent Network and Synthetic Data | Journal of Digital Imaging |
-| 10 | 51 | 2019 | Visualizing and explaining deep learning predictions for pneumonia detection in pediatric chest radiographs | Medical Imaging 2019: Computer-Aided Diagnosis |
-| 11 | 47 | 2021 | Efficient ensemble for image-based identification of Pneumonia utilizing deep CNN and SGD with warm restarts | Expert Systems with Applications |
-| 12 | 44 | 2022 | Deep Learning-Assisted Diagnosis of Pediatric Skull Fractures on Plain Radiographs | Korean Journal of Radiology |
-| 13 | 41 | 2021 | Using deep learning and natural language processing models to detect child physical abuse | Journal of Pediatric Surgery |
-| 14 | 41 | 2023 | Comparison of diagnostic performance of a deep learning algorithm, emergency physicians, junior radiologists and senior radiologists in the detection of appendicular fractures in children | Pediatric Radiology |
-| 15 | 37 | 2021 | Radiology “forensics”: determination of age and sex from chest radiographs using deep learning | Emergency Radiology |
-| 16 | 36 | 2010 | Lateral Chest Radiograph | Academic Radiology |
-| 17 | 35 | 2019 | A Lightweight U-Net Architecture Multi-Scale Convolutional Network for Pediatric Hand Bone Segmentation in X-Ray Image | IEEE Access |
-| 18 | 34 | 2023 | Intestinal Ultrasound in the Assessment and Management of Inflammatory Bowel Disease: Is It Ready for Standard Practice? | Gastroenterology |
-| 19 | 32 | 2020 | Planning stereoelectroencephalography using automated lesion detection: Retrospective feasibility study | Epilepsia |
-| 20 | 30 | 2024 | Noninvasive Molecular Subtyping of Pediatric Low-Grade Glioma with Self-Supervised Transfer Learning | Radiology Artificial Intelligence |
+| 1 | 457 | 2017 | Performance of a Deep-Learning Neural Network Model in Assessing Skeletal Maturity on Pediatric Hand Radiographs | Radiology |
+| 2 | 453 | 2018 | The RSNA Pediatric Bone Age Machine Learning Challenge | Radiology |
+| 3 | 445 | 2017 | Fully Automated Deep Learning System for Bone Age Assessment | Journal of Digital Imaging |
+| 4 | 421 | 2016 | Deep learning for automated skeletal bone age assessment in X-ray images | Medical Image Analysis |
+| 5 | 197 | 2020 | Improving Image Quality and Reducing Radiation Dose for Pediatric CT by Using Deep Learning Reconstruction | Radiology |
+| 6 | 160 | 2017 | Computerized Bone Age Estimation Using Deep Learning Based Program: Evaluation of the Accuracy and Efficiency | American Journal of Roentgenology |
+| 7 | 126 | 2018 | Regression Convolutional Neural Network for Automated Pediatric Bone Age Assessment From Hand Radiograph | IEEE Journal of Biomedical and Health Informatics |
+| 8 | 125 | 2018 | Artificial intelligence-assisted interpretation of bone age radiographs improves accuracy and decreases variability | Skeletal Radiology |
+| 9 | 116 | 2019 | Deep Learning Based Attenuation Correction of PET/MRI in Pediatric Brain Tumor Patients: Evaluation in a Clinical Setting | Frontiers in Neuroscience |
+| 10 | 107 | 2019 | Using a Dual-Input Convolutional Neural Network for Automated Detection of Pediatric Supracondylar Fracture on Conventional Radiography | Investigative Radiology |
+| 11 | 96 | 2018 | Real-time automatic fetal brain extraction in fetal MRI by deep learning |  |
+| 12 | 91 | 2021 | Deep Learning–based Reconstruction for Lower-Dose Pediatric CT: Technical Principles, Image Characteristics, and Clinical Implementations | Radiographics |
+| 13 | 87 | 2018 | MABAL: a Novel Deep-Learning Architecture for Machine-Assisted Bone Age Labeling | Journal of Digital Imaging |
+| 14 | 83 | 2019 | Incorporated region detection and classification using deep convolutional networks for bone age assessment | Artificial Intelligence in Medicine |
+| 15 | 79 | 2019 | Automatic feature extraction in X-ray image based on deep learning approach for determination of bone age | Future Generation Computer Systems |
+| 16 | 76 | 2020 | Deep Learning for Pediatric Posterior Fossa Tumor Detection and Classification: A Multi-Institutional Study | American Journal of Neuroradiology |
+| 17 | 75 | 2019 | TW3-Based Fully Automated Bone Age Assessment System Using Deep Neural Networks | IEEE Access |
+| 18 | 74 | 2021 | Deep learning-based automatic tumor burden assessment of pediatric high-grade gliomas, medulloblastomas, and other leptomeningeal seeding tumors | Neuro-Oncology |
+| 19 | 74 | 2020 | A Deep Attentive Convolutional Neural Network for Automatic Cortical Plate Segmentation in Fetal MRI | IEEE Transactions on Medical Imaging |
+| 20 | 73 | 2021 | Automated detection of pneumonia cases using deep transfer learning with paediatric chest X-ray images | British Journal of Radiology |
 
 ## Most-starred open-source radiology / imaging AI tools
 

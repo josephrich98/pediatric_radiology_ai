@@ -1,0 +1,220 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\graphicspath{{../figures/}}
+\setbeamertemplate{navigation symbols}{}
+
+\title[Radiology AI]{Artificial Intelligence in Radiology}
+\subtitle{How fast it is growing, where it sits, and how much is pediatric}
+\author{Pediatric Radiology AI project}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Objectives}
+\begin{itemize}
+  \item Quantify how much \textbf{radiology AI} has grown, from a pre-deep-learning
+        2008 baseline to today, using reproducible queries against public databases.
+  \item Measure \textbf{where} inside radiology the AI work sits --- by imaging
+        modality and by clinical task.
+  \item Measure how much of radiology AI is \textbf{pediatric}, and in which modalities.
+  \item Identify the \textbf{biggest players}: most-cited papers and most-used
+        open-source software.
+  \item Summarize what the field \textbf{does well}, what is \textbf{bleeding edge},
+        and what remains \textbf{unresolved} --- for a children's hospital.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Methods --- databases and queries}
+\textbf{Databases queried:}
+\begin{itemize}
+  \item \textbf{PubMed} (NCBI E-utilities) --- publication counts by year, by query.
+  \item \textbf{OpenAlex} --- citation counts and most-cited papers (union of
+        modality/task searches, deduped by work id).
+  \item \textbf{GitHub} --- open-source tools ranked by stars.
+  \item \textbf{DBLP} --- ML/CV venue programs (CVPR, ICCV, NeurIPS, ICML, ICLR).
+  \item \textbf{PatentsView} --- granted US patents (requires an API key).
+\end{itemize}
+\textbf{Representative PubMed query (radiology $\cap$ AI):}
+\begin{block}{}
+\scriptsize
+(radiology OR radiograph* OR ``medical imaging'' OR MRI OR CT OR ultrasound \dots)
+\textbf{AND} (``artificial intelligence'' OR ``deep learning'' OR
+``convolutional neural network'' OR radiomics \dots)
+\end{block}
+\footnotesize Counts use the \texttt{[pdat]} date facet; shares are ratios of counts.
+The exact strings live in \texttt{pedrad\_ai/config.py}.
+\end{frame}
+
+\begin{frame}{How much has AI grown in the radiology literature?}
+\begin{columns}
+\begin{column}{0.42\textwidth}
+\footnotesize
+\begin{itemize}
+  \item 27,011 radiology-AI papers in 2025.
+  \item Compound growth $\approx$ \textbf{23\%/yr}.
+  \item AI share of all radiology rose from \textbf{0.8\%} (2008) to
+        \textbf{11.3\%} (2025).
+\end{itemize}
+\end{column}
+\begin{column}{0.58\textwidth}
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{radiology_ai_trend.png}\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Where the AI work sits --- by modality}
+\begin{columns}
+\begin{column}{0.40\textwidth}
+\footnotesize Share of radiology-AI papers mentioning each modality (overlapping):
+\begin{itemize}
+\item ultrasound --- 62.7\%
+\item MRI --- 32.7\%
+\item x-ray / radiography --- 21.6\%
+\item CT --- 17.1\%
+\end{itemize}
+\end{column}
+\begin{column}{0.60\textwidth}
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{modality_breakdown.png}\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Where the AI work sits --- by clinical task}
+\begin{columns}
+\begin{column}{0.40\textwidth}
+\footnotesize Share of radiology-AI papers by task (overlapping):
+\begin{itemize}
+\item classification / diagnosis --- 86.1\%
+\item detection / screening --- 71.9\%
+\item prognosis / outcome --- 27.1\%
+\item segmentation --- 23.8\%
+\end{itemize}
+\end{column}
+\begin{column}{0.60\textwidth}
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{task_breakdown.png}\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{How much is pediatric?}
+\begin{columns}
+\begin{column}{0.42\textwidth}
+\footnotesize
+\begin{itemize}
+  \item Pediatric work is \textbf{11.0\%} of radiology AI in 2025
+        (2,980 papers).
+  \item Small but growing; strongest in ultrasound and MRI.
+\end{itemize}
+\end{column}
+\begin{column}{0.58\textwidth}
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{pediatric_share.png}\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Radiology's own engagement: AI share of RSNA journals}
+\begin{columns}
+\begin{column}{0.40\textwidth}
+\footnotesize
+The AI share of RSNA's flagship journals rose from \textbf{1.1\%} to
+\textbf{24.4\%} --- about one in four articles now touches AI.
+\end{column}
+\begin{column}{0.60\textwidth}
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{rsna_ai_share.png}\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Conferences and societies}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\centering \footnotesize Radiology share of ML venues\\
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{ml_venue_radiology_share.png}\end{center}
+\end{column}
+\begin{column}{0.5\textwidth}
+\centering \footnotesize AI share of radiology-society journals\\
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{society_ai_share.png}\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Biggest players --- most-cited radiology AI papers}
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{top_papers_radiology.png}\end{center}
+\end{frame}
+
+\begin{frame}{Biggest players --- most-cited pediatric radiology AI papers}
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{top_papers_pediatric.png}\end{center}
+\end{frame}
+
+\begin{frame}{Biggest players --- most-starred open-source tools}
+\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{github_stars.png}\end{center}
+\end{frame}
+
+\begin{frame}{What radiology AI does well}
+\begin{itemize}
+  \item \textbf{Worklist triage}: hemorrhage, large-vessel occlusion, pulmonary
+        embolism, pneumothorax --- the most validated, most deployed category.
+  \item \textbf{Detection / measurement aids} on high-volume adult exams
+        (lung nodules, mammography, volumetry).
+  \item \textbf{Image quality / acquisition}: deep-learning reconstruction and
+        denoising --- lower dose, shorter scans (most valuable in pediatrics).
+  \item \textbf{Quantification / standardization}: segmentation, longitudinal
+        tumor measurement.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Bleeding edge}
+\begin{itemize}
+  \item Foundation models and vision-language / report-generation systems.
+  \item Opportunistic screening (bone density, coronary calcium, body composition).
+  \item Multimodal and longitudinal models (imaging $+$ EHR $+$ priors).
+  \item Self-supervised / label-efficient learning (key where labels are scarce).
+  \item \textbf{Pediatric frontiers}: bone age (mature), fetal/neonatal brain MRI,
+        congenital anomaly detection, scoliosis / Cobb-angle, growth-aware models.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{What remains unresolved}
+\begin{itemize}
+  \item \textbf{Generalization}: models degrade across scanners, sites, populations.
+  \item \textbf{Pediatric data scarcity \& age dependence}: children are not small
+        adults; adult models transfer poorly.
+  \item \textbf{Prospective benefit}: most evidence is retrospective accuracy, not
+        improved outcomes.
+  \item \textbf{Report-generation trust}: LLM reports can be fluent and wrong.
+  \item \textbf{Regulation/liability}: most cleared devices are validated on adults.
+  \item \textbf{Workflow integration, monitoring, drift, and equity.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Implications for a children's hospital}
+\begin{enumerate}
+  \item \textbf{Buy maturity, build for the gaps}: adopt cleared adult-derived tools
+        that transfer (triage, reconstruction); treat pediatric tasks as local
+        validation / research.
+  \item \textbf{Demand local pediatric validation} before clinical use.
+  \item \textbf{Prioritize dose and throughput}: deep-learning reconstruction gives
+        the clearest pediatric benefit today.
+  \item \textbf{Plan for monitoring}: pediatric drift (growth, protocol change) is
+        faster than in adults.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Summary}
+\begin{itemize}
+  \item Radiology AI grew from \textbf{0.8\%} to \textbf{11.3\%}
+        of the radiology literature (2008--2025), $\approx$23\%/yr.
+  \item Pediatric work is \textbf{11.0\%} of radiology AI --- small but growing.
+  \item RSNA journals: AI share \textbf{1.1\%} $\rightarrow$ \textbf{24.4\%}.
+  \item Mature where data are large and adult (triage, reconstruction); pediatric
+        bone age is the one mature pediatric task.
+  \item Generalization, pediatric data, and prospective benefit remain the gaps.
+\end{itemize}
+\end{frame}
+
+\end{document}

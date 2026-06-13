@@ -33,13 +33,22 @@ The questions it answers:
   for networking so pulls run anywhere.
   - `config.py` — **the single place to retune scope**: search queries, year
     range, venues, keyword sets.
-  - `pubmed.py`, `crossref.py` — publication counts over time.
-  - `patents.py` — PatentsView granted-patent counts.
+  - `pubmed.py`, `crossref.py` — publication counts over time; `pubmed.py` also
+    computes the AI fraction of a journal set (used for the RSNA/ACR/ECR/SPR
+    society analysis).
+  - `patents.py` — PatentsView granted-patent counts (needs `PATENTSVIEW_API_KEY`).
   - `github_repos.py` — repository star leaderboards (uses `gh` CLI auth or
     `GITHUB_TOKEN`).
-  - `semantic_scholar.py` — citation counts and most-cited papers.
-  - `conferences.py` — DBLP venue title pulls + keyword labelling.
-  - `doi2bib.py` — DOI → BibTeX (see "Adding References" below).
+  - `openalex.py` — citation counts and most-cited papers. `top_cited_union`
+    runs several modality/task searches and dedupes, because a single
+    "radiology deep learning" query misses landmark papers whose titles never
+    say "radiology" (e.g. TotalSegmentator). Replaces the rate-limited
+    `semantic_scholar.py` (kept as a fallback).
+  - `conferences.py` — ML/CV venues via DBLP (radiology share) and radiology
+    societies via their journals (AI share). DBLP throttles hard; the collector
+    paces gently and skips fast on failure.
+  - `doi2bib.py` — DOI → BibTeX via doi.org content negotiation (see "Adding
+    References" below).
 - `scripts/` — runnable CLI entry points. `run_all.py` runs the whole pipeline;
   individual `collect_*.py` scripts run one source; `make_figures.py` and
   `build_reports.py` produce the deliverables.
@@ -73,7 +82,13 @@ python scripts/collect_conferences.py
 python scripts/collect_patents.py
 python scripts/make_figures.py
 python scripts/build_reports.py
+python scripts/build_slides.py      # writes slides/pedrad_ai_slides.tex
+cd slides && latexmk -pdf pedrad_ai_slides.tex   # compile the Beamer deck
 ```
+
+The Beamer deck (`slides/`) is generated from the same processed data, so its
+headline numbers stay consistent with the reports. The template uses `@@KEY@@`
+placeholders (not `str.format`) because the LaTeX body is full of literal braces.
 
 ### API etiquette and keys
 
