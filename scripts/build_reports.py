@@ -288,10 +288,27 @@ def build_landscape_report() -> tuple[list[str], list[str]]:
 
     if rad:
         L.append("## Most-cited radiology AI papers\n")
-        L.extend(paper_table(rad, 25))
+        L.append(
+            "**How obtained.** OpenAlex was searched with a *union* of "
+            "modality- and task-specific queries (e.g. `CT deep learning "
+            "segmentation`, `chest radiograph deep learning`, `radiomics machine "
+            "learning`, `anatomical structures segmentation CT`), the results "
+            "deduplicated by work id and ranked by citation count. The union "
+            "matters: a single `radiology deep learning` query misses landmark "
+            "papers whose title/abstract never use the word \"radiology\" — "
+            "TotalSegmentator and nnU-Net, for instance, are framed purely as CT "
+            "segmentation and only surface through the modality/task queries.\n"
+        )
+        L.extend(paper_table(rad, 30))
         L.append("")
     if ped:
         L.append("## Most-cited pediatric radiology AI papers\n")
+        L.append(
+            "**How obtained.** Same union-of-queries method with pediatric terms "
+            "(bone age, fetal/neonatal MRI, pediatric CT/fracture/pneumonia), "
+            "additionally requiring a pediatric signal in the title so the list "
+            "stays genuinely pediatric.\n"
+        )
         L.extend(paper_table(ped, 20))
         L.append("")
 

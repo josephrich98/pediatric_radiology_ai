@@ -4,6 +4,8 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 
 ## Most-cited radiology AI papers
 
+**How obtained.** OpenAlex was searched with a *union* of modality- and task-specific queries (e.g. `CT deep learning segmentation`, `chest radiograph deep learning`, `radiomics machine learning`, `anatomical structures segmentation CT`), the results deduplicated by work id and ranked by citation count. The union matters: a single `radiology deep learning` query misses landmark papers whose title/abstract never use the word "radiology" — TotalSegmentator and nnU-Net, for instance, are framed purely as CT segmentation and only surface through the modality/task queries.
+
 | Rank | Citations | Year | Title | Venue |
 |---:|---:|---:|:--|:--|
 | 1 | 8899 | 2018 | UNet++: A Nested U-Net Architecture for Medical Image Segmentation | Lecture notes in computer science |
@@ -31,8 +33,15 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 | 23 | 1500 | 2018 | Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs: A cross-sectional study | PLoS Medicine |
 | 24 | 1473 | 2017 | Deep Learning Applications in Medical Image Analysis | IEEE Access |
 | 25 | 1383 | 2018 | Deep learning for chest radiograph diagnosis: A retrospective comparison of the CheXNeXt algorithm to practicing radiologists | PLoS Medicine |
+| 26 | 1344 | 2020 | CoroNet: A deep neural network for detection and diagnosis of COVID-19 from chest x-ray images | Computer Methods and Programs in Biomedicine |
+| 27 | 1275 | 2019 | Brain tumor classification using deep CNN features via transfer learning | Computers in Biology and Medicine |
+| 28 | 1274 | 2010 | 4D XCAT phantom for multimodality imaging research | Medical Physics |
+| 29 | 1251 | 2023 | TotalSegmentator: Robust Segmentation of 104 Anatomic Structures in CT Images | Radiology Artificial Intelligence |
+| 30 | 1228 | 2018 | A radiomics approach to assess tumour-infiltrating CD8 cells and response to anti-PD-1 or anti-PD-L1 immunotherapy: an imaging biomarker, retrospective multicohort study | The Lancet Oncology |
 
 ## Most-cited pediatric radiology AI papers
+
+**How obtained.** Same union-of-queries method with pediatric terms (bone age, fetal/neonatal MRI, pediatric CT/fracture/pneumonia), additionally requiring a pediatric signal in the title so the list stays genuinely pediatric.
 
 | Rank | Citations | Year | Title | Venue |
 |---:|---:|---:|:--|:--|
