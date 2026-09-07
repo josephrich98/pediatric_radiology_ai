@@ -23,7 +23,13 @@ children's hospital — not to produce a paper.
 pip install -e .
 python scripts/run_all.py --quick      # fast headline run
 python scripts/run_all.py              # full run (slower, hits more queries)
+python scripts/refresh.py              # bring everything up to today: clears the
+                                       # HTTP cache, re-collects, rebuilds, compiles slides
 ```
+
+`run_all.py` rebuilds from cached responses (reproducible); `refresh.py`
+re-pulls every source as of today. A monthly GitHub Action
+(`.github/workflows/refresh.yml`) runs the refresh and opens a pull request.
 
 Outputs land in:
 

@@ -113,21 +113,46 @@ def _safe_div(num: float, den: float) -> float:
 
 def summarize(counts: dict[str, dict[Any, int]]) -> dict[str, Any]:
     """A compact headline summary used at the top of reports."""
+    import datetime as _dt
+
+    from . import config
+
     frac = fractions_over_time(counts)
     if not frac:
         return {}
-    latest = frac[-1]
     first = frac[0]
-    return {
+    # The current calendar year is still accumulating records, so headline
+    # numbers and growth rates use the last *complete* year; the partial year is
+    # reported separately as year-to-date.
+    partial = None
+    complete = [r for r in frac if r["year"] < config.PARTIAL_YEAR]
+    if len(complete) < len(frac) and len(complete) >= 1:
+        partial = frac[-1]
+        latest = complete[-1]
+    else:
+        latest = frac[-1]
+    out = {
+        "collected_on": _dt.date.today().isoformat(),
         "year_range": [first["year"], latest["year"]],
         "radiology_ai_latest": latest["radiology_ai"],
-        "radiology_ai_cagr": cagr(_series(counts, "radiology_ai")),
+        "radiology_ai_cagr": cagr(_series(counts, "radiology_ai"), end=latest["year"]),
         "pediatric_radiology_ai_latest": latest["pediatric_radiology_ai"],
-        "pediatric_radiology_ai_cagr": cagr(_series(counts, "pediatric_radiology_ai")),
+        "pediatric_radiology_ai_cagr": cagr(_series(counts, "pediatric_radiology_ai"), end=latest["year"]),
         "ai_share_of_radiology_first": first["ai_share_of_radiology"],
         "ai_share_of_radiology_latest": latest["ai_share_of_radiology"],
         "pediatric_share_of_radiology_ai_latest": latest["pediatric_share_of_radiology_ai"],
     }
+    if partial:
+        out.update(
+            {
+                "partial_year": partial["year"],
+                "radiology_ai_ytd": partial["radiology_ai"],
+                "pediatric_radiology_ai_ytd": partial["pediatric_radiology_ai"],
+                "ai_share_of_radiology_ytd": partial["ai_share_of_radiology"],
+                "pediatric_share_of_radiology_ai_ytd": partial["pediatric_share_of_radiology_ai"],
+            }
+        )
+    return out
 
 
 def write_trend_csv(counts: dict[str, dict[Any, int]], path: str) -> str:

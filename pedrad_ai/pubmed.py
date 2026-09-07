@@ -73,6 +73,18 @@ def collect_all_yearly() -> dict[str, dict[int, int]]:
     for modality, terms in config.MODALITY_TERMS.items():
         q = f"{config.QUERIES['pediatric_radiology_ai']} AND {terms}"
         out[f"ped_modality::{modality}"] = yearly_counts(q)
+    for task, terms in config.TASK_TERMS.items():
+        q = f"{config.QUERIES['pediatric_radiology_ai']} AND {terms}"
+        out[f"ped_task::{task}"] = yearly_counts(q)
+    return out
+
+
+def collect_crosstabs() -> dict[str, Any]:
+    """Modality x task tables for the radiology-AI and pediatric corpora."""
+    out: dict[str, Any] = {}
+    for name in ("radiology_ai", "pediatric_radiology_ai"):
+        print(f"  crosstab modality x task for {name}...")
+        out[name] = crosstab(config.QUERIES[name], config.MODALITY_TERMS, config.TASK_TERMS)
     return out
 
 
@@ -220,3 +232,85 @@ def _extract_year(article: ET.Element) -> int | None:
         if token.isdigit():
             return int(token)
     return None
+
+
+def crosstab(
+    base_query: str,
+    rows: dict[str, str],
+    cols: dict[str, str],
+    start: int | None = None,
+    end: int | None = None,
+) -> dict[str, Any]:
+    """Count records matching ``base AND row AND col`` for every pair.
+
+    Used to sub-stratify each modality by task (and vice versa). Counts are
+    summed over the year window with a single date-range facet per pair, so a
+    6 x 9 table costs 54 queries, not 54 x years. Row/column marginals are
+    returned too so the figure can normalise within a modality.
+    """
+    start = start or config.START_YEAR
+    end = end or config.END_YEAR
+    span = f"{start}:{end}[pdat]"
+    pause = 0.12 if config.NCBI_API_KEY else 0.34
+
+    def _count(term: str) -> int:
+        params = _base_params()
+        params.update({"term": f"({term}) AND {span}", "retmax": 0, "rettype": "count", "retmode": "json"})
+        return int(utils.http_get_json(ESEARCH, params, pause=pause)["esearchresult"]["count"])
+
+    total = _count(base_query)
+    row_tot = {r: _count(f"{base_query} AND {rq}") for r, rq in rows.items()}
+    col_tot = {c: _count(f"{base_query} AND {cq}") for c, cq in cols.items()}
+    cells: dict[str, dict[str, int]] = {}
+    for r, rq in rows.items():
+        cells[r] = {c: _count(f"{base_query} AND {rq} AND {cq}") for c, cq in cols.items()}
+    return {
+        "years": [start, end],
+        "total": total,
+        "row_totals": row_tot,
+        "col_totals": col_tot,
+        "cells": cells,
+    }
+
+
+def pmid_for_doi(doi: str) -> str | None:
+    """Resolve a DOI to a PMID via ESearch's [doi] field (None if not indexed)."""
+    params = _base_params()
+    params.update({"term": f'"{doi}"[doi]', "retmax": 1, "retmode": "json"})
+    pause = 0.12 if config.NCBI_API_KEY else 0.34
+    try:
+        ids = utils.http_get_json(ESEARCH, params, pause=pause)["esearchresult"].get("idlist", [])
+    except Exception:
+        return None
+    return ids[0] if ids else None
+
+
+def query_contains(query: str, pmid: str) -> bool:
+    """True if ``pmid`` is in the result set of ``query``."""
+    return count_for_query(f"({query}) AND {pmid}[uid]") > 0
+
+
+def sample_pmids(query: str, year: int, n: int = 60, offsets: tuple[int, ...] = (0, 2000, 4000, 8000, 12000)) -> list[str]:
+    """A spread sample of PMIDs matching ``query`` in ``year``.
+
+    PubMed has no random sort, so the sample is taken as small slices at
+    several offsets of the date-sorted result list, which spreads it over the
+    year rather than over-sampling January.
+    """
+    per = max(1, n // len(offsets))
+    pause = 0.12 if config.NCBI_API_KEY else 0.34
+    out: list[str] = []
+    for off in offsets:
+        params = _base_params()
+        params.update({"term": f"({query}) AND {year}[pdat]", "retstart": off, "retmax": per,
+                       "sort": "pub_date", "retmode": "json"})
+        try:
+            out.extend(utils.http_get_json(ESEARCH, params, pause=pause)["esearchresult"].get("idlist", []))
+        except Exception:
+            continue
+    return list(dict.fromkeys(out))
+
+
+def article_details(pmids: list[str]) -> list[dict[str, Any]]:
+    """Public wrapper around the EFetch parser (title, journal, year, doi)."""
+    return _fetch_article_details(pmids) if pmids else []

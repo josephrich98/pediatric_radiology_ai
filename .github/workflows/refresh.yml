@@ -1,0 +1,124 @@
+# Scheduled data refresh.
+#
+# Runs scripts/refresh.py (clear cache -> collect -> figures -> reports ->
+# slides) and opens a pull request with the regenerated deliverables, so
+# nothing lands on main without a look. Also runnable by hand from the Actions
+# tab ("Run workflow").
+#
+# Optional repository secrets (everything works without them, just slower):
+#   NCBI_API_KEY          PubMed 3 -> 10 req/s
+#   PATENTSVIEW_API_KEY   enables the patent counts (zero without it)
+#   SEMANTIC_SCHOLAR_API_KEY
+# The built-in GITHUB_TOKEN is used for GitHub search and for opening the PR.
+# Repository setting required for the PR step: Settings -> Actions -> General ->
+# "Allow GitHub Actions to create and approve pull requests".
+
+name: Refresh data and reports
+
+on:
+  schedule:
+    # 06:17 UTC on the 1st of every month (odd minute to avoid the top-of-hour rush).
+    - cron: "17 6 1 * *"
+  workflow_dispatch:
+    inputs:
+      quick:
+        description: "Headline PubMed queries only (fast smoke run)"
+        type: boolean
+        default: false
+      build_slides:
+        description: "Install TeX Live and compile the Beamer PDF (adds ~5 min)"
+        type: boolean
+        default: true
+      skip:
+        description: "Collectors to skip, space-separated (pubmed landscape conferences patents newsletters)"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      # DBLP throttles cold pulls hard; carrying its cached responses between
+      # runs keeps the conference table complete. refresh.py deletes every
+      # other cached response, so only DBLP entries actually persist.
+      - name: Restore HTTP cache (DBLP entries)
+        uses: actions/cache@v4
+        with:
+          path: data/raw/cache
+          key: http-cache-${{ github.run_id }}
+          restore-keys: |
+            http-cache-
+
+      - name: Install TeX Live
+        if: ${{ github.event_name == 'schedule' || inputs.build_slides }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk
+
+      - name: Refresh
+        env:
+          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+          PATENTSVIEW_API_KEY: ${{ secrets.PATENTSVIEW_API_KEY }}
+          SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PEDRAD_AI_EMAIL: josephrich98@gmail.com
+        run: |
+          args=""
+          if [ "${{ inputs.quick }}" = "true" ]; then args="$args --quick"; fi
+          if [ "${{ github.event_name }}" != "schedule" ] && [ "${{ inputs.build_slides }}" != "true" ]; then
+            args="$args --no-slides"
+          fi
+          for s in ${{ inputs.skip }}; do args="$args --skip $s"; done
+          python scripts/refresh.py $args
+
+      - name: Upload run logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: refresh-logs
+          path: data/logs/
+          if-no-files-found: ignore
+
+      - name: Open pull request with refreshed deliverables
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: refresh/${{ github.run_id }}
+          delete-branch: true
+          add-paths: |
+            data/processed/**
+            figures/**
+            reports/**
+            slides/pedrad_ai_slides.tex
+            slides/pedrad_ai_slides.pdf
+          commit-message: "Refresh data, figures, and reports"
+          title: "Data refresh ${{ github.run_id }}"
+          body: |
+            Automated refresh of every collector (PubMed, OpenAlex, GitHub, DBLP,
+            PatentsView, newsletter archives) followed by figures, reports, and
+            slides. Run logs are attached to the workflow run as an artifact.
+
+            Review the headline numbers in `reports/00_popularity_trends.md` and the
+            newsletter hits in `reports/03_newsletter_watch.md` before merging.

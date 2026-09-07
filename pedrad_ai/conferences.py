@@ -36,43 +36,53 @@ def _matches(title: str, keywords: list[str]) -> bool:
     return False
 
 
-# DBLP drops connections to throttle bursts, so we make exactly ONE request per
-# venue-year (no pagination) and pace generously. DBLP caps each response at 100
-# hits but reports the true total, so one request yields a 100-paper sample for
-# the on-topic *fraction* plus the venue's true paper count for that year.
+# DBLP caps each response at 100 hits and drops connections to throttle
+# bursts, so we page through a venue-year in 100-hit requests, paced
+# generously, up to DBLP_SAMPLE_TARGET titles. A dropped page ends the sample
+# early rather than aborting; cached pages persist, so re-running the collector
+# accumulates coverage. DBLP reports the true total on every page, so the
+# venue's paper count is exact even when the sample is partial.
 DBLP_PAUSE = 2.0
+DBLP_PAGE = 100
+DBLP_SAMPLE_TARGET = 500
 
 
 def fetch_venue_titles(venue_key: str, year: int) -> tuple[list[str], int]:
     """Fetch a sample of paper titles for a DBLP venue stream in a given year.
 
-    Returns ``(titles, reported_total)`` where ``titles`` is up to 100 papers
-    (DBLP's per-response cap) and ``reported_total`` is the venue's true paper
-    count that year. Fractions are estimated from the sample; totals are exact.
+    Returns ``(titles, reported_total)`` where ``titles`` is up to
+    ``DBLP_SAMPLE_TARGET`` papers (paged 100 at a time) and ``reported_total``
+    is the venue's true paper count that year. Fractions are estimated from
+    the sample; totals are exact.
     """
     venue_short = venue_key.split("/")[-1]
-    params = {
-        "q": f"stream:streams/conf/{venue_short}: year:{year}:",
-        "format": "xml",
-        "h": 100,
-        "c": 0,
-    }
-    try:
-        # max_retries=2: one retry recovers transient drops; cached successes
-        # persist, so running the collector several times accumulates coverage
-        # of the venue-years DBLP throttled on earlier passes.
-        xml = utils.http_get(DBLP_PUBL_API, params, pause=DBLP_PAUSE, max_retries=2)
-        root = ET.fromstring(xml)
-    except Exception:
-        return [], 0
     titles: list[str] = []
-    for hit in root.findall(".//hit"):
-        title_el = hit.find(".//title")
-        if title_el is not None and title_el.text:
-            titles.append("".join(title_el.itertext()).strip())
-    total_el = root.find(".//hits")
-    reported_total = int(total_el.get("total", 0)) if total_el is not None else len(titles)
-    return titles, reported_total
+    reported_total = 0
+    for first in range(0, DBLP_SAMPLE_TARGET, DBLP_PAGE):
+        params = {
+            "q": f"stream:streams/conf/{venue_short}: year:{year}:",
+            "format": "xml",
+            "h": DBLP_PAGE,
+            "f": first,
+            "c": 0,
+        }
+        try:
+            xml = utils.http_get(DBLP_PUBL_API, params, pause=DBLP_PAUSE, max_retries=2)
+            root = ET.fromstring(xml)
+        except Exception:
+            break
+        page: list[str] = []
+        for hit in root.findall(".//hit"):
+            title_el = hit.find(".//title")
+            if title_el is not None and title_el.text:
+                page.append("".join(title_el.itertext()).strip())
+        total_el = root.find(".//hits")
+        if total_el is not None:
+            reported_total = int(total_el.get("total", 0))
+        titles.extend(page)
+        if len(page) < DBLP_PAGE or len(titles) >= reported_total:
+            break
+    return titles, reported_total or len(titles)
 
 
 def venue_topic_fractions(venue_name: str, venue_key: str, start: int, end: int) -> list[dict[str, Any]]:

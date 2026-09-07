@@ -9,6 +9,7 @@ Outputs:
     data/processed/pubmed_yearly_counts.json
     data/processed/pubmed_trends.csv
     data/processed/pubmed_summary.json
+    data/processed/pubmed_crosstab.json   (modality x task, full run only)
     data/raw/top_articles_<query>.json
 """
 
@@ -34,6 +35,10 @@ def main() -> None:
     utils.save_json(counts, config.PROCESSED_DIR / "pubmed_yearly_counts.json")
     analysis.write_trend_csv(counts, str(config.PROCESSED_DIR / "pubmed_trends.csv"))
     utils.save_json(analysis.summarize(counts), config.PROCESSED_DIR / "pubmed_summary.json")
+
+    if not args.quick:
+        print("Modality x task cross-tabulations...")
+        utils.save_json(pubmed.collect_crosstabs(), config.PROCESSED_DIR / "pubmed_crosstab.json")
 
     print("Computing RSNA-journal AI fraction...")
     rsna = pubmed.rsna_ai_fraction()

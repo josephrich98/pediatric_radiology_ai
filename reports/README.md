@@ -1,15 +1,18 @@
 # Reports
 
-Generated deliverables for the children's hospital briefing. Regenerate with
-`python scripts/run_all.py` (collection) followed by the figures/reports steps,
-or rebuild just the prose from already-collected data with
-`python scripts/build_reports.py`.
+Generated deliverables for the children's hospital briefing. Refresh everything
+to today with `python scripts/refresh.py` (clears the HTTP cache, re-collects,
+rebuilds figures, reports, and slides), or rebuild just the prose from
+already-collected data with `python scripts/build_reports.py`. A monthly GitHub
+Action (`.github/workflows/refresh.yml`) runs the same refresh and opens a pull
+request with the results.
 
 | File | What it covers |
 |:--|:--|
 | [00_popularity_trends.md](00_popularity_trends.md) | How fast radiology AI is growing, its share of all radiology, the pediatric fraction, modality/task breakdowns, the AI share of RSNA's own journals, patents, and conference attention. |
 | [01_landscape_players.md](01_landscape_players.md) | The biggest players: most-cited radiology-AI and pediatric-radiology-AI papers, and the most-starred open-source tools. |
 | [02_state_of_the_field.md](02_state_of_the_field.md) | Curated synthesis for clinical leadership: what radiology AI does well, the bleeding edge, what remains unresolved, and implications for a children's hospital. |
+| [03_newsletter_watch.md](03_newsletter_watch.md) | What newsletters and trade press (The Imaging Wire, RSNA News, TLDR, Signify, Radiology Business) are saying about pediatric radiology AI: counts by year and source, topics, and the stories themselves. |
 | [references.bib](references.bib) | BibTeX for every cited paper, resolved through doi2bib. |
 
 A **Beamer slide deck** summarizing all of this (objectives, methods, results,
@@ -23,7 +26,13 @@ data tables are in [`../data/processed/`](../data/processed).
 ## Caveats that apply throughout
 
 - Counts reflect records indexed at collection time and **undercount the most
-  recent year** (MEDLINE indexing and patent grants lag).
+  recent year** (MEDLINE indexing and patent grants lag). The current calendar
+  year is partial and is labelled **YTD**; headline numbers and growth rates use
+  the last complete year.
+- Newsletter labelling is keyword co-occurrence within a story (pediatric AND
+  AI, plus radiology for non-imaging sources); it is a lower bound with some
+  false positives from sponsor blocks. AuntMinnie and Diagnostic Imaging block
+  automated access and are not included.
 - Conference fractions use title-keyword labelling on a per-venue-year sample
   and are conservative lower bounds; DBLP throttling may leave that section
   incomplete in a given run.

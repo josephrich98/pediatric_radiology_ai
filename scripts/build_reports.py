@@ -36,6 +36,15 @@ def _fmt_cagr(x: float | None) -> str:
     return f"{x:.0%}/yr" if isinstance(x, (int, float)) else "n/a"
 
 
+def _ylabel(yr: int | str) -> str:
+    """Year label for tables; the current (partial) year is marked YTD."""
+    return f"{yr} (YTD)" if int(yr) == config.PARTIAL_YEAR else str(yr)
+
+
+def _span() -> str:
+    return f"{config.START_YEAR}-{config.END_YEAR}"
+
+
 def _query_block(names: list[str]) -> list[str]:
     """Render the exact PubMed boolean queries for the named series, for
     transparency in the report."""
@@ -60,7 +69,7 @@ def _pivot(rows: list[dict], value_key: str, col_key: str) -> tuple[list[str], l
         for c in cols:
             v = lookup.get((c, yr))
             cells.append(_fmt_pct(v) if isinstance(v, (int, float)) else "–")
-        lines.append(f"| {yr} | " + " | ".join(cells) + " |")
+        lines.append(f"| {_ylabel(yr)} | " + " | ".join(cells) + " |")
     lines.append("")
     return lines, years
 
@@ -78,20 +87,33 @@ def _conference_section() -> list[str]:
             "### Machine-learning / computer-vision venues — radiology share\n"
         )
         L.append(
-            "**How obtained.** For each venue-year, a title sample (up to 100 "
+            "**How obtained.** For each venue-year, a title sample (up to "
+            f"{getattr(__import__('pedrad_ai.conferences', fromlist=['x']), 'DBLP_SAMPLE_TARGET', 100)} "
             "papers) was pulled from DBLP and labelled with radiology / "
             "medical-imaging title keywords. The cell is the share of that "
             "venue's papers that are about medical imaging — a conservative "
             "lower bound, since title-only labelling misses papers that do not "
             "name a modality. ICCV is biennial (odd years).\n"
         )
-        L.append(
-            "_Coverage note: DBLP throttles automated access aggressively, so "
-            "this run captured only a subset of venue-years; re-running "
-            "`scripts/collect_conferences.py` while DBLP is idle fills in more. "
-            "The consistent finding across the years that did return is that "
-            "medical imaging is roughly 0-2% of these general ML/CV venues._\n"
+        venues = {r["venue"] for r in ml}
+        yrs = {r["year"] for r in ml}
+        expected = sum(
+            1 for v in venues for y in yrs if not (v == "ICCV" and y % 2 == 0)
         )
+        if expected and len(ml) < 0.9 * expected:
+            L.append(
+                "_Coverage note: DBLP throttles automated access aggressively, so "
+                "this run captured only a subset of venue-years; re-running "
+                "`scripts/collect_conferences.py` while DBLP is idle fills in more. "
+                "The consistent finding across the years that did return is that "
+                "medical imaging is roughly 0-2% of these general ML/CV venues._\n"
+            )
+        else:
+            L.append(
+                "_Across every venue-year sampled, medical imaging is roughly 0-3% "
+                "of these general ML/CV venues — a small, flat share of a rapidly "
+                "growing whole._\n"
+            )
         lines, _ = _pivot(ml, "radiology_fraction", "venue")
         L.extend(lines)
         L.append("![Radiology share of ML venues](../figures/ml_venue_radiology_share.png)\n")
@@ -141,29 +163,40 @@ def build_popularity_report() -> list[str]:
             f"of radiology AI in {yr1} — a small but growing slice "
             f"(**{summary.get('pediatric_radiology_ai_latest', 'n/a')}** records).\n"
         )
+        if summary.get("partial_year"):
+            L[-1] = L[-1].rstrip("\n")
+            L.append(
+                f"- {summary['partial_year']} year-to-date (collected "
+                f"{summary.get('collected_on', '?')}): **{summary.get('radiology_ai_ytd', 'n/a')}** "
+                f"radiology-AI records, of which **{summary.get('pediatric_radiology_ai_ytd', 'n/a')}** "
+                f"({_fmt_pct(summary.get('pediatric_share_of_radiology_ai_ytd'))}) are pediatric. "
+                f"Partial-year counts are not comparable to full years and lag indexing.\n"
+            )
 
     rows = analysis.fractions_over_time(counts) if counts else []
     if rows:
         L.append("## Publication trend (PubMed)\n")
         L.append(
-            "**How obtained.** For each year 2008-2025, PubMed E-utilities "
+            f"**How obtained.** For each year {_span()}, PubMed E-utilities "
             "(`esearch`, `[pdat]` date facet) returned the record count for four "
             "boolean queries: all radiology, radiology AND AI, pediatric "
             "radiology, and pediatric radiology AND AI. The shares are ratios of "
-            "those counts. The exact query strings:\n"
+            f"those counts. {config.PARTIAL_YEAR} is a partial year (year-to-date "
+            "at collection). The exact query strings:\n"
         )
         L.extend(_query_block(["all_radiology", "radiology_ai", "pediatric_radiology_ai"]))
         L.append("| Year | All radiology | Radiology AI | AI share | Pediatric rad-AI | Pediatric share of rad-AI |")
         L.append("|---:|---:|---:|---:|---:|---:|")
         for r in rows:
             L.append(
-                f"| {r['year']} | {r['all_radiology']} | {r['radiology_ai']} | "
+                f"| {_ylabel(r['year'])} | {r['all_radiology']} | {r['radiology_ai']} | "
                 f"{_fmt_pct(r['ai_share_of_radiology'])} | {r['pediatric_radiology_ai']} | "
                 f"{_fmt_pct(r['pediatric_share_of_radiology_ai'])} |"
             )
         L.append("")
         L.append("![Radiology AI publication trend](../figures/radiology_ai_trend.png)\n")
         L.append("![Pediatric share of radiology AI](../figures/pediatric_share.png)\n")
+        L.extend(_validation_section())
 
     if counts:
         mod = analysis.breakdown_table(counts, "modality", denom_series="radiology_ai")
@@ -171,7 +204,7 @@ def build_popularity_report() -> list[str]:
             L.append("## Where the AI work sits, by modality\n")
             L.append(
                 "**How obtained.** The radiology-AI query above was intersected "
-                "with each modality's term group (PubMed, summed over 2008-2025). "
+                f"with each modality's term group (PubMed, summed over {_span()}). "
                 "Modalities overlap, so the fraction is the share of radiology-AI "
                 "records that mention that modality and need not sum to 100%.\n"
             )
@@ -194,6 +227,22 @@ def build_popularity_report() -> list[str]:
                 L.append(f"| {r['label']} | {r['total']} | {_fmt_pct(r.get('fraction'))} |")
             L.append("")
             L.append("![Radiology AI by clinical task](../figures/task_breakdown.png)\n")
+            L.append("Task categories are organised by what the model *produces*:\n")
+            for t, g in config.TASK_GLOSS.items():
+                L.append(f"- **{t}** — {g}")
+            L.append("")
+        xt = _load("pubmed_crosstab.json", {})
+        if xt.get("radiology_ai"):
+            L.append("### Modality by task, and task by modality\n")
+            L.append(
+                "**How obtained.** Every modality term group was intersected with every "
+                f"task term group inside the radiology-AI query (PubMed, {_span()}). Bars are the "
+                "share of the corpus mentioning the modality (or task); segments are the "
+                "composition of task (or modality) mentions inside it. Labels overlap, so "
+                "segments are normalised to the bar.\n"
+            )
+            L.append("![Radiology AI by modality, split by task](../figures/modality_by_task.png)\n")
+            L.append("![Radiology AI by task, split by modality](../figures/task_by_modality.png)\n")
         ped_mod = analysis.breakdown_table(
             counts, "ped_modality", denom_series="pediatric_radiology_ai"
         )
@@ -201,7 +250,7 @@ def build_popularity_report() -> list[str]:
             L.append("## Pediatric radiology AI, by modality\n")
             L.append(
                 "**How obtained.** The pediatric-radiology-AI query intersected "
-                "with each modality's term group (PubMed, summed over 2008-2025). "
+                f"with each modality's term group (PubMed, summed over {_span()}). "
                 "Fraction is the share of pediatric radiology-AI records.\n"
             )
             L.append("| Modality | Pediatric radiology-AI records | Share |")
@@ -210,6 +259,18 @@ def build_popularity_report() -> list[str]:
                 L.append(f"| {r['label']} | {r['total']} | {_fmt_pct(r.get('fraction'))} |")
             L.append("")
             L.append("![Pediatric radiology AI by modality](../figures/ped_modality_breakdown.png)\n")
+        ped_task = analysis.breakdown_table(counts, "ped_task", denom_series="pediatric_radiology_ai")
+        if ped_task:
+            L.append("## Pediatric radiology AI, by task\n")
+            L.append("| Task | Pediatric radiology-AI records | Share |")
+            L.append("|:--|---:|---:|")
+            for r in ped_task:
+                L.append(f"| {r['label']} | {r['total']} | {_fmt_pct(r.get('fraction'))} |")
+            L.append("")
+            L.append("![Pediatric radiology AI by task](../figures/ped_task_breakdown.png)\n")
+        if xt.get("pediatric_radiology_ai"):
+            L.append("![Pediatric radiology AI by modality, split by task](../figures/ped_modality_by_task.png)\n")
+            L.append("![Pediatric radiology AI by task, split by modality](../figures/ped_task_by_modality.png)\n")
 
     rsna = _load("rsna_ai_fraction.json", [])
     if rsna:
@@ -225,7 +286,7 @@ def build_popularity_report() -> list[str]:
         L.append("|---:|---:|---:|---:|")
         for r in rsna:
             L.append(
-                f"| {r['year']} | {r['rsna_total']} | {r['rsna_ai']} | "
+                f"| {_ylabel(r['year'])} | {r['rsna_total']} | {r['rsna_ai']} | "
                 f"{_fmt_pct(r['rsna_ai_fraction'])} |"
             )
         L.append("")
@@ -259,6 +320,103 @@ def build_popularity_report() -> list[str]:
         "flagship journals (RSNA meetings have no machine-readable program).\n"
     )
     return L, dois
+
+
+def _validation_section() -> list[str]:
+    """Is the query sufficient? Recall on gold papers, strict-vs-broad, term audit."""
+    v = _load("query_validation.json", {})
+    if not v:
+        return []
+    r, p = v["recall"], v["precision"]
+    L = ["## Is the radiology-AI query sufficient?\n"]
+    L.append(
+        "**How obtained.** `scripts/validate_queries.py` runs three checks against PubMed: "
+        "(1) *recall* on a hand-picked set of landmark radiology-AI papers (`config.GOLD_PAPERS`), "
+        "each resolved from DOI to PMID and tested for membership in the query; (2) a *precision "
+        "proxy*, comparing the headline query with a strict title/abstract-only variant of the same "
+        "vocabulary and sampling the records that only the headline query returns; (3) a *term "
+        "audit* of PubMed's automatic translation of each single-word term.\n"
+    )
+    L.append(f"- Recall: {r['n_retrieved']}/{r['n_indexed']} landmark papers retrieved "
+             f"({_fmt_pct(r['recall'])}); pediatric subset {r['n_pediatric_retrieved']}/{r['n_pediatric_indexed']}.")
+    if r["missed"]:
+        L.append("  Missed: " + "; ".join(r["missed"]) + " (methods papers naming no modality, or cross-domain "
+                 "papers removed by the non-radiology-imaging exclusion).")
+    for name, sr in p["series"].items():
+        L.append(f"- {name} ({p['year']}): headline {sr['broad']:,} records, strict {sr['strict']:,}; "
+                 f"{_fmt_pct(sr['strict_share_of_broad'])} of the headline count is confirmed by explicit "
+                 "title/abstract wording.")
+    L.append(
+        "- Term audit: bare `ultrasound` is auto-mapped to the *diagnostic imaging* MeSH subheading and bare "
+        "`tomography` to a tree that includes optical coherence tomography. Query version 1 therefore counted "
+        "about two-thirds of radiology-AI papers as ultrasound; version 2 (current) fields every modality "
+        "term and excludes ophthalmic, dental, pathology and endoscopic imaging."
+    )
+    L.append("")
+    samp = p.get("broad_only_sample", [])[:12]
+    if samp:
+        L.append("Sample of records returned only by the headline (MeSH-expanded) query:\n")
+        for a in samp:
+            L.append(f"- {a['title']} ({a['journal']})")
+        L.append("")
+    return L
+
+
+def _question_table(papers, threshold) -> list[str]:
+    from pedrad_ai import curated
+
+    rows = [p for p in papers if p.get("citation_count", 0) >= threshold]
+    if not rows:
+        return []
+    L = [f"### What the papers above {threshold:,} citations answer\n",
+         "| Citations | Paper | Topic | Clinical question |", "|---:|:--|:--|:--|"]
+    for p in rows:
+        topic, q = curated.question_for(p)
+        L.append(f"| {p.get('citation_count', 0)} | {(p.get('title') or '').replace('|', '/')} ({p.get('year')}) | {topic} | {q.replace('|', '/')} |")
+    L.append("")
+    return L
+
+
+def _commercial_section() -> list[str]:
+    from pedrad_ai import fda_devices
+
+    fda = _load("fda_ai_devices.json", {})
+    L = ["## Commercial players: the FDA AI-enabled device list\n"]
+    if not fda:
+        L.append("_FDA list not collected in this run (`scripts/collect_fda.py`)._\n")
+        return L
+    L.append(
+        "**How obtained.** The FDA publishes a spreadsheet of every AI-enabled device it has authorized "
+        f"([source]({fda['source']})). Restricting to the *Radiology* lead panel gives products per year and "
+        "clearances per company. The list carries no pediatric flag; device names were matched against "
+        "pediatric terms and a curated list of products with pediatric indications was cross-checked against it.\n"
+    )
+    L.append(f"- {fda['radiology_devices']:,} of {fda['total_devices_all_panels']:,} AI-enabled devices "
+             f"({_fmt_pct(fda['radiology_share'])}) are in the Radiology panel (snapshot {fda['collected_on']}).")
+    L.append("")
+    L.append("| Company | Radiology AI devices | Years | Examples |")
+    L.append("|:--|---:|:--|:--|")
+    for c in fda["top_companies"][:20]:
+        L.append(f"| {c['company']} | {c['devices']} | {c['first_year']}–{c['last_year']} | {'; '.join(c['examples'])} |")
+    L.append("")
+    L.append("![FDA AI devices per year](../figures/fda_devices_per_year.png)\n")
+    L.append("![Companies with the most FDA radiology AI devices](../figures/fda_companies.png)\n")
+    L.append("### Devices whose names carry a pediatric term\n")
+    L.append("| Year | Company | Device |")
+    L.append("|---:|:--|:--|")
+    for d in sorted(fda["pediatric_name_hits"], key=lambda d: d["year"] or 0, reverse=True):
+        L.append(f"| {d['year']} | {d['company']} | {d['device']} |")
+    L.append("")
+    L.append("### Commercial software with a pediatric angle (curated)\n")
+    L.append("| Vendor | Product | Task | Pediatric status | On FDA list |")
+    L.append("|:--|:--|:--|:--|:--|")
+    for c in config.COMMERCIAL_PEDIATRIC:
+        look = fda_devices.company_lookup(fda, c["fda_company"])
+        yrs = look["years"]
+        on = f"{look['devices']} device(s), {yrs[0]}–{yrs[-1]}" if look["devices"] and yrs else "not listed"
+        L.append(f"| {c['vendor']} | {c['product']} | {c['task']} | {c['pediatric']} | {on} |")
+    L.append("")
+    return L
 
 
 def build_landscape_report() -> tuple[list[str], list[str]]:
@@ -301,6 +459,7 @@ def build_landscape_report() -> tuple[list[str], list[str]]:
         )
         L.extend(paper_table(rad, 30))
         L.append("")
+        L.extend(_question_table(rad, 1500))
     if ped:
         L.append("## Most-cited pediatric radiology AI papers\n")
         L.append(
@@ -311,6 +470,8 @@ def build_landscape_report() -> tuple[list[str], list[str]]:
         )
         L.extend(paper_table(ped, 20))
         L.append("")
+        L.extend(_question_table(ped, 100))
+        L.extend(_commercial_section())
 
     if repos:
         seen: dict[str, dict] = {}
@@ -348,6 +509,188 @@ def build_landscape_report() -> tuple[list[str], list[str]]:
     return L, dois
 
 
+def build_newsletter_report() -> list[str]:
+    """Pediatric radiology AI as it appears in newsletters and trade press."""
+    items = _load("newsletter_items.json", [])
+    summary = _load("newsletter_summary.json", {})
+    L: list[str] = []
+    L.append("# Pediatric Radiology AI in the News: Newsletter and Trade-Press Watch\n")
+    if not summary:
+        L.append("_No newsletter data collected in this run (`python scripts/collect_newsletters.py`)._\n")
+        return L
+    srcs = summary.get("sources", {})
+    L.append(
+        f"_Auto-generated from the public archives of {len(srcs)} newsletters / news "
+        f"sites, collected {summary.get('collected_on', '?')}. The peer-reviewed "
+        "literature lags practice by a year or more; this is the companion view of "
+        "what the field is talking about right now._\n"
+    )
+
+    # Headline ------------------------------------------------------------
+    total = summary.get("total_pediatric_radiology_ai_stories", len(items))
+    iw = srcs.get("The Imaging Wire", {})
+    rsna = srcs.get("RSNA News", {})
+    this_year = str(config.PARTIAL_YEAR)
+    last_year = str(config.PARTIAL_YEAR - 1)
+    by_year = summary.get("by_year", {})
+
+    def _yr_total(y: str, key: str = "pediatric_radiology_ai") -> int:
+        return sum(by_year.get(s, {}).get(y, {}).get(key, 0) for s in by_year)
+
+    L.append("## Headline\n")
+    L.append(f"- **{total}** distinct pediatric-radiology-AI stories found across all archives.")
+    L.append(
+        f"- {last_year}: **{_yr_total(last_year)}** stories; {this_year} year-to-date: "
+        f"**{_yr_total(this_year)}**."
+    )
+    if iw.get("radiology_ai_stories"):
+        L.append(
+            f"- In The Imaging Wire (the deepest archive, {iw.get('archive_from', '?')[:4]}-"
+            f"{iw.get('archive_to', '?')[:4]}), pediatric stories are "
+            f"**{_fmt_pct(iw['pediatric_radiology_ai_stories'] / iw['radiology_ai_stories'])}** "
+            f"of all radiology-AI stories — the trade-press analogue of the pediatric share of "
+            "the literature."
+        )
+    if rsna.get("radiology_ai_stories"):
+        L.append(
+            f"- In RSNA News, pediatric stories are "
+            f"**{_fmt_pct(rsna['pediatric_radiology_ai_stories'] / rsna['radiology_ai_stories'])}** "
+            "of AI-titled articles."
+        )
+    L.append("")
+
+    # Method / sources ----------------------------------------------------
+    L.append("## How obtained\n")
+    L.append(
+        "Each source's public archive was enumerated in full (WordPress REST API, "
+        "the RSNA News archive page, TLDR's dated daily pages, or an RSS feed), "
+        "every issue was split into its individual stories at heading boundaries "
+        "(and digest lists such as The Imaging Wire's \"The Wire\" into their bullets), "
+        "and a story was labelled **pediatric radiology AI** only when a pediatric "
+        "term (pediatric, child, infant, neonatal, fetal, bone age, ...) and an AI "
+        "term (AI, deep learning, algorithm, LLM, ...) occur **in the same story**; "
+        "for sources that are not imaging-specific (TLDR, Signify) a radiology term "
+        "is also required. Stories re-run across issues are de-duplicated by title. "
+        "Vocabularies are in `pedrad_ai/config.py` (`NEWS_*_PATTERNS`).\n"
+    )
+    L.append("| Source | Archive | Coverage | Issues / articles | Stories | Radiology-AI stories | Pediatric radiology-AI | Pediatric share of AI stories |")
+    L.append("|:--|:--|:--|---:|---:|---:|---:|---:|")
+    for name, s in srcs.items():
+        cov = f"{s.get('archive_from') or '?'} → {s.get('archive_to') or '?'}"
+        share = (
+            _fmt_pct(s["pediatric_radiology_ai_stories"] / s["radiology_ai_stories"])
+            if s.get("radiology_ai_stories") else "–"
+        )
+        L.append(
+            f"| [{name}]({s.get('url', '')}) | {s['kind']} | {cov} | {s['docs']} | {s['stories']} | "
+            f"{s['radiology_ai_stories']} | {s['pediatric_radiology_ai_stories']} | {share} |"
+        )
+    L.append("")
+    notes = [
+        "RSNA News: article bodies are fetched only for titles that already carry a pediatric or AI term; the radiology-AI denominator is therefore title-based.",
+        f"TLDR has no archive listing, so its daily pages are enumerated from {summary.get('tldr_start_date', '?')}; weekend/holiday dates are skipped.",
+        "RSS sources (Radiology Business, Health Imaging) expose only their most recent items, so they contribute recency, not history.",
+        "Newsletter issues contain sponsor blocks; these are counted as stories, which slightly inflates denominators.",
+    ]
+    blocked = summary.get("blocked", {})
+    if blocked:
+        notes.append(
+            "Not included: "
+            + "; ".join(f"[{k}]({v['url']}) ({v['reason']})" for k, v in blocked.items()) + "."
+        )
+    L.append("_Coverage notes:_\n")
+    L.extend(f"- {n}" for n in notes)
+    L.append("")
+
+    # By year -------------------------------------------------------------
+    years = sorted({y for s in by_year.values() for y in s if y != "unknown"})
+    years = [y for y in years if _yr_total(y) or y >= last_year]  # skip leading empty years
+    if years:
+        L.append("## Pediatric radiology-AI stories by year and source\n")
+        names = list(srcs)
+        L.append("| Year | " + " | ".join(names) + " | Total |")
+        L.append("|---:|" + "---:|" * (len(names) + 1))
+        for y in years:
+            cells = [str(by_year.get(n, {}).get(y, {}).get("pediatric_radiology_ai", 0)) for n in names]
+            L.append(f"| {_ylabel(y)} | " + " | ".join(cells) + f" | {_yr_total(y)} |")
+        L.append("")
+        if "The Imaging Wire" in by_year:
+            L.append("Pediatric share of The Imaging Wire's radiology-AI stories, by year:\n")
+            L.append("| Year | Radiology-AI stories | Pediatric | Share |")
+            L.append("|---:|---:|---:|---:|")
+            for y in years:
+                r = by_year["The Imaging Wire"].get(y)
+                if not r or not r.get("radiology_ai"):
+                    continue
+                L.append(
+                    f"| {_ylabel(y)} | {r['radiology_ai']} | {r['pediatric_radiology_ai']} | "
+                    f"{_fmt_pct(r['pediatric_radiology_ai'] / r['radiology_ai'])} |"
+                )
+            L.append("")
+        L.append("![Pediatric radiology AI in the news](../figures/newsletter_watch.png)\n")
+        L.append("![Radiology AI in the news, all ages](../figures/newsletter_radiology_ai.png)\n")
+        players = summary.get("players") or {}
+        if any(v.get("radiology_ai") for v in players.values()):
+            L.append("## Who the trade press talks about\n")
+            L.append(
+                "Stories mentioning each company or tool, over all radiology-AI stories and the pediatric "
+                "subset (sponsor blocks and round-ups mentioning more than five players excluded). A third "
+                "importance signal next to citations and GitHub stars.\n"
+            )
+            L.append("| Company / tool | Radiology-AI stories | ...of which pediatric |")
+            L.append("|:--|---:|---:|")
+            for k, v in list(players.items())[:25]:
+                if v["radiology_ai"]:
+                    L.append(f"| {k} | {v['radiology_ai']} | {v['pediatric_radiology_ai']} |")
+            L.append("")
+            L.append("![Who the trade press talks about](../figures/newsletter_players.png)\n")
+
+    # Topics --------------------------------------------------------------
+    topics = summary.get("topics", {})
+    if any(topics.values()):
+        L.append("## What the news is about\n")
+        L.append(
+            "Topic tags are keyword-based and overlapping (a story can carry several). "
+            "Counts are stories, all sources, all years.\n"
+        )
+        L.append("| Topic | Stories |")
+        L.append("|:--|---:|")
+        for t, c in topics.items():
+            if c:
+                L.append(f"| {t} | {c} |")
+        L.append("")
+
+    # Stories -------------------------------------------------------------
+    if items:
+        cap = 200
+        L.append(f"## The stories (most recent first{', first ' + str(cap) if len(items) > cap else ''})\n")
+        L.append(
+            "_Full list with matched terms: `data/processed/newsletter_items.csv`._\n"
+            if len(items) > cap else ""
+        )
+        cur = None
+        for it in items[:cap]:
+            y = (it.get("date") or "unknown")[:4]
+            if y != cur:
+                L.append(f"### {y}\n")
+                cur = y
+            story = (it.get("story") or it.get("issue_title") or "").replace("|", "/").strip()
+            if not story:
+                story = it.get("url", "")
+            snippet = (it.get("snippet") or "").replace("\n", " ").strip()
+            if len(snippet) > 260:
+                snippet = snippet[:257].rstrip() + "…"
+            tags = f" _[{', '.join(it['topics'])}]_" if it.get("topics") else ""
+            L.append(
+                f"- **{it.get('date') or '?'}** · {it['source']} · [{story}]({it.get('url', '')}){tags}  \n"
+                f"  {snippet}"
+            )
+        L.append("")
+    else:
+        L.append("_No pediatric-radiology-AI stories matched in this run._\n")
+    return L
+
+
 def build_state_report() -> list[str]:
     """Hand-curated synthesis: does-well / bleeding-edge / unresolved.
 
@@ -370,6 +713,9 @@ def main() -> None:
     all_dois += d2
 
     (REPORTS / "02_state_of_the_field.md").write_text(STATE_OF_FIELD, encoding="utf-8")
+
+    news = build_newsletter_report()
+    (REPORTS / "03_newsletter_watch.md").write_text("\n".join(news) + "\n", encoding="utf-8")
     # The curated report cites a fixed set of landmark DOIs.
     all_dois += CURATED_DOIS
 

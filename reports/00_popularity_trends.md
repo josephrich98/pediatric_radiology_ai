@@ -4,60 +4,87 @@ _Auto-generated from PubMed, PatentsView, DBLP, GitHub, and OpenAlex pulls. Coun
 
 ## Headline
 
-- Radiology-AI publications grew from the 2008 baseline to **27011** records in 2025 (compound growth ≈ **23%/yr**).
-- The AI share of all radiology publishing rose from **0.8%** to **11.3%**.
-- Pediatric work is **11.0%** of radiology AI in 2025 — a small but growing slice (**2980** records).
+- Radiology-AI publications grew from the 2008 baseline to **20831** records in 2025 (compound growth ≈ **22%/yr**).
+- The AI share of all radiology publishing rose from **0.8%** to **11.4%**.
+- Pediatric work is **11.3%** of radiology AI in 2025 — a small but growing slice (**2348** records).
+- 2026 year-to-date (collected 2026-09-03): **16481** radiology-AI records, of which **1897** (11.5%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
 
 ## Publication trend (PubMed)
 
-**How obtained.** For each year 2008-2025, PubMed E-utilities (`esearch`, `[pdat]` date facet) returned the record count for four boolean queries: all radiology, radiology AND AI, pediatric radiology, and pediatric radiology AND AI. The shares are ratios of those counts. The exact query strings:
+**How obtained.** For each year 2008-2026, PubMed E-utilities (`esearch`, `[pdat]` date facet) returned the record count for four boolean queries: all radiology, radiology AND AI, pediatric radiology, and pediatric radiology AND AI. The shares are ratios of those counts. 2026 is a partial year (year-to-date at collection). The exact query strings:
 
 ```text
 all_radiology:
-  (radiology OR radiological OR radiograph* OR "medical imaging" OR tomography OR "magnetic resonance" OR MRI OR "computed tomography" OR CT OR ultrasound OR mammograph* OR "chest x-ray" OR radiograph)
+  ((radiology OR radiological OR radiograph* OR "medical imaging" OR "diagnostic imaging"[tiab] OR "tomography, x-ray computed"[MeSH Terms] OR "tomography, emission-computed"[MeSH Terms] OR tomograph*[tiab] OR "magnetic resonance" OR MRI OR "computed tomography" OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] OR "ultrasonography"[MeSH Terms] OR mammograph* OR "chest x-ray") NOT ("optical coherence"[tiab] OR fundus[tiab] OR retina*[tiab] OR dental[tiab] OR histopatholog*[tiab] OR "whole slide"[tiab] OR dermoscop*[tiab] OR endoscop*[tiab] OR colonoscop*[tiab] OR microscop*[tiab]))
 radiology_ai:
-  (radiology OR radiological OR radiograph* OR "medical imaging" OR tomography OR "magnetic resonance" OR MRI OR "computed tomography" OR CT OR ultrasound OR mammograph* OR "chest x-ray" OR radiograph) AND ("artificial intelligence" OR "machine learning" OR "deep learning" OR "convolutional neural network" OR "neural network" OR "computer-aided diagnosis" OR radiomics OR "computer vision")
+  ((radiology OR radiological OR radiograph* OR "medical imaging" OR "diagnostic imaging"[tiab] OR "tomography, x-ray computed"[MeSH Terms] OR "tomography, emission-computed"[MeSH Terms] OR tomograph*[tiab] OR "magnetic resonance" OR MRI OR "computed tomography" OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] OR "ultrasonography"[MeSH Terms] OR mammograph* OR "chest x-ray") NOT ("optical coherence"[tiab] OR fundus[tiab] OR retina*[tiab] OR dental[tiab] OR histopatholog*[tiab] OR "whole slide"[tiab] OR dermoscop*[tiab] OR endoscop*[tiab] OR colonoscop*[tiab] OR microscop*[tiab])) AND ("artificial intelligence" OR "machine learning" OR "deep learning" OR "convolutional neural network" OR "neural network" OR "computer-aided diagnosis" OR radiomics OR "computer vision")
 pediatric_radiology_ai:
-  (radiology OR radiological OR radiograph* OR "medical imaging" OR tomography OR "magnetic resonance" OR MRI OR "computed tomography" OR CT OR ultrasound OR mammograph* OR "chest x-ray" OR radiograph) AND ("artificial intelligence" OR "machine learning" OR "deep learning" OR "convolutional neural network" OR "neural network" OR "computer-aided diagnosis" OR radiomics OR "computer vision") AND (pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR "children's hospital")
+  ((radiology OR radiological OR radiograph* OR "medical imaging" OR "diagnostic imaging"[tiab] OR "tomography, x-ray computed"[MeSH Terms] OR "tomography, emission-computed"[MeSH Terms] OR tomograph*[tiab] OR "magnetic resonance" OR MRI OR "computed tomography" OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] OR "ultrasonography"[MeSH Terms] OR mammograph* OR "chest x-ray") NOT ("optical coherence"[tiab] OR fundus[tiab] OR retina*[tiab] OR dental[tiab] OR histopatholog*[tiab] OR "whole slide"[tiab] OR dermoscop*[tiab] OR endoscop*[tiab] OR colonoscop*[tiab] OR microscop*[tiab])) AND ("artificial intelligence" OR "machine learning" OR "deep learning" OR "convolutional neural network" OR "neural network" OR "computer-aided diagnosis" OR radiomics OR "computer vision") AND (pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR "children's hospital")
 ```
 
 | Year | All radiology | Radiology AI | AI share | Pediatric rad-AI | Pediatric share of rad-AI |
 |---:|---:|---:|---:|---:|---:|
-| 2008 | 99964 | 802 | 0.8% | 63 | 7.9% |
-| 2009 | 106437 | 788 | 0.7% | 59 | 7.5% |
-| 2010 | 114610 | 616 | 0.5% | 51 | 8.3% |
-| 2011 | 124890 | 559 | 0.4% | 66 | 11.8% |
-| 2012 | 134258 | 630 | 0.5% | 66 | 10.5% |
-| 2013 | 142799 | 752 | 0.5% | 79 | 10.5% |
-| 2014 | 152249 | 856 | 0.6% | 122 | 14.3% |
-| 2015 | 161552 | 1004 | 0.6% | 150 | 14.9% |
-| 2016 | 169194 | 1295 | 0.8% | 175 | 13.5% |
-| 2017 | 175723 | 1941 | 1.1% | 244 | 12.6% |
-| 2018 | 181399 | 3293 | 1.8% | 405 | 12.3% |
-| 2019 | 188971 | 5403 | 2.9% | 607 | 11.2% |
-| 2020 | 221322 | 8739 | 3.9% | 860 | 9.8% |
-| 2021 | 240419 | 12629 | 5.3% | 1135 | 9.0% |
-| 2022 | 225791 | 15487 | 6.9% | 1237 | 8.0% |
-| 2023 | 213818 | 17211 | 8.0% | 1478 | 8.6% |
-| 2024 | 223048 | 20806 | 9.3% | 2176 | 10.5% |
-| 2025 | 239586 | 27011 | 11.3% | 2980 | 11.0% |
+| 2008 | 86812 | 715 | 0.8% | 58 | 8.1% |
+| 2009 | 92281 | 723 | 0.8% | 58 | 8.0% |
+| 2010 | 99121 | 557 | 0.6% | 48 | 8.6% |
+| 2011 | 107921 | 492 | 0.5% | 62 | 12.6% |
+| 2012 | 115476 | 569 | 0.5% | 63 | 11.1% |
+| 2013 | 122316 | 680 | 0.6% | 72 | 10.6% |
+| 2014 | 128775 | 769 | 0.6% | 113 | 14.7% |
+| 2015 | 134828 | 873 | 0.6% | 134 | 15.3% |
+| 2016 | 134488 | 1045 | 0.8% | 155 | 14.8% |
+| 2017 | 137742 | 1556 | 1.1% | 203 | 13.0% |
+| 2018 | 140927 | 2632 | 1.9% | 340 | 12.9% |
+| 2019 | 144818 | 4342 | 3.0% | 515 | 11.9% |
+| 2020 | 166142 | 6928 | 4.2% | 682 | 9.8% |
+| 2021 | 177988 | 10174 | 5.7% | 947 | 9.3% |
+| 2022 | 169514 | 12469 | 7.4% | 1038 | 8.3% |
+| 2023 | 160988 | 13901 | 8.6% | 1227 | 8.8% |
+| 2024 | 167690 | 16222 | 9.7% | 1695 | 10.4% |
+| 2025 | 182492 | 20831 | 11.4% | 2348 | 11.3% |
+| 2026 (YTD) | 138306 | 16481 | 11.9% | 1897 | 11.5% |
 
 ![Radiology AI publication trend](../figures/radiology_ai_trend.png)
 
 ![Pediatric share of radiology AI](../figures/pediatric_share.png)
 
+## Is the radiology-AI query sufficient?
+
+**How obtained.** `scripts/validate_queries.py` runs three checks against PubMed: (1) *recall* on a hand-picked set of landmark radiology-AI papers (`config.GOLD_PAPERS`), each resolved from DOI to PMID and tested for membership in the query; (2) a *precision proxy*, comparing the headline query with a strict title/abstract-only variant of the same vocabulary and sampling the records that only the headline query returns; (3) a *term audit* of PubMed's automatic translation of each single-word term.
+
+- Recall: 26/30 landmark papers retrieved (86.7%); pediatric subset 11/11.
+  Missed: nnU-Net (Nat Methods 2021); Litjens DL survey (Med Image Anal 2017); MedSAM (Nat Commun 2024); Kermany OCT / chest X-ray (Cell 2018) (methods papers naming no modality, or cross-domain papers removed by the non-radiology-imaging exclusion).
+- radiology_ai (2025): headline 20,831 records, strict 18,217; 76.3% of the headline count is confirmed by explicit title/abstract wording.
+- pediatric_radiology_ai (2025): headline 2,348 records, strict 1,898; 71.8% of the headline count is confirmed by explicit title/abstract wording.
+- Term audit: bare `ultrasound` is auto-mapped to the *diagnostic imaging* MeSH subheading and bare `tomography` to a tree that includes optical coherence tomography. Query version 1 therefore counted about two-thirds of radiology-AI papers as ultrasound; version 2 (current) fields every modality term and excludes ophthalmic, dental, pathology and endoscopic imaging.
+
+Sample of records returned only by the headline (MeSH-expanded) query:
+
+- Utilizing multimodal models to forecast Alzheimer's disease progression and clinical subtypes. (Health information science and systems)
+- Spatial radiomics-based interpretable multimodal machine learning model enhances outcomes prediction for minor stroke: A multicenter cohort study. (Journal of advanced research)
+- Evaluating the Performance and Fragility of Large Language Models on the Self-Assessment for Neurological Surgeons. (Neurosurgery)
+- GN-Net: A Geometric and Neighborhood-Aware Network for Predicting Intracranial Aneurysm Rupture Risk and Assisting Clinical Decision-Making. (Interdisciplinary sciences, computational life sciences)
+- Artificial intelligence in cerebral cavernous malformations: a scoping review. (Neurological research)
+- Artificial Intelligence in Palliative Care: A Scoping Review of Current Applications, Challenges, and Future Directions. (The American journal of hospice & palliative care)
+- The neurophysiological correlates of altruism: A scoping review of fMRI, EEG, and autonomic studies. (Cognitive, affective & behavioral neuroscience)
+- Angiographic phenotypes predict FFR/iFR discordance in severe aortic stenosis: A cluster analysis. (Cardiovascular revascularization medicine : including molecular interventions)
+- Academic Journal Podcast and Generative Artificial Intelligence: Introducing KJR SummaryCast. (Korean journal of radiology)
+- Advancing Early Detection of Chronic Obstructive Pulmonary Disease Using Generative AI. (Radiology. Artificial intelligence)
+- Quantitative Pharmacokinetic Mapping with AI: Toward More Generalizable Response Prediction in Breast Cancer MRI. (Radiology. Artificial intelligence)
+- Artificial Intelligence-Based Multimodal Prediction of Postoperative Adjuvant Immunotherapy Benefit in Urothelial Carcinoma: Results From the Phase III, Multicenter, Randomized, IMvigor010 Trial. (MedComm)
+
 ## Where the AI work sits, by modality
 
-**How obtained.** The radiology-AI query above was intersected with each modality's term group (PubMed, summed over 2008-2025). Modalities overlap, so the fraction is the share of radiology-AI records that mention that modality and need not sum to 100%.
+**How obtained.** The radiology-AI query above was intersected with each modality's term group (PubMed, summed over 2008-2026). Modalities overlap, so the fraction is the share of radiology-AI records that mention that modality and need not sum to 100%.
 
 | Modality | Radiology-AI records | Share of radiology AI |
 |:--|---:|---:|
-| ultrasound | 75141 | 62.7% |
-| MRI | 39209 | 32.7% |
-| x-ray / radiography | 25911 | 21.6% |
-| CT | 20472 | 17.1% |
-| nuclear / PET | 10441 | 8.7% |
-| mammography | 7119 | 5.9% |
+| MRI | 38950 | 34.8% |
+| CT | 33368 | 29.8% |
+| ultrasound | 13579 | 12.1% |
+| x-ray / radiography | 11886 | 10.6% |
+| nuclear / PET | 7578 | 6.8% |
+| mammography | 3186 | 2.9% |
 
 ![Radiology AI by modality](../figures/modality_breakdown.png)
 
@@ -67,29 +94,72 @@ pediatric_radiology_ai:
 
 | Task | Radiology-AI records | Share of radiology AI |
 |:--|---:|---:|
-| classification / diagnosis | 103130 | 86.1% |
-| detection / screening | 86092 | 71.9% |
-| prognosis / outcome | 32486 | 27.1% |
-| segmentation | 28458 | 23.8% |
-| image reconstruction / denoising | 4558 | 3.8% |
-| report generation | 774 | 0.7% |
+| classification / detection | 52160 | 46.6% |
+| segmentation / quantification | 38597 | 34.5% |
+| prognosis / outcome prediction | 29595 | 26.4% |
+| reconstruction / image enhancement | 15615 | 14.0% |
+| workflow / non-interpretive | 14094 | 12.6% |
+| foundation model / vision-language | 10790 | 9.6% |
+| generative / synthesis / registration | 6337 | 5.7% |
+| report generation / LLM | 3515 | 3.1% |
+| agent / autonomous | 491 | 0.4% |
 
 ![Radiology AI by clinical task](../figures/task_breakdown.png)
 
+Task categories are organised by what the model *produces*:
+
+- **classification / detection** — is a finding present, and where (label or box)
+- **segmentation / quantification** — outline / measure a structure or lesion
+- **prognosis / outcome prediction** — predict risk, response, or survival from images
+- **reconstruction / image enhancement** — better images from less dose or shorter scans
+- **report generation / LLM** — draft, summarize, or extract from report text
+- **foundation model / vision-language** — large pretrained models reused across tasks
+- **generative / synthesis / registration** — make or align images (GAN, diffusion)
+- **agent / autonomous** — multi-step actions taken without a human in the loop
+- **workflow / non-interpretive** — protocoling, scheduling, ordering, education
+
+### Modality by task, and task by modality
+
+**How obtained.** Every modality term group was intersected with every task term group inside the radiology-AI query (PubMed, 2008-2026). Bars are the share of the corpus mentioning the modality (or task); segments are the composition of task (or modality) mentions inside it. Labels overlap, so segments are normalised to the bar.
+
+![Radiology AI by modality, split by task](../figures/modality_by_task.png)
+
+![Radiology AI by task, split by modality](../figures/task_by_modality.png)
+
 ## Pediatric radiology AI, by modality
 
-**How obtained.** The pediatric-radiology-AI query intersected with each modality's term group (PubMed, summed over 2008-2025). Fraction is the share of pediatric radiology-AI records.
+**How obtained.** The pediatric-radiology-AI query intersected with each modality's term group (PubMed, summed over 2008-2026). Fraction is the share of pediatric radiology-AI records.
 
 | Modality | Pediatric radiology-AI records | Share |
 |:--|---:|---:|
-| ultrasound | 7806 | 65.3% |
-| MRI | 5026 | 42.0% |
-| x-ray / radiography | 2278 | 19.1% |
-| CT | 1205 | 10.1% |
-| nuclear / PET | 773 | 6.5% |
-| mammography | 278 | 2.3% |
+| MRI | 4985 | 42.8% |
+| CT | 1959 | 16.8% |
+| ultrasound | 1594 | 13.7% |
+| x-ray / radiography | 1528 | 13.1% |
+| nuclear / PET | 394 | 3.4% |
+| mammography | 88 | 0.8% |
 
 ![Pediatric radiology AI by modality](../figures/ped_modality_breakdown.png)
+
+## Pediatric radiology AI, by task
+
+| Task | Pediatric radiology-AI records | Share |
+|:--|---:|---:|
+| classification / detection | 5346 | 45.9% |
+| segmentation / quantification | 3671 | 31.5% |
+| prognosis / outcome prediction | 2439 | 20.9% |
+| workflow / non-interpretive | 1595 | 13.7% |
+| reconstruction / image enhancement | 1133 | 9.7% |
+| foundation model / vision-language | 1076 | 9.2% |
+| generative / synthesis / registration | 508 | 4.4% |
+| report generation / LLM | 322 | 2.8% |
+| agent / autonomous | 41 | 0.4% |
+
+![Pediatric radiology AI by task](../figures/ped_task_breakdown.png)
+
+![Pediatric radiology AI by modality, split by task](../figures/ped_modality_by_task.png)
+
+![Pediatric radiology AI by task, split by modality](../figures/ped_task_by_modality.png)
 
 ## How much of RSNA's own output is about AI?
 
@@ -110,11 +180,12 @@ pediatric_radiology_ai:
 | 2018 | 845 | 76 | 9.0% |
 | 2019 | 839 | 133 | 15.8% |
 | 2020 | 910 | 174 | 19.1% |
-| 2021 | 1011 | 197 | 19.5% |
-| 2022 | 996 | 213 | 21.4% |
-| 2023 | 1028 | 224 | 21.8% |
+| 2021 | 1011 | 198 | 19.6% |
+| 2022 | 996 | 214 | 21.5% |
+| 2023 | 1028 | 226 | 22.0% |
 | 2024 | 884 | 214 | 24.2% |
 | 2025 | 859 | 210 | 24.4% |
+| 2026 (YTD) | 612 | 150 | 24.5% |
 
 ![AI share of RSNA flagship journals](../figures/rsna_ai_share.png)
 
@@ -122,15 +193,22 @@ pediatric_radiology_ai:
 
 ### Machine-learning / computer-vision venues — radiology share
 
-**How obtained.** For each venue-year, a title sample (up to 100 papers) was pulled from DBLP and labelled with radiology / medical-imaging title keywords. The cell is the share of that venue's papers that are about medical imaging — a conservative lower bound, since title-only labelling misses papers that do not name a modality. ICCV is biennial (odd years).
+**How obtained.** For each venue-year, a title sample (up to 500 papers) was pulled from DBLP and labelled with radiology / medical-imaging title keywords. The cell is the share of that venue's papers that are about medical imaging — a conservative lower bound, since title-only labelling misses papers that do not name a modality. ICCV is biennial (odd years).
 
-_Coverage note: DBLP throttles automated access aggressively, so this run captured only a subset of venue-years; re-running `scripts/collect_conferences.py` while DBLP is idle fills in more. The consistent finding across the years that did return is that medical imaging is roughly 0-2% of these general ML/CV venues._
+_Across every venue-year sampled, medical imaging is roughly 0-3% of these general ML/CV venues — a small, flat share of a rapidly growing whole._
 
-| Year | CVPR | ICCV | ICML | NeurIPS |
-|---:|---:|---:|---:|---:|
-| 2016 | 2.0% | – | 0.0% | 0.0% |
-| 2017 | 0.0% | 0.0% | – | 1.0% |
-| 2018 | 1.0% | – | – | – |
+| Year | CVPR | ICCV | ICLR | ICML | NeurIPS |
+|---:|---:|---:|---:|---:|---:|
+| 2016 | 1.0% | – | 0.0% | 0.0% | 0.0% |
+| 2017 | 0.0% | 0.0% | 0.0% | 0.2% | 0.4% |
+| 2018 | 0.2% | – | 0.0% | 0.0% | 0.0% |
+| 2019 | 0.4% | 0.0% | 0.0% | 0.0% | 0.0% |
+| 2020 | 1.2% | – | 0.0% | 0.0% | 0.6% |
+| 2021 | 0.4% | 0.8% | 0.0% | 0.2% | 0.2% |
+| 2022 | 0.4% | – | 0.2% | 0.0% | 0.4% |
+| 2023 | 1.2% | 1.6% | 0.2% | 0.2% | 0.6% |
+| 2024 | 2.4% | – | 0.2% | 0.0% | 0.8% |
+| 2025 | 2.4% | 3.8% | 0.4% | 0.2% | 0.8% |
 
 ![Radiology share of ML venues](../figures/ml_venue_radiology_share.png)
 
@@ -145,12 +223,12 @@ _Coverage note: DBLP throttles automated access aggressively, so this run captur
 | 2018 | 7.5% | 7.5% | 9.0% | 0.3% |
 | 2019 | 9.8% | 13.5% | 15.8% | 1.4% |
 | 2020 | 8.0% | 18.9% | 19.1% | 1.6% |
-| 2021 | 8.7% | 22.8% | 19.5% | 4.6% |
-| 2022 | 6.6% | 30.2% | 21.4% | 9.0% |
-| 2023 | 13.1% | 31.7% | 21.8% | 7.8% |
+| 2021 | 8.7% | 22.8% | 19.6% | 4.6% |
+| 2022 | 6.6% | 30.2% | 21.5% | 9.0% |
+| 2023 | 13.1% | 31.7% | 22.0% | 7.8% |
 | 2024 | 11.3% | 30.3% | 24.2% | 7.5% |
 | 2025 | 16.2% | 30.3% | 24.4% | 9.4% |
-| 2026 | 18.8% | 32.4% | 25.6% | 16.3% |
+| 2026 (YTD) | 20.0% | 31.8% | 24.5% | 16.0% |
 
 ![AI share of radiology societies](../figures/society_ai_share.png)
 

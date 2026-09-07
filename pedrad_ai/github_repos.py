@@ -34,6 +34,7 @@ REPO_QUERIES: dict[str, str] = {
 _EXCLUDE_TOKENS = (
     "awesome", "course", "tutorial", "roadmap", "interview", "cheatsheet",
     "book", "survey", "papers", "paper-list", "reading", "100-days",
+    "collection of", "literature review", "project summary", "sota-", "sota ",
 )
 
 
@@ -86,9 +87,40 @@ def _clean_repo(r: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def fetch_repo(full_name: str) -> dict[str, Any] | None:
+    """Fetch one repository by name (``owner/repo``); None if missing."""
+    headers = {"Accept": "application/vnd.github+json"}
+    token = _token()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    try:
+        data = utils.http_get_json(f"https://api.github.com/repos/{full_name}", headers=headers, pause=1.0)
+    except Exception:
+        return None
+    return _clean_repo(data) if data.get("full_name") else None
+
+
+def known_repos(names: list[str] | None = None) -> list[dict[str, Any]]:
+    """Directly fetched leaderboard of the tools named in ``config.KNOWN_REPOS``.
+
+    GitHub search ranks by text match inside a 1,000-result window, so the
+    best-known frameworks (MONAI, nnU-Net) are missed when their descriptions
+    do not contain the query words. Fetching them by name fixes recall.
+    """
+    out = []
+    for name in names or config.KNOWN_REPOS:
+        r = fetch_repo(name)
+        if r:
+            out.append(r)
+    return sorted(out, key=lambda r: r["stars"], reverse=True)
+
+
 def collect_all(limit: int = 50) -> dict[str, list[dict[str, Any]]]:
-    """Run every repo query and return a leaderboard per query."""
-    return {name: search_repos(q, limit=limit) for name, q in REPO_QUERIES.items()}
+    """Run every repo query (plus the known-tools list) and return a
+    leaderboard per query."""
+    out = {name: search_repos(q, limit=limit) for name, q in REPO_QUERIES.items()}
+    out["known_tools"] = known_repos()
+    return out
 
 
 def new_repos_per_year(repos: list[dict[str, Any]]) -> dict[int, int]:

@@ -39,6 +39,11 @@ def main() -> None:
     run("collect_landscape.py")
     run("collect_conferences.py")
     run("collect_patents.py")
+    run("collect_newsletters.py")
+    run("collect_fda.py")
+    if not args.quick:
+        run("validate_queries.py")
+        run("collect_examples.py")
     run("make_figures.py")
     run("build_reports.py")
     run("build_slides.py")

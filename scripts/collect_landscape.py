@@ -36,6 +36,8 @@ _EXCLUDE_DOMAIN = [
     "retinopathy", "fundus", "ophthalmolog", "retinal", "dermatolog",
     "skin lesion", "skin cancer", "histopath", "whole slide", "whole-slide",
     "microscop", "cytolog", "genomic", "electrocardiogram", "endoscop",
+    "eeg", "electroencephalogra", "practice guideline", "encephalopathy",
+    "wearable", "ecg",
 ]
 
 
