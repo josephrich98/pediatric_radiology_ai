@@ -24,6 +24,11 @@ dependencies = [
 [project.optional-dependencies]
 notebooks = ["jupyter>=1.0", "ipykernel>=6.0", "papermill>=2.0"]
 dev = ["pytest>=7.0", "doi2bib", "ruff>=0.5"]
+slides = ["python-pptx>=1.0"]   # editable PowerPoint export (scripts/build_pptx.py)
+# Paper database: structured, schema-constrained reading of abstracts
+# (pedrad_ai/extract.py -> scripts/build_paper_db.py). Needs Anthropic
+# credentials at run time; the rest of the pipeline does not.
+db = ["anthropic>=1.0", "pydantic>=2.0"]
 
 [project.scripts]
 pedrad-collect = "scripts.run_all:main"

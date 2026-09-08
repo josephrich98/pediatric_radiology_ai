@@ -25,7 +25,9 @@ def _mailto() -> dict[str, str]:
     return {"mailto": config.CONTACT_EMAIL}
 
 
-def top_cited(query: str, per_page: int = 50, min_year: int | None = None) -> list[dict[str, Any]]:
+def top_cited(
+    query: str, per_page: int = 50, min_year: int | None = None, max_year: int | None = None
+) -> list[dict[str, Any]]:
     """Return works matching ``query`` (full-text search), ranked by citations.
 
     ``query`` is a plain phrase; every word is required (OpenAlex treats spaces
@@ -37,6 +39,8 @@ def top_cited(query: str, per_page: int = 50, min_year: int | None = None) -> li
     filters = [f"title_and_abstract.search:{query}", "type:article"]
     if min_year:
         filters.append(f"from_publication_date:{min_year}-01-01")
+    if max_year:
+        filters.append(f"to_publication_date:{max_year}-12-31")
     params = {
         "filter": ",".join(filters),
         "sort": "cited_by_count:desc",
@@ -51,7 +55,7 @@ def top_cited(query: str, per_page: int = 50, min_year: int | None = None) -> li
 
 
 def top_cited_union(
-    queries: list[str], per_query: int = 80, min_year: int | None = None
+    queries: list[str], per_query: int = 80, min_year: int | None = None, max_year: int | None = None
 ) -> list[dict[str, Any]]:
     """Run several searches, union the results, dedupe, and rank by citations.
 
@@ -63,7 +67,7 @@ def top_cited_union(
     """
     by_id: dict[str, dict[str, Any]] = {}
     for q in queries:
-        for paper in top_cited(q, per_page=per_query, min_year=min_year):
+        for paper in top_cited(q, per_page=per_query, min_year=min_year, max_year=max_year):
             wid = paper.get("openalex_id")
             if wid and wid not in by_id:
                 by_id[wid] = paper

@@ -8,8 +8,10 @@ Usage:
     python scripts/refresh.py                 # full refresh (30-60 min)
     python scripts/refresh.py --quick         # headline PubMed queries only
     python scripts/refresh.py --keep-cache    # re-run without re-fetching
-    python scripts/refresh.py --no-slides     # skip build_slides + latexmk
+    python scripts/refresh.py --no-slides     # skip build_slides + latexmk + build_pptx
     python scripts/refresh.py --skip conferences --skip patents
+    python scripts/refresh.py --skip paperdb     # leave the paper database alone
+    python scripts/refresh.py --paper-db-all     # read every outstanding paper (slow, costs money)
     python scripts/refresh.py --dry-run       # print the plan, touch nothing
 
 Cache policy: the on-disk HTTP cache (data/raw/cache/) makes re-runs
@@ -17,6 +19,12 @@ reproducible but also freezes counts at the time of the first pull, so a
 refresh deletes it. DBLP entries are kept by default because DBLP throttles
 hard and a cold re-pull can lose venue-years; pass --drop-dblp-cache to
 re-sample those too.
+
+The paper database (scripts/build_paper_db.py) runs as one of the steps. It is
+the only step that spends money: each paper that is new since the last refresh
+is read once by Claude. It is capped at config.PAPER_DB_RUN_LIMIT papers per
+run, papers already read are never re-read, and with no Anthropic credentials
+it keeps the committed database and just regenerates the exports.
 
 Every step is wrapped so one unreachable service never aborts the run; the
 exit code is non-zero only when --strict is given and a step failed.
@@ -48,6 +56,13 @@ COLLECTORS = {
     "validation": "validate_queries.py",
     "examples": "collect_examples.py",
 }
+
+# The paper database is not a plain collector: it reads abstracts with Claude,
+# so it costs money per new paper and is capped per run. It is listed
+# separately so --skip paperdb and --paper-db-limit can control it, and it
+# degrades to a no-op (keeping the database already committed) when the
+# anthropic package or credentials are missing.
+PAPER_DB_SCRIPT = "build_paper_db.py"
 
 
 def clear_cache(keep_dblp: bool, dry_run: bool) -> tuple[int, int]:
@@ -91,9 +106,14 @@ def main() -> int:
     ap.add_argument("--quick", action="store_true", help="headline PubMed queries only")
     ap.add_argument("--keep-cache", action="store_true", help="do not clear data/raw/cache/")
     ap.add_argument("--drop-dblp-cache", action="store_true", help="also clear cached DBLP responses")
-    ap.add_argument("--no-slides", action="store_true", help="skip build_slides.py and latexmk")
-    ap.add_argument("--skip", action="append", default=[], choices=sorted(COLLECTORS),
-                    help="collector(s) to skip (repeatable)")
+    ap.add_argument("--no-slides", action="store_true", help="skip build_slides.py, latexmk, and build_pptx.py")
+    ap.add_argument("--skip", action="append", default=[], choices=sorted(COLLECTORS) + ["paperdb"],
+                    help="collector(s) to skip (repeatable); 'paperdb' skips the paper database")
+    ap.add_argument("--paper-db-limit", type=int, default=None,
+                    help="max new papers to read into the paper database this run "
+                         "(default: config.PAPER_DB_RUN_LIMIT; 0 means rebuild exports only)")
+    ap.add_argument("--paper-db-all", action="store_true",
+                    help="read every outstanding paper into the database (can be slow and costly)")
     ap.add_argument("--strict", action="store_true", help="exit non-zero if any step fails")
     ap.add_argument("--dry-run", action="store_true", help="print the plan without running anything")
     args = ap.parse_args()
@@ -120,6 +140,21 @@ def main() -> int:
             cmd.append("--quick")
         results[key], _ = run_step(key, cmd, LOGS / f"refresh-{stamp}-{key}.log", args.dry_run)
 
+    # Paper database: incremental structured extraction of the papers that are
+    # new since the last refresh. Runs after the collectors because it reuses
+    # the FDA device list to settle the commercial column.
+    if "paperdb" in args.skip:
+        print("\n=== paperdb: skipped")
+    else:
+        cmd = [py, str(SCRIPTS / PAPER_DB_SCRIPT)]
+        if args.paper_db_all:
+            cmd.append("--all")
+        elif args.paper_db_limit == 0:
+            cmd.append("--rebuild")
+        elif args.paper_db_limit is not None:
+            cmd += ["--limit", str(args.paper_db_limit)]
+        results["paperdb"], _ = run_step("paperdb", cmd, LOGS / f"refresh-{stamp}-paperdb.log", args.dry_run)
+
     results["figures"], _ = run_step("figures", [py, str(SCRIPTS / "make_figures.py")],
                                      LOGS / f"refresh-{stamp}-figures.log", args.dry_run)
     results["reports"], _ = run_step("reports", [py, str(SCRIPTS / "build_reports.py")],
@@ -136,6 +171,13 @@ def main() -> int:
             )
         else:
             print("\n=== pdf: latexmk not found; slides/pedrad_ai_slides.tex written but not compiled")
+        try:
+            import pptx  # noqa: F401  (python-pptx; pip install -e ".[slides]")
+        except ImportError:
+            print("\n=== pptx: python-pptx not installed; skipping slides/pedrad_ai_slides.pptx")
+        else:
+            results["pptx"], _ = run_step("pptx", [py, str(SCRIPTS / "build_pptx.py")],
+                                          LOGS / f"refresh-{stamp}-pptx.log", args.dry_run)
 
     print(f"\nRefresh {'plan' if args.dry_run else 'finished'} in {(time.time() - t_start)/60:.1f} min")
     failed = [k for k, ok in results.items() if not ok]

@@ -7,7 +7,7 @@ _Auto-generated from PubMed, PatentsView, DBLP, GitHub, and OpenAlex pulls. Coun
 - Radiology-AI publications grew from the 2008 baseline to **20831** records in 2025 (compound growth ≈ **22%/yr**).
 - The AI share of all radiology publishing rose from **0.8%** to **11.4%**.
 - Pediatric work is **11.3%** of radiology AI in 2025 — a small but growing slice (**2348** records).
-- 2026 year-to-date (collected 2026-09-03): **16481** radiology-AI records, of which **1897** (11.5%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
+- 2026 year-to-date (collected 2026-09-07): **16481** radiology-AI records, of which **1897** (11.5%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
 
 ## Publication trend (PubMed)
 
@@ -94,13 +94,13 @@ Sample of records returned only by the headline (MeSH-expanded) query:
 
 | Task | Radiology-AI records | Share of radiology AI |
 |:--|---:|---:|
-| classification / detection | 52160 | 46.6% |
-| segmentation / quantification | 38597 | 34.5% |
-| prognosis / outcome prediction | 29595 | 26.4% |
-| reconstruction / image enhancement | 15615 | 14.0% |
+| detection / diagnosis | 52222 | 46.6% |
+| outcome prediction | 29595 | 26.4% |
+| segmentation | 26645 | 23.8% |
+| measurement / quantification | 19489 | 17.4% |
+| reconstruction / imputation | 16452 | 14.7% |
 | workflow / non-interpretive | 14094 | 12.6% |
-| foundation model / vision-language | 10790 | 9.6% |
-| generative / synthesis / registration | 6337 | 5.7% |
+| foundation model / vision-language | 4912 | 4.4% |
 | report generation / LLM | 3515 | 3.1% |
 | agent / autonomous | 491 | 0.4% |
 
@@ -108,15 +108,15 @@ Sample of records returned only by the headline (MeSH-expanded) query:
 
 Task categories are organised by what the model *produces*:
 
-- **classification / detection** — is a finding present, and where (label or box)
-- **segmentation / quantification** — outline / measure a structure or lesion
-- **prognosis / outcome prediction** — predict risk, response, or survival from images
-- **reconstruction / image enhancement** — better images from less dose or shorter scans
-- **report generation / LLM** — draft, summarize, or extract from report text
-- **foundation model / vision-language** — large pretrained models reused across tasks
-- **generative / synthesis / registration** — make or align images (GAN, diffusion)
+- **detection / diagnosis** — is a finding present now, and which one (label or box): fracture, pneumonia, tumor; includes triage and screening
+- **segmentation** — outline a structure or lesion (a mask)
+- **measurement / quantification** — a number from the image: bone age, Cobb angle, organ volume, fetal biometry
+- **outcome prediction** — a future risk, response, or survival estimate from the image (prognosis, radiomics signatures)
+- **reconstruction / imputation** — a better or missing image: lower dose, faster scans, denoising, synthetic CT/MR
+- **report generation / LLM** — text: draft, summarize, or extract from radiology reports
+- **foundation model / vision-language** — a large pretrained model reused across tasks (segment-anything, self-supervised)
 - **agent / autonomous** — multi-step actions taken without a human in the loop
-- **workflow / non-interpretive** — protocoling, scheduling, ordering, education
+- **workflow / non-interpretive** — protocoling, scheduling, ordering, decision support, education
 
 ### Modality by task, and task by modality
 
@@ -145,13 +145,13 @@ Task categories are organised by what the model *produces*:
 
 | Task | Pediatric radiology-AI records | Share |
 |:--|---:|---:|
-| classification / detection | 5346 | 45.9% |
-| segmentation / quantification | 3671 | 31.5% |
-| prognosis / outcome prediction | 2439 | 20.9% |
+| detection / diagnosis | 5355 | 46.0% |
+| measurement / quantification | 2539 | 21.8% |
+| outcome prediction | 2439 | 20.9% |
+| segmentation | 2331 | 20.0% |
 | workflow / non-interpretive | 1595 | 13.7% |
-| reconstruction / image enhancement | 1133 | 9.7% |
-| foundation model / vision-language | 1076 | 9.2% |
-| generative / synthesis / registration | 508 | 4.4% |
+| reconstruction / imputation | 1208 | 10.4% |
+| foundation model / vision-language | 389 | 3.3% |
 | report generation / LLM | 322 | 2.8% |
 | agent / autonomous | 41 | 0.4% |
 

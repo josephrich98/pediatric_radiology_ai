@@ -136,29 +136,34 @@ MODALITY_TERMS: dict[str, str] = {
     ),
 }
 
-# Task breakdown inside radiology AI, organised by *what the model produces*
-# so the categories are mutually intelligible (the old "detection" vs
-# "classification" split was not): a label or box, a mask/measurement, a risk,
-# a better image, text, a reusable pretrained backbone, a synthetic image, an
-# autonomous multi-step action, or a non-interpretive workflow decision. As
-# with modalities, all terms are [tiab] and the labels overlap.
+# Task breakdown inside radiology AI, organised by *what the model produces*.
+# Version 3 (2026-09): the old "classification / detection" and
+# "segmentation / quantification" pairs were ambiguous (outcome prediction is
+# also a classification; a mask and a number are different products), so the
+# categories are now one product each: a present-finding label or box, a mask,
+# a number, a future risk, a better or missing image, text, a reusable
+# pretrained backbone, an autonomous multi-step action, or a non-interpretive
+# workflow decision. As with modalities, all terms are [tiab] and the labels
+# overlap (a paper can be both segmentation and measurement).
 TASK_TERMS: dict[str, str] = {
-    "classification / detection": (
-        "(classif*[tiab] OR detect*[tiab] OR triage[tiab] OR screening[tiab] "
+    "detection / diagnosis": (
+        "(detect*[tiab] OR classif*[tiab] OR triage[tiab] OR screening[tiab] "
         'OR "computer-aided diagnosis"[tiab] OR "computer-aided detection"[tiab])'
     ),
-    "segmentation / quantification": (
-        "(segment*[tiab] OR contour*[tiab] OR delineat*[tiab] OR volumetr*[tiab] "
-        "OR quantif*[tiab] OR measurement*[tiab])"
+    "segmentation": "(segment*[tiab] OR contour*[tiab] OR delineat*[tiab])",
+    "measurement / quantification": (
+        '("bone age"[tiab] OR "skeletal maturity"[tiab] OR volumetr*[tiab] OR quantif*[tiab] '
+        'OR measurement*[tiab] OR biometry[tiab] OR "Cobb angle"[tiab] OR "brain age"[tiab])'
     ),
-    "prognosis / outcome prediction": (
+    "outcome prediction": (
         '(prognos*[tiab] OR "outcome prediction"[tiab] OR survival[tiab] '
         'OR "risk prediction"[tiab] OR "treatment response"[tiab] OR radiomic*[tiab])'
     ),
-    "reconstruction / image enhancement": (
+    "reconstruction / imputation": (
         '(reconstruct*[tiab] OR denois*[tiab] OR "dose reduction"[tiab] OR "low-dose"[tiab] '
         'OR "super-resolution"[tiab] OR "artifact reduction"[tiab] OR "image quality"[tiab] '
-        "OR accelerat*[tiab])"
+        'OR accelerat*[tiab] OR "image synthesis"[tiab] OR "synthetic CT"[tiab] OR "image-to-image"[tiab] '
+        'OR imput*[tiab] OR "missing modality"[tiab])'
     ),
     "report generation / LLM": (
         '("report generation"[tiab] OR "large language model"[tiab] OR "large language models"[tiab] '
@@ -168,12 +173,7 @@ TASK_TERMS: dict[str, str] = {
     "foundation model / vision-language": (
         '("foundation model"[tiab] OR "foundation models"[tiab] OR "vision-language"[tiab] '
         'OR "self-supervised"[tiab] OR "segment anything"[tiab] OR pretrain*[tiab] '
-        'OR "pre-trained"[tiab] OR multimodal[tiab])'
-    ),
-    "generative / synthesis / registration": (
-        '("generative adversarial"[tiab] OR GAN[tiab] OR GANs[tiab] OR "diffusion model"[tiab] '
-        'OR "diffusion models"[tiab] OR "image synthesis"[tiab] OR "image-to-image"[tiab] '
-        "OR registration[tiab])"
+        'OR "pre-trained"[tiab])'
     ),
     "agent / autonomous": (
         '("AI agent"[tiab] OR "AI agents"[tiab] OR agentic[tiab] OR "multi-agent"[tiab] '
@@ -185,22 +185,98 @@ TASK_TERMS: dict[str, str] = {
         'OR "order"[tiab] OR "appropriateness"[tiab])'
     ),
 }
-
-# Short one-line meaning of each task label, shown next to the task figures.
+# One-line meaning of each task, shown next to the task figures.
 TASK_GLOSS: dict[str, str] = {
-    "classification / detection": "is a finding present, and where (label or box)",
-    "segmentation / quantification": "outline / measure a structure or lesion",
-    "prognosis / outcome prediction": "predict risk, response, or survival from images",
-    "reconstruction / image enhancement": "better images from less dose or shorter scans",
-    "report generation / LLM": "draft, summarize, or extract from report text",
-    "foundation model / vision-language": "large pretrained models reused across tasks",
-    "generative / synthesis / registration": "make or align images (GAN, diffusion)",
+    "detection / diagnosis": "is a finding present now, and which one (label or box): fracture, pneumonia, tumor; includes triage and screening",
+    "segmentation": "outline a structure or lesion (a mask)",
+    "measurement / quantification": "a number from the image: bone age, Cobb angle, organ volume, fetal biometry",
+    "outcome prediction": "a future risk, response, or survival estimate from the image (prognosis, radiomics signatures)",
+    "reconstruction / imputation": "a better or missing image: lower dose, faster scans, denoising, synthetic CT/MR",
+    "report generation / LLM": "text: draft, summarize, or extract from radiology reports",
+    "foundation model / vision-language": "a large pretrained model reused across tasks (segment-anything, self-supervised)",
     "agent / autonomous": "multi-step actions taken without a human in the loop",
-    "workflow / non-interpretive": "protocoling, scheduling, ordering, education",
+    "workflow / non-interpretive": "protocoling, scheduling, ordering, decision support, education",
 }
 
-# --------------------------------------------------------------------------- #
-# Query validation (is the radiology-AI query sufficient?)
+# Two eras for the most-cited and problem-breakdown views: citation counts
+# favor old papers, so "what mattered before" and "what matters now" are
+# ranked separately.
+ERAS: list[tuple[str, int, int]] = [
+    ("2008-2022", START_YEAR, 2022),
+    ("2023-present", 2023, END_YEAR),
+]
+
+# Clinical problems addressed by pediatric radiology AI (all [tiab]; overlapping).
+# Counted against the pediatric radiology-AI query per era.
+PEDIATRIC_PROBLEM_TERMS: dict[str, str] = {
+    "bone age / skeletal maturity": '("bone age"[tiab] OR "skeletal maturity"[tiab] OR "skeletal age"[tiab])',
+    "fracture / trauma / abuse": (
+        '(fracture*[tiab] OR "abusive head trauma"[tiab] OR "non-accidental"[tiab] OR "child abuse"[tiab] '
+        'OR "traumatic brain injury"[tiab])'
+    ),
+    "pneumonia / bronchiolitis / RSV / TB": (
+        '(pneumonia[tiab] OR bronchiolitis[tiab] OR "respiratory syncytial"[tiab] OR RSV[tiab] '
+        'OR tuberculosis[tiab] OR "lower respiratory tract"[tiab])'
+    ),
+    "COVID-19 / MIS-C": '(COVID*[tiab] OR "SARS-CoV-2"[tiab] OR "MIS-C"[tiab] OR "multisystem inflammatory"[tiab])',
+    "chronic lung disease of prematurity / neonatal lung": (
+        '("bronchopulmonary dysplasia"[tiab] OR "chronic lung disease"[tiab] OR "respiratory distress syndrome"[tiab] '
+        'OR "neonatal lung"[tiab] OR "lung ultrasound"[tiab])'
+    ),
+    "cystic fibrosis / asthma / airway": '("cystic fibrosis"[tiab] OR asthma[tiab] OR bronchiectasis[tiab] OR airway[tiab])',
+    "appendicitis / intussusception / NEC": (
+        '(appendicitis[tiab] OR intussusception[tiab] OR "pyloric stenosis"[tiab] OR "necrotizing enterocolitis"[tiab] '
+        'OR malrotation[tiab])'
+    ),
+    "neonatal jaundice / biliary atresia / liver": (
+        '("biliary atresia"[tiab] OR jaundice[tiab] OR cholestasis[tiab] OR "liver fibrosis"[tiab] OR steatosis[tiab] '
+        'OR "fatty liver"[tiab])'
+    ),
+    "inflammatory bowel disease": '(Crohn*[tiab] OR "inflammatory bowel"[tiab] OR "ulcerative colitis"[tiab])',
+    "hydronephrosis / VUR / kidney": (
+        '(hydronephrosis[tiab] OR "vesicoureteral"[tiab] OR "urinary tract"[tiab] OR "posterior urethral"[tiab] '
+        'OR "kidney"[tiab] OR renal[tiab])'
+    ),
+    "brain tumors": (
+        '(glioma*[tiab] OR medulloblastoma[tiab] OR "brain tumor*"[tiab] OR "brain tumour*"[tiab] '
+        'OR "posterior fossa"[tiab] OR DIPG[tiab] OR ependymoma[tiab] OR craniopharyngioma[tiab] OR "optic pathway"[tiab])'
+    ),
+    "other solid tumors / leukemia": (
+        '(neuroblastoma[tiab] OR Wilms[tiab] OR nephroblastoma[tiab] OR osteosarcoma[tiab] OR "Ewing"[tiab] '
+        'OR rhabdomyosarcoma[tiab] OR hepatoblastoma[tiab] OR lymphoma[tiab] OR leukemia[tiab] OR leukaemia[tiab])'
+    ),
+    "preterm / neonatal brain injury (HIE, IVH)": (
+        '("hypoxic-ischemic"[tiab] OR "hypoxic ischemic"[tiab] OR "intraventricular hemorrhage"[tiab] OR "germinal matrix"[tiab] '
+        'OR "white matter injury"[tiab] OR leukomalacia[tiab] OR "neonatal encephalopathy"[tiab] OR "preterm brain"[tiab] '
+        'OR "cranial ultrasound"[tiab])'
+    ),
+    "fetal anomalies / prenatal": (
+        '(fetal[tiab] OR fetus[tiab] OR prenatal[tiab] OR "congenital anomal*"[tiab] OR "gestational age"[tiab] '
+        'OR placenta*[tiab])'
+    ),
+    "congenital heart disease / cardiac": (
+        '("congenital heart"[tiab] OR tetralogy[tiab] OR "rheumatic heart"[tiab] OR cardiomyopathy[tiab] OR Kawasaki[tiab] '
+        'OR "ventricular function"[tiab] OR "ejection fraction"[tiab])'
+    ),
+    "hydrocephalus / ventricles": '(hydrocephalus[tiab] OR "ventricular volume"[tiab] OR ventriculomegaly[tiab] OR shunt[tiab])',
+    "epilepsy": '(epilep*[tiab] OR "focal cortical dysplasia"[tiab] OR seizure*[tiab])',
+    "autism / ADHD / neurodevelopment": (
+        '(autis*[tiab] OR ADHD[tiab] OR "attention deficit"[tiab] OR "neurodevelopment*"[tiab] OR "cerebral palsy"[tiab] '
+        'OR "brain age"[tiab] OR "brain development"[tiab])'
+    ),
+    "scoliosis / hip dysplasia / MSK": (
+        '(scoliosis[tiab] OR "Cobb angle"[tiab] OR "hip dysplasia"[tiab] OR DDH[tiab] OR Perthes[tiab] '
+        'OR "leg length"[tiab] OR clubfoot[tiab] OR "slipped capital"[tiab] OR osteomyelitis[tiab] OR "juvenile idiopathic arthritis"[tiab])'
+    ),
+    "craniosynostosis / craniofacial": '(craniosynostosis[tiab] OR cleft[tiab] OR craniofacial[tiab] OR "skull shape"[tiab])',
+    "stroke / sickle cell / vascular": '("sickle cell"[tiab] OR moyamoya[tiab] OR stroke[tiab] OR "arteriovenous"[tiab] OR "vein of Galen"[tiab])',
+    "lines and tubes / NICU support devices": (
+        '("endotracheal tube"[tiab] OR catheter*[tiab] OR "tube position"[tiab] OR "lines and tubes"[tiab] '
+        'OR "umbilical"[tiab] OR "nasogastric"[tiab])'
+    ),
+    "testicular / ovarian torsion": '(torsion[tiab])',
+}
+
 # --------------------------------------------------------------------------- #
 # Recall is checked against a hand-picked "gold" set of landmark radiology-AI
 # papers that a sufficient query must retrieve. Each DOI is resolved to a PMID;
@@ -567,6 +643,39 @@ KNOWN_REPOS: list[str] = [
 #   github_readme  - first image linked from the repository README
 #   og_image       - the page's Open Graph preview image (vendor sites)
 #   europepmc_fig  - first figure of an open-access article, by DOI
+# --------------------------------------------------------------------------- #
+# Public pediatric imaging datasets (curated; numbers verified against the
+# primary papers / hosting pages on 2026-09-07). Sorted by size for the slide.
+# --------------------------------------------------------------------------- #
+PEDIATRIC_DATASETS: list[dict[str, str]] = [
+    {"name": "CBTN clinical MRI (Children's Brain Tumor Network)", "year": "2023", "modality": "brain / spine tumor MRI",
+     "size": "23,101 exams (1,526 patients); tumor masks for 370", "ages": "pediatric", "access": "application (NCI CCDI)", "ref": "arXiv:2310.01413"},
+    {"name": "GRAZPEDWRI-DX", "year": "2022", "modality": "wrist radiographs (trauma)",
+     "size": "20,327 images (6,091 patients)", "ages": "0.2--19 y", "access": "open", "ref": "Nagy, Sci Data 2022"},
+    {"name": "RSNA Pediatric Bone Age Challenge", "year": "2017", "modality": "hand radiographs",
+     "size": "14,236 images (bone age + sex)", "ages": "mean 10.6 y", "access": "open (RSNA terms)", "ref": "Halabi, Radiology 2019"},
+    {"name": "FETAL\_PLANES\_DB", "year": "2020", "modality": "fetal ultrasound (standard planes)",
+     "size": "12,400 images (1,792 pregnancies)", "ages": "fetal", "access": "open", "ref": "Burgos-Artizzu, Sci Rep 2020"},
+    {"name": "ABCD Study", "year": "2018--", "modality": "brain MRI, longitudinal",
+     "size": "11,878 participants, up to 7 follow-ups", "ages": "9--10 y at baseline", "access": "application (NBDC)", "ref": "Casey, Dev Cogn Neurosci 2018"},
+    {"name": "PediCXR / VinDr-PCXR", "year": "2023", "modality": "chest radiographs",
+     "size": "9,125 studies; 36 findings, 15 diagnoses", "ages": "< 10 y", "access": "credentialed (PhysioNet)", "ref": "Pham, Sci Data 2023"},
+    {"name": "Guangzhou pediatric chest X-ray (Kermany)", "year": "2018", "modality": "chest radiographs",
+     "size": "5,856 images (normal / bacterial / viral pneumonia)", "ages": "1--5 y", "access": "open", "ref": "Kermany, Cell 2018"},
+    {"name": "ABIDE I + II (autism)", "year": "2012 / 2016", "modality": "brain MRI (structural, resting fMRI)",
+     "size": "2,156 subjects", "ages": "5--64 y (mostly children)", "access": "open", "ref": "Di Martino, Mol Psychiatry 2014"},
+    {"name": "Regensburg Pediatric Appendicitis", "year": "2023", "modality": "abdominal ultrasound + labs",
+     "size": "1,709 images (579 patients)", "ages": "0--18 y", "access": "open", "ref": "Marcinkevičs, Med Image Anal 2024"},
+    {"name": "dHCP (Developing Human Connectome Project)", "year": "2022--24", "modality": "neonatal + fetal brain MRI",
+     "size": "886 neonatal + 297 fetal datasets, with segmentations", "ages": "20--45 weeks", "access": "open (NDA)", "ref": "Edwards, Front Neurosci 2022"},
+    {"name": "Pediatric-CT-SEG (TCIA)", "year": "2022", "modality": "chest / abdomen / pelvis CT",
+     "size": "718 series (359 patients); 29 organ contours", "ages": "5 days -- 16 y", "access": "open", "ref": "Jordan, Med Phys 2022"},
+    {"name": "BraTS-PEDs (pediatric brain tumor challenge)", "year": "2023--25", "modality": "brain tumor MRI",
+     "size": "464 patients (2024 challenge); 1,649 series on TCIA", "ages": "pediatric", "access": "registration / TCIA", "ref": "Kazerooni, MELBA 2025"},
+    {"name": "FeTA (fetal brain tissue annotation)", "year": "2021--24", "modality": "fetal brain MRI",
+     "size": "280 volumes (120 train + 160 test); 7 tissue labels", "ages": "18--35 weeks", "access": "registration", "ref": "Payette, Sci Data 2021"},
+]
+
 EXAMPLE_IMAGES: list[dict[str, str]] = [
     {"slug": "totalsegmentator", "kind": "github_readme", "ref": "wasserth/TotalSegmentator",
      "caption": "TotalSegmentator: 100+ anatomic structures segmented on any CT (repository README)", "group": "open source"},
@@ -592,4 +701,147 @@ EXAMPLE_IMAGES: list[dict[str, str]] = [
      "caption": "Visiana BoneXpert: automated bone age (vendor site)", "group": "commercial"},
     {"slug": "qure", "kind": "page_image", "ref": "https://www.qure.ai/product/qxr",
      "caption": "Qure.ai qXR: chest radiograph findings (vendor site)", "group": "commercial"},
+    # Paper spotlights (one slide per paper; text lives in curated.PAPER_SPOTLIGHTS).
+    # ``fig`` = 1-based index into the article's PMC figure list.
+    {"slug": "spot_bone_age_challenge", "kind": "europepmc_fig", "ref": "10.1148/radiol.2018180736", "fig": 4,
+     "caption": "Halabi et al., Radiology 2019, figure 4: hand radiograph, cropped and contrast-normalized, with the patches one team used", "group": "spotlight"},
+    {"slug": "spot_dl_recon_ct", "kind": "europepmc_fig", "ref": "10.3348/kjr.2021.0466", "fig": 6,
+     "caption": "Nagayama et al., Korean J Radiol 2022, figure 6: the same pediatric abdominal CT reconstructed six ways (FBP, hybrid iterative, deep learning)", "group": "spotlight"},
+    {"slug": "spot_posterior_fossa", "kind": "europepmc_fig", "ref": "10.3174/ajnr.a6704", "fig": 1,
+     "caption": "Quon et al., AJNR 2020, figure 1: T2 MRI examples of the four posterior fossa tumor types", "group": "spotlight"},
+    {"slug": "spot_feta", "kind": "europepmc_fig", "ref": "10.1038/s41597-021-00946-3", "fig": 2,
+     "caption": "Payette et al., Sci Data 2021, figure 2: fetal brain MRI with the seven tissue labels", "group": "spotlight"},
+    {"slug": "spot_deeplasia", "kind": "europepmc_fig", "ref": "10.1007/s00247-023-05789-1", "fig": 1,
+     "caption": "Rassmann et al., Pediatr Radiol 2023, graphical abstract", "group": "spotlight"},
+    {"slug": "spot_fracture_ed", "kind": "europepmc_fig", "ref": "10.1007/s00330-025-11554-9", "fig": 5,
+     "caption": "Ziegner et al., Eur Radiol 2025, figure 4: pediatric fractures the software found, with its per-region sensitivity and specificity", "group": "spotlight"},
+]
+
+# --------------------------------------------------------------------------- #
+# Paper database (structured, per-paper extraction)
+# --------------------------------------------------------------------------- #
+# The counting collectors answer "how much"; the paper database answers "what",
+# one row per pediatric radiology-AI paper: which model, on which modality, in
+# which children, for which clinical problem, and whether anyone outside the
+# authors' institution can actually use it. Rows are produced by reading each
+# abstract with Claude under a fixed schema (see :mod:`pedrad_ai.paper_db` and
+# :mod:`pedrad_ai.extract`) and are appended incrementally, so a refresh only
+# pays for papers that are new since the last run.
+
+PAPER_DB_JSON = PROCESSED_DIR / "pedrad_paper_db.json"
+PAPER_DB_CSV = PROCESSED_DIR / "pedrad_paper_db.csv"
+PAPER_DB_SUMMARY = PROCESSED_DIR / "pedrad_paper_db_summary.json"
+# Papers waiting to be read, written by --worklist and read back by --ingest.
+# This is the no-API-key path: the abstracts are dumped for a person (or a
+# Claude Code session) to read, and the rows come back through the same schema
+# validation the API path uses.
+PAPER_DB_WORKLIST = PROCESSED_DIR / "pedrad_paper_db_worklist.json"
+# Hand corrections, keyed by PMID: {"12345678": {"model_name": "BoneXpert", ...}}.
+# Applied after extraction and never overwritten by a re-run, so a human
+# reviewing the table can fix a row permanently. Committed to the repo.
+PAPER_DB_OVERRIDES = DATA_DIR / "paper_db_overrides.json"
+
+# Bump when the extraction schema or prompt changes in a way that makes old
+# rows non-comparable; rows stamped with an older version are re-extracted.
+PAPER_DB_SCHEMA_VERSION = 1
+
+# Candidate papers come from the pediatric radiology-AI PubMed query. 2015 is
+# the practical floor: before it the corpus is mostly hand-crafted-feature work
+# with no named, reusable model, which is what these columns are for.
+PAPER_DB_START_YEAR = 2015
+
+# Candidate query for the database. Deliberately stricter than
+# QUERIES["pediatric_radiology_ai"], which is the right net for *counting* (it
+# accepts MeSH-indexed papers whose abstract never says "child") but the wrong
+# one for a table of what has been built for children: ranked by citations, that
+# query's top results are Global Burden of Disease reports and adult
+# neuroimaging that match only through MeSH expansion. Here every clause has to
+# appear in the title or abstract, which is the same rule the modality and task
+# term groups already follow. Counting queries are untouched, so the headline
+# numbers in the reports stay comparable.
+_PEDIATRIC_TERMS_TIAB = (
+    "(pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR "
+    "neonat*[tiab] OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR "
+    "newborn*[tiab] OR preterm[tiab] OR \"children's hospital\"[tiab])"
+)
+PAPER_DB_QUERY = f"{STRICT_QUERIES['radiology_ai']} AND {_PEDIATRIC_TERMS_TIAB}"
+
+# Citation floor. The query returns ~10,000 records from 2015 on, most of which
+# nobody has read: a threshold on NIH iCite's citedByPmidCount (PubMed-indexed
+# citing papers, so a conservative count) is the cheapest way to keep the
+# database to work the field actually engages with. 20 keeps roughly a fifth of
+# the corpus. Note that it is also an implicit recency filter — a 2026 paper has
+# had no time to accrue citations — so the last two years are always
+# under-represented; --min-citations 0 turns the filter off.
+PAPER_DB_MIN_CITATIONS = 20
+
+# Extraction is a per-abstract structured-output call, so cost scales with the
+# number of new papers. Defaults are deliberately modest; scripts/build_paper_db.py
+# takes --limit / --all / --model / --effort to override.
+PAPER_DB_MODEL = os.environ.get("PEDRAD_AI_EXTRACT_MODEL", "claude-sonnet-5")
+PAPER_DB_EFFORT = os.environ.get("PEDRAD_AI_EXTRACT_EFFORT", "low")
+PAPER_DB_RUN_LIMIT = int(os.environ.get("PEDRAD_AI_EXTRACT_LIMIT", "250"))
+PAPER_DB_WORKERS = int(os.environ.get("PEDRAD_AI_EXTRACT_WORKERS", "4"))
+
+# Controlled vocabularies. The extractor is only allowed to emit these values,
+# so the database groups cleanly and stays comparable with the count-based
+# modality / task breakdowns above. "other" and "not stated" are always legal.
+PAPER_DB_MODALITIES = [
+    "x-ray / radiography",
+    "CT",
+    "MRI",
+    "ultrasound",
+    "nuclear / PET",
+    "fluoroscopy",
+    "mammography",
+    "multiple",
+    "other",
+]
+
+PAPER_DB_AGE_GROUPS = [
+    "fetal",
+    "neonate",
+    "infant",
+    "child",
+    "adolescent",
+    "pediatric (unspecified)",
+    "mixed pediatric and adult",
+]
+
+# Mirrors TASK_TERMS: categories named for what the model produces.
+PAPER_DB_TASKS = list(TASK_TERMS.keys()) + ["other"]
+
+# The release axis: can anyone outside the authors' group run this model?
+PAPER_DB_RELEASE_STATUS = [
+    "open-source",   # weights and/or code publicly available (repo, model hub)
+    "commercial",    # sold or licensed as a product / cleared device
+    "unreleased",    # described in the paper only, no code, no product
+    "unclear",       # abstract does not say either way
+]
+
+PAPER_DB_VALIDATION = [
+    "internal only",
+    "external / multi-center",
+    "prospective",
+    "reader study",
+    "none / not stated",
+]
+
+PAPER_DB_DATA_SOURCE = [
+    "single center",
+    "multi center",
+    "public dataset",
+    "not stated",
+]
+
+# Code-hosting hosts scanned in the abstract text; a hit is strong evidence of
+# an open-source release and overrides an "unclear" verdict from the model.
+PAPER_DB_CODE_HOSTS = [
+    "github.com",
+    "gitlab.com",
+    "bitbucket.org",
+    "huggingface.co",
+    "zenodo.org",
+    "codeocean.com",
+    "sourceforge.net",
 ]

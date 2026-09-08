@@ -124,12 +124,97 @@ WORTH_KNOWING: list[tuple[str, str, str]] = [
     ("nnU-Net", "open tool", "if a vendor claims a segmentation result, this is the baseline they had to beat"),
     ("MONAI", "open framework", "what your data scientists will build with; knowing the name lets you read a methods section"),
     ("RSNA Pediatric Bone Age Challenge (2017)", "paper / dataset", "the one pediatric task with a public benchmark, many models, and cleared products (BoneXpert, Rho)"),
-    ("Zech et al. 2018 (PLoS Med)", "paper", "the cleanest demonstration that a model can learn the hospital instead of the disease; the reason to demand local validation"),
+    ("\"Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs\" (Zech et al., PLoS Med 2018)", "paper", "the cleanest demonstration that a model can learn the hospital instead of the disease; the reason to demand local validation"),
     ("CLAIM checklist (Radiology: AI 2020)", "guideline", "how to tell a well-reported AI study from a weak one"),
-    ("Brady et al. 2021 (Radiology)", "paper", "deep-learning CT reconstruction lowers pediatric dose with better image quality; the most immediately usable pediatric benefit"),
+    ("\"Improving Image Quality and Reducing Radiation Dose for Pediatric CT by Using Deep Learning Reconstruction\" (Brady et al., Radiology 2021)", "paper", "the most-cited non-bone-age pediatric paper: deep-learning reconstruction lowers pediatric CT dose with better image quality; the most immediately usable pediatric benefit"),
     ("FDA AI-enabled device list", "registry", "the authoritative list of what is cleared; check the indication's age range before buying"),
     ("Gleamer BoneView / AZmed Rayvolve", "products", "the first fracture-detection tools with pediatric indications; realistic first pediatric AI purchases"),
     ("MedSAM / segment-anything models", "foundation models", "where annotation and segmentation tooling is heading: click, don't draw"),
+]
+
+
+# One slide per paper: image slug (config.EXAMPLE_IMAGES, group "spotlight"),
+# short title, reference line, and the bullets (problem, data, method, result,
+# why it matters). Numbers are taken from the papers' abstracts.
+PAPER_SPOTLIGHTS: list[dict[str, object]] = [
+    {
+        "slug": "spot_bone_age_challenge",
+        "title": "The RSNA Pediatric Bone Age Machine Learning Challenge",
+        "ref": "Halabi et al., Radiology 2019 (2008--2022 era, most-cited pediatric paper)",
+        "doi": "10.1148/radiol.2018180736",
+        "bullets": [
+            ("Problem", "bone age from a left-hand radiograph: a tedious, subjective read that every children's hospital does daily."),
+            ("Data", "14,236 hand radiographs from two children's hospitals (Stanford, Colorado) with Greulich--Pyle bone age by pediatric radiologists; 200 test cases read by six reviewers."),
+            ("Method", "an open competition (260 teams); entries were convolutional networks that regress bone age from the image plus sex."),
+            ("Result", "the winning model's mean absolute difference from the reviewers was 4.2 months; 48 teams were within 5 months, i.e. at reviewer-to-reviewer variability."),
+            ("Why it matters", "the first public pediatric imaging benchmark; it made bone age the one pediatric task with many models and cleared products."),
+        ],
+    },
+    {
+        "slug": "spot_dl_recon_ct",
+        "title": "Deep-learning reconstruction for pediatric CT: image quality at lower dose",
+        "ref": "Nagayama et al., Korean J Radiol 2022 (open-access companion to Brady et al., Radiology 2021, the most-cited paper on this topic)",
+        "doi": "10.3348/kjr.2021.0466",
+        "bullets": [
+            ("Problem", "pediatric CT dose is limited by noise; the standard fixes (filtered back projection, hybrid iterative reconstruction) trade noise for a blotchy texture and lost detail."),
+            ("Data", "120 pediatric abdominopelvic CT scans (median age 5 years) reconstructed with FBP, two iterative settings, and three deep-learning-reconstruction strengths."),
+            ("Method", "the vendor's deep-learning reconstruction (a network trained to map low-dose to high-dose raw data); noise, texture, edge sharpness, and reader scores compared across reconstructions."),
+            ("Result", "deep-learning reconstruction cut noise the most while keeping texture and sharpness, giving the highest reader scores; Brady et al. reported the same in 2021 with a 52% dose reduction at equal or better image quality."),
+            ("Why it matters", "this is the pediatric AI benefit available on today's scanners: lower dose or shorter scans without an interpretive model in the loop."),
+        ],
+    },
+    {
+        "slug": "spot_posterior_fossa",
+        "title": "Deep learning for pediatric posterior fossa tumor detection and classification",
+        "ref": "Quon et al., AJNR 2020, multi-institutional",
+        "doi": "10.3174/ajnr.a6704",
+        "bullets": [
+            ("Problem", "the four common posterior fossa tumors of childhood (medulloblastoma, pilocytic astrocytoma, ependymoma, diffuse midline glioma) need different surgery and prognosis, and preoperative MRI reads disagree."),
+            ("Data", "617 children from five institutions: T2-weighted MRI of 199 tumors and 418 controls."),
+            ("Method", "a 2D convolutional network (ResNeXt-50) trained on axial T2 slices to detect a tumor and assign its type; performance compared with four radiologists."),
+            ("Result", "tumor detection accuracy 92% (AUC 0.99); four-class tumor typing accuracy 72%, similar to the radiologists, whose own accuracy ranged widely."),
+            ("Why it matters", "a multi-site pediatric neuro-oncology model that matched human readers; the next step, prospective use, has not been shown."),
+        ],
+    },
+    {
+        "slug": "spot_feta",
+        "title": "FeTA: the fetal brain tissue annotation and segmentation challenge",
+        "ref": "Payette et al., Sci Data 2021 (dataset) and Med Image Anal 2023 (challenge results; most-cited pediatric paper of 2023--present)",
+        "doi": "10.1016/j.media.2023.102833",
+        "bullets": [
+            ("Problem", "fetal brain MRI volumes of cortex, white matter, ventricles, and cerebellum track abnormal development, but manual segmentation takes hours per case and moves with the fetus."),
+            ("Data", "80 (later 120) reconstructed fetal brain MRI volumes, 20--35 weeks, normal and pathological (spina bifida), each with seven tissue labels."),
+            ("Method", "a MICCAI challenge: 21 teams submitted segmentation networks (most nnU-Net variants) evaluated on held-out cases."),
+            ("Result", "the best entries reached a mean Dice of about 0.79 across tissues; performance dropped on the youngest and most abnormal brains."),
+            ("Why it matters", "the first shared benchmark for fetal MRI; a template for the multi-center datasets pediatric radiology lacks."),
+        ],
+    },
+    {
+        "slug": "spot_deeplasia",
+        "title": "Deeplasia: deep learning for bone age assessment validated on skeletal dysplasias",
+        "ref": "Rassmann et al., Pediatr Radiol 2023",
+        "doi": "10.1007/s00247-023-05789-1",
+        "bullets": [
+            ("Problem", "bone-age models are trained on ordinary children, but the patients who most need the read (achondroplasia, Turner, Noonan, Silver--Russell, SHOX) have abnormal hands."),
+            ("Data", "the RSNA challenge set for training; testing on the RSNA test set, the Digital Hand Atlas, and 568 radiographs from children with molecularly confirmed dysplasias."),
+            ("Method", "an ensemble of three convolutional networks with no hand-crafted priors, released as open source."),
+            ("Result", "mean absolute difference 3.9 months on the RSNA test set and about 5--6 months on dysplasia cohorts, comparable to inter-rater variation."),
+            ("Why it matters", "shows how to test a pediatric model on the rare phenotypes a children's hospital actually sees, not only on the benchmark."),
+        ],
+    },
+    {
+        "slug": "spot_fracture_ed",
+        "title": "Real-life benefit of AI fracture detection in a pediatric emergency department",
+        "ref": "Ziegner et al., Eur Radiol 2025",
+        "doi": "10.1007/s00330-025-11554-9",
+        "bullets": [
+            ("Problem", "pediatric fractures are subtle and often first read by inexperienced physicians; cleared fracture tools were validated on adults."),
+            ("Data", "1,672 real-life radiographic studies (1,657 trauma patients, upper and lower extremity) from one children's emergency department."),
+            ("Method", "a commercial fracture-detection tool (pediatric indication) run stand-alone, then three inexperienced readers with and without the AI output."),
+            ("Result", "stand-alone sensitivity about 90% with region-dependent specificity; readers with AI gained only a few percentage points of accuracy (about 2% of wrong reads corrected, 4% of correct reads reversed)."),
+            ("Why it matters", "a good stand-alone model translated into a limited reader benefit: the gap between retrospective accuracy and clinical value that most pediatric AI has not yet crossed."),
+        ],
+    },
 ]
 
 

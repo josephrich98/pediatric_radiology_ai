@@ -1,0 +1,21 @@
+{
+  "_README": [
+    "Hand corrections to the pediatric radiology-AI paper database, keyed by PMID.",
+    "Each value is a partial row: only the fields you list are replaced, and they",
+    "are applied when the CSV / markdown are written, never baked into the stored",
+    "extraction. So re-running scripts/build_paper_db.py cannot clobber a fix, and",
+    "deleting an entry here reverts that row to what the extractor said.",
+    "Overridable fields: every column in pedrad_ai.paper_db.COLUMNS except pmid and",
+    "the provenance ones, plus 'include' (to force a paper in or out of the table)",
+    "and 'exclusion_reason'.",
+    "Apply with: python scripts/build_paper_db.py --rebuild   (makes no API calls)",
+    "Keys beginning with an underscore, like this one, are ignored.",
+    "",
+    "Example:",
+    "  \"29095675\": {",
+    "    \"model_name\": \"BoneXpert\",",
+    "    \"release_status\": \"commercial\",",
+    "    \"release_evidence\": \"CE-marked since 2009; checked on the vendor site 2026-09\"",
+    "  }"
+  ]
+}

@@ -7,7 +7,7 @@ skipped if its input file is missing.
 Chart conventions (kept deliberately simple so every figure reads the same):
 one axis per chart (no twin axes), a fixed categorical palette assigned in a
 fixed order, thin marks, recessive grids, integer year ticks, and the current
-partial year shaded and labelled "YTD".
+partial year labelled "YTD" (a text label only; no shading).
 """
 
 from __future__ import annotations
@@ -70,7 +70,6 @@ def _year_axis(ax, years):
 def _mark_partial(ax, years):
     """Annotate the current (year-to-date) year so it is not read as a drop."""
     if years and max(years) == config.PARTIAL_YEAR:
-        ax.axvspan(config.PARTIAL_YEAR - 0.5, config.PARTIAL_YEAR + 0.5, color="0.88", alpha=0.6, zorder=0)
         ax.text(config.PARTIAL_YEAR, ax.get_ylim()[1] * 0.97, "YTD", ha="center", va="top", fontsize=8, color="0.35")
 
 
@@ -150,16 +149,19 @@ def breakdown_figure(counts, prefix, denom, title, fname, colors):
 # --------------------------------------------------------------------------- #
 # Modality x task sub-stratification (stacked composition)
 # --------------------------------------------------------------------------- #
-def crosstab_figure(tab, rows_are, title, fname):
+def crosstab_figure(tab, rows_are, title, fname, exclude_rows=()):
     """Bars = share of the corpus mentioning each row label; each bar is split
     by the *composition* of column-label mentions within it (overlapping
-    labels, normalised to the bar length so the picture is proportional)."""
+    labels, normalised to the bar length so the picture is proportional).
+    ``exclude_rows`` drops rows that are not meaningful for the corpus (the
+    pediatric chart drops mammography: its hits are adult breast papers whose
+    abstracts happen to mention children)."""
     if not tab:
         return
     total = tab["total"] or 1
     cells = tab["cells"]
     if rows_are == "modality":
-        row_labels = list(config.MODALITY_TERMS)
+        row_labels = [m for m in config.MODALITY_TERMS if m not in exclude_rows]
         col_labels = list(config.TASK_TERMS)
         col_color, col_hatch = TASK_COLOR, TASK_HATCH
         row_tot = tab["row_totals"]
@@ -190,13 +192,44 @@ def crosstab_figure(tab, rows_are, title, fname):
         ax.text(share + 0.4, i, f"{share:.0f}%", va="center", fontsize=9)
     ax.set_yticks(list(y))
     ax.set_yticklabels(order)
-    ax.set_xlabel(f"Share of corpus mentioning the {rows_are} (%); segments = composition of "
-                  f"{'task' if rows_are == 'modality' else 'modality'} mentions within it")
+    ax.set_xlabel("Percentage of papers")
     ax.set_title(title)
     ax.spines[["top", "right"]].set_visible(False)
     ax.set_xlim(0, max(100 * row_tot.get(r, 0) / total for r in order) * 1.12 + 3)
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels, fontsize=7.5, loc="lower right", frameon=False, ncol=1)
+    _save(fig, fname)
+
+
+# --------------------------------------------------------------------------- #
+# Clinical problems addressed (pediatric corpus, per era)
+# --------------------------------------------------------------------------- #
+def problems_figure(prob, fname="ped_problems.png"):
+    """Grouped horizontal bars: papers per clinical problem, one bar per era,
+    sorted by the recent era. Labels carry the count and share of the era's
+    pediatric radiology-AI papers."""
+    if not prob or not prob.get("counts"):
+        return
+    eras = [e["label"] for e in prob["eras"]]
+    totals = prob["totals"]
+    rows = sorted(prob["counts"].items(), key=lambda kv: kv[1].get(eras[-1], 0))
+    fig, ax = plt.subplots(figsize=(10, 6.4))
+    h = 0.8 / len(eras)
+    era_colors = [GRAY, GREEN, BLUE]
+    for j, era in enumerate(eras):
+        ys = [i + (j - (len(eras) - 1) / 2) * h for i in range(len(rows))]
+        vals = [c.get(era, 0) for _, c in rows]
+        ax.barh(ys, vals, height=h, color=era_colors[j % len(era_colors)], label=f"{era} (n = {totals.get(era, 0):,})")
+        for y, v in zip(ys, vals):
+            share = 100 * v / (totals.get(era) or 1)
+            ax.text(v + max(vals) * 0.01, y, f"{v:,} ({share:.0f}%)", va="center", fontsize=6.5)
+    ax.set_yticks(range(len(rows)))
+    ax.set_yticklabels([r for r, _ in rows], fontsize=8)
+    ax.set_xlabel("Pediatric radiology-AI papers naming the problem (PubMed, title/abstract)")
+    ax.set_title("Which clinical problems pediatric radiology AI addresses, by era")
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.set_xlim(0, max(c.get(e, 0) for _, c in rows for e in eras) * 1.2)
+    ax.legend(frameon=False, loc="lower right", fontsize=8)
     _save(fig, fname)
 
 
@@ -411,7 +444,8 @@ def main() -> None:
     if xt.get("pediatric_radiology_ai"):
         yrs = xt["pediatric_radiology_ai"]["years"]
         crosstab_figure(xt["pediatric_radiology_ai"], "modality",
-                        f"Pediatric radiology AI by modality, split by task ({yrs[0]}–{yrs[1]})", "ped_modality_by_task.png")
+                        f"Pediatric radiology AI by modality, split by task ({yrs[0]}–{yrs[1]})", "ped_modality_by_task.png",
+                        exclude_rows=("mammography",))
         crosstab_figure(xt["pediatric_radiology_ai"], "task",
                         f"Pediatric radiology AI by task, split by modality ({yrs[0]}–{yrs[1]})", "ped_task_by_modality.png")
     rsna = _load("rsna_ai_fraction.json")
@@ -427,6 +461,12 @@ def main() -> None:
                       "Most-cited radiology AI papers", "top_papers_radiology.png", BLUE)
     top_papers_figure(_load("top_papers_pediatric_radiology_ai.json") or [],
                       "Most-cited pediatric radiology AI papers", "top_papers_pediatric.png", GREEN)
+    for label, _, _ in config.ERAS:
+        top_papers_figure(_load(f"top_papers_radiology_ai_{label}.json") or [],
+                          f"Most-cited radiology AI papers, {label}", f"top_papers_radiology_{label}.png", BLUE)
+        top_papers_figure(_load(f"top_papers_pediatric_radiology_ai_{label}.json") or [],
+                          f"Most-cited pediatric radiology AI papers, {label}", f"top_papers_pediatric_{label}.png", GREEN)
+    problems_figure(_load("pubmed_pediatric_problems.json") or {})
     github_figure(_load("github_repos.json") or {})
     newsletter_figures(_load("newsletter_summary.json") or {})
     fda_figures(_load("fda_ai_devices.json") or {})

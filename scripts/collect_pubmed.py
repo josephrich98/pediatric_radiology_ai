@@ -10,6 +10,7 @@ Outputs:
     data/processed/pubmed_trends.csv
     data/processed/pubmed_summary.json
     data/processed/pubmed_crosstab.json   (modality x task, full run only)
+    data/processed/pubmed_pediatric_problems.json   (clinical problems x era)
     data/raw/top_articles_<query>.json
 """
 
@@ -39,6 +40,12 @@ def main() -> None:
     if not args.quick:
         print("Modality x task cross-tabulations...")
         utils.save_json(pubmed.collect_crosstabs(), config.PROCESSED_DIR / "pubmed_crosstab.json")
+
+    print("Pediatric clinical-problem counts per era...")
+    utils.save_json(
+        pubmed.problem_counts(config.QUERIES["pediatric_radiology_ai"], config.PEDIATRIC_PROBLEM_TERMS),
+        config.PROCESSED_DIR / "pubmed_pediatric_problems.json",
+    )
 
     print("Computing RSNA-journal AI fraction...")
     rsna = pubmed.rsna_ai_fraction()

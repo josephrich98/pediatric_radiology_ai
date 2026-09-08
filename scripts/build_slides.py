@@ -11,31 +11,29 @@ uses ``@@KEY@@`` placeholders (not str.format) because the LaTeX body is full of
 literal braces. Slides whose data file is missing degrade to a one-line note
 rather than breaking the build.
 
-Deck outline:
-  objectives; methods (sources, pediatric filter, commercial players);
-  query-sufficiency check; growth graph; modality x task (all, pediatric);
-  task x modality (all, pediatric); most-cited papers + what they answer
-  (all, pediatric); most-starred tools + what they do; newsletters (pediatric,
-  all-ages, who is talked about); commercial (FDA list, pediatric products);
-  example images; worth knowing; does well / bleeding edge / unresolved /
-  implications; summary.
+Deck outline (2026-09 revision):
+  title; objectives; methods; growth graph; modality x task with task
+  definitions (all, pediatric); cross-check against the 2025 scoping review;
+  biggest pediatric datasets; most-cited papers per era (all: 2008-2022,
+  2023-present; pediatric: same); clinical problems addressed (pediatric, per
+  era); one spotlight slide per landmark pediatric paper; newsletters (all
+  ages, pediatric, then one slide per year listing the pediatric stories);
+  commercial products with a pediatric angle; worth knowing; does well /
+  bleeding edge / open problems / implications.
 """
 
 from __future__ import annotations
 
 import json
-import textwrap
+import re
 
 from pedrad_ai import analysis, config, curated, fda_devices, utils
 
 SLIDES_DIR = config.REPO_ROOT / "slides"
 SLIDES_DIR.mkdir(exist_ok=True)
 
-# Thresholds for the "what do the top papers / tools answer" follow-up slides.
-CITE_THRESHOLD_RADIOLOGY = 1500
-CITE_THRESHOLD_PEDIATRIC = 100
-STAR_THRESHOLD = 2000
 MAX_TABLE_ROWS = 10
+NEWS_YEARS_FROM = 2023  # one slide per year from here to the present
 
 
 def _load(name, default=None):
@@ -61,7 +59,8 @@ def _tex(s) -> str:
     for a, b in (("\\", "\\textbackslash{}"), ("&", "\\&"), ("%", "\\%"), ("_", "\\_"), ("#", "\\#"),
                  ("$", "\\$"), ("{", "\\{"), ("}", "\\}"), ("~", "\\textasciitilde{}"), ("^", "\\^{}"),
                  ("…", "\\ldots{}"), ("–", "--"), ("—", "---"), ("’", "'"), ("“", "``"), ("”", "''"),
-                 ("→", "$\\rightarrow$"), ("×", "$\\times$"), ("≥", "$\\geq$"), ("≤", "$\\leq$")):
+                 ("→", "$\\rightarrow$"), ("×", "$\\times$"), ("≥", "$\\geq$"), ("≤", "$\\leq$"),
+                 ("·", "$\\cdot$"), ("€", "EUR ")):
         s = s.replace(a, b)
     return s
 
@@ -71,63 +70,107 @@ def _short(s: str, n: int) -> str:
     return s if len(s) <= n else s[: n - 1].rstrip() + "…"
 
 
+def _share(tab, label):
+    """Share of a crosstab corpus whose title/abstract carries a task term."""
+    if not tab or not tab.get("col_totals"):
+        return None
+    return tab["col_totals"].get(label, 0) / (tab["total"] or 1)
+
+
 # --------------------------------------------------------------------------- #
 # Slide fragments
 # --------------------------------------------------------------------------- #
-def paper_question_table(papers, threshold, max_rows=MAX_TABLE_ROWS):
-    rows = [p for p in papers if p.get("citation_count", 0) >= threshold][:max_rows]
+def paper_table(papers, max_rows=MAX_TABLE_ROWS):
+    """Most-cited papers of one era: citations, title (venue, year), what it answers."""
+    rows = papers[:max_rows]
     if not rows:
-        return "\\footnotesize No papers above the threshold in this run."
-    out = ["\\begin{tabular}{@{}r p{0.30\\textwidth} p{0.58\\textwidth}@{}}",
-           "\\textbf{Cites} & \\textbf{Paper} & \\textbf{Clinical question it answers} \\\\ \\hline"]
+        return "\\footnotesize No papers collected for this era."
+    out = ["\\begin{tabular}{@{}r p{0.40\\textwidth} p{0.47\\textwidth}@{}}",
+           "\\textbf{Cites} & \\textbf{Paper} & \\textbf{What it answers} \\\\ \\hline"]
     for p in rows:
         topic, q = curated.question_for(p)
-        title = _short(p.get("title") or "", 70)
-        out.append(f"{p.get('citation_count', 0):,} & {_tex(title)} ({p.get('year')}) & "
-                   f"\\textit{{{_tex(topic)}}}: {_tex(_short(q, 120))} \\\\")
+        title = _short(p.get("title") or "", 105)
+        venue = _short(p.get("venue") or "", 34)
+        meta = f" ({_tex(venue)}, {p.get('year')})" if venue else f" ({p.get('year')})"
+        q = "" if q == (p.get("title") or "") else _short(q, 125)
+        cell = f"\\textit{{{_tex(topic)}}}" + (f": {_tex(q)}" if q else "")
+        out.append(f"{p.get('citation_count', 0):,} & {_tex(title)}{meta} & {cell} \\\\")
     out.append("\\end{tabular}")
     return "\n".join(out)
 
 
-def repo_table(repos, threshold=STAR_THRESHOLD, max_rows=MAX_TABLE_ROWS):
-    from make_figures import github_board  # noqa: E402  (same scripts dir)
-
-    board = [r for r in github_board(repos, n=40) if r["stars"] >= threshold][:max_rows]
-    if not board:
-        return "\\footnotesize No repositories above the threshold in this run."
-    out = ["\\begin{tabular}{@{}r p{0.26\\textwidth} p{0.22\\textwidth} p{0.40\\textwidth}@{}}",
-           "\\textbf{Stars} & \\textbf{Repository} & \\textbf{What it is} & \\textbf{Why it matters} \\\\ \\hline"]
-    for r in board:
-        what, why = curated.repo_note(r["full_name"], r.get("description", ""))
-        out.append(f"{r['stars']:,} & {_tex(r['full_name'])} & {_tex(_short(what, 40))} & {_tex(_short(why, 95))} \\\\")
+def dataset_table():
+    out = ["\\renewcommand{\\arraystretch}{1.0}", "\\begin{tabular}{@{}p{0.24\\textwidth} p{0.05\\textwidth} p{0.17\\textwidth} p{0.23\\textwidth} p{0.08\\textwidth} p{0.11\\textwidth}@{}}",
+           "\\textbf{Dataset} & \\textbf{Year} & \\textbf{Modality} & \\textbf{Size} & \\textbf{Ages} & \\textbf{Access} \\\\ \\hline"]
+    for d in config.PEDIATRIC_DATASETS:
+        out.append(f"{d['name']} & {d['year']} & {_tex(d['modality'])} & {_tex(d['size'])} & {_tex(d['ages'])} & {_tex(d['access'])} \\\\")
     out.append("\\end{tabular}")
     return "\n".join(out)
 
 
-def validation_block(v):
-    if not v:
-        return "\\item Query validation not run (\\texttt{scripts/validate\\_queries.py})."
-    r, p = v["recall"], v["precision"]
-    s = p["series"]["radiology_ai"]
-    sp = p["series"]["pediatric_radiology_ai"]
-    missed = ", ".join(_tex(m.split(" (")[0]) for m in r["missed"]) or "none"
-    lines = [
-        f"\\item \\textbf{{Recall}} on {r['n_indexed']} hand-picked landmark papers (methods, clinical validations, "
-        f"reconstruction, guidelines): \\textbf{{{r['n_retrieved']}/{r['n_indexed']}}} retrieved "
-        f"({_pct(r['recall'], 0)}); pediatric subset {r['n_pediatric_retrieved']}/{r['n_pediatric_indexed']}. "
-        f"Missed: {missed} --- methods papers that name no modality (``biomedical image segmentation'') or "
-        "cross-domain papers removed by the non-radiology-imaging exclusion (OCT, microscopy); "
-        "the most-cited tables use OpenAlex union queries, which recover them.",
-        f"\\item \\textbf{{Precision proxy}} ({p['year']}): a strict title/abstract-only variant of the query returns "
-        f"{s['strict']:,} records vs {s['broad']:,} for the headline query; {_pct(s['strict_share_of_broad'], 0)} of the "
-        f"headline count is confirmed by explicit wording (pediatric: {_pct(sp['strict_share_of_broad'], 0)}). "
-        "The remainder enters via MeSH indexing; a sample of those records is in the validation report.",
-        "\\item \\textbf{Term audit}: PubMed auto-maps bare \\emph{ultrasound} to the ``diagnostic imaging'' MeSH "
-        "subheading and bare \\emph{tomography} to a tree that includes optical coherence tomography. Version 1 of the "
-        "query counted 63\\% of radiology-AI papers as ``ultrasound''; version 2 fields every modality term "
-        "([tiab] or its specific MeSH heading) and excludes ophthalmic, dental, pathology and endoscopic imaging.",
-    ]
-    return "\n".join(lines)
+def task_gloss_columns():
+    items = list(config.TASK_GLOSS.items())
+    third = (len(items) + 2) // 3
+    cols = []
+    for chunk in (items[:third], items[third:2 * third], items[2 * third:]):
+        body = "\n".join(f"\\item \\textbf{{{_tex(t)}}}: {_tex(g)}" for t, g in chunk)
+        cols.append("\\begin{column}{0.33\\textwidth}\n\\begin{itemize}\n%s\n\\end{itemize}\n\\end{column}" % body)
+    return "\\begin{columns}[T]\n" + "\n".join(cols) + "\n\\end{columns}"
+
+
+def spotlight_frames(manifest):
+    files = {e["slug"]: e for e in manifest if e.get("file")}
+    frames = []
+    for sp in curated.PAPER_SPOTLIGHTS:
+        e = files.get(sp["slug"])
+        bullets = "\n".join(f"\\item \\textbf{{{_tex(k)}}}: {_tex(v)}" for k, v in sp["bullets"])
+        if e:
+            src = e.get("source_url") or ""
+            host = src.split("/")[2] if src.startswith("http") else ""
+            left = ("\\includegraphics[height=0.55\\textheight,width=\\textwidth,keepaspectratio]{examples/%s}\\\\[2pt]\n"
+                    "{\\tiny %s}\\\\{\\tiny source: %s}" % (e["file"], _tex(e["caption"]), _tex(host)))
+        else:
+            left = "{\\footnotesize (figure not fetched; run scripts/collect\\_examples.py)}"
+        frames.append(
+            "\\begin{frame}{%s}\n"
+            "{\\scriptsize %s\\par}\\vspace{2pt}\n"
+            "\\begin{columns}[T]\n"
+            "\\begin{column}{0.42\\textwidth}\\centering\n%s\n\\end{column}\n"
+            "\\begin{column}{0.56\\textwidth}\n\\scriptsize\n\\begin{itemize}\n%s\n\\end{itemize}\n\\end{column}\n"
+            "\\end{columns}\n\\end{frame}"
+            % (_tex(sp["title"]), _tex(sp["ref"]), left, bullets)
+        )
+    return "\n\n".join(frames)
+
+
+_NEWS_PREFIX = re.compile(r"^(The (Resource |Industry )?Wire)\s*[·•]\s*", re.I)
+
+
+def _clean_story(s: str) -> str:
+    s = _NEWS_PREFIX.sub("", s or "").strip()
+    return s.rstrip(":").strip()
+
+
+def news_year_frames(items):
+    if not items:
+        return ""
+    frames = []
+    for year in range(NEWS_YEARS_FROM, config.PARTIAL_YEAR + 1):
+        rows = sorted((i for i in items if (i.get("date") or "").startswith(str(year))), key=lambda i: i["date"])
+        ytd = " (year to date)" if year == config.PARTIAL_YEAR else ""
+        if not rows:
+            body = "\\footnotesize No pediatric radiology-AI stories found for this year."
+        else:
+            size = "\\tiny" if len(rows) > 14 else "\\scriptsize"
+            out = [size, "\\begin{tabular}{@{}l l p{0.72\\textwidth}@{}}",
+                   "\\textbf{Date} & \\textbf{Newsletter} & \\textbf{Story} \\\\ \\hline"]
+            for i in rows:
+                out.append(f"{i['date']} & {_tex(i['source'])} & {_tex(_short(_clean_story(i.get('story')), 105))} \\\\")
+            out.append("\\end{tabular}")
+            body = "\n".join(out)
+        frames.append("\\begin{frame}{Pediatric radiology AI in the trade press, %d%s (%d stories)}\n%s\n\\end{frame}"
+                      % (year, ytd, len(rows), body))
+    return "\n\n".join(frames)
 
 
 def commercial_table(fda):
@@ -145,79 +188,37 @@ def commercial_table(fda):
     return "\n".join(out)
 
 
-def image_slides(manifest):
-    """Two images per slide, grouped: open source / papers / commercial."""
-    if not manifest:
-        return "\\begin{frame}{What it looks like}\\footnotesize No example images fetched (run scripts/collect\\_examples.py).\\end{frame}"
-    groups = {}
-    for e in manifest:
-        if e.get("file"):
-            groups.setdefault(e.get("group", "other"), []).append(e)
-    titles = {"open source": "What it looks like --- open-source tools",
-              "paper": "What it looks like --- landmark papers",
-              "commercial": "What it looks like --- commercial products"}
-    frames = []
-    for g in ("open source", "paper", "commercial"):
-        items = groups.get(g, [])
-        for i in range(0, len(items), 2):
-            pair = items[i:i + 2]
-            cols = []
-            for e in pair:
-                src = e.get("source_url") or ""
-                host = src.split("/")[2] if src.startswith("http") else ""
-                cols.append(
-                    "\\begin{column}{%.2f\\textwidth}\\centering\n"
-                    "\\includegraphics[height=0.62\\textheight,width=\\textwidth,keepaspectratio]{examples/%s}\\\\[2pt]\n"
-                    "{\\scriptsize %s}\\\\{\\tiny source: %s}\n\\end{column}"
-                    % (0.48 if len(pair) == 2 else 0.8, e["file"], _tex(e["caption"]), _tex(host))
-                )
-            frames.append("\\begin{frame}{%s}\n\\begin{columns}[T]\n%s\n\\end{columns}\n\\end{frame}"
-                          % (titles[g], "\n".join(cols)))
-    return "\n\n".join(frames)
-
-
 def worth_knowing_items():
     return "\n".join(f"\\item \\textbf{{{_tex(n)}}} ({_tex(k)}): {_tex(w)}" for n, k, w in curated.WORTH_KNOWING)
 
 
-def task_gloss():
-    return "\n".join(f"\\item \\textbf{{{_tex(t)}}}: {_tex(g)}" for t, g in config.TASK_GLOSS.items())
-
-
-def modality_bullets(counts, prefix, denom, n=4):
+def modality_bullets(counts, prefix, denom, n=4, skip=("mammography",)):
     rows = analysis.breakdown_table(counts, prefix, denom_series=denom) if counts else []
+    rows = [r for r in rows if r["label"] not in skip]
     return ", ".join(f"{_tex(r['label'])} {_pct(r.get('fraction'), 0)}" for r in rows[:n])
 
 
-def news_bullets(news):
-    if not news:
-        return "No newsletter data collected."
-    srcs = news.get("sources", {})
-    by_year = news.get("by_year", {})
-    last_y = str(config.PARTIAL_YEAR - 1)
-    tot = lambda y, k: sum(by_year.get(n, {}).get(y, {}).get(k, 0) for n in by_year)
-    out = (
-        f"{news.get('total_pediatric_radiology_ai_stories', 0)} pediatric radiology-AI stories across "
-        f"{len(srcs)} archives; in {last_y}, {tot(last_y, 'pediatric_radiology_ai')} of "
-        f"{tot(last_y, 'radiology_ai'):,} radiology-AI stories were pediatric."
-    )
-    topics = [t for t, c in news.get("topics", {}).items() if c][:3]
-    if topics:
-        out += " Leading pediatric topics: " + _tex("; ".join(t.split(" / ")[0] for t in topics)) + "."
-    return out
+def problem_facts(prob):
+    """Numbers for the problems slide and the open-problems slide."""
+    if not prob or not prob.get("counts"):
+        return {"top": "n/a", "low": "n/a", "era": "", "n_recent": "n/a", "mam": ""}
+    eras = [e["label"] for e in prob["eras"]]
+    recent = eras[-1]
+    ranked = sorted(prob["counts"].items(), key=lambda kv: -kv[1].get(recent, 0))
+    top = "; ".join(f"{_tex(k)} ({v[recent]:,})" for k, v in ranked[:4])
+    low = "; ".join(f"{_tex(k)} ({v[recent]:,})" for k, v in ranked[-6:][::-1])
+    return {"top": top, "low": low, "era": recent, "n_recent": f"{prob['totals'][recent]:,}"}
 
 
 # --------------------------------------------------------------------------- #
 def main() -> None:
     summary = _load("pubmed_summary.json", {})
     counts = _load("pubmed_yearly_counts.json", {})
-    rsna = _load("rsna_ai_fraction.json", [])
-    rad = _load("top_papers_radiology_ai.json", [])
-    ped = _load("top_papers_pediatric_radiology_ai.json", [])
-    repos = _load("github_repos.json", {})
+    xt = _load("pubmed_crosstab.json", {})
+    prob = _load("pubmed_pediatric_problems.json", {})
     news = _load("newsletter_summary.json", {})
+    news_items = _load("newsletter_items.json", [])
     fda = _load("fda_ai_devices.json", {})
-    val = _load("query_validation.json", {})
     manifest_p = config.FIGURE_DIR / "examples" / "manifest.json"
     manifest = json.loads(manifest_p.read_text()) if manifest_p.exists() else []
 
@@ -225,52 +226,65 @@ def main() -> None:
     cagr = summary.get("radiology_ai_cagr")
     cagr_s = f"{cagr*100:.0f}\\%/yr" if isinstance(cagr, (int, float)) else "n/a"
     fda_rad = fda.get("radiology_devices", 0) if fda else 0
-    fda_all = fda.get("total_devices_all_panels", 0) if fda else 0
-    fda_last = (fda.get("by_year", {}) or {}).get(str(yr1), 0) if fda else 0
+    rad_tab = xt.get("radiology_ai") if xt else None
+    ped_tab = xt.get("pediatric_radiology_ai") if xt else None
+    mam = (ped_tab or {}).get("row_totals", {}).get("mammography", 0)
+    ped_total = (ped_tab or {}).get("total", 0)
+    pf = problem_facts(prob)
+    era_a, era_b = config.ERAS[0][0], config.ERAS[1][0]
+    n_ped_news = sum(1 for i in news_items if (i.get("date") or "") >= str(NEWS_YEARS_FROM))
 
     repl = {
         "@@yr0@@": str(yr0),
         "@@yr1@@": str(yr1),
+        "@@era_a@@": era_a,
+        "@@era_b@@": era_b.replace("present", "present"),
         "@@rad_ai_latest@@": f"{summary.get('radiology_ai_latest', 0):,}",
         "@@cagr@@": cagr_s,
         "@@ai_share_first@@": _pct(summary.get("ai_share_of_radiology_first")),
         "@@ai_share_last@@": _pct(summary.get("ai_share_of_radiology_latest")),
         "@@ped_share@@": _pct(summary.get("pediatric_share_of_radiology_ai_latest")),
         "@@ped_latest@@": f"{summary.get('pediatric_radiology_ai_latest', 0):,}",
-        "@@rsna_first@@": _pct(rsna[0]["rsna_ai_fraction"]) if rsna else "n/a",
-        "@@rsna_last@@": _pct(rsna[-1]["rsna_ai_fraction"]) if rsna else "n/a",
         "@@fig_trend@@": _fig("radiology_ai_trend.png", 0.8),
-        "@@fig_mod_task@@": _fig("modality_by_task.png", 0.74),
-        "@@fig_ped_mod_task@@": _fig("ped_modality_by_task.png", 0.74),
-        "@@fig_task_mod@@": _fig("task_by_modality.png", 0.72),
-        "@@fig_ped_task_mod@@": _fig("ped_task_by_modality.png", 0.74),
-        "@@fig_toppapers@@": _fig("top_papers_radiology.png", 0.8),
-        "@@fig_pedpapers@@": _fig("top_papers_pediatric.png", 0.8),
-        "@@fig_github@@": _fig("github_stars.png", 0.8),
+        "@@fig_mod_task@@": _fig("modality_by_task.png", 0.47),
+        "@@fig_ped_mod_task@@": _fig("ped_modality_by_task.png", 0.47),
+        "@@fig_problems@@": _fig("ped_problems.png", 0.82),
         "@@fig_news_ped@@": _fig("newsletter_watch.png", 0.82),
         "@@fig_news_all@@": _fig("newsletter_radiology_ai.png", 0.82),
-        "@@fig_news_players@@": _fig("newsletter_players.png", 0.66),
-        "@@fig_fda_year@@": _fig("fda_devices_per_year.png", 0.72),
-        "@@fig_fda_companies@@": _fig("fda_companies.png", 0.72),
-        "@@paper_table_rad@@": paper_question_table(rad, CITE_THRESHOLD_RADIOLOGY),
-        "@@paper_table_ped@@": paper_question_table(ped, CITE_THRESHOLD_PEDIATRIC),
-        "@@repo_table@@": repo_table(repos),
-        "@@validation@@": validation_block(val),
+        "@@task_gloss@@": task_gloss_columns(),
+        "@@paper_table_rad_a@@": paper_table(_load(f"top_papers_radiology_ai_{era_a}.json", [])),
+        "@@paper_table_rad_b@@": paper_table(_load(f"top_papers_radiology_ai_{era_b}.json", [])),
+        "@@paper_table_ped_a@@": paper_table(_load(f"top_papers_pediatric_radiology_ai_{era_a}.json", [])),
+        "@@paper_table_ped_b@@": paper_table(_load(f"top_papers_pediatric_radiology_ai_{era_b}.json", [])),
+        "@@dataset_table@@": dataset_table(),
+        "@@spotlights@@": spotlight_frames(manifest),
+        "@@news_year_frames@@": news_year_frames(news_items),
+        "@@n_ped_news@@": str(n_ped_news),
         "@@commercial_table@@": commercial_table(fda),
-        "@@image_slides@@": image_slides(manifest),
         "@@worth_knowing@@": worth_knowing_items(),
-        "@@task_gloss@@": task_gloss(),
-        "@@news_bullets@@": news_bullets(news),
-        "@@cite_thr_rad@@": f"{CITE_THRESHOLD_RADIOLOGY:,}",
-        "@@cite_thr_ped@@": f"{CITE_THRESHOLD_PEDIATRIC:,}",
-        "@@star_thr@@": f"{STAR_THRESHOLD:,}",
         "@@fda_rad@@": f"{fda_rad:,}",
-        "@@fda_all@@": f"{fda_all:,}",
-        "@@fda_share@@": _pct(fda.get("radiology_share")) if fda else "n/a",
-        "@@fda_last@@": f"{fda_last:,}",
-        "@@fda_date@@": _tex(fda.get("collected_on", "")) if fda else "",
-        "@@mod_bullets@@": modality_bullets(counts, "modality", "radiology_ai"),
         "@@ped_mod_bullets@@": modality_bullets(counts, "ped_modality", "pediatric_radiology_ai"),
+        "@@mam_note@@": (f"Mammography is omitted: its {mam} pediatric-query hits (of {ped_total:,}) are adult breast-imaging "
+                         "papers whose abstracts mention children." if mam else ""),
+        "@@ped_total@@": f"{ped_total:,}",
+        "@@rad_total@@": f"{(rad_tab or {}).get('total', 0):,}",
+        "@@det_rad@@": _pct(_share(rad_tab, "detection / diagnosis"), 0),
+        "@@det_ped@@": _pct(_share(ped_tab, "detection / diagnosis"), 0),
+        "@@seg_rad@@": _pct(_share(rad_tab, "segmentation"), 0),
+        "@@meas_ped@@": _pct(_share(ped_tab, "measurement / quantification"), 0),
+        "@@recon_rad@@": _pct(_share(rad_tab, "reconstruction / imputation"), 0),
+        "@@recon_ped@@": _pct(_share(ped_tab, "reconstruction / imputation"), 0),
+        "@@fm_rad@@": _pct(_share(rad_tab, "foundation model / vision-language"), 1),
+        "@@fm_ped@@": _pct(_share(ped_tab, "foundation model / vision-language"), 1),
+        "@@llm_rad@@": _pct(_share(rad_tab, "report generation / LLM"), 1),
+        "@@agent_rad@@": _pct(_share(rad_tab, "agent / autonomous"), 1),
+        "@@agent_ped_n@@": f"{(ped_tab or {}).get('col_totals', {}).get('agent / autonomous', 0):,}",
+        "@@wf_rad@@": _pct(_share(rad_tab, "workflow / non-interpretive"), 0),
+        "@@prob_top@@": pf["top"],
+        "@@prob_low@@": pf["low"],
+        "@@prob_era@@": pf["era"],
+        "@@prob_n_recent@@": pf["n_recent"],
+        "@@news_ped_total@@": f"{news.get('total_pediatric_radiology_ai_stories', 0):,}" if news else "n/a",
     }
 
     tex = TEMPLATE
@@ -279,7 +293,7 @@ def main() -> None:
 
     out = SLIDES_DIR / "pedrad_ai_slides.tex"
     out.write_text(tex, encoding="utf-8")
-    print(f"Wrote {out} ({tex.count(chr(10))} lines)")
+    print(f"Wrote {out} ({tex.count(chr(10))} lines, {tex.count(chr(92) + 'begin{frame}') + 1} frames)")
 
 
 TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
@@ -291,13 +305,16 @@ TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
 \usepackage{array}
 \graphicspath{{../figures/}}
 \setbeamertemplate{navigation symbols}{}
+% No bottom bar: just "n / N" in the bottom-right corner.
+\setbeamertemplate{footline}{%
+  \hfill{\usebeamercolor[fg]{page number in head/foot}\usebeamerfont{page number in head/foot}%
+  \insertframenumber\,/\,\inserttotalframenumber}\hspace*{2ex}\vskip4pt}
 \setbeamerfont{frametitle}{size=\large}
 \renewcommand{\arraystretch}{1.08}
 
-\title[Radiology AI]{Artificial Intelligence in Radiology}
-\subtitle{How fast it is growing, where it sits, who the players are, and how much is pediatric}
-\author{Pediatric Radiology AI project}
-\date{\today}
+\title[Radiology AI]{Artificial Intelligence in Pediatric Radiology}
+\author{Joseph Rich, Dr.~Amit Sura}
+\date{September 23, 2026}
 
 \begin{document}
 
@@ -305,36 +322,30 @@ TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
 
 \begin{frame}{Objectives}
 \begin{itemize}
-  \item Quantify how much \textbf{radiology AI} has grown, from a pre-deep-learning
-        @@yr0@@ baseline to today, using reproducible queries against public databases.
-  \item Measure \textbf{where} inside radiology the AI work sits --- by imaging
-        modality and by the question each model answers.
-  \item Measure how much of radiology AI is \textbf{pediatric}, and in which modalities and tasks.
-  \item Identify the \textbf{biggest players}: most-cited papers, most-used
-        open-source software, most-cleared commercial products, and who the trade press talks about.
-  \item Summarize what the field \textbf{does well}, what is \textbf{bleeding edge},
-        and what remains \textbf{unresolved} --- for a children's hospital.
+  \item Describe the big players in radiology AI, both general and pediatric, since 2023
+  \item Summarize what radiology AI does well and what remains unresolved
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Methods --- sources, filters, and players}
+\begin{frame}{Methods}
 \scriptsize
 \textbf{Academic output.} \textbf{PubMed} (E-utilities) yearly counts per query and per modality/task term group;
-\textbf{OpenAlex} citation counts (union of modality/task searches, deduped); \textbf{DBLP} for ML venues;
+\textbf{OpenAlex} citation counts (union of modality/task searches, deduped), ranked separately for
+@@era_a@@ and @@era_b@@ because citations favor older papers; \textbf{DBLP} for ML venues;
 \textbf{PatentsView} for granted patents.\\[3pt]
-\textbf{Open-source software.} \textbf{GitHub} search leaderboards plus a fixed list of known tools fetched by name
-(search alone misses MONAI and nnU-Net because their descriptions never say ``radiology'').\\[3pt]
+\textbf{Clinical problems.} The pediatric radiology-AI query AND a term group per problem (bone age, fracture, pneumonia,
+appendicitis, brain tumor, \dots), counted per era; a paper can name several problems.\\[3pt]
+\textbf{Datasets.} Public pediatric imaging datasets, sizes verified against the primary papers or hosting pages.\\[3pt]
 \textbf{Commercial players.} The \textbf{FDA AI-enabled device list} (public spreadsheet: decision date, device,
-company, lead panel), filtered to the Radiology panel: products per year, clearances per company, device names
-matching pediatric terms; cross-checked against a curated list of products with pediatric indications.\\[3pt]
+company, lead panel), filtered to the Radiology panel; cross-checked against a curated list of products with pediatric indications.\\[3pt]
 \textbf{Trade press.} Newsletter archives (The Imaging Wire, RSNA News, TLDR, Signify Research, Radiology Business)
 split into stories; a story is radiology-AI when AI terms co-occur with imaging terms, pediatric when pediatric terms
-also co-occur; company/tool mentions counted per story (sponsor blocks excluded).\\[3pt]
+also co-occur.\\[3pt]
 \textbf{Pediatric filter.} PubMed: the radiology-AI query AND
 (pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR ``children's hospital'').
 Most-cited lists: the title must also carry a pediatric term (bone age, fetal, newborn, \dots), otherwise
 highly cited adult papers float in. Newsletters: pediatric term inside the same story.\\[3pt]
-\textbf{Representative PubMed query (radiology $\cap$ AI, version 2):}
+\textbf{Representative PubMed query (radiology $\cap$ AI):}
 \begin{block}{}
 \tiny
 (radiology OR radiograph* OR ``medical imaging'' OR MRI OR ``computed tomography'' OR CT[tiab] OR ultrasound[tiab] \dots
@@ -343,109 +354,112 @@ NOT (``optical coherence'' OR fundus OR dental OR histopatholog* \dots))
 \end{block}
 \end{frame}
 
-\begin{frame}{Methods --- is the radiology-AI query sufficient?}
-\scriptsize
-\begin{itemize}
-@@validation@@
-\item \textbf{Verdict}: recall is high; precision was the problem and is now controlled. Recent-year counts
-      still undercount (indexing lag) and the current year is partial.
-\end{itemize}
-\end{frame}
-
-\begin{frame}{How much has AI grown in the radiology literature?}
+\begin{frame}{Radiology AI publication counts}
 @@fig_trend@@
 \end{frame}
 
-\begin{frame}{Where the AI work sits --- by modality, and which questions are asked}
+\begin{frame}{Radiology AI publications, stratified by modality and task}
 @@fig_mod_task@@
-\vspace{-4pt}
-{\scriptsize Bar = share of radiology-AI papers whose title/abstract names the modality (@@yr0@@--present, overlapping).
-Segments = the mix of task terms inside that modality's papers.}
-\end{frame}
-
-\begin{frame}{Pediatric radiology AI --- by modality, and which questions are asked}
-@@fig_ped_mod_task@@
-\vspace{-4pt}
-{\scriptsize Same construction, restricted to the pediatric subset. Top pediatric modalities:
-@@ped_mod_bullets@@ (share of pediatric radiology-AI papers).}
-\end{frame}
-
-\begin{frame}{Where the AI work sits --- by task (what the model produces)}
-\begin{columns}[T]
-\begin{column}{0.70\textwidth}
-@@fig_task_mod@@
-\end{column}
-\begin{column}{0.30\textwidth}
+\vspace{-6pt}
+{\tiny Bar = percentage of radiology-AI papers (@@rad_total@@, @@yr0@@--present) whose title/abstract names the modality;
+segments = which task terms those papers use (overlapping). What each task means, by what the model produces:}
+\vspace{-2pt}
 \tiny
-\begin{itemize}
 @@task_gloss@@
+\end{frame}
+
+\begin{frame}{Pediatric radiology AI publications, stratified by modality and task}
+@@fig_ped_mod_task@@
+\vspace{-6pt}
+{\tiny Same construction, restricted to the pediatric subset (@@ped_total@@ papers). Top pediatric modalities:
+@@ped_mod_bullets@@. @@mam_note@@}
+\vspace{-2pt}
+\tiny
+@@task_gloss@@
+\end{frame}
+
+\begin{frame}{Cross-check: an independent 2025 scoping review of pediatric radiology AI}
+\scriptsize
+Kamran et al., \textit{Pediatric Radiology} 2025 (doi 10.1007/s00247-025-06462-5): 789 original pediatric-focused
+articles hand-screened from four databases, 2005 to August 2024. Our PubMed counts are larger because they include any
+paper that mentions a pediatric term.
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+  \item \textbf{Modality}: radiography 38\%, MRI 33\%, ultrasound 14\%, CT 11\%, nuclear 2\%. Our pediatric query
+        ranks MRI first (@@ped_mod_bullets@@) because MRI-heavy neurodevelopment papers mention children.
+  \item \textbf{Subspecialty}: musculoskeletal 33\%, neuro 29\%, chest 17\%, body 14\%, cardiac 6\%.
+  \item \textbf{Top applications}: bone age (88 articles), pneumonia (65), brain tumors (54), scoliosis (45),
+        hip dysplasia (28), congenital heart disease (25), autism (18), epilepsy (14), ADHD (9), hydrocephalus (9).
+  \item \textbf{Use of AI}: 91\% image interpretation / diagnosis; 5.6\% image quality; under 2\% for
+        acquisition, communication, protocoling, education, and policy combined.
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+  \item \textbf{Data}: 65\% used a single local hospital dataset; 7\% did not report the dataset;
+        China 28\%, USA 25\%, Canada 7\% of articles.
+  \item \textbf{Growth}: 23 articles in 2018, 158 in 2022, 171 in 2023, consistent with our PubMed curve.
+  \item \textbf{Recommendations}: multi-institutional, age-diverse pediatric datasets; CLAIM-style reporting with
+        subgroup results and calibration; funding for the neglected non-interpretive areas (policy, education,
+        implementation); children and families as stakeholders across the AI lifecycle.
+  \item \textbf{What it adds to this deck}: the same three leading tasks (bone age, pneumonia, brain tumor) and the
+        same gap (small local datasets, adult tools applied to children) reached by a manual review.
 \end{itemize}
 \end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Pediatric radiology AI --- by task}
-@@fig_ped_task_mod@@
-\vspace{-4pt}
-{\scriptsize Same task categories, restricted to the pediatric subset. Labels overlap; a paper can be both
-segmentation and prognosis.}
-\end{frame}
-
-\begin{frame}{Biggest players --- most-cited radiology AI papers}
-@@fig_toppapers@@
-\end{frame}
-
-\begin{frame}{What the most-cited radiology AI papers answer ($\geq$ @@cite_thr_rad@@ citations)}
+\begin{frame}{The biggest public pediatric radiology AI datasets}
 \tiny
-@@paper_table_rad@@
+@@dataset_table@@
+\\[3pt]
+{\tiny Sizes verified against the primary paper or hosting page (2026-09). Only two pediatric radiograph sets exceed
+10,000 images; the largest public pediatric-only CT set has 359 patients; no RSNA pediatric challenge has run since
+bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude children.}
 \end{frame}
 
-\begin{frame}{Biggest players --- most-cited pediatric radiology AI papers}
-@@fig_pedpapers@@
-\end{frame}
-
-\begin{frame}{What the most-cited pediatric papers answer ($\geq$ @@cite_thr_ped@@ citations)}
+\begin{frame}{Most-cited radiology AI papers, @@era_a@@}
 \tiny
-@@paper_table_ped@@
+@@paper_table_rad_a@@
 \end{frame}
 
-\begin{frame}{Biggest players --- most-starred open-source tools}
-@@fig_github@@
-\end{frame}
-
-\begin{frame}{What the most-starred tools do ($\geq$ @@star_thr@@ stars)}
+\begin{frame}{Most-cited radiology AI papers, @@era_b@@}
 \tiny
-@@repo_table@@
+@@paper_table_rad_b@@
+\\[3pt]
+{\tiny Recent citations accrue to surveys first; the clinical landmarks of this era (TotalSegmentator, pancreatic
+cancer detection on non-contrast CT, Sybil lung-cancer risk) sit among many review articles.}
+\end{frame}
+
+\begin{frame}{Most-cited pediatric radiology AI papers, @@era_a@@}
+\tiny
+@@paper_table_ped_a@@
+\end{frame}
+
+\begin{frame}{Most-cited pediatric radiology AI papers, @@era_b@@}
+\tiny
+@@paper_table_ped_b@@
+\\[3pt]
+{\tiny Fetal brain MRI segmentation, pediatric brain tumor segmentation, and bone age lead the recent era; citation
+counts are two orders of magnitude below the adult list.}
+\end{frame}
+
+\begin{frame}{Which medical problems pediatric radiology AI addresses}
+@@fig_problems@@
+\end{frame}
+
+@@spotlights@@
+
+\begin{frame}{Newsletters --- radiology AI stories, all ages}
+@@fig_news_all@@
 \end{frame}
 
 \begin{frame}{Newsletters --- pediatric radiology AI stories}
 @@fig_news_ped@@
 \end{frame}
 
-\begin{frame}{Newsletters --- radiology AI stories, all ages}
-@@fig_news_all@@
-\end{frame}
-
-\begin{frame}{Newsletters --- who the trade press talks about}
-@@fig_news_players@@
-\vspace{-4pt}
-{\scriptsize A third importance signal next to citations and stars: stories mentioning each company or tool
-(sponsor blocks excluded). @@news_bullets@@}
-\end{frame}
-
-\begin{frame}{Commercial players --- the FDA AI-enabled device list}
-\begin{columns}[T]
-\begin{column}{0.5\textwidth}
-@@fig_fda_year@@
-\end{column}
-\begin{column}{0.5\textwidth}
-@@fig_fda_companies@@
-\end{column}
-\end{columns}
-{\scriptsize @@fda_rad@@ of @@fda_all@@ AI-enabled devices (@@fda_share@@) sit in the Radiology panel; @@fda_last@@ radiology
-devices were authorized in @@yr1@@. The list has no pediatric flag: age indications live in each 510(k) summary.
-Snapshot @@fda_date@@.}
-\end{frame}
+@@news_year_frames@@
 
 \begin{frame}{Commercial software with a pediatric angle}
 \tiny
@@ -455,8 +469,6 @@ Snapshot @@fda_date@@.}
 status is the publicly stated indication; confirm the age range in the 510(k) summary before purchase.}
 \end{frame}
 
-@@image_slides@@
-
 \begin{frame}{Worth knowing as a radiologist --- and why}
 \scriptsize
 \begin{itemize}
@@ -464,73 +476,74 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
 \end{itemize}
 \end{frame}
 
-\begin{frame}{What radiology AI does well}
+\begin{frame}{What the field does well}
+\small
 \begin{itemize}
-  \item \textbf{Worklist triage}: hemorrhage, large-vessel occlusion, pulmonary
-        embolism, pneumothorax --- the most validated, most deployed category (and the largest
-        block of FDA clearances).
-  \item \textbf{Detection / measurement aids} on high-volume adult exams
-        (lung nodules, mammography, fractures, volumetry).
-  \item \textbf{Image quality / acquisition}: deep-learning reconstruction and
-        denoising --- lower dose, shorter scans (most valuable in pediatrics).
-  \item \textbf{Quantification / standardization}: segmentation, longitudinal
-        tumor measurement, opportunistic screening from existing CTs.
+  \item \textbf{Finding what is there.} Detection / diagnosis is the bulk of the literature (@@det_rad@@ of
+        radiology-AI papers, @@det_ped@@ of pediatric); in adults it has become deployed worklist triage, the largest
+        block of the @@fda_rad@@ FDA-listed radiology AI devices.
+  \item \textbf{Outlining and measuring.} Segmentation (@@seg_rad@@ of papers) has open, strong defaults (nnU-Net,
+        TotalSegmentator); in children the mature measurement task is bone age (RSNA challenge: 4.2-month error,
+        several cleared products), and measurement / quantification is @@meas_ped@@ of pediatric papers.
+  \item \textbf{Better images from less dose.} Reconstruction / imputation is @@recon_rad@@ of radiology AI and
+        @@recon_ped@@ of pediatric work; deep-learning reconstruction is on today's scanners and cut pediatric CT dose
+        by about half at equal or better image quality.
+  \item \textbf{Shared benchmarks where they exist.} Fetal and neonatal brain MRI (FeTA, dHCP) and pediatric brain
+        tumors (BraTS-PEDs) now have challenge datasets, and multi-site pediatric neuro-oncology models match
+        radiologists retrospectively.
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Bleeding edge}
+\small
 \begin{itemize}
-  \item Foundation models and vision-language / report-generation systems.
-  \item Agents: LLMs that call imaging tools and take multi-step actions (still $<$1\% of papers).
-  \item Opportunistic screening (bone density, coronary calcium, body composition).
-  \item Multimodal and longitudinal models (imaging $+$ EHR $+$ priors).
-  \item Self-supervised / label-efficient learning (key where labels are scarce).
-  \item \textbf{Pediatric frontiers}: bone age (mature), fetal/neonatal brain MRI,
-        congenital anomaly detection, scoliosis / Cobb-angle, growth-aware models.
+  \item \textbf{Foundation and vision-language models}: @@fm_rad@@ of radiology-AI papers (@@fm_ped@@ pediatric);
+        segment-anything style tools (MedSAM) and generalist radiology models are replacing task-specific training.
+  \item \textbf{Report generation and LLMs}: @@llm_rad@@ of papers; drafting and extracting from reports, with
+        fluency ahead of reliability.
+  \item \textbf{Agents}: @@agent_rad@@ of radiology-AI papers (@@agent_ped_n@@ pediatric papers in total); LLMs that
+        call imaging tools and take multi-step actions.
+  \item \textbf{Pediatric-specific}: bone age robust to skeletal dysplasias (Deeplasia); fetal ultrasound AI is the
+        most active commercial pediatric area in the trade press (BrightHeart, Sonio, DeepEcho clearances,
+        2023--2026); adult fracture tools extended to children (Gleamer 2023, AZmed 2024) and now tested in a
+        real pediatric emergency department.
+  \item \textbf{Generalization studies}: adult-trained CT organ segmentation degrades in small children, and the
+        first pediatric prospective-style reader studies show smaller gains than stand-alone accuracy implies.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{What remains unresolved}
+\begin{frame}{Open problems --- where a children's hospital could contribute}
+\small
 \begin{itemize}
-  \item \textbf{Generalization}: models degrade across scanners, sites, populations.
-  \item \textbf{Pediatric data scarcity \& age dependence}: children are not small
-        adults; adult models transfer poorly.
-  \item \textbf{Prospective benefit}: most evidence is retrospective accuracy, not
-        improved outcomes.
-  \item \textbf{Report-generation trust}: LLM reports can be fluent and wrong.
-  \item \textbf{Regulation/liability}: most cleared devices are validated on adults; only a
-        handful of radiology clearances carry a pediatric indication.
-  \item \textbf{Workflow integration, monitoring, drift, and equity.}
+  \item \textbf{Which diseases?} Since 2023 the pediatric corpus (@@prob_n_recent@@ papers) leans to
+        @@prob_top@@. Barely studied: @@prob_low@@. Which of these deserve a model first is an open question for
+        this group.
+  \item \textbf{Dataset curation.} What would a multi-center pediatric dataset look like: age-stratified, consented,
+        protocol-diverse, with rare phenotypes? Which of our own archives (CT, ultrasound, NICU radiographs) could
+        become the pediatric benchmark that does not yet exist?
+  \item \textbf{Validation.} Local, age-stratified testing of adult-cleared tools; prospective reader studies rather
+        than retrospective accuracy; monitoring for drift as children grow and protocols change.
+  \item \textbf{Beyond interpretation.} Workflow / non-interpretive work is @@wf_rad@@ of papers, but communication
+        with families, education, protocoling and policy are almost absent; these are cheaper to build and evaluate
+        than diagnostic models.
+  \item \textbf{Regulation and liability.} Few of the @@fda_rad@@ radiology clearances carry a pediatric indication;
+        which adult clearances are acceptable to use off-label in children, and under what local validation?
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Implications for a children's hospital}
+\small
 \begin{enumerate}
-  \item \textbf{Buy maturity, build for the gaps}: adopt cleared adult-derived tools
-        that transfer (triage, reconstruction); treat pediatric tasks as local
-        validation / research.
-  \item \textbf{Demand local pediatric validation} before clinical use, and check the
-        age range in the clearance.
-  \item \textbf{Prioritize dose and throughput}: deep-learning reconstruction gives
-        the clearest pediatric benefit today.
-  \item \textbf{Plan for monitoring}: pediatric drift (growth, protocol change) is
-        faster than in adults.
+  \item \textbf{Buy maturity, build for the gaps}: adopt cleared adult-derived tools that transfer (reconstruction,
+        bone age, fracture with a pediatric indication); treat the under-studied pediatric problems as local
+        validation and research.
+  \item \textbf{Demand local pediatric validation} before clinical use, by age group, and check the age range in
+        the clearance.
+  \item \textbf{Prioritize dose and throughput}: deep-learning reconstruction gives the clearest pediatric benefit
+        today.
+  \item \textbf{Invest in data}: a curated, shareable pediatric dataset is the scarcest resource in the field and the
+        contribution a children's hospital is uniquely placed to make.
 \end{enumerate}
-\end{frame}
-
-\begin{frame}{Summary}
-\begin{itemize}
-  \item Radiology AI grew from \textbf{@@ai_share_first@@} to \textbf{@@ai_share_last@@}
-        of the radiology literature (@@yr0@@--@@yr1@@), $\approx$@@cagr@@; @@rad_ai_latest@@ papers in @@yr1@@.
-  \item Pediatric work is \textbf{@@ped_share@@} of radiology AI --- small but growing;
-        MRI-heavy, bone age and neuro lead.
-  \item RSNA journals: AI share \textbf{@@rsna_first@@} $\rightarrow$ \textbf{@@rsna_last@@}.
-  \item Commercial: @@fda_rad@@ FDA-authorized radiology AI devices; scanner makers and triage vendors dominate;
-        pediatric indications are rare (fracture, bone age, fetal echo).
-  \item Mature where data are large and adult (triage, reconstruction); pediatric
-        bone age is the one mature pediatric task.
-  \item Generalization, pediatric data, and prospective benefit remain the gaps.
-\end{itemize}
 \end{frame}
 
 \end{document}
@@ -538,7 +551,4 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
 
 
 if __name__ == "__main__":
-    import sys
-
-    sys.path.insert(0, str(config.REPO_ROOT / "scripts"))
     main()

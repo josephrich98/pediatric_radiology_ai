@@ -6,8 +6,9 @@ Three fetch kinds, all without a login:
   (resolved relative to the default branch).
 * ``og_image`` - a vendor page's Open Graph preview image (``og:image``), which
   is normally the product hero shot.
-* ``europepmc_fig`` - the first figure of an open-access article, located via
-  the Europe PMC full-text XML.
+* ``europepmc_fig`` - a figure of an open-access article (``fig`` = 1-based
+  figure number, default the first), located via Europe PMC and the PMC page.
+* ``url`` - a direct image URL.
 
 Images are saved under ``figures/examples/<slug>.<ext>`` with a sidecar JSON
 that records the source URL for attribution. Any failure is reported and
@@ -19,6 +20,7 @@ from __future__ import annotations
 import base64
 import json
 import re
+import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -110,8 +112,8 @@ def _page_image(url: str) -> str | None:
     return best or (seen[0] if seen else None)
 
 
-def _europepmc_figure(doi: str) -> str | None:
-    """First figure of an open-access article.
+def _europepmc_figure(doi: str, nth: int = 1) -> str | None:
+    """The ``nth`` figure (1-based) of an open-access article; first if fewer.
 
     DOI -> PMCID via the Europe PMC search API, then the figure image URL is
     read from the PMC article page (figures are served from
@@ -124,12 +126,22 @@ def _europepmc_figure(doi: str) -> str | None:
     pmcid = next((r.get("pmcid") for r in res if r.get("pmcid")), None)
     if not pmcid:
         return None
-    html = _get(f"https://pmc.ncbi.nlm.nih.gov/articles/{pmcid}/")[0].decode("utf-8", "replace")
-    urls = re.findall(r'https://cdn\.ncbi\.nlm\.nih\.gov/pmc/blobs/[^"\s]+\.(?:jpg|png|jpeg)', html)
+    # PMC throttles repeated page loads (a reCAPTCHA page or a page without the
+    # figure blobs comes back); pause and retry a few times.
+    urls: list[str] = []
+    for attempt in range(4):
+        html = _get(f"https://pmc.ncbi.nlm.nih.gov/articles/{pmcid}/")[0].decode("utf-8", "replace")
+        urls = re.findall(r'https://cdn\.ncbi\.nlm\.nih\.gov/pmc/blobs/[^"\s]+\.(?:jpg|png|jpeg)', html)
+        if urls:
+            break
+        time.sleep(5 * (attempt + 1))
+    figs: list[str] = []
     for u in urls:
         name = u.rsplit("/", 1)[-1].lower()
-        if re.search(r"fig|g00[1-9]|[._]f0?[1-9]", name) and not re.search(r"tbl|table|equ|_e0", name):
-            return u
+        if re.search(r"fig|g00[1-9]|[._]f0?[1-9]", name) and not re.search(r"tbl|table|equ|_e0", name) and u not in figs:
+            figs.append(u)
+    if figs:
+        return figs[min(nth, len(figs)) - 1]
     return urls[0] if urls else None
 
 
@@ -153,7 +165,7 @@ def fetch_all(specs: list[dict[str, str]] | None = None) -> list[dict[str, Any]]
             elif kind == "og_image":
                 url = _og_image(ref)
             elif kind == "europepmc_fig":
-                url = _europepmc_figure(ref)
+                url = _europepmc_figure(ref, nth=int(s.get("fig", 1)))
             elif kind == "page_image":
                 url = _page_image(ref)
             else:

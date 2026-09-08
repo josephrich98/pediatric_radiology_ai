@@ -168,8 +168,14 @@ def top_articles(query: str, retmax: int = 200) -> list[dict[str, Any]]:
     return _fetch_article_details(ids)
 
 
-def _fetch_article_details(pmids: list[str]) -> list[dict[str, Any]]:
-    """Pull full records via EFetch XML for a list of PMIDs (chunked)."""
+def _fetch_article_details(pmids: list[str], *, with_abstract: bool = False) -> list[dict[str, Any]]:
+    """Pull full records via EFetch XML for a list of PMIDs (chunked).
+
+    Abstracts are parsed but dropped unless ``with_abstract`` is set, because
+    the callers that only want counts and titles write their results to JSON
+    and an abstract per record would bloat those files by an order of
+    magnitude. The paper database asks for them.
+    """
     articles: list[dict[str, Any]] = []
     pause = 0.12 if config.NCBI_API_KEY else 0.34
     for i in range(0, len(pmids), 100):
@@ -177,7 +183,12 @@ def _fetch_article_details(pmids: list[str]) -> list[dict[str, Any]]:
         params = _base_params()
         params.update({"id": ",".join(chunk), "retmode": "xml"})
         xml = utils.http_get(EFETCH, params, pause=pause)
-        articles.extend(_parse_pubmed_xml(xml))
+        for art in _parse_pubmed_xml(xml):
+            if not with_abstract:
+                art.pop("abstract", None)
+                art.pop("publication_types", None)
+                art.pop("mesh_terms", None)
+            articles.append(art)
     return articles
 
 
@@ -198,10 +209,7 @@ def _parse_pubmed_xml(xml: str) -> list[dict[str, Any]]:
         journal_el = article.find(".//Journal/Title")
         journal = journal_el.text if journal_el is not None else ""
         year = _extract_year(article)
-        doi = None
-        for idnode in art.findall(".//ArticleIdList/ArticleId"):
-            if idnode.get("IdType") == "doi":
-                doi = (idnode.text or "").strip()
+        doi = _extract_doi(art, article)
         authors = []
         for a in article.findall(".//AuthorList/Author"):
             last = a.find("LastName")
@@ -216,9 +224,53 @@ def _parse_pubmed_xml(xml: str) -> list[dict[str, Any]]:
                 "year": year,
                 "doi": doi,
                 "authors": authors[:8],
+                "abstract": _extract_abstract(article),
+                "publication_types": [
+                    (pt.text or "").strip()
+                    for pt in article.findall(".//PublicationTypeList/PublicationType")
+                ],
+                "mesh_terms": [
+                    (mh.text or "").strip()
+                    for mh in medline.findall(".//MeshHeadingList/MeshHeading/DescriptorName")
+                ],
             }
         )
     return out
+
+
+def _extract_doi(pubmed_article: ET.Element, article: ET.Element) -> str | None:
+    """The article's own DOI.
+
+    A PubmedArticle also carries an ``ArticleIdList`` for every entry in its
+    ``ReferenceList``, so a descendant search (``.//ArticleIdList``) returns the
+    DOIs of the works this paper *cites* alongside its own. Only two places hold
+    the article's own DOI: ``PubmedData/ArticleIdList`` and the Article-level
+    ``ELocationID``. Read those, in that order, and nothing else.
+    """
+    for idnode in pubmed_article.findall("./PubmedData/ArticleIdList/ArticleId"):
+        if idnode.get("IdType") == "doi" and (idnode.text or "").strip():
+            return idnode.text.strip()
+    for el in article.findall("./ELocationID"):
+        if el.get("EIdType") == "doi" and (el.text or "").strip():
+            return el.text.strip()
+    return None
+
+
+def _extract_abstract(article: ET.Element) -> str:
+    """Join a (possibly structured) abstract into one labelled string.
+
+    Structured abstracts carry a ``Label`` per section (BACKGROUND, METHODS,
+    ...); keeping the labels helps the extractor tell a study's design from its
+    results.
+    """
+    parts: list[str] = []
+    for node in article.findall(".//Abstract/AbstractText"):
+        text = "".join(node.itertext()).strip()
+        if not text:
+            continue
+        label = node.get("Label")
+        parts.append(f"{label}: {text}" if label else text)
+    return "\n".join(parts)
 
 
 def _extract_year(article: ET.Element) -> int | None:
@@ -273,6 +325,33 @@ def crosstab(
     }
 
 
+def problem_counts(
+    base_query: str,
+    problems: dict[str, str],
+    eras: list[tuple[str, int, int]] | None = None,
+) -> dict[str, Any]:
+    """Count records matching ``base AND problem`` per era.
+
+    Feeds the "which medical problems are addressed" view of the pediatric
+    corpus: one date-range query per (problem, era) plus the era totals, so
+    23 problems x 2 eras costs about 50 queries.
+    """
+    eras = eras or config.ERAS
+    pause = 0.12 if config.NCBI_API_KEY else 0.34
+
+    def _count(term: str, start: int, end: int) -> int:
+        params = _base_params()
+        params.update({"term": f"({term}) AND {start}:{end}[pdat]", "retmax": 0, "rettype": "count", "retmode": "json"})
+        return int(utils.http_get_json(ESEARCH, params, pause=pause)["esearchresult"]["count"])
+
+    out: dict[str, Any] = {"eras": [{"label": lab, "start": a, "end": b} for lab, a, b in eras], "totals": {}, "counts": {}}
+    for lab, a, b in eras:
+        out["totals"][lab] = _count(base_query, a, b)
+    for name, q in problems.items():
+        out["counts"][name] = {lab: _count(f"{base_query} AND {q}", a, b) for lab, a, b in eras}
+    return out
+
+
 def pmid_for_doi(doi: str) -> str | None:
     """Resolve a DOI to a PMID via ESearch's [doi] field (None if not indexed)."""
     params = _base_params()
@@ -311,6 +390,30 @@ def sample_pmids(query: str, year: int, n: int = 60, offsets: tuple[int, ...] = 
     return list(dict.fromkeys(out))
 
 
-def article_details(pmids: list[str]) -> list[dict[str, Any]]:
+def article_details(pmids: list[str], *, with_abstract: bool = False) -> list[dict[str, Any]]:
     """Public wrapper around the EFetch parser (title, journal, year, doi)."""
-    return _fetch_article_details(pmids) if pmids else []
+    return _fetch_article_details(pmids, with_abstract=with_abstract) if pmids else []
+
+
+def pmids_for_year(query: str, year: int, retmax: int = 10000) -> list[str]:
+    """Every PMID matching ``query`` in ``year``, newest first.
+
+    ESearch caps ``retmax`` at 10000 per request, which is well above the
+    yearly size of the pediatric radiology-AI corpus, so one request per year
+    is enough and each request caches cleanly.
+    """
+    params = _base_params()
+    params.update(
+        {
+            "term": f"({query}) AND {year}[pdat]",
+            "retmax": retmax,
+            "sort": "pub_date",
+            "retmode": "json",
+        }
+    )
+    pause = 0.12 if config.NCBI_API_KEY else 0.34
+    try:
+        data = utils.http_get_json(ESEARCH, params, pause=pause)
+    except Exception:
+        return []
+    return list(data["esearchresult"].get("idlist", []))

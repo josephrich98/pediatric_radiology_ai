@@ -9,6 +9,12 @@
 #   NCBI_API_KEY          PubMed 3 -> 10 req/s
 #   PATENTSVIEW_API_KEY   enables the patent counts (zero without it)
 #   SEMANTIC_SCHOLAR_API_KEY
+#   ANTHROPIC_API_KEY     grows the paper database (data/processed/pedrad_paper_db.csv)
+#                         by reading the abstracts that are new since the last
+#                         run. Without it the database is left as committed and
+#                         only its exports are regenerated. Each run reads at
+#                         most PAPER_DB_RUN_LIMIT papers (250 by default, a few
+#                         dollars); raise it with the paper_db_limit input.
 # The built-in GITHUB_TOKEN is used for GitHub search and for opening the PR.
 # Repository setting required for the PR step: Settings -> Actions -> General ->
 # "Allow GitHub Actions to create and approve pull requests".
@@ -30,7 +36,11 @@ on:
         type: boolean
         default: true
       skip:
-        description: "Collectors to skip, space-separated (pubmed landscape conferences patents newsletters)"
+        description: "Collectors to skip, space-separated (pubmed landscape conferences patents newsletters paperdb)"
+        type: string
+        default: ""
+      paper_db_limit:
+        description: "Max new papers to read into the paper database (0 = rebuild exports only)"
         type: string
         default: ""
 
@@ -58,7 +68,7 @@ jobs:
           cache: pip
 
       - name: Install package
-        run: pip install -e .
+        run: pip install -e ".[slides,db]"
 
       # DBLP throttles cold pulls hard; carrying its cached responses between
       # runs keeps the conference table complete. refresh.py deletes every
@@ -84,10 +94,12 @@ jobs:
           PATENTSVIEW_API_KEY: ${{ secrets.PATENTSVIEW_API_KEY }}
           SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PEDRAD_AI_EMAIL: josephrich98@gmail.com
         run: |
           args=""
           if [ "${{ inputs.quick }}" = "true" ]; then args="$args --quick"; fi
+          if [ -n "${{ inputs.paper_db_limit }}" ]; then args="$args --paper-db-limit ${{ inputs.paper_db_limit }}"; fi
           if [ "${{ github.event_name }}" != "schedule" ] && [ "${{ inputs.build_slides }}" != "true" ]; then
             args="$args --no-slides"
           fi
@@ -113,6 +125,7 @@ jobs:
             reports/**
             slides/pedrad_ai_slides.tex
             slides/pedrad_ai_slides.pdf
+            slides/pedrad_ai_slides.pptx
           commit-message: "Refresh data, figures, and reports"
           title: "Data refresh ${{ github.run_id }}"
           body: |
@@ -120,5 +133,6 @@ jobs:
             PatentsView, newsletter archives) followed by figures, reports, and
             slides. Run logs are attached to the workflow run as an artifact.
 
-            Review the headline numbers in `reports/00_popularity_trends.md` and the
-            newsletter hits in `reports/03_newsletter_watch.md` before merging.
+            Review the headline numbers in `reports/00_popularity_trends.md`, the
+            newsletter hits in `reports/03_newsletter_watch.md`, and the rows added
+            to `reports/04_paper_database.md` before merging.

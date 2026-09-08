@@ -68,12 +68,20 @@ def collect_papers() -> None:
     }
     for name, queries in query_sets.items():
         print(f"OpenAlex: top-cited union ({len(queries)} queries) for {name!r}...")
-        papers = openalex.top_cited_union(queries, per_query=80, min_year=config.START_YEAR)
         is_ped = name == "pediatric_radiology_ai"
+        papers = openalex.top_cited_union(queries, per_query=80, min_year=config.START_YEAR)
         papers = [p for p in papers if _is_relevant(p, pediatric=is_ped)][:50]
         utils.save_json(papers, config.PROCESSED_DIR / f"top_papers_{name}.json")
         if papers:
             print(f"  {len(papers)} papers; top: {papers[0]['citation_count']} cites — {papers[0]['title']!r}")
+        # Per-era lists: citation counts favor old papers, so the recent era is
+        # ranked on its own (top_papers_<name>_<era>.json, era label with '-').
+        for label, start, end in config.ERAS:
+            era = openalex.top_cited_union(queries, per_query=80, min_year=start, max_year=end)
+            era = [p for p in era if _is_relevant(p, pediatric=is_ped)][:50]
+            utils.save_json(era, config.PROCESSED_DIR / f"top_papers_{name}_{label}.json")
+            if era:
+                print(f"  {label}: {len(era)} papers; top: {era[0]['citation_count']} cites — {era[0]['title']!r}")
 
 
 def collect_software() -> None:
