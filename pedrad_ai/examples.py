@@ -6,6 +6,7 @@ Three fetch kinds, all without a login:
   (resolved relative to the default branch).
 * ``og_image`` - a vendor page's Open Graph preview image (``og:image``), which
   is normally the product hero shot.
+* ``arxiv_fig`` - the ``fig``-th figure of an arXiv paper's HTML rendering
 * ``europepmc_fig`` - a figure of an open-access article (``fig`` = 1-based
   figure number, default the first), located via Europe PMC and the PMC page.
 * ``url`` - a direct image URL.
@@ -145,6 +146,34 @@ def _europepmc_figure(doi: str, nth: int = 1) -> str | None:
     return urls[0] if urls else None
 
 
+def _arxiv_figure(arxiv_id: str, nth: int = 1) -> str | None:
+    """The ``nth`` figure of an arXiv paper's HTML rendering (``arxiv.org/html``).
+
+    arXiv renders most 2024+ submissions to HTML with figures at
+    ``https://arxiv.org/html/<id>vN/x<k>.png``; papers without an HTML version
+    return None.
+    """
+    arxiv_id = re.sub(r"^(arxiv:|https?://arxiv\.org/(abs|pdf|html)/)", "", arxiv_id.strip(), flags=re.I)
+    base = f"https://arxiv.org/html/{arxiv_id}"
+    try:
+        html = _get(base)[0].decode("utf-8", "replace")
+    except Exception:
+        return None
+    imgs = re.findall(r'<img[^>]+src="([^"]+\.(?:png|jpg|jpeg))"', html, re.I)
+    figs: list[str] = []
+    for u in imgs:
+        low = u.lower()
+        if "logo" in low or "icon" in low or "/static/" in low or "funders" in low or u in figs:
+            continue
+        if low.startswith("http") and f"/html/{arxiv_id.lower()}" not in low:
+            continue
+        figs.append(u)
+    if not figs:
+        return None
+    pick = figs[min(nth, len(figs)) - 1]
+    return pick if pick.startswith("http") else f"{base.rstrip('/')}/{pick.lstrip('./')}"
+
+
 def fetch_all(specs: list[dict[str, str]] | None = None) -> list[dict[str, Any]]:
     specs = specs or config.EXAMPLE_IMAGES
     manifest: list[dict[str, Any]] = []
@@ -166,6 +195,8 @@ def fetch_all(specs: list[dict[str, str]] | None = None) -> list[dict[str, Any]]
                 url = _og_image(ref)
             elif kind == "europepmc_fig":
                 url = _europepmc_figure(ref, nth=int(s.get("fig", 1)))
+            elif kind == "arxiv_fig":
+                url = _arxiv_figure(ref, nth=int(s.get("fig", 1)))
             elif kind == "page_image":
                 url = _page_image(ref)
             else:

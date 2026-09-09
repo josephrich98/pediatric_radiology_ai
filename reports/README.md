@@ -12,7 +12,7 @@ request with the results.
 | [00_popularity_trends.md](00_popularity_trends.md) | How fast radiology AI is growing, its share of all radiology, the pediatric fraction, modality/task breakdowns, the AI share of RSNA's own journals, patents, and conference attention. |
 | [01_landscape_players.md](01_landscape_players.md) | The biggest players: most-cited radiology-AI and pediatric-radiology-AI papers, and the most-starred open-source tools. |
 | [02_state_of_the_field.md](02_state_of_the_field.md) | Curated synthesis for clinical leadership: what radiology AI does well, the bleeding edge, what remains unresolved, and implications for a children's hospital. |
-| [03_newsletter_watch.md](03_newsletter_watch.md) | What newsletters and trade press (The Imaging Wire, RSNA News, TLDR, Signify, Radiology Business) are saying about pediatric radiology AI: counts by year and source, topics, and the stories themselves. |
+| [03_newsletter_watch.md](03_newsletter_watch.md) | What newsletters and trade press (The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify, Radiology Business) are saying about pediatric radiology AI: counts by year and source, topics, and the stories themselves. |
 | [references.bib](references.bib) | BibTeX for every cited paper, resolved through doi2bib. |
 
 A **Beamer slide deck** summarizing all of this (objectives, methods, results,

@@ -30,7 +30,7 @@ The questions it answers:
 4. **What does the field do well, what is bleeding-edge, what is unresolved?** A
    curated synthesis for clinical leadership.
 5. **What is the news saying about pediatric radiology AI?** Newsletter and
-   trade-press archives (The Imaging Wire, RSNA News, TLDR, Signify Research,
+   trade-press archives (The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify Research,
    Radiology Business) scanned for stories where pediatric and AI terms
    co-occur, with counts by year/source and topic tags.
 
@@ -48,21 +48,49 @@ The questions it answers:
   - `patents.py` — PatentsView granted-patent counts (needs `PATENTSVIEW_API_KEY`).
   - `github_repos.py` — repository star leaderboards (uses `gh` CLI auth or
     `GITHUB_TOKEN`).
-  - `openalex.py` — citation counts and most-cited papers. `top_cited_union`
-    runs several modality/task searches and dedupes, because a single
-    "radiology deep learning" query misses landmark papers whose titles never
-    say "radiology" (e.g. TotalSegmentator). Replaces the rate-limited
-    `semantic_scholar.py` (kept as a fallback).
+  - `semantic_scholar.py` — the **most-cited lists and venue tables**
+    (bulk search: boolean query syntax, `year=` and `venue=` filters, sorted
+    by citations, arXiv/medRxiv preprints included). `union_search` runs the
+    modality/task queries and dedupes, because a single "radiology deep
+    learning" query misses landmark papers whose titles never say "radiology"
+    (TotalSegmentator); `venue_search` feeds `conferences.collect_venue_works`.
+    Every cleaned paper carries `is_preprint`, `venue_label` ("arXiv
+    (preprint)"), `first_author` and `fwci: None`.
+  - `openalex.py` — **FWCI only, on a budget.** OpenAlex's free tier (since
+    2026) is about 1,000 credits per day, reset at midnight UTC: a search
+    costs 10 credits, a `filter=doi:a|b|...` lookup of 50 DOIs costs 1.
+    `scripts/enrich_fwci.py` therefore batches the DOIs of every table into a
+    handful of requests and writes `fwci` / `citation_count_openalex` into the
+    JSON files in place; when the budget is gone it prints the reset time and
+    leaves the files alone. `translate_pubmed_query` (PubMed boolean ->
+    search syntax) is shared with `arxiv.py`. Do not put OpenAlex searches
+    back into the collectors: 100 searches a day is not enough for one pull.
+  - `arxiv.py` — the **preprint layer** for the count-based views: the same
+    PubMed queries translated to arXiv API syntax (`all:` terms, `ANDNOT`,
+    `submittedDate` by year), `count` / `yearly_counts` / `crosstab` /
+    `problem_counts` in the PubMed shapes (see `collect_preprints.py`);
+    `paper_meta` resolves an arXiv id for the newsletter citations.
   - `conferences.py` — ML/CV venues via DBLP (radiology share) and radiology
     societies via their journals (AI share). DBLP throttles hard; the collector
-    paces gently and skips fast on failure.
+    paces gently and skips fast on failure. `collect_venue_works` builds the
+    per-venue tables (`config.CONFERENCE_WORKS`: NeurIPS, ICLR, ICML, CVPR,
+    MICCAI, MIDL with a radiology term query; RSNA and SPR as their journals
+    with an AI term query, since meeting abstracts are not indexed), all via
+    Semantic Scholar, filtered by the shared title rules `is_radiology_paper`
+    / `is_pediatric_title` (`config.PAPER_MEDICAL_SIGNAL`,
+    `PAPER_EXCLUDE_DOMAIN`, `PAPER_PEDIATRIC_SIGNAL`).
   - `newsletters.py` — newsletter / trade-press archive scanner. Four adapter
     kinds (`wordpress` REST API, `rsna_news` archive page, `tldr` dated daily
     pages, `rss`); each issue is split into stories at heading boundaries and
     labelled by keyword co-occurrence (`NEWS_*_PATTERNS` in `config.py`).
     Sources are declared in `config.NEWSLETTER_SOURCES`; AuntMinnie and
     Diagnostic Imaging are Cloudflare-blocked and listed in
-    `NEWSLETTER_BLOCKED` so the report can say so.
+    `NEWSLETTER_BLOCKED` so the report can say so. Each story keeps its
+    outbound links; `resolve_paper` turns the first publisher link into a DOI
+    (URL patterns, else the landing page's `citation_doi` meta tag) and a
+    citation via Crossref, or the arXiv API for arXiv DOIs ("Bradley et al.,
+    2024 (Nature Communications)"), stored as `item["paper"]` and shown as the
+    Paper column of the per-year news slides.
   - `fda_devices.py` — parses the FDA AI-enabled device list spreadsheet
     (standard library only) and keeps the Radiology panel: devices per year,
     clearances per company, pediatric-named devices. The commercial-players
@@ -118,7 +146,9 @@ python scripts/run_all.py --quick    # headline PubMed queries only (fast)
 
 # or one source at a time
 python scripts/collect_pubmed.py
-python scripts/collect_landscape.py
+python scripts/collect_preprints.py     # arXiv preprint layer for the count-based views (~400 requests)
+python scripts/collect_landscape.py     # most-cited papers: overall, per era, per year (2023-), Semantic Scholar
+python scripts/enrich_fwci.py           # FWCI from OpenAlex by DOI, batched (after landscape + conferences)
 python scripts/collect_conferences.py
 python scripts/collect_patents.py
 python scripts/collect_newsletters.py   # or --source "RSNA News" to restrict
@@ -167,8 +197,56 @@ under the rate limit.
 is the one deliverable produced by reading papers rather than counting them. It
 is built by code and must stay that way:
 
-- **Candidates** are whatever `config.QUERIES["pediatric_radiology_ai"]` returns
-  from `PAPER_DB_START_YEAR` to `END_YEAR`, one ESearch per year. No hand-picking.
+- **Candidates** are whatever `config.PAPER_DB_QUERY` returns from
+  `PAPER_DB_START_YEAR` to `END_YEAR`, filtered to papers with at least
+  `PAPER_DB_MIN_CITATIONS` citations in NIH iCite (`pedrad_ai/icite.py`). No
+  hand-picking. Two deliberate differences from the counting queries:
+  - `PAPER_DB_QUERY` is the **strict, title/abstract-fielded** query, not
+    `QUERIES["pediatric_radiology_ai"]`. The broad query is right for counting
+    but wrong here: ranked by citations, its top results are Global Burden of
+    Disease reports and adult neuroimaging that match only through MeSH
+    expansion. The strict query cuts 2015-present from ~9,800 to ~4,500
+    candidates and puts real pediatric work at the top.
+  - The **impact floors** cut that down, and are combined with OR:
+    `--min-citations` (raw count), `--min-citations-per-year` (rate), and
+    `--min-rcr` (iCite's relative citation ratio, where 1.0 is the median
+    NIH-funded paper of the same field and year). A raw count alone silently
+    excludes the current year — of 763 papers this query returns for 2026,
+    eight have five citations — so a recent-year run must use the rate clause.
+    RCR is only computed once a paper is about two years old: present for 94%
+    of 2024 papers here, 17% of 2025 and 1% of 2026, so it cannot carry the
+    newest year either. Order the reading queue with `--order rate` for a
+    recent window and `--order citations` for the settled literature.
+  - **Preprints** are topped up from OpenAlex `type:preprint` and deduplicated
+    against the PubMed set by PMID, DOI and normalized title, so a preprint
+    drops out of the table once its journal version appears. PubMed does not
+    index arXiv and covers medRxiv and bioRxiv only through the NIH preprint
+    pilot, so without this the current year misses much of the methods work.
+    `--no-preprints` restricts to PubMed. Preprint rows are keyed `oa:W…`
+    rather than by PMID and are marked `is_preprint`; their release status is
+    recorded as `unreleased` rather than `unclear`, because "not yet published"
+    is a known fact rather than an open question.
+  - **Metrics are refreshed separately from extraction.**
+    `--refresh-metrics` re-fetches citations, citations/year and RCR for every
+    stored row and rebuilds the exports without re-reading a single abstract or
+    calling a model. Run it whenever the numbers are quoted; re-extraction is
+    only for schema or prompt changes. `--with-fwci` adds the OpenAlex lookup,
+    which is off by default because OpenAlex throttles hard and RCR already
+    covers every PubMed row.
+
+Four impact columns, and which to quote:
+
+| Column | Source | Meaning | Missing when |
+| --- | --- | --- | --- |
+| `citations` | iCite | PubMed-indexed citing papers | never (0 if uncited) |
+| `citations_per_year` | iCite | count / years since publication | never |
+| `rcr` | iCite | 1.0 = median NIH-funded paper, same field and year | paper under ~2 years old, or not a research article |
+| `fwci` | OpenAlex | 1.0 = world average for field, year and type | OpenAlex has not computed it, or the lookup was skipped |
+
+Quote `rcr` when comparing papers of different ages, `citations_per_year` when
+`rcr` is missing (which is most of the current year), and `citations` only
+within a single year. The markdown report shows all three and falls back from
+RCR to FWCI automatically.
 - **Each new abstract is read once.** Every row stores the hash of the exact
   text the model saw (`input_fingerprint`) plus the prompt/schema fingerprint. A
   paper is re-read only when it is new, when PubMed changed the record, or when
@@ -183,11 +261,20 @@ is built by code and must stay that way:
   entry reverts that row. Apply with `--rebuild`, which makes no API calls.
 - **A fresh clone reproduces the table** from the committed JSON with
   `python scripts/build_paper_db.py --rebuild`.
-- **Cost.** Each new paper is one structured-output call (~$0.02 with
-  `claude-opus-5` at effort `low`), so a run is capped at
-  `config.PAPER_DB_RUN_LIMIT` papers. `--dry-run` prints the count and the
-  estimate before spending anything. The full 2015-present corpus is ~10,000
-  papers; fill it in batches, or with `--all` deliberately.
+- **Two ways to fill a row, one schema.** The API path
+  (`build_paper_db.py` with credentials) makes one structured-output call per
+  abstract. The worklist path needs no API key at all: `--worklist` dumps the
+  outstanding papers with their abstracts, the prompt and the JSON schema to
+  `data/processed/pedrad_paper_db_worklist.json`; a person or a Claude Code
+  session reads them and writes rows back; `--ingest <file>` validates every
+  row against `extract.PaperExtraction` before storing it and stamps the same
+  provenance, so the two paths are indistinguishable in the table except by
+  `extractor_model`. A row that fails validation is reported and skipped, never
+  silently stored.
+- **Cost.** Each new paper on the API path is one structured-output call
+  (~$0.01 with `claude-sonnet-5` at effort `low`, the default), so a run is
+  capped at `config.PAPER_DB_RUN_LIMIT` papers. `--dry-run` prints the count
+  and the estimate before spending anything.
 - **The release column is not left to the model alone.** A code-hosting URL in
   the abstract settles "open-source", and a product already on
   `config.COMMERCIAL_PEDIATRIC` or the FDA pediatric-named device list settles
@@ -248,8 +335,19 @@ Rules now in force in `config.py`:
   query per era (`config.ERAS`: 2008-2022 and 2023-present) by
   `pubmed.problem_counts` into `data/processed/pubmed_pediatric_problems.json`.
 - The most-cited lists are also collected per era
-  (`top_papers_<name>_<era>.json`, OpenAlex `to_publication_date`) because
-  citation counts favor old papers; the slides show one table per era.
+  (`top_papers_<name>_<era>.json`, OpenAlex `to_publication_date`) and, for
+  2023 onward, per year (`top_papers_<name>_<year>.json`) because citation
+  counts favor old papers: inside a 2023-present window every top-10 row was
+  from 2023. The slides show the 2008-2022 table, then one slide per year with
+  citations, FWCI and venue (preprints marked).
+- **Preprints.** PubMed does not index arXiv, so `collect_preprints.py` counts
+  arXiv papers with the same queries (translated) in the same shapes
+  (`preprint_counts.json`: yearly, crosstab, problems).
+  `analysis.add_preprints` / `merge_crosstab` / `merge_problems` add the two
+  layers; figures, slides and reports all use the merged numbers and say so.
+  The translation is approximate (stemming instead of truncation, no MeSH), so
+  preprint counts are indicative. The most-cited and venue tables include
+  preprints natively (Semantic Scholar indexes arXiv and medRxiv).
 - `pubmed.crosstab` builds the modality x task tables with one date-range
   query per cell (`data/processed/pubmed_crosstab.json`).
 
@@ -266,12 +364,17 @@ Rules now in force in `config.py`:
   headline numbers and growth rates and reports the current year as `*_ytd`;
   reports and figures label it "YTD".
 - Slides are regenerated by `scripts/build_slides.py`; the most-cited tables
-  show the top 10 per era and fall back to a title heuristic for papers not in
+  show the top 10 (2008-2022, then per year) with citations, FWCI and venue,
+  and fall back to a title heuristic for papers not in
   `curated.PAPER_QUESTIONS`. Add new entries there when the rankings change.
+  One slide per venue in `config.CONFERENCE_WORKS` lists the radiology-AI
+  works that appeared there since `VENUE_WORKS_START` (pediatric titles
+  starred). The per-year news slides carry a Paper column (see `newsletters.py`).
   Hand-written slide content lives next to the data it follows:
-  `curated.PAPER_SPOTLIGHTS` (one slide per landmark pediatric paper, image
-  from `config.EXAMPLE_IMAGES` group "spotlight", fetched by
-  `collect_examples.py` from PMC by figure number), `config.PEDIATRIC_DATASETS`
+  `curated.PAPER_SPOTLIGHTS` (one slide per landmark pediatric paper, 2025-2026
+  papers preferred, image from `config.EXAMPLE_IMAGES` group "spotlight",
+  fetched by `collect_examples.py` from PMC by figure number or from the
+  arXiv HTML rendering, kind `arxiv_fig`), `config.PEDIATRIC_DATASETS`
   (the datasets slide; sizes verified against primary sources on 2026-09-07),
   and `curated.WORTH_KNOWING`. The pediatric modality chart omits mammography
   (its pediatric-query hits are adult breast papers). The trade-press section
@@ -282,7 +385,8 @@ Rules now in force in `config.py`:
 - To refresh to today, run `python scripts/refresh.py` (clears the cache except
   DBLP entries, re-runs every collector incl. FDA, validation and example
   images, adds the papers that are new since the last run to the paper database
-  (`--skip paperdb`, `--paper-db-limit N`, `--paper-db-all`), then figures, reports, slides,
+  (`--skip paperdb`, `--paper-db-limit N`, `--paper-db-all`), runs `enrich_fwci.py` (skipped
+  gracefully when the OpenAlex budget is spent), then figures, reports, slides,
   latexmk, and the `.pptx` export; `--quick`, `--keep-cache`, `--no-slides`, `--skip <collector>`,
   `--dry-run`). The same script runs monthly in
   `.github/workflows/refresh.yml`, which opens a pull request with the

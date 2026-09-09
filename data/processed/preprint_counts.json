@@ -1,0 +1,413 @@
+{
+  "collected_on": "2026-09-08",
+  "source": "arXiv API (submittedDate by year)",
+  "yearly": {
+    "all_radiology": {
+      "2008": 346,
+      "2009": 491,
+      "2010": 473,
+      "2011": 564,
+      "2012": 676,
+      "2013": 738,
+      "2014": 828,
+      "2015": 965,
+      "2016": 1120,
+      "2017": 1528,
+      "2018": 2101,
+      "2019": 2605,
+      "2020": 3387,
+      "2021": 3408,
+      "2022": 3666,
+      "2023": 4442,
+      "2024": 5322,
+      "2025": 6309,
+      "2026": 4690
+    },
+    "radiology_ai": {
+      "2008": 11,
+      "2009": 18,
+      "2010": 28,
+      "2011": 39,
+      "2012": 61,
+      "2013": 76,
+      "2014": 97,
+      "2015": 135,
+      "2016": 247,
+      "2017": 514,
+      "2018": 972,
+      "2019": 1424,
+      "2020": 2110,
+      "2021": 2101,
+      "2022": 2361,
+      "2023": 3017,
+      "2024": 3736,
+      "2025": 4426,
+      "2026": 3198
+    },
+    "pediatric_radiology": {
+      "2008": 0,
+      "2009": 1,
+      "2010": 2,
+      "2011": 1,
+      "2012": 2,
+      "2013": 2,
+      "2014": 3,
+      "2015": 3,
+      "2016": 4,
+      "2017": 19,
+      "2018": 23,
+      "2019": 48,
+      "2020": 49,
+      "2021": 44,
+      "2022": 58,
+      "2023": 64,
+      "2024": 94,
+      "2025": 116,
+      "2026": 72
+    },
+    "pediatric_radiology_ai": {
+      "2008": 0,
+      "2009": 0,
+      "2010": 0,
+      "2011": 1,
+      "2012": 0,
+      "2013": 0,
+      "2014": 2,
+      "2015": 1,
+      "2016": 0,
+      "2017": 13,
+      "2018": 16,
+      "2019": 32,
+      "2020": 37,
+      "2021": 35,
+      "2022": 49,
+      "2023": 46,
+      "2024": 84,
+      "2025": 104,
+      "2026": 59
+    },
+    "all_ai": {
+      "2008": 662,
+      "2009": 976,
+      "2010": 1379,
+      "2011": 1982,
+      "2012": 3352,
+      "2013": 4444,
+      "2014": 4744,
+      "2015": 6527,
+      "2016": 10056,
+      "2017": 15213,
+      "2018": 23882,
+      "2019": 34179,
+      "2020": 45988,
+      "2021": 50480,
+      "2022": 55459,
+      "2023": 69310,
+      "2024": 88672,
+      "2025": 109321,
+      "2026": 91208
+    }
+  },
+  "crosstab": {
+    "radiology_ai": {
+      "years": [
+        2008,
+        2026
+      ],
+      "total": 24571,
+      "row_totals": {
+        "x-ray / radiography": 3239,
+        "CT": 5980,
+        "MRI": 8027,
+        "ultrasound": 2096,
+        "mammography": 543,
+        "nuclear / PET": 732
+      },
+      "col_totals": {
+        "detection / diagnosis": 8970,
+        "segmentation": 8584,
+        "measurement / quantification": 4960,
+        "outcome prediction": 1275,
+        "reconstruction / imputation": 13423,
+        "report generation / LLM": 1561,
+        "foundation model / vision-language": 4452,
+        "agent / autonomous": 729,
+        "workflow / non-interpretive": 3212
+      },
+      "cells": {
+        "x-ray / radiography": {
+          "detection / diagnosis": 1719,
+          "segmentation": 559,
+          "measurement / quantification": 519,
+          "outcome prediction": 107,
+          "reconstruction / imputation": 1761,
+          "report generation / LLM": 545,
+          "foundation model / vision-language": 823,
+          "agent / autonomous": 77,
+          "workflow / non-interpretive": 384
+        },
+        "CT": {
+          "detection / diagnosis": 1965,
+          "segmentation": 2427,
+          "measurement / quantification": 1308,
+          "outcome prediction": 489,
+          "reconstruction / imputation": 3827,
+          "report generation / LLM": 337,
+          "foundation model / vision-language": 993,
+          "agent / autonomous": 159,
+          "workflow / non-interpretive": 786
+        },
+        "MRI": {
+          "detection / diagnosis": 2426,
+          "segmentation": 2891,
+          "measurement / quantification": 1932,
+          "outcome prediction": 474,
+          "reconstruction / imputation": 5155,
+          "report generation / LLM": 180,
+          "foundation model / vision-language": 1180,
+          "agent / autonomous": 150,
+          "workflow / non-interpretive": 1196
+        },
+        "ultrasound": {
+          "detection / diagnosis": 922,
+          "segmentation": 764,
+          "measurement / quantification": 462,
+          "outcome prediction": 64,
+          "reconstruction / imputation": 1209,
+          "report generation / LLM": 65,
+          "foundation model / vision-language": 377,
+          "agent / autonomous": 103,
+          "workflow / non-interpretive": 235
+        },
+        "mammography": {
+          "detection / diagnosis": 440,
+          "segmentation": 112,
+          "measurement / quantification": 60,
+          "outcome prediction": 50,
+          "reconstruction / imputation": 251,
+          "report generation / LLM": 27,
+          "foundation model / vision-language": 85,
+          "agent / autonomous": 9,
+          "workflow / non-interpretive": 69
+        },
+        "nuclear / PET": {
+          "detection / diagnosis": 213,
+          "segmentation": 252,
+          "measurement / quantification": 157,
+          "outcome prediction": 107,
+          "reconstruction / imputation": 486,
+          "report generation / LLM": 31,
+          "foundation model / vision-language": 99,
+          "agent / autonomous": 8,
+          "workflow / non-interpretive": 86
+        }
+      }
+    },
+    "pediatric_radiology_ai": {
+      "years": [
+        2008,
+        2026
+      ],
+      "total": 479,
+      "row_totals": {
+        "x-ray / radiography": 95,
+        "CT": 56,
+        "MRI": 271,
+        "ultrasound": 69,
+        "mammography": 3,
+        "nuclear / PET": 8
+      },
+      "col_totals": {
+        "detection / diagnosis": 204,
+        "segmentation": 181,
+        "measurement / quantification": 121,
+        "outcome prediction": 32,
+        "reconstruction / imputation": 271,
+        "report generation / LLM": 18,
+        "foundation model / vision-language": 65,
+        "agent / autonomous": 9,
+        "workflow / non-interpretive": 73
+      },
+      "cells": {
+        "x-ray / radiography": {
+          "detection / diagnosis": 66,
+          "segmentation": 17,
+          "measurement / quantification": 27,
+          "outcome prediction": 4,
+          "reconstruction / imputation": 51,
+          "report generation / LLM": 7,
+          "foundation model / vision-language": 24,
+          "agent / autonomous": 2,
+          "workflow / non-interpretive": 10
+        },
+        "CT": {
+          "detection / diagnosis": 20,
+          "segmentation": 27,
+          "measurement / quantification": 15,
+          "outcome prediction": 1,
+          "reconstruction / imputation": 37,
+          "report generation / LLM": 3,
+          "foundation model / vision-language": 4,
+          "agent / autonomous": 2,
+          "workflow / non-interpretive": 9
+        },
+        "MRI": {
+          "detection / diagnosis": 77,
+          "segmentation": 115,
+          "measurement / quantification": 72,
+          "outcome prediction": 24,
+          "reconstruction / imputation": 161,
+          "report generation / LLM": 7,
+          "foundation model / vision-language": 30,
+          "agent / autonomous": 3,
+          "workflow / non-interpretive": 49
+        },
+        "ultrasound": {
+          "detection / diagnosis": 40,
+          "segmentation": 28,
+          "measurement / quantification": 18,
+          "outcome prediction": 3,
+          "reconstruction / imputation": 40,
+          "report generation / LLM": 2,
+          "foundation model / vision-language": 12,
+          "agent / autonomous": 0,
+          "workflow / non-interpretive": 9
+        },
+        "mammography": {
+          "detection / diagnosis": 0,
+          "segmentation": 0,
+          "measurement / quantification": 1,
+          "outcome prediction": 0,
+          "reconstruction / imputation": 0,
+          "report generation / LLM": 1,
+          "foundation model / vision-language": 1,
+          "agent / autonomous": 0,
+          "workflow / non-interpretive": 0
+        },
+        "nuclear / PET": {
+          "detection / diagnosis": 1,
+          "segmentation": 2,
+          "measurement / quantification": 1,
+          "outcome prediction": 0,
+          "reconstruction / imputation": 5,
+          "report generation / LLM": 1,
+          "foundation model / vision-language": 1,
+          "agent / autonomous": 0,
+          "workflow / non-interpretive": 1
+        }
+      }
+    }
+  },
+  "problems": {
+    "eras": [
+      {
+        "label": "2008-2022",
+        "start": 2008,
+        "end": 2022
+      },
+      {
+        "label": "2023-present",
+        "start": 2023,
+        "end": 2026
+      }
+    ],
+    "totals": {
+      "2008-2022": 186,
+      "2023-present": 293
+    },
+    "counts": {
+      "bone age / skeletal maturity": {
+        "2008-2022": 6,
+        "2023-present": 8
+      },
+      "fracture / trauma / abuse": {
+        "2008-2022": 1,
+        "2023-present": 11
+      },
+      "pneumonia / bronchiolitis / RSV / TB": {
+        "2008-2022": 8,
+        "2023-present": 28
+      },
+      "COVID-19 / MIS-C": {
+        "2008-2022": 3,
+        "2023-present": 7
+      },
+      "chronic lung disease of prematurity / neonatal lung": {
+        "2008-2022": 2,
+        "2023-present": 4
+      },
+      "cystic fibrosis / asthma / airway": {
+        "2008-2022": 5,
+        "2023-present": 8
+      },
+      "appendicitis / intussusception / NEC": {
+        "2008-2022": 0,
+        "2023-present": 3
+      },
+      "neonatal jaundice / biliary atresia / liver": {
+        "2008-2022": 0,
+        "2023-present": 0
+      },
+      "inflammatory bowel disease": {
+        "2008-2022": 0,
+        "2023-present": 0
+      },
+      "hydronephrosis / VUR / kidney": {
+        "2008-2022": 3,
+        "2023-present": 4
+      },
+      "brain tumors": {
+        "2008-2022": 13,
+        "2023-present": 41
+      },
+      "other solid tumors / leukemia": {
+        "2008-2022": 4,
+        "2023-present": 5
+      },
+      "preterm / neonatal brain injury (HIE, IVH)": {
+        "2008-2022": 2,
+        "2023-present": 6
+      },
+      "fetal anomalies / prenatal": {
+        "2008-2022": 11,
+        "2023-present": 21
+      },
+      "congenital heart disease / cardiac": {
+        "2008-2022": 2,
+        "2023-present": 12
+      },
+      "hydrocephalus / ventricles": {
+        "2008-2022": 1,
+        "2023-present": 4
+      },
+      "epilepsy": {
+        "2008-2022": 1,
+        "2023-present": 2
+      },
+      "autism / ADHD / neurodevelopment": {
+        "2008-2022": 20,
+        "2023-present": 27
+      },
+      "scoliosis / hip dysplasia / MSK": {
+        "2008-2022": 3,
+        "2023-present": 13
+      },
+      "craniosynostosis / craniofacial": {
+        "2008-2022": 2,
+        "2023-present": 3
+      },
+      "stroke / sickle cell / vascular": {
+        "2008-2022": 1,
+        "2023-present": 0
+      },
+      "lines and tubes / NICU support devices": {
+        "2008-2022": 2,
+        "2023-present": 0
+      },
+      "testicular / ovarian torsion": {
+        "2008-2022": 0,
+        "2023-present": 0
+      }
+    }
+  }
+}

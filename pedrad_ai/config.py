@@ -358,6 +358,14 @@ RADIOLOGY_AI_QUERIES = [
     "computer aided diagnosis convolutional",
     "lung nodule deep learning",
     "anatomical structures segmentation CT",
+    # Preprint-first recent work rarely says "deep learning" in the title.
+    "radiology foundation model",
+    "medical imaging foundation model",
+    "medical vision-language model",
+    "radiology report generation",
+    "chest x-ray vision-language",
+    "radiology large language model",
+    "medical image segmentation foundation model",
 ]
 PEDIATRIC_RADIOLOGY_AI_QUERIES = [
     "pediatric radiology deep learning",
@@ -369,6 +377,10 @@ PEDIATRIC_RADIOLOGY_AI_QUERIES = [
     "fetal MRI deep learning segmentation",
     "neonatal brain MRI deep learning",
     "pediatric fracture deep learning radiograph",
+    "pediatric radiology foundation model",
+    "pediatric chest x-ray vision-language",
+    "fetal ultrasound deep learning",
+    "pediatric appendicitis deep learning",
 ]
 
 # --------------------------------------------------------------------------- #
@@ -426,6 +438,86 @@ PEDIATRIC_TITLE_KEYWORDS = [
 ]
 
 # --------------------------------------------------------------------------- #
+# Venue tables: which radiology-AI works made it into the big venues
+# --------------------------------------------------------------------------- #
+# One slide per venue over the recent window, all from Semantic Scholar's bulk
+# search (``venue=`` filter; DBLP has no citation counts and OpenAlex has a
+# daily budget). Radiology societies are represented by their journals
+# (meeting abstracts are not indexed anywhere machine-readable).
+VENUE_WORKS_START = 2023
+CONFERENCE_WORKS: dict[str, dict] = {
+    "NeurIPS": {"kind": "s2", "venue": "NeurIPS", "full": "Conference on Neural Information Processing Systems"},
+    "ICLR": {"kind": "s2", "venue": "ICLR", "full": "International Conference on Learning Representations"},
+    "ICML": {"kind": "s2", "venue": "ICML", "full": "International Conference on Machine Learning"},
+    "CVPR": {"kind": "s2", "venue": "CVPR", "full": "IEEE/CVF Conference on Computer Vision and Pattern Recognition"},
+    "MICCAI": {"kind": "s2", "venue": "MICCAI", "full": "Medical Image Computing and Computer-Assisted Intervention"},
+    "MIDL": {"kind": "s2", "venue": "MIDL", "full": "Medical Imaging with Deep Learning"},
+    "RSNA": {
+        "kind": "s2", "query": "ai",
+        "venue": "Radiology,Radiology: Artificial Intelligence,RadioGraphics",
+        "full": "Radiological Society of North America: Radiology, Radiology: AI, RadioGraphics",
+        "note": "RSNA annual-meeting abstracts are not indexed; the society's journals stand in.",
+    },
+    "SPR": {
+        "kind": "s2", "query": "ai",
+        "venue": "Pediatric Radiology",
+        "full": "Society for Pediatric Radiology: Pediatric Radiology (journal)",
+        "note": "SPR meeting abstracts are not indexed; the society's journal stands in.",
+    },
+}
+S2_AI_QUERY = (
+    '("artificial intelligence" | "machine learning" | "deep learning" | "neural network" | radiomics | '
+    'convolutional | "foundation model" | "language model" | "computer-aided")'
+)
+# Semantic Scholar bulk-search syntax: | = OR, * = prefix, quotes = phrase.
+S2_RADIOLOGY_QUERY = (
+    '(radiolog* | mri | "magnetic resonance" | "x-ray" | "chest radiograph" | radiograph* | '
+    'ultrasound | ultrasonograph* | echocardiograph* | "computed tomography" | "ct scan" | '
+    '"ct images" | "medical imag*" | mammogra* | "bone age" | fetal | "pet/ct" | tomography)'
+)
+
+# Title-level relevance filters for the most-cited and venue tables. A paper
+# is kept only if its title carries a radiology / medical-imaging signal and
+# is not from an adjacent imaging domain (retina, pathology, EEG, ...). This
+# keeps recall high (TotalSegmentator, nnU-Net) while dropping generic CS
+# papers and non-radiology imaging.
+PAPER_MEDICAL_SIGNAL = RADIOLOGY_TITLE_KEYWORDS + [
+    "ct", "mri", "imaging", "radiograph", "tumor", "tumour", "lesion",
+    "nodule", "cancer", "disease", "diagnosis", "diagnostic", "medical",
+    "clinical", "biomedical", "segment", "radiomics", "pneumonia",
+    "fracture", "bone age", "covid", "chest", "u-net", "unet", "nnu-net",
+    "brain", "cardiac", "abdominal", "anatomic", "anatomical", "pulmonary",
+    "fetal", "fmri", "echocardiography", "ultrasound", "x-ray", "pet",
+]
+PAPER_EXCLUDE_DOMAIN = [
+    "retinopathy", "fundus", "ophthalmolog", "retinal", "dermatolog",
+    "skin lesion", "skin cancer", "histopath", "whole slide", "whole-slide",
+    "microscop", "cytolog", "genomic", "electrocardiogram", "endoscop",
+    "eeg", "electroencephalogra", "practice guideline", "encephalopathy",
+    "wearable", "ecg", "gaussian splatting", "prohibited item", "baggage",
+    "security screening", "dental", "tooth", "teeth", "cbct", "maxillofacial",
+    "blood cell", "omics", "big data analytics", "wearable sensor", "speech", "protein",
+    "brain decoding", "fmri-to-image", "connectom", "brain activit", "brain signals",
+    "pathology image", "pathology images", "clinical text", "text summarization",
+]
+# The title must also say something about AI / modelling, otherwise a
+# highly-cited clinical paper that merely mentions CT and "machine learning"
+# in its abstract (a COVID follow-up cohort, say) floats into the AI tables.
+PAPER_AI_SIGNAL = AI_TITLE_KEYWORDS + [
+    "learning", "artificial intelligence", "ai", "ai-based", "ai-assisted", "model", "models", "network",
+    "networks", "automated", "automatic", "algorithm", "algorithms", "segment", "detection", "prediction",
+    "predicting", "radiomics", "radiomic", "reconstruction", "u-net", "unet", "nnu-net", "gpt", "chatgpt",
+    "language model", "language models", "computer-aided", "computer aided", "vision-language",
+    "vision language", "foundation model", "diffusion", "mamba", "large-scale", "benchmark", "dataset",
+    "challenge", "synthesis", "denoising", "super-resolution", "registration", "classification",
+    "quantification", "estimation", "software", "computational", "computer vision",
+]
+PAPER_PEDIATRIC_SIGNAL = PEDIATRIC_TITLE_KEYWORDS + [
+    "bone age", "pediatrics", "paediatrics", "kawasaki", "scoliosis",
+    "preterm", "premature", "congenital", "young adult",
+]
+
+# --------------------------------------------------------------------------- #
 # Newsletter / trade-press archives (for "what is the field talking about")
 # --------------------------------------------------------------------------- #
 # The peer-reviewed literature lags practice by a year or more; trade
@@ -476,6 +568,17 @@ NEWSLETTER_SOURCES: dict[str, dict] = {
         "radiology_domain": False,
         "url": "https://www.signifyresearch.net/insights/",
     },
+    # European Society of Radiology: the society news feed (which carries the
+    # ECR congress coverage, category "ecr") and the ESR AI Blog, both served
+    # by the same WordPress REST API. There is no scannable ECR Today archive;
+    # ECR stories live in the news posts.
+    "ESR / ECR": {
+        "kind": "wordpress",
+        "base": "https://www.myesr.org",
+        "types": ["posts", "ai-blog"],
+        "radiology_domain": True,
+        "url": "https://www.myesr.org/news/",
+    },
     "Radiology Business": {
         "kind": "rss",
         "feed": "https://radiologybusiness.com/rss.xml",
@@ -502,7 +605,9 @@ NEWSLETTER_START_DATE = "2024-01-01"
 # added only when the pattern ends with a word character and no explicit
 # boundary is wanted (stems like ``child`` deliberately match ``children``).
 NEWS_PEDIATRIC_PATTERNS = [
-    r"p(a)?ediatric", r"child", r"infant", r"neonat", r"newborn", r"adolescen",
+    # "child" excludes the Child-Pugh liver score and the idiom "poster child",
+    # both of which occur in adult-imaging stories.
+    r"p(a)?ediatric", r"(?<!poster )child(?!-pugh)", r"infant", r"neonat", r"newborn", r"adolescen",
     r"f(o)?etal", r"fetus", r"bone age", r"preterm", r"\bnicu\b", r"toddler",
     r"kids\b", r"in utero", r"prenatal",
 ]
@@ -703,18 +808,18 @@ EXAMPLE_IMAGES: list[dict[str, str]] = [
      "caption": "Qure.ai qXR: chest radiograph findings (vendor site)", "group": "commercial"},
     # Paper spotlights (one slide per paper; text lives in curated.PAPER_SPOTLIGHTS).
     # ``fig`` = 1-based index into the article's PMC figure list.
-    {"slug": "spot_bone_age_challenge", "kind": "europepmc_fig", "ref": "10.1148/radiol.2018180736", "fig": 4,
-     "caption": "Halabi et al., Radiology 2019, figure 4: hand radiograph, cropped and contrast-normalized, with the patches one team used", "group": "spotlight"},
-    {"slug": "spot_dl_recon_ct", "kind": "europepmc_fig", "ref": "10.3348/kjr.2021.0466", "fig": 6,
-     "caption": "Nagayama et al., Korean J Radiol 2022, figure 6: the same pediatric abdominal CT reconstructed six ways (FBP, hybrid iterative, deep learning)", "group": "spotlight"},
-    {"slug": "spot_posterior_fossa", "kind": "europepmc_fig", "ref": "10.3174/ajnr.a6704", "fig": 1,
-     "caption": "Quon et al., AJNR 2020, figure 1: T2 MRI examples of the four posterior fossa tumor types", "group": "spotlight"},
-    {"slug": "spot_feta", "kind": "europepmc_fig", "ref": "10.1038/s41597-021-00946-3", "fig": 2,
-     "caption": "Payette et al., Sci Data 2021, figure 2: fetal brain MRI with the seven tissue labels", "group": "spotlight"},
-    {"slug": "spot_deeplasia", "kind": "europepmc_fig", "ref": "10.1007/s00247-023-05789-1", "fig": 1,
-     "caption": "Rassmann et al., Pediatr Radiol 2023, graphical abstract", "group": "spotlight"},
     {"slug": "spot_fracture_ed", "kind": "europepmc_fig", "ref": "10.1007/s00330-025-11554-9", "fig": 5,
      "caption": "Ziegner et al., Eur Radiol 2025, figure 4: pediatric fractures the software found, with its per-region sensitivity and specificity", "group": "spotlight"},
+    {"slug": "spot_ped_tb", "kind": "europepmc_fig", "ref": "10.1038/s41467-025-64391-1", "fig": 1,
+     "caption": "Capellan-Martin et al., Nat Commun 2025, figure 1: the multi-view pTBLightNet pipeline", "group": "spotlight"},
+    {"slug": "spot_dl_recon_mri", "kind": "europepmc_fig", "ref": "10.3348/kjr.2024.0701", "fig": 2,
+     "caption": "Yoo et al., Korean J Radiol 2025, figure 2: conventional (A, D) vs accelerated 3D T1 pediatric brain MRI without (B, E) and with (C, F) deep-learning reconstruction", "group": "spotlight"},
+    {"slug": "spot_deeplasia_rare", "kind": "europepmc_fig", "ref": "10.3389/fendo.2026.1741927", "fig": 1,
+     "caption": "Skaf et al., Front Endocrinol 2026, figure 1: Deeplasia bone age vs the expert mean in the endocrine cohort (scatter and Bland-Altman)", "group": "spotlight"},
+    {"slug": "spot_pet_dose", "kind": "europepmc_fig", "ref": "10.1186/s40658-026-00876-2", "fig": 5,
+     "caption": "Han et al., EJNMMI Phys 2026, figure 5: pediatric whole-body FDG PET, standard 90 s vs 20 s per bed, with and without patch-based deep-learning denoising", "group": "spotlight"},
+    {"slug": "spot_not_small_adults", "kind": "europepmc_fig", "ref": "10.1007/s10278-024-01273-w", "fig": 7,
+     "caption": "Chatterjee et al., J Imaging Inform Med 2025, figure 7: pediatric CT organ labels, ground truth vs adult-trained TotalSegmentator vs pediatric-trained models", "group": "spotlight"},
 ]
 
 # --------------------------------------------------------------------------- #
@@ -774,6 +879,65 @@ PAPER_DB_QUERY = f"{STRICT_QUERIES['radiology_ai']} AND {_PEDIATRIC_TERMS_TIAB}"
 # had no time to accrue citations — so the last two years are always
 # under-represented; --min-citations 0 turns the filter off.
 PAPER_DB_MIN_CITATIONS = 20
+
+# Year-normalized floors, combined with the raw count by OR. A raw count is the
+# wrong filter for the current year, where nothing has had time to be cited:
+# of the 763 papers this query returns for 2026, eight have five citations. So a
+# rate (citations per year) and iCite's relative citation ratio (RCR, where 1.0
+# is the median NIH-funded paper of the same field and year) let recent work in
+# on its own terms. Note RCR is only computed once a paper is about two years
+# old — present for 94% of 2024 papers here but 17% of 2025 and 1% of 2026 —
+# so the rate is what actually carries the newest years. 0 disables a clause.
+PAPER_DB_MIN_CITATIONS_PER_YEAR = 10.0
+PAPER_DB_MIN_RCR = 5.0
+
+# Preprints. PubMed does not index arXiv and indexes medRxiv and bioRxiv only
+# through the NIH preprint pilot, so a PubMed-only view of the current year
+# misses much of the methods work. Candidates are topped up from OpenAlex
+# ``type:preprint`` and deduplicated against the PubMed set by PMID, DOI and
+# normalized title, so a preprint drops out once its journal version appears.
+PAPER_DB_INCLUDE_PREPRINTS = True
+PAPER_DB_PREPRINT_CAP = 600  # per year, a guard against a runaway OpenAlex page loop
+
+# Conference proceedings. Much of the methods work in this field is published at
+# MICCAI, ISBI, IPMI, MIDL, NeurIPS and CVPR rather than in journals. Coverage
+# comes from three directions and none of them alone is enough:
+#   * PubMed indexes some proceedings outright (IPMI, IEEE EMBC, SPIE Medical
+#     Imaging), so those already arrive through PAPER_DB_QUERY;
+#   * the arXiv preprint stream carries the author versions of most NeurIPS,
+#     CVPR and MICCAI papers, so PAPER_DB_INCLUDE_PREPRINTS catches many;
+#   * this source adds works OpenAlex types as ``conference-paper``, plus a
+#     second pass over Lecture Notes in Computer Science, where the MICCAI, IPMI
+#     and MIDL proceedings are filed.
+# The work type is the filter and the venue is not: OpenAlex files MICCAI under
+# a book series, NeurIPS and CVPR under their own sources, and
+# ``primary_location.source.type:conference`` catches almost none of them while
+# sweeping in a long tail of unrelated local proceedings. A record that comes
+# back with no abstract — which is most of them — cannot be read under the
+# extraction schema and is reported, not guessed at.
+PAPER_DB_INCLUDE_CONFERENCE = True
+PAPER_DB_CONFERENCE_CAP = 1200  # a guard against a runaway OpenAlex page loop
+# The second clause is an imaging clause, not a machine-learning one. An earlier
+# version paired the pediatric terms with "segmentation OR detection OR
+# classification ..."; across all conference proceedings that matches papers on
+# cyberbullying detection, crowd counting and blockchain, because "child" and
+# "detection" co-occur everywhere. Requiring a modality or an imaging phrase is
+# what makes this a radiology search.
+PAPER_DB_CONFERENCE_QUERY = (
+    "(pediatric OR paediatric OR pediatrics OR paediatrics OR fetal OR foetal OR neonatal OR "
+    "neonate OR infant OR infants OR children OR child OR newborn OR preterm OR adolescent OR "
+    "adolescents OR prenatal) AND "
+    "(radiograph OR radiographs OR radiography OR radiology OR radiological OR \"x-ray\" OR "
+    "\"chest x-ray\" OR ultrasound OR ultrasonography OR sonography OR sonographic OR "
+    "echocardiography OR MRI OR \"magnetic resonance\" OR \"computed tomography\" OR tomography OR "
+    "PET OR SPECT OR mammography OR fluoroscopy OR angiography OR tractography OR neurosonography OR "
+    "\"bone age\" OR \"medical image\" OR \"medical imaging\" OR neuroimaging OR "
+    "\"image segmentation\" OR \"image registration\" OR \"image reconstruction\" OR "
+    "\"image analysis\" OR \"image classification\")"
+)
+# OpenAlex source id for Lecture Notes in Computer Science, where the MICCAI,
+# IPMI and MIDL proceedings are filed.
+PAPER_DB_LNCS_SOURCE = "S106296714"
 
 # Extraction is a per-abstract structured-output call, so cost scales with the
 # number of new papers. Defaults are deliberately modest; scripts/build_paper_db.py

@@ -26,8 +26,8 @@ FIG = config.FIGURE_DIR
 # Fixed categorical order (validated for color-vision-deficiency separation).
 PALETTE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948", "#8c8c8c"]
 BLUE, ORANGE, AQUA, YELLOW, MAGENTA, GREEN, VIOLET, RED, GRAY = PALETTE
-# A hatch on the 9th slot is the secondary encoding for the gray category.
-HATCHES = [None] * 8 + ["////"]
+# The 9th (gray) category is solid; no hatching anywhere.
+HATCHES = [None] * 9
 # Modality colors are fixed by name so the same modality has the same color on
 # every chart (adult and pediatric alike).
 MODALITY_COLOR = {
@@ -76,7 +76,9 @@ def _mark_partial(ax, years):
 # --------------------------------------------------------------------------- #
 # Publication trends
 # --------------------------------------------------------------------------- #
-def trend_figures(counts):
+def trend_figures(counts, preprints=None):
+    """``counts`` is the merged (PubMed + arXiv preprint) series; ``preprints``
+    only decides the axis label (one solid bar per series)."""
     rows = analysis.fractions_over_time(counts)
     if not rows:
         return
@@ -84,13 +86,14 @@ def trend_figures(counts):
 
     # Nested bars: pediatric radiology AI is a subset of radiology AI, so it is
     # drawn on top of (inside) the radiology-AI bar for the same year.
+    has_pre = bool(preprints and (preprints.get("yearly") or {}).get("radiology_ai"))
     rad = [r["radiology_ai"] for r in rows]
     ped = [r["pediatric_radiology_ai"] for r in rows]
     fig, ax1 = plt.subplots(figsize=(9, 5))
-    ax1.bar(years, rad, width=0.8, color=BLUE, label="Radiology AI")
+    ax1.bar(years, rad, width=0.8, color=BLUE, label="Radiology AI" + (" (PubMed + arXiv)" if has_pre else ""))
     ax1.bar(years, ped, width=0.8, color=GREEN, label="Pediatric radiology AI (subset)")
     ax1.set_xlabel("Year")
-    ax1.set_ylabel("Publications per year (PubMed)")
+    ax1.set_ylabel("Publications per year (PubMed + arXiv preprints)" if has_pre else "Publications per year (PubMed)")
     ax1.yaxis.set_major_formatter(lambda v, _: f"{int(v):,}")
     _style(ax1)
     ax1.annotate(f"{rad[-1]:,}", (years[-1], rad[-1]), xytext=(0, 3),
@@ -225,7 +228,8 @@ def problems_figure(prob, fname="ped_problems.png"):
             ax.text(v + max(vals) * 0.01, y, f"{v:,} ({share:.0f}%)", va="center", fontsize=6.5)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([r for r, _ in rows], fontsize=8)
-    ax.set_xlabel("Pediatric radiology-AI papers naming the problem (PubMed, title/abstract)")
+    src = "PubMed + preprints" if prob.get("preprint_totals") else "PubMed"
+    ax.set_xlabel(f"Pediatric radiology-AI papers naming the problem ({src}, title/abstract)")
     ax.set_title("Which clinical problems pediatric radiology AI addresses, by era")
     ax.spines[["top", "right"]].set_visible(False)
     ax.set_xlim(0, max(c.get(e, 0) for _, c in rows for e in eras) * 1.2)
@@ -423,9 +427,11 @@ def fda_figures(fda):
 # --------------------------------------------------------------------------- #
 def main() -> None:
     print(f"Writing figures to {FIG}")
+    preprints = _load("preprint_counts.json") or {}
     counts = _load("pubmed_yearly_counts.json")
     if counts:
-        trend_figures(counts)
+        counts = analysis.add_preprints(counts, preprints)
+        trend_figures(counts, preprints)
         breakdown_figure(counts, "modality", "radiology_ai",
                          "Radiology AI by imaging modality", "modality_breakdown.png", MODALITY_COLOR)
         breakdown_figure(counts, "task", "radiology_ai",
@@ -435,6 +441,7 @@ def main() -> None:
         breakdown_figure(counts, "ped_task", "pediatric_radiology_ai",
                          "Pediatric radiology AI by task", "ped_task_breakdown.png", TASK_COLOR)
     xt = _load("pubmed_crosstab.json") or {}
+    xt = {k: analysis.merge_crosstab(v, (preprints.get("crosstab") or {}).get(k)) for k, v in xt.items()}
     if xt.get("radiology_ai"):
         yrs = xt["radiology_ai"]["years"]
         crosstab_figure(xt["radiology_ai"], "modality",
@@ -466,7 +473,7 @@ def main() -> None:
                           f"Most-cited radiology AI papers, {label}", f"top_papers_radiology_{label}.png", BLUE)
         top_papers_figure(_load(f"top_papers_pediatric_radiology_ai_{label}.json") or [],
                           f"Most-cited pediatric radiology AI papers, {label}", f"top_papers_pediatric_{label}.png", GREEN)
-    problems_figure(_load("pubmed_pediatric_problems.json") or {})
+    problems_figure(analysis.merge_problems(_load("pubmed_pediatric_problems.json") or {}, preprints.get("problems")) or {})
     github_figure(_load("github_repos.json") or {})
     newsletter_figures(_load("newsletter_summary.json") or {})
     fda_figures(_load("fda_ai_devices.json") or {})

@@ -2,12 +2,14 @@
 
 _Auto-generated from PubMed, PatentsView, DBLP, GitHub, and OpenAlex pulls. Counts reflect indexed records at collection time and undercount the most recent year (indexing/grant lag)._
 
+_Publication counts are **PubMed records plus preprints**: PubMed does not index arXiv, so the same queries, translated to arXiv API syntax, add the arXiv preprint layer: 4,426 radiology-AI and 104 pediatric preprints in 2025. The preprint query is an approximation (no MeSH expansion, stemming instead of truncation)._
+
 ## Headline
 
-- Radiology-AI publications grew from the 2008 baseline to **20831** records in 2025 (compound growth ≈ **22%/yr**).
-- The AI share of all radiology publishing rose from **0.8%** to **11.4%**.
-- Pediatric work is **11.3%** of radiology AI in 2025 — a small but growing slice (**2348** records).
-- 2026 year-to-date (collected 2026-09-07): **16481** radiology-AI records, of which **1897** (11.5%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
+- Radiology-AI publications grew from the 2008 baseline to **25257** records in 2025 (compound growth ≈ **23%/yr**).
+- The AI share of all radiology publishing rose from **0.8%** to **13.4%**.
+- Pediatric work is **9.7%** of radiology AI in 2025 — a small but growing slice (**2452** records).
+- 2026 year-to-date (collected 2026-09-09): **19679** radiology-AI records, of which **1956** (9.9%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
 
 ## Publication trend (PubMed)
 
@@ -24,25 +26,25 @@ pediatric_radiology_ai:
 
 | Year | All radiology | Radiology AI | AI share | Pediatric rad-AI | Pediatric share of rad-AI |
 |---:|---:|---:|---:|---:|---:|
-| 2008 | 86812 | 715 | 0.8% | 58 | 8.1% |
-| 2009 | 92281 | 723 | 0.8% | 58 | 8.0% |
-| 2010 | 99121 | 557 | 0.6% | 48 | 8.6% |
-| 2011 | 107921 | 492 | 0.5% | 62 | 12.6% |
-| 2012 | 115476 | 569 | 0.5% | 63 | 11.1% |
-| 2013 | 122316 | 680 | 0.6% | 72 | 10.6% |
-| 2014 | 128775 | 769 | 0.6% | 113 | 14.7% |
-| 2015 | 134828 | 873 | 0.6% | 134 | 15.3% |
-| 2016 | 134488 | 1045 | 0.8% | 155 | 14.8% |
-| 2017 | 137742 | 1556 | 1.1% | 203 | 13.0% |
-| 2018 | 140927 | 2632 | 1.9% | 340 | 12.9% |
-| 2019 | 144818 | 4342 | 3.0% | 515 | 11.9% |
-| 2020 | 166142 | 6928 | 4.2% | 682 | 9.8% |
-| 2021 | 177988 | 10174 | 5.7% | 947 | 9.3% |
-| 2022 | 169514 | 12469 | 7.4% | 1038 | 8.3% |
-| 2023 | 160988 | 13901 | 8.6% | 1227 | 8.8% |
-| 2024 | 167690 | 16222 | 9.7% | 1695 | 10.4% |
-| 2025 | 182492 | 20831 | 11.4% | 2348 | 11.3% |
-| 2026 (YTD) | 138306 | 16481 | 11.9% | 1897 | 11.5% |
+| 2008 | 87158 | 726 | 0.8% | 58 | 8.0% |
+| 2009 | 92772 | 741 | 0.8% | 58 | 7.8% |
+| 2010 | 99594 | 585 | 0.6% | 48 | 8.2% |
+| 2011 | 108485 | 531 | 0.5% | 63 | 11.9% |
+| 2012 | 116152 | 630 | 0.5% | 63 | 10.0% |
+| 2013 | 123054 | 756 | 0.6% | 72 | 9.5% |
+| 2014 | 129603 | 866 | 0.7% | 115 | 13.3% |
+| 2015 | 135793 | 1008 | 0.7% | 135 | 13.4% |
+| 2016 | 135608 | 1292 | 1.0% | 155 | 12.0% |
+| 2017 | 139270 | 2070 | 1.5% | 216 | 10.4% |
+| 2018 | 143028 | 3604 | 2.5% | 356 | 9.9% |
+| 2019 | 147423 | 5766 | 3.9% | 547 | 9.5% |
+| 2020 | 169529 | 9038 | 5.3% | 719 | 8.0% |
+| 2021 | 181396 | 12275 | 6.8% | 982 | 8.0% |
+| 2022 | 173180 | 14830 | 8.6% | 1087 | 7.3% |
+| 2023 | 165430 | 16918 | 10.2% | 1273 | 7.5% |
+| 2024 | 173012 | 19958 | 11.5% | 1779 | 8.9% |
+| 2025 | 188801 | 25257 | 13.4% | 2452 | 9.7% |
+| 2026 (YTD) | 142996 | 19679 | 13.8% | 1956 | 9.9% |
 
 ![Radiology AI publication trend](../figures/radiology_ai_trend.png)
 
@@ -79,12 +81,12 @@ Sample of records returned only by the headline (MeSH-expanded) query:
 
 | Modality | Radiology-AI records | Share of radiology AI |
 |:--|---:|---:|
-| MRI | 38950 | 34.8% |
-| CT | 33368 | 29.8% |
-| ultrasound | 13579 | 12.1% |
-| x-ray / radiography | 11886 | 10.6% |
-| nuclear / PET | 7578 | 6.8% |
-| mammography | 3186 | 2.9% |
+| MRI | 38950 | 28.5% |
+| CT | 33368 | 24.4% |
+| ultrasound | 13579 | 10.0% |
+| x-ray / radiography | 11886 | 8.7% |
+| nuclear / PET | 7578 | 5.5% |
+| mammography | 3186 | 2.3% |
 
 ![Radiology AI by modality](../figures/modality_breakdown.png)
 
@@ -94,14 +96,14 @@ Sample of records returned only by the headline (MeSH-expanded) query:
 
 | Task | Radiology-AI records | Share of radiology AI |
 |:--|---:|---:|
-| detection / diagnosis | 52222 | 46.6% |
-| outcome prediction | 29595 | 26.4% |
-| segmentation | 26645 | 23.8% |
-| measurement / quantification | 19489 | 17.4% |
-| reconstruction / imputation | 16452 | 14.7% |
-| workflow / non-interpretive | 14094 | 12.6% |
-| foundation model / vision-language | 4912 | 4.4% |
-| report generation / LLM | 3515 | 3.1% |
+| detection / diagnosis | 52222 | 38.2% |
+| outcome prediction | 29595 | 21.7% |
+| segmentation | 26645 | 19.5% |
+| measurement / quantification | 19489 | 14.3% |
+| reconstruction / imputation | 16452 | 12.0% |
+| workflow / non-interpretive | 14094 | 10.3% |
+| foundation model / vision-language | 4912 | 3.6% |
+| report generation / LLM | 3515 | 2.6% |
 | agent / autonomous | 491 | 0.4% |
 
 ![Radiology AI by clinical task](../figures/task_breakdown.png)
@@ -132,12 +134,12 @@ Task categories are organised by what the model *produces*:
 
 | Modality | Pediatric radiology-AI records | Share |
 |:--|---:|---:|
-| MRI | 4985 | 42.8% |
-| CT | 1959 | 16.8% |
-| ultrasound | 1594 | 13.7% |
-| x-ray / radiography | 1528 | 13.1% |
-| nuclear / PET | 394 | 3.4% |
-| mammography | 88 | 0.8% |
+| MRI | 4985 | 41.1% |
+| CT | 1959 | 16.1% |
+| ultrasound | 1594 | 13.1% |
+| x-ray / radiography | 1528 | 12.6% |
+| nuclear / PET | 394 | 3.2% |
+| mammography | 88 | 0.7% |
 
 ![Pediatric radiology AI by modality](../figures/ped_modality_breakdown.png)
 
@@ -145,15 +147,15 @@ Task categories are organised by what the model *produces*:
 
 | Task | Pediatric radiology-AI records | Share |
 |:--|---:|---:|
-| detection / diagnosis | 5355 | 46.0% |
-| measurement / quantification | 2539 | 21.8% |
-| outcome prediction | 2439 | 20.9% |
-| segmentation | 2331 | 20.0% |
-| workflow / non-interpretive | 1595 | 13.7% |
-| reconstruction / imputation | 1208 | 10.4% |
-| foundation model / vision-language | 389 | 3.3% |
-| report generation / LLM | 322 | 2.8% |
-| agent / autonomous | 41 | 0.4% |
+| detection / diagnosis | 5355 | 44.1% |
+| measurement / quantification | 2539 | 20.9% |
+| outcome prediction | 2439 | 20.1% |
+| segmentation | 2331 | 19.2% |
+| workflow / non-interpretive | 1595 | 13.1% |
+| reconstruction / imputation | 1208 | 10.0% |
+| foundation model / vision-language | 389 | 3.2% |
+| report generation / LLM | 322 | 2.6% |
+| agent / autonomous | 41 | 0.3% |
 
 ![Pediatric radiology AI by task](../figures/ped_task_breakdown.png)
 

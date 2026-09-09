@@ -78,8 +78,28 @@ def main() -> int:
     ap.add_argument("--since", type=int, default=config.PAPER_DB_START_YEAR, help="first publication year")
     ap.add_argument("--until", type=int, default=config.END_YEAR, help="last publication year")
     ap.add_argument("--min-citations", type=int, default=config.PAPER_DB_MIN_CITATIONS,
-                    help=f"citation floor from NIH iCite (default {config.PAPER_DB_MIN_CITATIONS}; "
-                         "0 keeps every paper the query returns)")
+                    help=f"raw citation floor from NIH iCite (default {config.PAPER_DB_MIN_CITATIONS}; "
+                         "0 disables this clause)")
+    ap.add_argument("--min-citations-per-year", type=float,
+                    default=config.PAPER_DB_MIN_CITATIONS_PER_YEAR,
+                    help="citations-per-year floor; the clause that lets the current year in, "
+                         "where a raw count cannot work")
+    ap.add_argument("--min-rcr", type=float, default=config.PAPER_DB_MIN_RCR,
+                    help="relative citation ratio floor (iCite; 1.0 is the median NIH-funded "
+                         "paper of the same field and year). Undefined for papers under about "
+                         "two years old, so it admits nothing from the current year")
+    ap.add_argument("--preprints", dest="preprints", action="store_true", default=None,
+                    help="include OpenAlex preprints (default: config.PAPER_DB_INCLUDE_PREPRINTS)")
+    ap.add_argument("--no-preprints", dest="preprints", action="store_false",
+                    help="PubMed records only")
+    ap.add_argument("--conference", dest="conference", action="store_true", default=None,
+                    help="include OpenAlex conference proceedings — MICCAI, ISBI, SPIE, NeurIPS "
+                         "and the rest (default: config.PAPER_DB_INCLUDE_CONFERENCE)")
+    ap.add_argument("--no-conference", dest="conference", action="store_false",
+                    help="skip the conference proceedings pass")
+    ap.add_argument("--order", choices=["citations", "rate", "rcr"], default="citations",
+                    help="which impact measure orders the reading queue (default citations); "
+                         "use 'rate' for a recent-year run")
     ap.add_argument("--model", default=config.PAPER_DB_MODEL, help="extraction model")
     ap.add_argument("--effort", default=config.PAPER_DB_EFFORT,
                     choices=["low", "medium", "high", "xhigh", "max"], help="thinking effort")
@@ -87,6 +107,12 @@ def main() -> int:
     ap.add_argument("--reextract", action="store_true", help="re-read papers already in the store")
     ap.add_argument("--rebuild", action="store_true",
                     help="regenerate CSV and summary from the stored rows; makes no API calls")
+    ap.add_argument("--refresh-metrics", action="store_true",
+                    help="re-fetch citations, citations/year and RCR for every stored row and "
+                         "rebuild the exports; re-reads no abstracts and calls no model")
+    ap.add_argument("--with-fwci", action="store_true",
+                    help="also look up OpenAlex field-weighted citation impact by DOI during "
+                         "--refresh-metrics (slow: OpenAlex throttles hard)")
     ap.add_argument("--dry-run", action="store_true", help="report what is outstanding, extract nothing")
     ap.add_argument("--pmid", action="append", default=[], help="extract specific PMID(s) only (repeatable)")
     ap.add_argument("--worklist", nargs="?", const=str(config.PAPER_DB_WORKLIST), default=None,
@@ -97,6 +123,9 @@ def main() -> int:
                     help="merge hand-written rows (the JSON produced by reading a worklist) into the store")
     ap.add_argument("--extractor", default="claude-code (manual)",
                     help="value recorded in extractor_model for --ingest rows")
+    ap.add_argument("--articles", metavar="PATH",
+                    help="JSON of pre-fetched records keyed by record id, used by --ingest instead "
+                         "of querying PubMed. Required for preprints, which have no PMID to fetch")
     args = ap.parse_args()
 
     store = paper_db.load()
@@ -106,31 +135,64 @@ def main() -> int:
     if overrides:
         print(f"Overrides: {len(overrides)} hand-corrected papers")
 
+    if args.refresh_metrics:
+        print("Refreshing bibliometrics for every stored row (no model calls)...")
+        n = paper_db.refresh_metrics(store, with_fwci=args.with_fwci)
+        print(f"  updated {n} of {len(store['records'])} rows")
+        return _export(store, overrides)
+
     if args.rebuild:
         return _export(store, overrides)
 
     if args.ingest:
-        return _ingest(store, overrides, Path(args.ingest), args.extractor)
+        return _ingest(store, overrides, Path(args.ingest), args.extractor,
+                       Path(args.articles) if args.articles else None)
 
     # ------------------------------------------------------------------ #
     # Which papers still need reading
     # ------------------------------------------------------------------ #
     if args.pmid:
-        wanted = {p: {"year": None, "citations": None} for p in args.pmid}
+        wanted = {p: {"record_id": p, "pmid": p, "source": "pubmed", "is_preprint": False,
+                      "year": None, "citations": None} for p in args.pmid}
         print(f"Candidates: {len(wanted)} PMID(s) given on the command line")
     else:
-        print(f"Searching PubMed for candidates, {args.since}-{args.until}...")
-        wanted = paper_db.candidates_with_citations(args.since, args.until, args.min_citations)
-        print(f"Candidates: {len(wanted)} papers match the query with >= {args.min_citations} "
-              f"citations in iCite")
+        print(f"Searching for candidates, {args.since}-{args.until}...")
+        wanted = paper_db.collect_candidates(
+            args.since, args.until,
+            min_citations=args.min_citations,
+            min_citations_per_year=args.min_citations_per_year,
+            min_rcr=args.min_rcr,
+            include_preprints=args.preprints,
+            include_conference=args.conference,
+        )
+        floors = [f"{args.min_citations} citations"]
+        if args.min_citations_per_year:
+            floors.append(f"{args.min_citations_per_year:g}/year")
+        if args.min_rcr:
+            floors.append(f"RCR {args.min_rcr:g}")
+        n_pre = sum(1 for c in wanted.values() if c.get("is_preprint"))
+        n_conf = sum(1 for c in wanted.values() if c.get("origin") == "conference")
+        print(f"Candidates: {len(wanted)} works clear a floor of " + " or ".join(floors)
+              + f" ({n_pre} preprints, {n_conf} conference papers)")
 
     outstanding = [
         pmid for pmid in wanted
         if args.reextract or args.pmid or paper_db.needs_extraction(store, pmid)
     ]
-    # Most-cited first: whatever the run reads, it reads the papers that matter
-    # most to the field, and a capped run is a prefix of a full one.
-    outstanding.sort(key=lambda p: (-(wanted[p]["citations"] or 0), -(wanted[p]["year"] or 0), p))
+    # Highest impact first: whatever the run reads, it reads the papers that
+    # matter most, and a capped run is a prefix of a full one. Which measure
+    # "most" means is the caller's choice, because a raw count ranks the
+    # current year last by construction.
+    def _rank(rid: str) -> tuple:
+        c = wanted[rid]
+        primary = {
+            "citations": c.get("citations") or 0,
+            "rate": c.get("citations_per_year") or 0,
+            "rcr": c.get("rcr") or c.get("fwci") or 0,
+        }[args.order]
+        return (-primary, -(c.get("citations") or 0), -(c.get("year") or 0), rid)
+
+    outstanding.sort(key=_rank)
     print(f"Outstanding: {len(outstanding)} papers not yet read under prompt v{extract.PROMPT_VERSION}")
 
     todo = outstanding if (args.all or args.pmid) else outstanding[: args.limit]
@@ -155,10 +217,8 @@ def main() -> int:
     # ------------------------------------------------------------------ #
     # Read them
     # ------------------------------------------------------------------ #
-    print(f"Fetching {len(todo)} PubMed records with abstracts...")
-    articles = paper_db.fetch_articles(todo)
-    for art in articles:
-        art["citations"] = (wanted.get(art["pmid"]) or {}).get("citations")
+    print(f"Fetching {len(todo)} records with abstracts...")
+    articles = paper_db.fetch_articles({rid: wanted[rid] for rid in todo})
     if not args.reextract and not args.pmid:
         # A record already read under the current prompt, from identical text,
         # needs no second read. The prompt check happened above; the text check
@@ -166,7 +226,8 @@ def main() -> int:
         # attached an abstract to a record we read title-only.
         articles = [
             a for a in articles
-            if paper_db.needs_extraction(store, a["pmid"]) or paper_db.stale_fingerprint(store, a)
+            if paper_db.needs_extraction(store, paper_db.record_key(a))
+            or paper_db.stale_fingerprint(store, a)
         ]
     no_abstract = [a for a in articles if not (a.get("abstract") or "").strip()]
     if no_abstract:
@@ -179,8 +240,9 @@ def main() -> int:
     counters = {"included": 0, "excluded": 0, "errors": 0}
 
     def _on_result(idx: int, article: dict, extraction: dict) -> None:
-        row = paper_db.build_row(article, extraction)
-        store["records"][article["pmid"]] = row
+        rid = paper_db.record_key(article)
+        row = paper_db.build_row(article, extraction, metrics=wanted.get(rid))
+        store["records"][rid] = row
         if extraction.get("error"):
             counters["errors"] += 1
         elif row.get("include"):
@@ -270,7 +332,8 @@ def _write_worklist(pmids: list[str], wanted: dict, path: Path) -> int:
     return 0
 
 
-def _ingest(store: dict, overrides: dict, path: Path, extractor: str) -> int:
+def _ingest(store: dict, overrides: dict, path: Path, extractor: str,
+            articles_path: Path | None = None) -> int:
     """Merge hand-written rows into the store, validating each against the schema.
 
     Accepts either {"<pmid>": {...fields...}, ...} or a list of objects that
@@ -283,37 +346,48 @@ def _ingest(store: dict, overrides: dict, path: Path, extractor: str) -> int:
 
     raw = json.loads(path.read_text(encoding="utf-8"))
     if isinstance(raw, dict):
-        raw = [{**fields, "pmid": str(pmid)} for pmid, fields in raw.items()
-               if not str(pmid).startswith("_")]
+        raw = [{**fields, "record_id": str(key)} for key, fields in raw.items()
+               if not str(key).startswith("_")]
     if not isinstance(raw, list):
         print(f"{path}: expected a JSON object keyed by PMID, or a list of rows")
         return 1
 
     valid: dict[str, Any] = {}
     for entry in raw:
-        pmid = str(entry.get("pmid") or "")
-        fields = {k: v for k, v in entry.items() if k != "pmid"}
-        if not pmid:
-            print("  skipped a row with no pmid")
+        rid = str(entry.get("record_id") or entry.get("pmid") or "")
+        fields = {k: v for k, v in entry.items() if k not in ("pmid", "record_id", "_metrics")}
+        if not rid:
+            print("  skipped a row with no pmid or record_id")
             continue
         try:
-            valid[pmid] = extract.PaperExtraction.model_validate(fields).model_dump()
+            valid[rid] = extract.PaperExtraction.model_validate(fields).model_dump()
+            if entry.get("_metrics"):
+                valid[rid]["_metrics"] = entry["_metrics"]
         except Exception as exc:
             first = str(exc).splitlines()[1] if len(str(exc).splitlines()) > 1 else str(exc)
-            print(f"  {pmid}: rejected — {first.strip()}")
+            print(f"  {rid}: rejected — {first.strip()}")
     if not valid:
         print("No valid rows to ingest.")
         return 1
 
-    print(f"Fetching {len(valid)} PubMed records to attach titles, DOIs and fingerprints...")
-    articles = {a["pmid"]: a for a in paper_db.fetch_articles(list(valid))}
-    citations = icite.citation_counts(list(valid))
+    # Records supplied by the caller (a saved worklist, or the OpenAlex works
+    # behind a preprint candidate) are used as-is; anything else is a PMID and
+    # is fetched from PubMed.
+    supplied: dict[str, Any] = {}
+    if articles_path is not None:
+        supplied = json.loads(articles_path.read_text(encoding="utf-8"))
+        print(f"Using {len(supplied)} pre-fetched records from {articles_path.name}")
+    to_fetch = [k for k in valid if k not in supplied and k.isdigit()]
+    if to_fetch:
+        print(f"Fetching {len(to_fetch)} PubMed records to attach titles, DOIs and fingerprints...")
+    articles = {**{a["pmid"]: a for a in paper_db.fetch_articles(to_fetch)}, **supplied}
+    metrics = icite.metrics([k for k in valid if k.isdigit()])
 
     added = excluded = 0
-    for pmid, fields in valid.items():
-        article = articles.get(pmid)
+    for rid, fields in valid.items():
+        article = articles.get(rid)
         if article is None:
-            print(f"  {pmid}: not in PubMed, skipped")
+            print(f"  {rid}: no record found, skipped")
             continue
         extraction = {
             **fields,
@@ -323,8 +397,17 @@ def _ingest(store: dict, overrides: dict, path: Path, extractor: str) -> int:
             "prompt_fingerprint": extract.prompt_fingerprint(),
             "input_fingerprint": extract.input_fingerprint(article),
         }
-        row = paper_db.build_row(article, extraction, citations=citations.get(pmid))
-        store["records"][pmid] = row
+        is_preprint = not rid.isdigit()
+        row = paper_db.build_row(
+            article, extraction,
+            metrics={
+                **metrics.get(rid, {}),
+                **{k: v for k, v in (fields.get("_metrics") or {}).items()},
+                "source": "openalex" if is_preprint else "pubmed",
+                "is_preprint": is_preprint or None,
+            },
+        )
+        store["records"][rid] = row
         if row.get("include"):
             added += 1
         else:

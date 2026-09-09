@@ -10,6 +10,7 @@ Two venue families:
 Outputs:
     data/processed/conference_ml_venues.csv / .json
     data/processed/conference_society_venues.csv / .json
+    data/processed/conference_works.json   (radiology-AI works per big venue, recent window)
 """
 
 from __future__ import annotations
@@ -23,7 +24,15 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--start", type=int, default=config.CONF_START_YEAR)
     ap.add_argument("--end", type=int, default=config.CONF_END_YEAR)
+    ap.add_argument("--works-only", action="store_true", help="only the per-venue works tables")
+    ap.add_argument("--no-works", action="store_true", help="skip the per-venue works tables")
     args = ap.parse_args()
+
+    if not args.no_works:
+        print(f"Venue works {config.VENUE_WORKS_START}-{config.END_YEAR}: {list(config.CONFERENCE_WORKS)}")
+        utils.save_json(conferences.collect_venue_works(), config.PROCESSED_DIR / "conference_works.json")
+        if args.works_only:
+            return
 
     print(f"DBLP ML venues {args.start}-{args.end}: {list(config.DBLP_VENUES)}")
     ml_rows = conferences.collect_all(args.start, args.end)

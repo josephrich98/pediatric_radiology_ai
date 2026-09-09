@@ -2,7 +2,9 @@
 """Collect the "biggest players" landscape: cited papers, software, citations.
 
 Pulls:
-    * most-cited radiology-AI and pediatric-radiology-AI papers (Semantic Scholar)
+    * most-cited radiology-AI and pediatric-radiology-AI papers (Semantic Scholar,
+      incl. preprints; overall, per era, per year). FWCI is filled in later by
+      scripts/enrich_fwci.py (batched OpenAlex DOI lookups, cheap on the daily budget).
     * top GitHub repositories by stars (radiology AI + pediatric)
     * enriches PubMed top-articles with citation counts where DOIs are present
 
@@ -15,61 +17,41 @@ Outputs:
 
 from __future__ import annotations
 
-from pedrad_ai import conferences, config, github_repos, openalex, utils
+import re
 
-# A paper is kept only if its title carries a radiology / medical-imaging signal
-# AND is not from an adjacent imaging domain that is not radiology. This keeps
-# recall high (TotalSegmentator, nnU-Net) while dropping generic CS papers (a
-# data-augmentation survey) and non-radiology imaging (diabetic retinopathy,
-# histopathology).
-_MEDICAL_SIGNAL = (
-    config.RADIOLOGY_TITLE_KEYWORDS
-    + [
-        "ct", "mri", "imaging", "radiograph", "tumor", "tumour", "lesion",
-        "nodule", "cancer", "disease", "diagnosis", "diagnostic", "medical",
-        "clinical", "biomedical", "segment", "radiomics", "pneumonia",
-        "fracture", "bone age", "covid", "chest", "u-net", "unet", "nnu-net",
-        "brain", "cardiac", "abdominal", "anatomic", "anatomical", "pulmonary",
-    ]
-)
-_EXCLUDE_DOMAIN = [
-    "retinopathy", "fundus", "ophthalmolog", "retinal", "dermatolog",
-    "skin lesion", "skin cancer", "histopath", "whole slide", "whole-slide",
-    "microscop", "cytolog", "genomic", "electrocardiogram", "endoscop",
-    "eeg", "electroencephalogra", "practice guideline", "encephalopathy",
-    "wearable", "ecg",
-]
-
-
-_PEDIATRIC_SIGNAL = config.PEDIATRIC_TITLE_KEYWORDS + [
-    "bone age", "pediatrics", "paediatrics", "kawasaki", "scoliosis",
-]
-
+from pedrad_ai import conferences, config, github_repos, semantic_scholar, utils
 
 def _is_relevant(paper: dict, pediatric: bool = False) -> bool:
+    """Title-level filter (see config.PAPER_MEDICAL_SIGNAL / PAPER_EXCLUDE_DOMAIN).
+
+    The pediatric list must actually be pediatric: the union search otherwise
+    floats in highly-cited adult papers (TotalSegmentator, etc.).
+    """
     title = paper.get("title") or ""
-    if conferences._matches(title, _EXCLUDE_DOMAIN):
+    if not conferences.is_radiology_paper(title):
         return False
-    if not conferences._matches(title, _MEDICAL_SIGNAL):
+    # Semantic Scholar occasionally carries a wrong year; a DOI that embeds a
+    # year (IEEE ACCESS.2020.xxx) two or more years away gives it away.
+    m = re.search(r"\.(20[0-3]\d)\.", paper.get("doi") or "")
+    if m and isinstance(paper.get("year"), int) and abs(int(m.group(1)) - paper["year"]) > 1:
         return False
-    # The pediatric list must actually be pediatric: full-text union search
-    # otherwise floats in highly-cited adult papers (TotalSegmentator, etc.).
-    if pediatric and not conferences._matches(title, _PEDIATRIC_SIGNAL):
+    if pediatric and not conferences.is_pediatric_title(title):
         return False
     return True
 
 
 def collect_papers() -> None:
-    # Union of modality/task-specific OpenAlex searches, so landmark papers whose
+    # Union of modality/task-specific searches (Semantic Scholar bulk API, which
+    # indexes arXiv / medRxiv preprints and has no daily budget), so landmark papers whose
     # titles never say "radiology" (TotalSegmentator, nnU-Net, ...) are included.
     query_sets = {
         "radiology_ai": config.RADIOLOGY_AI_QUERIES,
         "pediatric_radiology_ai": config.PEDIATRIC_RADIOLOGY_AI_QUERIES,
     }
     for name, queries in query_sets.items():
-        print(f"OpenAlex: top-cited union ({len(queries)} queries) for {name!r}...")
+        print(f"Semantic Scholar: top-cited union ({len(queries)} queries) for {name!r}...")
         is_ped = name == "pediatric_radiology_ai"
-        papers = openalex.top_cited_union(queries, per_query=80, min_year=config.START_YEAR)
+        papers = semantic_scholar.union_search(queries, config.START_YEAR, config.END_YEAR)
         papers = [p for p in papers if _is_relevant(p, pediatric=is_ped)][:50]
         utils.save_json(papers, config.PROCESSED_DIR / f"top_papers_{name}.json")
         if papers:
@@ -77,11 +59,20 @@ def collect_papers() -> None:
         # Per-era lists: citation counts favor old papers, so the recent era is
         # ranked on its own (top_papers_<name>_<era>.json, era label with '-').
         for label, start, end in config.ERAS:
-            era = openalex.top_cited_union(queries, per_query=80, min_year=start, max_year=end)
+            era = semantic_scholar.union_search(queries, start, end)
             era = [p for p in era if _is_relevant(p, pediatric=is_ped)][:50]
             utils.save_json(era, config.PROCESSED_DIR / f"top_papers_{name}_{label}.json")
             if era:
                 print(f"  {label}: {len(era)} papers; top: {era[0]['citation_count']} cites — {era[0]['title']!r}")
+        # Per-year lists for the recent era (top_papers_<name>_<year>.json):
+        # within one publication year raw citations are comparable, and the
+        # slides show the FWCI next to them.
+        for year in range(config.ERAS[-1][1], config.END_YEAR + 1):
+            yr = semantic_scholar.union_search(queries, year, year)
+            yr = [p for p in yr if _is_relevant(p, pediatric=is_ped)][:50]
+            utils.save_json(yr, config.PROCESSED_DIR / f"top_papers_{name}_{year}.json")
+            if yr:
+                print(f"  {year}: {len(yr)} papers; top: {yr[0]['citation_count']} cites — {yr[0]['title']!r}")
 
 
 def collect_software() -> None:

@@ -136,8 +136,9 @@ def _conference_section() -> list[str]:
 
 
 def build_popularity_report() -> list[str]:
-    counts = _load("pubmed_yearly_counts.json", {})
-    summary = _load("pubmed_summary.json", {})
+    preprints = _load("preprint_counts.json", {})
+    counts = analysis.add_preprints(_load("pubmed_yearly_counts.json", {}), preprints)
+    summary = analysis.summarize(counts) if counts else _load("pubmed_summary.json", {})
     patents = _load("patent_yearly_counts.json", {})
     dois: list[str] = []
 
@@ -148,6 +149,15 @@ def build_popularity_report() -> list[str]:
         "pulls. Counts reflect indexed records at collection time and undercount "
         "the most recent year (indexing/grant lag)._\n"
     )
+    if preprints.get("yearly"):
+        yr = str(config.END_YEAR - 1)
+        L.append(
+            "_Publication counts are **PubMed records plus preprints**: PubMed does not index arXiv, so the "
+            "same queries, translated to arXiv API syntax, add the arXiv preprint layer: "
+            f"{int(preprints['yearly'].get('radiology_ai', {}).get(yr, 0)):,} radiology-AI and "
+            f"{int(preprints['yearly'].get('pediatric_radiology_ai', {}).get(yr, 0)):,} pediatric preprints in {yr}. "
+            "The preprint query is an approximation (no MeSH expansion, stemming instead of truncation)._\n"
+        )
 
     if summary:
         yr0, yr1 = summary.get("year_range", ["?", "?"])
@@ -231,7 +241,8 @@ def build_popularity_report() -> list[str]:
             for t, g in config.TASK_GLOSS.items():
                 L.append(f"- **{t}** — {g}")
             L.append("")
-        xt = _load("pubmed_crosstab.json", {})
+        xt = {k: analysis.merge_crosstab(v, (preprints.get("crosstab") or {}).get(k))
+              for k, v in _load("pubmed_crosstab.json", {}).items()}
         if xt.get("radiology_ai"):
             L.append("### Modality by task, and task by modality\n")
             L.append(
@@ -419,6 +430,36 @@ def _commercial_section() -> list[str]:
     return L
 
 
+def _venue_section() -> list[str]:
+    """The radiology-AI works that appeared at each big venue (recent window)."""
+    works = _load("conference_works.json", {})
+    if not works:
+        return []
+    L = ["## What made it into the big venues\n"]
+    L.append(
+        "**How obtained.** NeurIPS, ICLR, ICML, CVPR, MICCAI and MIDL: Semantic Scholar bulk search with a "
+        "radiology term query and the venue filter; RSNA and SPR: OpenAlex restricted to the society journals "
+        "(meeting abstracts are not indexed). Titles pass the same relevance filter as the most-cited tables; "
+        "FWCI from OpenAlex; * marks a pediatric title.\n"
+    )
+    for name, v in works.items():
+        yrs = v.get("years", ["?", "?"])
+        by_year = ", ".join(f"{y}: {n}" for y, n in sorted(v.get("by_year", {}).items()))
+        L.append(f"### {name} ({v.get('full', name)}), {yrs[0]}-{yrs[1]}\n")
+        L.append(f"{v.get('n_works', 0)} radiology-AI works found ({by_year}); {v.get('n_pediatric', 0)} pediatric."
+                 + (f" {v['note']}" if v.get("note") else "") + "\n")
+        L.append("| Year | Citations | FWCI | Paper |")
+        L.append("|---:|---:|---:|:--|")
+        for w in v.get("works", [])[:15]:
+            f = w.get("fwci")
+            fw = f"{f:.1f}" if isinstance(f, (int, float)) else ""
+            title = (w.get("title") or "").replace("|", "/")
+            star = " *" if w.get("pediatric") else ""
+            L.append(f"| {w.get('year')} | {w.get('citation_count', 0)} | {fw} | {title}{star} |")
+        L.append("")
+    return L
+
+
 def build_landscape_report() -> tuple[list[str], list[str]]:
     rad = _load("top_papers_radiology_ai.json", [])
     ped = _load("top_papers_pediatric_radiology_ai.json", [])
@@ -432,16 +473,31 @@ def build_landscape_report() -> tuple[list[str], list[str]]:
         "GitHub. Citation and star counts are snapshots at collection time._\n"
     )
 
+    def _fwci(p):
+        f = p.get("fwci")
+        return f"{f:.1f}" if isinstance(f, (int, float)) else ""
+
     def paper_table(papers, n=20):
-        out = ["| Rank | Citations | Year | Title | Venue |", "|---:|---:|---:|:--|:--|"]
+        out = ["| Rank | Citations | FWCI | Year | Title | Venue |", "|---:|---:|---:|---:|:--|:--|"]
         for i, p in enumerate(papers[:n], 1):
             title = (p.get("title") or "").replace("|", "/")
             out.append(
-                f"| {i} | {p.get('citation_count', 0)} | {p.get('year', '?')} | "
-                f"{title} | {p.get('venue') or ''} |"
+                f"| {i} | {p.get('citation_count', 0)} | {_fwci(p)} | {p.get('year', '?')} | "
+                f"{title} | {(p.get('venue_label') or p.get('venue') or '').replace(' (preprint)', '').replace('|', '/')} |"
             )
             if p.get("doi"):
                 dois.append(p["doi"])
+        return out
+
+    def year_sections(name, label):
+        out: list[str] = []
+        for year in range(config.ERAS[-1][1], config.END_YEAR + 1):
+            papers = _load(f"top_papers_{name}_{year}.json", [])
+            if not papers:
+                continue
+            out.append(f"### {label}, {year}{' (year to date)' if year == config.PARTIAL_YEAR else ''}\n")
+            out.extend(paper_table(papers, 15))
+            out.append("")
         return out
 
     if rad:
@@ -460,6 +516,15 @@ def build_landscape_report() -> tuple[list[str], list[str]]:
         L.extend(paper_table(rad, 30))
         L.append("")
         L.extend(_question_table(rad, 1500))
+        L.append("### Most-cited radiology AI papers per year, 2023-present\n")
+        L.append(
+            "**Why per year.** Inside a 2023-present window raw citation counts favor 2023 papers "
+            "(they have had three years to accrue citations), so the recent era is ranked one "
+            "publication year at a time. FWCI is OpenAlex's field-weighted citation impact "
+            "(1 = world average for papers of the same field and year). Preprints (arXiv, "
+            "medRxiv, ...) are included and marked in the venue column.\n"
+        )
+        L.extend(year_sections("radiology_ai", "Radiology AI"))
     if ped:
         L.append("## Most-cited pediatric radiology AI papers\n")
         L.append(
@@ -471,6 +536,9 @@ def build_landscape_report() -> tuple[list[str], list[str]]:
         L.extend(paper_table(ped, 20))
         L.append("")
         L.extend(_question_table(ped, 100))
+        L.append("### Most-cited pediatric radiology AI papers per year, 2023-present\n")
+        L.extend(year_sections("pediatric_radiology_ai", "Pediatric radiology AI"))
+        L.extend(_venue_section())
         L.extend(_commercial_section())
 
     if repos:
@@ -590,6 +658,7 @@ def build_newsletter_report() -> list[str]:
         "RSNA News: article bodies are fetched only for titles that already carry a pediatric or AI term; the radiology-AI denominator is therefore title-based.",
         f"TLDR has no archive listing, so its daily pages are enumerated from {summary.get('tldr_start_date', '?')}; weekend/holiday dates are skipped.",
         "RSS sources (Radiology Business, Health Imaging) expose only their most recent items, so they contribute recency, not history.",
+        "ESR / ECR is the European Society of Radiology news feed plus the ESR AI Blog; ECR congress coverage appears inside the news feed, as there is no machine-readable ECR Today archive.",
         "Newsletter issues contain sponsor blocks; these are counted as stories, which slightly inflates denominators.",
     ]
     blocked = summary.get("blocked", {})
@@ -681,8 +750,10 @@ def build_newsletter_report() -> list[str]:
             if len(snippet) > 260:
                 snippet = snippet[:257].rstrip() + "…"
             tags = f" _[{', '.join(it['topics'])}]_" if it.get("topics") else ""
+            paper = it.get("paper") or {}
+            cite = f" · paper: [{paper['citation']}](https://doi.org/{paper['doi']})" if paper.get("citation") else ""
             L.append(
-                f"- **{it.get('date') or '?'}** · {it['source']} · [{story}]({it.get('url', '')}){tags}  \n"
+                f"- **{it.get('date') or '?'}** · {it['source']} · [{story}]({it.get('url', '')}){tags}{cite}  \n"
                 f"  {snippet}"
             )
         L.append("")

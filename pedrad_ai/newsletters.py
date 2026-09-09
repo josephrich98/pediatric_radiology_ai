@@ -31,6 +31,7 @@ import html as htmllib
 import json
 import re
 import urllib.error
+import urllib.parse
 import xml.etree.ElementTree as ET
 from typing import Any, Iterable
 
@@ -55,6 +56,9 @@ _LONG_SECTION = 2500
 _LI_RE = re.compile(r"<li\b[^>]*>(.*?)</li>", re.S | re.I)
 _BOLD_P_RE = re.compile(r"<p\b[^>]*>\s*<(?:strong|b)\b", re.I)
 _DIGEST_MIN_ITEMS = 8
+# Some sites (myESR) put the article lede inside a heading tag; a "heading"
+# that long is a paragraph, so the document title is used instead.
+_MAX_HEADING = 200
 _MONTHS = {m.lower(): i for i, m in enumerate(
     ["January", "February", "March", "April", "May", "June", "July", "August",
      "September", "October", "November", "December"], 1)}
@@ -71,17 +75,32 @@ def html_to_text(raw: str) -> str:
     return s.strip()
 
 
-def split_sections(raw: str, fallback_title: str) -> list[tuple[str, str]]:
-    """Split an HTML document into (heading, text) stories.
+_HREF_RE = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.I)
+
+
+def _links(html: str) -> list[str]:
+    """Outbound http(s) links in an HTML fragment, deduped, fragments stripped."""
+    out: list[str] = []
+    for u in _HREF_RE.findall(html or ""):
+        u = htmllib.unescape(u).split("#", 1)[0].strip()
+        if u.startswith("http") and u not in out:
+            out.append(u)
+    return out
+
+
+def split_sections(raw: str, fallback_title: str) -> list[tuple[str, str, list[str]]]:
+    """Split an HTML document into (heading, text, links) stories.
 
     Splits at every ``<h1>``-``<h4>`` or ``<article>`` tag. A document with fewer
     than two such blocks is returned as a single story titled ``fallback_title``.
+    ``links`` are the hyperlinks inside the story, used to find the paper a
+    story reports on (see :func:`resolve_paper`).
     """
     parts = [p for p in _HEADING_SPLIT_RE.split(raw or "") if p and p.strip()]
     if len(parts) < 2:
         parts = [p for p in _BOLD_SPLIT_RE.split(raw or "") if p and p.strip()]
     if len(parts) < 2:
-        return [(fallback_title, html_to_text(raw))]
+        return [(fallback_title, html_to_text(raw), _links(raw))]
     # Only digests that never use real sub-headings (h2-h4) get sub-split at
     # bold run-in titles; modern issues bold the first words of paragraphs.
     has_subheadings = bool(re.search(r"<h[2-4]\b", raw or "", re.I))
@@ -93,17 +112,20 @@ def split_sections(raw: str, fallback_title: str) -> list[tuple[str, str]]:
                 expanded.extend(sub)
                 continue
         expanded.append(part)
-    out: list[tuple[str, str]] = []
+    out: list[tuple[str, str, list[str]]] = []
     for part in expanded:
         m = _HEADING_RE.search(part)
         heading = html_to_text(m.group(2)) if m else ""
         heading = re.sub(r"\s+", " ", heading).strip() or fallback_title
+        if len(heading) > _MAX_HEADING:
+            heading = fallback_title
         lis = _LI_RE.findall(part)
         if len(lis) >= _DIGEST_MIN_ITEMS and len(lis) > 2 * len(_BOLD_P_RE.findall(part)):
             # Digest list: each bullet is its own story.
-            lead = html_to_text(part[: part.lower().find("<li")])
+            lead_html = part[: part.lower().find("<li")]
+            lead = html_to_text(lead_html)
             if lead:
-                out.append((heading, lead))
+                out.append((heading, lead, _links(lead_html)))
             for li in lis:
                 li_text = html_to_text(li)
                 if not li_text:
@@ -112,13 +134,160 @@ def split_sections(raw: str, fallback_title: str) -> list[tuple[str, str]]:
                 li_head = re.sub(r"\s+", " ", html_to_text(lm.group(2))).strip() if lm else ""
                 if not li_head:
                     li_head = li_text.split(":")[0][:80] if ":" in li_text[:100] else li_text[:80]
-                out.append((f"{heading} · {li_head}", li_text))
+                out.append((f"{heading} · {li_head}", li_text, _links(li)))
             continue
         text = html_to_text(part)
         if not text:
             continue
-        out.append((heading, text))
+        out.append((heading, text, _links(part)))
     return out
+
+
+# --------------------------------------------------------------------------- #
+# The paper behind a story
+# --------------------------------------------------------------------------- #
+# A story that reports on a study usually links to it. The link is turned into
+# a DOI (directly from the URL for the common publishers, else from the
+# ``citation_doi`` meta tag of the landing page) and the DOI into a short
+# citation via Crossref (arXiv API for arXiv DOIs):
+# "Bradley et al., 2024 (Nature Communications)".
+_DOI_IN_URL = [
+    re.compile(r"doi\.org/(10\.\d{4,9}/[^\s?#]+)", re.I),
+    re.compile(r"/doi/(?:full/|abs/|pdf/|epdf/|10\.)?(10\.\d{4,9}/[^\s?#]+)", re.I),
+    re.compile(r"link\.springer\.com/(?:article|chapter)/(10\.\d{4,9}/[^\s?#]+)", re.I),
+    re.compile(r"frontiersin\.org/(?:journals/[^/]+/)?articles/(10\.\d{4,9}/[^\s?#/]+)", re.I),
+    re.compile(r"journals\.plos\.org/[^?]+\?id=(10\.\d{4,9}/[^\s&#]+)", re.I),
+    re.compile(r"(?:medrxiv|biorxiv)\.org/content/(10\.\d{4,9}/[^\s?#]+?)(?:v\d+)?(?:\.full[^\s?#]*)?$", re.I),
+]
+_NATURE = re.compile(r"nature\.com/articles/([a-z0-9.\-]+)", re.I)
+_ARXIV = re.compile(r"arxiv\.org/(?:abs|pdf|html)/(\d{4}\.\d{4,5})", re.I)
+_LANCET = re.compile(r"thelancet\.com/journals/[^/]+/article/PII(S[0-9X()\-]+)", re.I)
+_PUBLISHER_HOSTS = (
+    "nature.com", "science.org", "cell.com", "nejm.org", "jamanetwork.com", "thelancet.com",
+    "sciencedirect.com", "wiley.com", "springer.com", "bmj.com", "oup.com", "plos.org",
+    "frontiersin.org", "mdpi.com", "pubs.rsna.org", "ajronline.org", "ajnr.org", "tandfonline.com",
+    "sagepub.com", "acm.org", "ieee.org", "arxiv.org", "medrxiv.org", "biorxiv.org", "pnas.org",
+    "jmir.org", "ncbi.nlm.nih.gov", "pmc.ncbi.nlm.nih.gov", "doi.org", "springeropen.com",
+    "biomedcentral.com", "thieme-connect", "karger.com", "lww.com", "aappublications.org",
+    "publications.aap.org", "jpeds.com", "elsevier.com", "acpjournals.org", "annals.org", "ahajournals.org",
+    "cambridge.org", "degruyter.com", "hindawi.com", "openreview.net", "proceedings.mlr.press",
+    "proceedings.neurips.cc", "cvf.com", "ebm.bmj.com", "radiology.org",
+)
+_META_DOI = re.compile(r'<meta[^>]+(?:name|property)=["\'](?:citation_doi|dc\.identifier|DC\.Identifier|prism\.doi)["\'][^>]+content=["\'](?:doi:|https?://doi\.org/)?(10\.\d{4,9}/[^"\'\s]+)["\']', re.I)
+_META_DOI2 = re.compile(r'<meta[^>]+content=["\'](?:doi:|https?://doi\.org/)?(10\.\d{4,9}/[^"\'\s]+)["\'][^>]+(?:name|property)=["\'](?:citation_doi|dc\.identifier|DC\.Identifier|prism\.doi)["\']', re.I)
+
+
+def paper_links(links: list[str]) -> list[str]:
+    return [u for u in links if any(h in u.lower() for h in _PUBLISHER_HOSTS)]
+
+
+def doi_from_url(url: str, fetch: bool = True) -> str | None:
+    """DOI for a publisher URL: from the URL itself, else the landing page."""
+    u = htmllib.unescape(url).strip()
+    for rx in _DOI_IN_URL:
+        m = rx.search(u)
+        if m:
+            return m.group(1).rstrip("/.").lower()
+    m = _NATURE.search(u)
+    if m:
+        return f"10.1038/{m.group(1)}".lower()
+    m = _ARXIV.search(u)
+    if m:
+        return f"10.48550/arxiv.{m.group(1)}"
+    m = _LANCET.search(u)
+    if m:
+        return f"10.1016/{m.group(1)}"
+    m = re.search(r"ncbi\.nlm\.nih\.gov/(?:pmc/)?articles/(PMC\d+)", u, re.I)
+    if m:
+        try:
+            data = utils.http_get_json("https://www.ebi.ac.uk/europepmc/webservices/rest/search",
+                                       {"query": f"PMCID:{m.group(1)}", "format": "json", "resultType": "lite"},
+                                       pause=0.5, max_retries=2, timeout=60)
+            res = (data.get("resultList") or {}).get("result") or []
+            return (res[0].get("doi") or "").lower() or None
+        except Exception:
+            return None
+    if not fetch:
+        return None
+    try:
+        html = utils.http_get(u.split("?", 1)[0], pause=0.5, timeout=30, max_retries=1)
+    except Exception:
+        return None
+    m = _META_DOI.search(html) or _META_DOI2.search(html)
+    return m.group(1).rstrip("/.").lower() if m else None
+
+
+def _plain(s: Any) -> Any:
+    """Crossref and arXiv return XML-escaped text ("Obstetrics &amp; Gynecology");
+    unescape it so the citation reads as it does on the page."""
+    return re.sub(r"\s+", " ", htmllib.unescape(s)).strip() if isinstance(s, str) else s
+
+
+def _short_citation(w: dict[str, Any]) -> str:
+    first = w.get("first_author") or "Anon."
+    n = w.get("n_authors") or 1
+    who = first if n == 1 else f"{first} et al."
+    venue = w.get("venue") or "unknown venue"
+    if w.get("is_preprint"):
+        venue = f"{venue} preprint"
+    return f"{who}, {w.get('year')} ({venue})"
+
+
+def _crossref_meta(doi: str) -> dict[str, Any] | None:
+    """First author, author count, year and journal from Crossref (free, no budget)."""
+    try:
+        data = utils.http_get_json(f"https://api.crossref.org/works/{urllib.parse.quote(doi)}",
+                                   {"mailto": config.CONTACT_EMAIL}, pause=0.5, max_retries=2, timeout=60)
+    except Exception:
+        return None
+    m = data.get("message") or {}
+    authors = m.get("author") or []
+    first = next((a.get("family") for a in authors if a.get("family")), None)
+    parts = (m.get("issued") or m.get("published") or {}).get("date-parts") or [[None]]
+    year = parts[0][0] if parts and parts[0] else None
+    venue = (m.get("container-title") or [None])[0] or (m.get("institution") or [{}])[0].get("name")
+    is_pre = m.get("type") == "posted-content" or (m.get("subtype") == "preprint")
+    if is_pre and not venue:
+        venue = (m.get("group-title") or "preprint")
+    if not first or not year:
+        return None
+    return {"title": _plain((m.get("title") or [None])[0]), "first_author": _plain(first),
+            "n_authors": len(authors), "year": year, "venue": _plain(venue or ""),
+            "is_preprint": bool(is_pre), "citation_count": m.get("is-referenced-by-count")}
+
+
+def paper_meta(doi: str) -> dict[str, Any] | None:
+    """Metadata for a DOI: arXiv DOIs via the arXiv API, everything else via Crossref."""
+    m = re.match(r"10\.48550/arxiv\.(.+)$", doi, re.I)
+    if m:
+        from . import arxiv
+
+        return arxiv.paper_meta(m.group(1))
+    return _crossref_meta(doi)
+
+
+def resolve_paper(links: list[str]) -> dict[str, Any] | None:
+    """First link that resolves to an indexed paper -> citation record."""
+    for u in paper_links(links)[:6]:
+        doi = doi_from_url(u)
+        if not doi:
+            continue
+        try:
+            w = paper_meta(doi)
+        except Exception:
+            w = None
+        if not w or not w.get("year"):
+            continue
+        return {
+            "doi": doi,
+            "url": u,
+            "title": w.get("title"),
+            "year": w.get("year"),
+            "venue": w.get("venue"),
+            "citation_count": w.get("citation_count"),
+            "citation": _short_citation(w),
+        }
+    return None
 
 
 def _compile(patterns: Iterable[str]) -> list[tuple[str, re.Pattern[str]]]:
@@ -459,7 +628,7 @@ def collect(sources: dict[str, dict[str, Any]] | None = None) -> tuple[list[dict
             year = (doc.get("date") or "")[:4] or "unknown"
             y = yrs.setdefault(year, {"docs": 0, "stories": 0, "radiology_ai": 0, "pediatric_radiology_ai": 0})
             y["docs"] += 1
-            for heading, text in split_sections(doc["html"], doc["title"]):
+            for heading, text, links in split_sections(doc["html"], doc["title"]):
                 # A story re-run in a later issue (same heading and opening
                 # text) is counted once, in numerator and denominator alike.
                 key = _norm_title(heading) + "|" + _norm_title(text[:160])
@@ -503,6 +672,8 @@ def collect(sources: dict[str, dict[str, Any]] | None = None) -> tuple[list[dict
                         "radiology_terms": lab["radiology_terms"],
                         "topics": lab["topics"],
                         "players": lab["players"],
+                        "links": paper_links(links)[:6],
+                        "paper": resolve_paper(links),
                     }
                 )
         per_source[name] = stats

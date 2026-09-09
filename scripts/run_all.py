@@ -36,8 +36,10 @@ def main() -> None:
 
     pub_args = ["--quick"] if args.quick else []
     run("collect_pubmed.py", *pub_args)
+    run("collect_preprints.py", *pub_args)
     run("collect_landscape.py")
     run("collect_conferences.py")
+    run("enrich_fwci.py")
     run("collect_patents.py")
     run("collect_newsletters.py")
     run("collect_fda.py")

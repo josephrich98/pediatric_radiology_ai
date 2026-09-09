@@ -48,8 +48,10 @@ SLIDES = REPO / "slides"
 
 COLLECTORS = {
     "pubmed": "collect_pubmed.py",
+    "preprints": "collect_preprints.py",
     "landscape": "collect_landscape.py",
     "conferences": "collect_conferences.py",
+    "fwci": "enrich_fwci.py",
     "patents": "collect_patents.py",
     "newsletters": "collect_newsletters.py",
     "fda": "collect_fda.py",
@@ -136,7 +138,7 @@ def main() -> int:
             print(f"\n=== {key}: skipped")
             continue
         cmd = [py, str(SCRIPTS / script)]
-        if key == "pubmed" and args.quick:
+        if key in ("pubmed", "preprints") and args.quick:
             cmd.append("--quick")
         results[key], _ = run_step(key, cmd, LOGS / f"refresh-{stamp}-{key}.log", args.dry_run)
 

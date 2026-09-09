@@ -14,10 +14,13 @@ rather than breaking the build.
 Deck outline (2026-09 revision):
   title; objectives; methods; growth graph; modality x task with task
   definitions (all, pediatric); cross-check against the 2025 scoping review;
-  biggest pediatric datasets; most-cited papers per era (all: 2008-2022,
-  2023-present; pediatric: same); clinical problems addressed (pediatric, per
-  era); one spotlight slide per landmark pediatric paper; newsletters (all
-  ages, pediatric, then one slide per year listing the pediatric stories);
+  biggest pediatric datasets; most-cited papers (all: 2008-2022, then one
+  slide per year 2023-present with citations and FWCI; pediatric: same); one
+  slide per big venue (NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL, RSNA, SPR)
+  with the radiology-AI works that appeared there; clinical problems addressed
+  (pediatric, per era); one spotlight slide per landmark pediatric paper
+  (2025-2026 focus); newsletters (all ages, pediatric, then one slide per year
+  listing the pediatric stories and the paper each story reports on);
   commercial products with a pediatric angle; worth knowing; does well /
   bleeding edge / open problems / implications.
 """
@@ -54,13 +57,25 @@ def _fig(name, height=0.72):
     )
 
 
+_UNICODE_MAP = {"\u2009": " ", "\u202f": " ", "\u00a0": " ", "\u2010": "-", "\u2011": "-", "\u2012": "-",
+                "\u2212": "-", "\u2019": "'", "\u2018": "`", "\u201c": "``", "\u201d": "''", "\u2026": "...",
+                "\u03b1": "alpha", "\u03b2": "beta", "\u00d7": "x", "\u2264": "<=", "\u2265": ">=", "\u2032": "'",
+                "\u2013": "--", "\u2014": "---", "\u2192": "->", "\u20ac": "EUR ", "\u2022": "-"}
+
+
 def _tex(s) -> str:
+    """Escape for LaTeX; fold characters pdflatex's utf8 tables do not cover
+    (thin spaces, Unicode hyphens, Greek) to ASCII so a title from an API
+    never breaks the build."""
+    import unicodedata
+
     s = str(s) if s is not None else ""
+    for a, b in _UNICODE_MAP.items():
+        s = s.replace(a, b)
+    s = "".join(ch if ord(ch) < 0x250 else (unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode() or "") for ch in s)
     for a, b in (("\\", "\\textbackslash{}"), ("&", "\\&"), ("%", "\\%"), ("_", "\\_"), ("#", "\\#"),
                  ("$", "\\$"), ("{", "\\{"), ("}", "\\}"), ("~", "\\textasciitilde{}"), ("^", "\\^{}"),
-                 ("…", "\\ldots{}"), ("–", "--"), ("—", "---"), ("’", "'"), ("“", "``"), ("”", "''"),
-                 ("→", "$\\rightarrow$"), ("×", "$\\times$"), ("≥", "$\\geq$"), ("≤", "$\\leq$"),
-                 ("·", "$\\cdot$"), ("€", "EUR ")):
+                 ("<", "\\textless{}"), (">", "\\textgreater{}")):
         s = s.replace(a, b)
     return s
 
@@ -80,30 +95,117 @@ def _share(tab, label):
 # --------------------------------------------------------------------------- #
 # Slide fragments
 # --------------------------------------------------------------------------- #
-def paper_table(papers, max_rows=MAX_TABLE_ROWS):
-    """Most-cited papers of one era: citations, title (venue, year), what it answers."""
-    rows = papers[:max_rows]
+def _p(w):
+    """Left-aligned (not justified) paragraph column of width ``w`` textwidth."""
+    return "|>{\\raggedright\\arraybackslash}p{%.2f\\textwidth}" % w
+
+
+def _venue(p):
+    """Venue for tables: preprint servers by name ("arXiv"), else the journal / conference."""
+    v = p.get("venue_label") or p.get("venue") or ""
+    return v.replace(" (preprint)", "")
+
+
+def _impact(p):
+    f = p.get("fwci")
+    return f if isinstance(f, (int, float)) else -1.0
+
+
+def by_impact(papers, n):
+    """Top ``n`` rows by FWCI (papers without one last, by citations)."""
+    return sorted(papers, key=lambda p: (_impact(p), p.get("citation_count", 0)), reverse=True)[:n]
+
+
+def _fwci(p):
+    f = p.get("fwci")
+    return f"{f:.1f}" if isinstance(f, (int, float)) else "--"
+
+
+def paper_table(papers, max_rows=MAX_TABLE_ROWS, show_year=True):
+    """Most-cited papers of a period, ordered by FWCI: citations, FWCI, title
+    (year), venue, what it answers.
+
+    The candidate pool is the 15 most-cited papers (the rows enrich_fwci.py
+    fills in); they are re-ranked by FWCI = OpenAlex field-weighted citation
+    impact (1.0 = the world average for papers of the same field and year), so
+    a 2025 paper can be read next to a 2023 one.
+    """
+    rows = by_impact(papers[:15], max_rows)
     if not rows:
-        return "\\footnotesize No papers collected for this era."
-    out = ["\\begin{tabular}{@{}r p{0.40\\textwidth} p{0.47\\textwidth}@{}}",
-           "\\textbf{Cites} & \\textbf{Paper} & \\textbf{What it answers} \\\\ \\hline"]
+        return "\\footnotesize No papers collected for this period."
+    out = ["\\renewcommand{\\arraystretch}{0.92}",
+           "\\begin{tabular}{|r|r%s%s%s|}" % (_p(0.34), _p(0.15), _p(0.25)),
+           "\\hline \\textbf{Cites} & \\textbf{FWCI} & \\textbf{Paper} & \\textbf{Venue} & \\textbf{What it answers} \\\\ \\hline"]
     for p in rows:
         topic, q = curated.question_for(p)
-        title = _short(p.get("title") or "", 105)
-        venue = _short(p.get("venue") or "", 34)
-        meta = f" ({_tex(venue)}, {p.get('year')})" if venue else f" ({p.get('year')})"
-        q = "" if q == (p.get("title") or "") else _short(q, 125)
+        title = _short(p.get("title") or "", 78)
+        venue = _short(_venue(p), 28)
+        meta = f" ({p.get('year')})" if show_year else ""
+        q = "" if q == (p.get("title") or "") else _short(q, 78)
         cell = f"\\textit{{{_tex(topic)}}}" + (f": {_tex(q)}" if q else "")
-        out.append(f"{p.get('citation_count', 0):,} & {_tex(title)}{meta} & {cell} \\\\")
+        out.append(f"{p.get('citation_count', 0):,} & {_fwci(p)} & {_tex(title)}{meta} & {_tex(venue)} & {cell} \\\\ \\hline")
     out.append("\\end{tabular}")
     return "\n".join(out)
 
 
+FWCI_NOTE = ("Rows are the most-cited papers of the period, ordered by FWCI = field-weighted citation impact (OpenAlex): "
+             "citations relative to the world average for papers of the same field and year (1 = average), so a recent paper "
+             "can be compared with an older one. Preprints (arXiv, medRxiv) are included; the venue column names the server.")
+
+
+def year_frames(name, label):
+    """One slide per year of the recent era: top papers with citations and FWCI."""
+    frames = []
+    for year in range(config.ERAS[-1][1], config.END_YEAR + 1):
+        papers = _load(f"top_papers_{name}_{year}.json", [])
+        ytd = " (year to date)" if year == config.PARTIAL_YEAR else ""
+        n_pre = sum(1 for p in papers[:MAX_TABLE_ROWS] if p.get("is_preprint"))
+        note = FWCI_NOTE if year == config.ERAS[-1][1] else ""
+        if year == config.PARTIAL_YEAR:
+            note = "Citations for the current year are still accumulating; the FWCI column is the more stable signal here."
+        frames.append(
+            "\\begin{frame}{Most-cited %s papers, %d%s}\n\\tiny\n%s\n\\\\[1pt]\n{\\tiny %s%s}\n\\end{frame}"
+            % (label, year, ytd, paper_table(papers, show_year=False), _tex(note),
+               f" {n_pre} of the {min(len(papers), MAX_TABLE_ROWS)} rows are preprints." if n_pre else ""))
+    return "\n\n".join(frames)
+
+
+def venue_frames(works):
+    """One slide per big venue: the radiology-AI works that made it there."""
+    if not works:
+        return ""
+    frames = []
+    for name, v in works.items():
+        rows = sorted(v.get("works", [])[:12], key=lambda w: (w.get("year") or 0, w.get("citation_count", 0)), reverse=True)
+        yrs = v.get("years", [config.VENUE_WORKS_START, config.END_YEAR])
+        by_year = ", ".join(f"{y}: {n}" for y, n in sorted(v.get("by_year", {}).items()))
+        head = (f"\\textbf{{{_tex(v.get('full', name))}}}. Radiology-AI works found, {yrs[0]}--{yrs[1]}: "
+                f"{v.get('n_works', 0)} ({by_year}); {v.get('n_pediatric', 0)} pediatric (marked $\\star$).")
+        if v.get("note"):
+            head += " " + _tex(v["note"])
+        if not rows:
+            body = "\\footnotesize No works found for this venue."
+        else:
+            out = ["\\renewcommand{\\arraystretch}{1.0}",
+                   "\\begin{tabular}{|l|r|r%s|}" % _p(0.68),
+                   "\\hline \\textbf{Year} & \\textbf{Cites} & \\textbf{FWCI} & \\textbf{Paper} \\\\ \\hline"]
+            for w in rows:
+                star = " $\\star$" if w.get("pediatric") else ""
+                out.append(f"{w.get('year')} & {w.get('citation_count', 0):,} & {_fwci(w)} & {_tex(_short(w.get('title') or '', 120))}{star} \\\\ \\hline")
+            out.append("\\end{tabular}")
+            body = "\n".join(out)
+        src = "Semantic Scholar venue search, citations and FWCI from OpenAlex" if v.get("kind") == "s2" else "OpenAlex, restricted to the society's journals"
+        frames.append("\\begin{frame}{%s: radiology AI works, %d--%d}\n{\\scriptsize %s\\par}\\vspace{2pt}\n\\tiny\n%s\n\\\\[2pt]\n{\\tiny Source: %s; title-level relevance filter; the %d most-cited of %d works, newest year first.}\n\\end{frame}"
+                      % (_tex(name), yrs[0], yrs[1], head, body, src, len(rows), v.get("n_works", 0)))
+    return "\n\n".join(frames)
+
+
 def dataset_table():
-    out = ["\\renewcommand{\\arraystretch}{1.0}", "\\begin{tabular}{@{}p{0.24\\textwidth} p{0.05\\textwidth} p{0.17\\textwidth} p{0.23\\textwidth} p{0.08\\textwidth} p{0.11\\textwidth}@{}}",
-           "\\textbf{Dataset} & \\textbf{Year} & \\textbf{Modality} & \\textbf{Size} & \\textbf{Ages} & \\textbf{Access} \\\\ \\hline"]
+    out = ["\\renewcommand{\\arraystretch}{0.92}",
+           "\\begin{tabular}{%s|l%s%s%s%s|}" % (_p(0.21), _p(0.14), _p(0.21), _p(0.07), _p(0.10)),
+           "\\hline \\textbf{Dataset} & \\textbf{Year} & \\textbf{Modality} & \\textbf{Size} & \\textbf{Ages} & \\textbf{Access} \\\\ \\hline"]
     for d in config.PEDIATRIC_DATASETS:
-        out.append(f"{d['name']} & {d['year']} & {_tex(d['modality'])} & {_tex(d['size'])} & {_tex(d['ages'])} & {_tex(d['access'])} \\\\")
+        out.append(f"{d['name']} & {d['year']} & {_tex(d['modality'])} & {_tex(d['size'])} & {_tex(d['ages'])} & {_tex(d['access'])} \\\\ \\hline")
     out.append("\\end{tabular}")
     return "\n".join(out)
 
@@ -127,7 +229,7 @@ def spotlight_frames(manifest):
         if e:
             src = e.get("source_url") or ""
             host = src.split("/")[2] if src.startswith("http") else ""
-            left = ("\\includegraphics[height=0.55\\textheight,width=\\textwidth,keepaspectratio]{examples/%s}\\\\[2pt]\n"
+            left = ("\\includegraphics[height=0.50\\textheight,width=\\textwidth,keepaspectratio]{examples/%s}\\\\[2pt]\n"
                     "{\\tiny %s}\\\\{\\tiny source: %s}" % (e["file"], _tex(e["caption"]), _tex(host)))
         else:
             left = "{\\footnotesize (figure not fetched; run scripts/collect\\_examples.py)}"
@@ -136,7 +238,7 @@ def spotlight_frames(manifest):
             "{\\scriptsize %s\\par}\\vspace{2pt}\n"
             "\\begin{columns}[T]\n"
             "\\begin{column}{0.42\\textwidth}\\centering\n%s\n\\end{column}\n"
-            "\\begin{column}{0.56\\textwidth}\n\\scriptsize\n\\begin{itemize}\n%s\n\\end{itemize}\n\\end{column}\n"
+            "\\begin{column}{0.56\\textwidth}\n\\scriptsize\\setlength{\\itemsep}{1pt}\n\\begin{itemize}\n%s\n\\end{itemize}\n\\end{column}\n"
             "\\end{columns}\n\\end{frame}"
             % (_tex(sp["title"]), _tex(sp["ref"]), left, bullets)
         )
@@ -162,10 +264,12 @@ def news_year_frames(items):
             body = "\\footnotesize No pediatric radiology-AI stories found for this year."
         else:
             size = "\\tiny" if len(rows) > 14 else "\\scriptsize"
-            out = [size, "\\begin{tabular}{@{}l l p{0.72\\textwidth}@{}}",
-                   "\\textbf{Date} & \\textbf{Newsletter} & \\textbf{Story} \\\\ \\hline"]
+            stretch = "\\renewcommand{\\arraystretch}{0.85}" if len(rows) > 18 else "\\renewcommand{\\arraystretch}{0.90}"
+            out = [size, stretch, "\\begin{tabular}{|l|l%s%s|}" % (_p(0.43), _p(0.20)),
+                   "\\hline \\textbf{Date} & \\textbf{Newsletter} & \\textbf{Story} & \\textbf{Paper} \\\\ \\hline"]
             for i in rows:
-                out.append(f"{i['date']} & {_tex(i['source'])} & {_tex(_short(_clean_story(i.get('story')), 105))} \\\\")
+                paper = (i.get("paper") or {}).get("citation") or ""
+                out.append(f"{i['date']} & {_tex(i['source'])} & {_tex(_short(_clean_story(i.get('story')), 72))} & {_tex(_short(paper, 44))} \\\\ \\hline")
             out.append("\\end{tabular}")
             body = "\n".join(out)
         frames.append("\\begin{frame}{Pediatric radiology AI in the trade press, %d%s (%d stories)}\n%s\n\\end{frame}"
@@ -174,8 +278,8 @@ def news_year_frames(items):
 
 
 def commercial_table(fda):
-    out = ["\\begin{tabular}{@{}p{0.15\\textwidth} p{0.12\\textwidth} p{0.26\\textwidth} p{0.24\\textwidth} p{0.12\\textwidth}@{}}",
-           "\\textbf{Vendor} & \\textbf{Product} & \\textbf{Task} & \\textbf{Pediatric status} & \\textbf{FDA list} \\\\ \\hline"]
+    out = ["\\begin{tabular}{%s%s%s%s%s|}" % (_p(0.14), _p(0.11), _p(0.25), _p(0.23), _p(0.11)),
+           "\\hline \\textbf{Vendor} & \\textbf{Product} & \\textbf{Task} & \\textbf{Pediatric status} & \\textbf{FDA list} \\\\ \\hline"]
     for c in config.COMMERCIAL_PEDIATRIC:
         look = fda_devices.company_lookup(fda, c["fda_company"]) if fda else {"devices": 0, "years": []}
         if look["devices"]:
@@ -183,7 +287,7 @@ def commercial_table(fda):
             fda_s = f"{look['devices']} ({yrs[0]}--{yrs[-1]})" if len(yrs) > 1 else f"{look['devices']} ({yrs[0]})"
         else:
             fda_s = "not listed"
-        out.append(f"{_tex(c['vendor'])} & {_tex(c['product'])} & {_tex(c['task'])} & {_tex(c['pediatric'])} & {fda_s} \\\\")
+        out.append(f"{_tex(c['vendor'])} & {_tex(c['product'])} & {_tex(c['task'])} & {_tex(c['pediatric'])} & {fda_s} \\\\ \\hline")
     out.append("\\end{tabular}")
     return "\n".join(out)
 
@@ -212,10 +316,13 @@ def problem_facts(prob):
 
 # --------------------------------------------------------------------------- #
 def main() -> None:
-    summary = _load("pubmed_summary.json", {})
-    counts = _load("pubmed_yearly_counts.json", {})
-    xt = _load("pubmed_crosstab.json", {})
-    prob = _load("pubmed_pediatric_problems.json", {})
+    preprints = _load("preprint_counts.json", {})
+    counts = analysis.add_preprints(_load("pubmed_yearly_counts.json", {}), preprints)
+    summary = analysis.summarize(counts) if counts else _load("pubmed_summary.json", {})
+    xt = {k: analysis.merge_crosstab(v, (preprints.get("crosstab") or {}).get(k))
+          for k, v in _load("pubmed_crosstab.json", {}).items()}
+    prob = analysis.merge_problems(_load("pubmed_pediatric_problems.json", {}), preprints.get("problems")) or {}
+    venue_works = _load("conference_works.json", {})
     news = _load("newsletter_summary.json", {})
     news_items = _load("newsletter_items.json", [])
     fda = _load("fda_ai_devices.json", {})
@@ -253,9 +360,16 @@ def main() -> None:
         "@@fig_news_all@@": _fig("newsletter_radiology_ai.png", 0.82),
         "@@task_gloss@@": task_gloss_columns(),
         "@@paper_table_rad_a@@": paper_table(_load(f"top_papers_radiology_ai_{era_a}.json", [])),
-        "@@paper_table_rad_b@@": paper_table(_load(f"top_papers_radiology_ai_{era_b}.json", [])),
         "@@paper_table_ped_a@@": paper_table(_load(f"top_papers_pediatric_radiology_ai_{era_a}.json", [])),
-        "@@paper_table_ped_b@@": paper_table(_load(f"top_papers_pediatric_radiology_ai_{era_b}.json", [])),
+        "@@year_frames_rad@@": year_frames("radiology_ai", "radiology AI"),
+        "@@year_frames_ped@@": year_frames("pediatric_radiology_ai", "pediatric radiology AI"),
+        "@@venue_frames@@": venue_frames(venue_works),
+        "@@fwci_note@@": FWCI_NOTE,
+        "@@pre_rad_latest@@": f"{int((preprints.get('yearly') or {}).get('radiology_ai', {}).get(str(yr1), 0)):,}",
+        "@@pre_ped_latest@@": f"{int((preprints.get('yearly') or {}).get('pediatric_radiology_ai', {}).get(str(yr1), 0)):,}",
+        "@@rad_pub_total@@": f"{(rad_tab or {}).get('pubmed_total', (rad_tab or {}).get('total', 0)):,}",
+        "@@rad_pre_total@@": f"{(rad_tab or {}).get('preprint_total', 0):,}",
+        "@@ped_pre_total@@": f"{(ped_tab or {}).get('preprint_total', 0):,}",
         "@@dataset_table@@": dataset_table(),
         "@@spotlights@@": spotlight_frames(manifest),
         "@@news_year_frames@@": news_year_frames(news_items),
@@ -328,19 +442,23 @@ TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
 \end{frame}
 
 \begin{frame}{Methods}
-\scriptsize
-\textbf{Academic output.} \textbf{PubMed} (E-utilities) yearly counts per query and per modality/task term group;
-\textbf{OpenAlex} citation counts (union of modality/task searches, deduped), ranked separately for
-@@era_a@@ and @@era_b@@ because citations favor older papers; \textbf{DBLP} for ML venues;
-\textbf{PatentsView} for granted patents.\\[3pt]
+\tiny
+\textbf{Academic output.} \textbf{PubMed} (E-utilities) yearly counts per query and per modality/task term group,
+plus \textbf{preprints} (OpenAlex \texttt{type:preprint}: arXiv, medRxiv, bioRxiv, \dots) counted with the same
+queries, because PubMed does not index arXiv (@@pre_rad_latest@@ radiology-AI preprints in @@yr1@@).
+\textbf{Most-cited papers} from OpenAlex (union of modality/task searches, deduped, articles and preprints):
+one list for @@era_a@@, then one per year from 2023, each showing raw citations and the field-weighted citation
+impact (FWCI, 1 = world average for that field and year), so recent papers are not buried under 2023 ones.
+\textbf{Venues}: Semantic Scholar venue search (NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL) and OpenAlex journal filters
+(RSNA, SPR), 2023--present; \textbf{PatentsView} for granted patents.\\[3pt]
 \textbf{Clinical problems.} The pediatric radiology-AI query AND a term group per problem (bone age, fracture, pneumonia,
 appendicitis, brain tumor, \dots), counted per era; a paper can name several problems.\\[3pt]
 \textbf{Datasets.} Public pediatric imaging datasets, sizes verified against the primary papers or hosting pages.\\[3pt]
 \textbf{Commercial players.} The \textbf{FDA AI-enabled device list} (public spreadsheet: decision date, device,
 company, lead panel), filtered to the Radiology panel; cross-checked against a curated list of products with pediatric indications.\\[3pt]
-\textbf{Trade press.} Newsletter archives (The Imaging Wire, RSNA News, TLDR, Signify Research, Radiology Business)
+\textbf{Trade press.} Newsletter archives (The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify Research, Radiology Business)
 split into stories; a story is radiology-AI when AI terms co-occur with imaging terms, pediatric when pediatric terms
-also co-occur.\\[3pt]
+also co-occur; a story's outbound publisher link is resolved to a DOI and cited (OpenAlex).\\[3pt]
 \textbf{Pediatric filter.} PubMed: the radiology-AI query AND
 (pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR ``children's hospital'').
 Most-cited lists: the title must also carry a pediatric term (bone age, fetal, newborn, \dots), otherwise
@@ -361,7 +479,7 @@ NOT (``optical coherence'' OR fundus OR dental OR histopatholog* \dots))
 \begin{frame}{Radiology AI publications, stratified by modality and task}
 @@fig_mod_task@@
 \vspace{-6pt}
-{\tiny Bar = percentage of radiology-AI papers (@@rad_total@@, @@yr0@@--present) whose title/abstract names the modality;
+{\tiny Bar = percentage of radiology-AI papers (@@rad_total@@ = @@rad_pub_total@@ PubMed + @@rad_pre_total@@ preprints, @@yr0@@--present) whose title/abstract names the modality;
 segments = which task terms those papers use (overlapping). What each task means, by what the model produces:}
 \vspace{-2pt}
 \tiny
@@ -371,7 +489,7 @@ segments = which task terms those papers use (overlapping). What each task means
 \begin{frame}{Pediatric radiology AI publications, stratified by modality and task}
 @@fig_ped_mod_task@@
 \vspace{-6pt}
-{\tiny Same construction, restricted to the pediatric subset (@@ped_total@@ papers). Top pediatric modalities:
+{\tiny Same construction, restricted to the pediatric subset (@@ped_total@@ papers incl. @@ped_pre_total@@ preprints). Top pediatric modalities:
 @@ped_mod_bullets@@. @@mam_note@@}
 \vspace{-2pt}
 \tiny
@@ -422,28 +540,20 @@ bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude child
 \begin{frame}{Most-cited radiology AI papers, @@era_a@@}
 \tiny
 @@paper_table_rad_a@@
+\\[1pt]
+{\tiny @@fwci_note@@}
 \end{frame}
 
-\begin{frame}{Most-cited radiology AI papers, @@era_b@@}
-\tiny
-@@paper_table_rad_b@@
-\\[3pt]
-{\tiny Recent citations accrue to surveys first; the clinical landmarks of this era (TotalSegmentator, pancreatic
-cancer detection on non-contrast CT, Sybil lung-cancer risk) sit among many review articles.}
-\end{frame}
+@@year_frames_rad@@
 
 \begin{frame}{Most-cited pediatric radiology AI papers, @@era_a@@}
 \tiny
 @@paper_table_ped_a@@
 \end{frame}
 
-\begin{frame}{Most-cited pediatric radiology AI papers, @@era_b@@}
-\tiny
-@@paper_table_ped_b@@
-\\[3pt]
-{\tiny Fetal brain MRI segmentation, pediatric brain tumor segmentation, and bone age lead the recent era; citation
-counts are two orders of magnitude below the adult list.}
-\end{frame}
+@@year_frames_ped@@
+
+@@venue_frames@@
 
 \begin{frame}{Which medical problems pediatric radiology AI addresses}
 @@fig_problems@@
@@ -513,7 +623,7 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
 \end{frame}
 
 \begin{frame}{Open problems --- where a children's hospital could contribute}
-\small
+\footnotesize
 \begin{itemize}
   \item \textbf{Which diseases?} Since 2023 the pediatric corpus (@@prob_n_recent@@ papers) leans to
         @@prob_top@@. Barely studied: @@prob_low@@. Which of these deserve a model first is an open question for

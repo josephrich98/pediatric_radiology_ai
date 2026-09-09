@@ -48,7 +48,7 @@ re-pulls every source as of today. A monthly GitHub Action
 Outputs land in:
 
 - `reports/00_popularity_trends.md` — growth + pediatric share, with tables
-- `reports/01_landscape_players.md` — most-cited papers, most-starred tools
+- `reports/01_landscape_players.md` — most-cited papers (per era and per year, with FWCI; preprints included), what made it into the big venues, most-starred tools
 - `reports/02_state_of_the_field.md` — does-well / bleeding-edge / unresolved
 - `data/processed/pedrad_paper_db.csv` — the paper database, one row per paper
   (`reports/04_paper_database.md` is the readable view of it)
@@ -63,21 +63,44 @@ Outputs land in:
 ## The paper database
 
 `data/processed/pedrad_paper_db.csv` is built by code, not maintained by hand.
-Candidates come from the pediatric radiology-AI PubMed query; each new abstract
-is read once by Claude under a fixed Pydantic schema
-(`pedrad_ai/extract.py`), and the row is stored with a hash of the text it was
-read from. So a re-run only pays for papers that are new, an interrupted run
-resumes, and a fresh clone rebuilds the whole table from the committed JSON
-with no API calls at all.
+Candidates are the strict (title/abstract-fielded) pediatric radiology-AI PubMed
+query plus OpenAlex preprints, filtered by impact: a raw citation count from NIH
+iCite, a citations-per-year rate, or iCite's relative citation ratio (RCR, where
+1.0 is the median NIH-funded paper of the same field and year). Each row carries
+`citations`, `citations_per_year`, `rcr` and `fwci`, so a 2016 paper and a 2025
+one can be compared on the same footing. Each
+abstract is read once under a fixed Pydantic schema (`pedrad_ai/extract.py`) and
+the row is stored with a hash of the text it was read from, so a re-run only
+touches papers that are new, an interrupted run resumes, and a fresh clone
+rebuilds the whole table from the committed JSON with no API calls at all.
 
 ```bash
-pip install -e ".[db]"                          # anthropic + pydantic
-export ANTHROPIC_API_KEY=...
-python scripts/build_paper_db.py --dry-run      # how many are outstanding, and what it would cost
-python scripts/build_paper_db.py                # read the next 250 papers
-python scripts/build_paper_db.py --all          # read every outstanding paper
-python scripts/build_paper_db.py --rebuild      # regenerate the CSV/report, no API calls
+python scripts/build_paper_db.py --dry-run       # how many are outstanding, and what it would cost
+python scripts/build_paper_db.py --rebuild       # regenerate the CSV/report from the store, no API calls
+python scripts/build_paper_db.py --min-citations 50    # raise the raw-count floor
+python scripts/build_paper_db.py --refresh-metrics     # update citations/RCR/FWCI only, no model calls
+
+# the current years, where a raw citation count cannot work
+python scripts/build_paper_db.py --since 2024 --min-citations 20 \
+    --min-citations-per-year 10 --min-rcr 5 --order rate
+
+python scripts/build_paper_db.py --no-preprints   # PubMed records only
+
+# API path (needs credentials)
+pip install -e ".[db]" && export ANTHROPIC_API_KEY=...
+python scripts/build_paper_db.py                 # read the next 250 papers
+python scripts/build_paper_db.py --all           # read every outstanding paper
+
+# worklist path (no API key: read the abstracts yourself, write the rows back)
+python scripts/build_paper_db.py --worklist --limit 25
+python scripts/build_paper_db.py --ingest my_rows.json
 ```
+
+A raw citation floor is also a recency filter, so the recent window is selected
+on rate and field-normalized impact instead (`--min-citations-per-year`,
+`--min-rcr`). Even so, the current year is thin by construction: nothing
+published this year has had time to be cited. Read growth from the trend
+figures, not from this table.
 
 `refresh.py` runs it as a step, capped per run; `--skip paperdb` leaves it
 alone. Corrections go in `data/paper_db_overrides.json` keyed by PMID — they are

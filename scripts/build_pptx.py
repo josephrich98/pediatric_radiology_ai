@@ -125,7 +125,7 @@ def find_env_end(s: str, env: str, start: int) -> tuple[int, int]:
 MATH = {
     r"\geq": "\u2265", r"\leq": "\u2264", r"\cap": "\u2229", r"\cup": "\u222a", r"\approx": "\u2248",
     r"\rightarrow": "\u2192", r"\leftarrow": "\u2190", r"\times": "\u00d7", r"\pm": "\u00b1", r"\sim": "~",
-    r"\infty": "\u221e", "<": "<", ">": ">", "+": "+", "-": "\u2212", "=": "=",
+    r"\infty": "\u221e", r"\star": "\u2605", "<": "<", ">": ">", "+": "+", "-": "\u2212", "=": "=",
 }
 
 

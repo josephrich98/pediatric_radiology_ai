@@ -159,3 +159,63 @@ def write_trend_csv(counts: dict[str, dict[Any, int]], path: str) -> str:
     rows = fractions_over_time(counts)
     utils.save_csv(rows, path)
     return path
+
+
+# --------------------------------------------------------------------------- #
+# Preprint layer (OpenAlex) on top of the PubMed counts
+# --------------------------------------------------------------------------- #
+# PubMed indexes journals only. ``scripts/collect_preprints.py`` counts
+# OpenAlex preprints with the same queries; these helpers add the two layers
+# so every count-based figure and slide includes preprints. Shapes match the
+# PubMed files, so a missing preprint file degrades to the PubMed-only view.
+CORE_SERIES = ("all_radiology", "radiology_ai", "pediatric_radiology", "pediatric_radiology_ai", "all_ai")
+
+
+def add_preprints(counts: dict[str, dict[Any, int]], preprints: dict[str, Any] | None) -> dict[str, dict[Any, int]]:
+    """PubMed yearly counts plus preprint yearly counts for the core series."""
+    if not preprints or not preprints.get("yearly"):
+        return counts
+    out = {k: dict(v) for k, v in counts.items()}
+    for name in CORE_SERIES:
+        extra = preprints["yearly"].get(name) or {}
+        if not extra:
+            continue
+        merged = out.setdefault(name, {})
+        for yr, n in extra.items():
+            key = yr if yr in merged else (int(yr) if int(yr) in merged else yr)
+            merged[key] = merged.get(key, 0) + int(n)
+    return out
+
+
+def merge_crosstab(pub: dict[str, Any] | None, pre: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Cell-wise sum of a PubMed and a preprint modality x task table."""
+    if not pub:
+        return pre
+    if not pre:
+        return pub
+    out = {
+        "years": pub["years"],
+        "total": pub["total"] + pre.get("total", 0),
+        "row_totals": {r: v + pre.get("row_totals", {}).get(r, 0) for r, v in pub["row_totals"].items()},
+        "col_totals": {c: v + pre.get("col_totals", {}).get(c, 0) for c, v in pub["col_totals"].items()},
+        "cells": {r: {c: v + pre.get("cells", {}).get(r, {}).get(c, 0) for c, v in row.items()} for r, row in pub["cells"].items()},
+        "pubmed_total": pub["total"],
+        "preprint_total": pre.get("total", 0),
+    }
+    return out
+
+
+def merge_problems(pub: dict[str, Any] | None, pre: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Sum of PubMed and preprint clinical-problem counts per era."""
+    if not pub or not pub.get("counts"):
+        return pre
+    if not pre or not pre.get("counts"):
+        return pub
+    out = {
+        "eras": pub["eras"],
+        "totals": {e: v + pre.get("totals", {}).get(e, 0) for e, v in pub["totals"].items()},
+        "counts": {p: {e: v + pre["counts"].get(p, {}).get(e, 0) for e, v in eras.items()} for p, eras in pub["counts"].items()},
+        "pubmed_totals": pub["totals"],
+        "preprint_totals": pre.get("totals", {}),
+    }
+    return out

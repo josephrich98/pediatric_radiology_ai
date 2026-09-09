@@ -37,7 +37,7 @@ import re
 from pathlib import Path
 from typing import Any, Iterable
 
-from . import config, extract, icite, pubmed, utils
+from . import config, extract, icite, openalex, pubmed, utils
 
 # Column order for the CSV / markdown table. The first block is the answer to
 # "what is this paper about"; provenance trails at the end.
@@ -57,6 +57,10 @@ COLUMNS = [
     "journal",
     "year",
     "citations",
+    "citations_per_year",
+    "rcr",
+    "fwci",
+    "nih_percentile",
     "doi",
     "url",
     "title",
@@ -67,6 +71,9 @@ COLUMNS = [
     "validation",
     "headline_result",
     "pmid",
+    "record_id",
+    "source",
+    "is_preprint",
     "confidence",
     "overridden_fields",
     "extractor_model",
@@ -75,12 +82,15 @@ COLUMNS = [
 ]
 
 # Fields a human may override in data/paper_db_overrides.json.
-OVERRIDABLE = {
-    c
-    for c in COLUMNS
-    if c
-    not in {"pmid", "citations", "overridden_fields", "extractor_model", "prompt_version", "extracted_on"}
-} | {"include", "exclusion_reason"}
+# Fields a human may override in data/paper_db_overrides.json. The identifiers
+# and the bibliometric measures are excluded: they come from an external index
+# and a hand edit there would misrepresent the source rather than correct it.
+_NOT_OVERRIDABLE = {
+    "pmid", "record_id", "source", "is_preprint", "citations", "citations_per_year",
+    "rcr", "fwci", "nih_percentile", "overridden_fields", "extractor_model",
+    "prompt_version", "extracted_on",
+}
+OVERRIDABLE = {c for c in COLUMNS if c not in _NOT_OVERRIDABLE} | {"include", "exclusion_reason"}
 
 
 # --------------------------------------------------------------------------- #
@@ -94,7 +104,7 @@ def load(path: str | Path | None = None) -> dict[str, Any]:
     raw = utils.load_json(path)
     records = raw.get("records", [])
     if isinstance(records, list):
-        records = {r["pmid"]: r for r in records if r.get("pmid")}
+        records = {record_key(r): r for r in records if record_key(r)}
     return {
         "schema_version": raw.get("schema_version", 0),
         "updated": raw.get("updated"),
@@ -112,6 +122,8 @@ def save(store: dict[str, Any], path: str | Path | None = None) -> Path:
             "updated": dt.date.today().isoformat(),
             "source_query": config.PAPER_DB_QUERY,
             "min_citations": config.PAPER_DB_MIN_CITATIONS,
+            "min_citations_per_year": config.PAPER_DB_MIN_CITATIONS_PER_YEAR,
+            "min_rcr": config.PAPER_DB_MIN_RCR,
             "start_year": config.PAPER_DB_START_YEAR,
             "n_records": len(store["records"]),
             "n_included": sum(1 for r in store["records"].values() if r.get("include")),
@@ -121,11 +133,22 @@ def save(store: dict[str, Any], path: str | Path | None = None) -> Path:
     )
 
 
+def record_key(record: dict[str, Any]) -> str:
+    """The store key for a row or a candidate.
+
+    PubMed records are keyed by PMID, which is what the overrides file and every
+    earlier version of this store used. Preprints that PubMed does not index get
+    an OpenAlex-derived key instead, so the two sources can live in one table
+    without colliding.
+    """
+    return str(record.get("record_id") or record.get("pmid") or "")
+
+
 def sorted_records(store: dict[str, Any]) -> list[dict[str, Any]]:
-    """Records newest first, then by PMID — stable across runs."""
+    """Records newest first, then by key — stable across runs."""
     return sorted(
         store["records"].values(),
-        key=lambda r: (-(r.get("year") or 0), str(r.get("pmid"))),
+        key=lambda r: (-(r.get("year") or 0), record_key(r)),
     )
 
 
@@ -140,7 +163,7 @@ def presented(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None
     out = []
     for rec in sorted_records(store):
         row = dict(rec)
-        override = overrides.get(str(rec.get("pmid")))
+        override = overrides.get(record_key(rec))
         if override:
             applied = sorted(k for k in override if k in OVERRIDABLE)
             for key in applied:
@@ -204,30 +227,237 @@ def candidate_pmids(
     return out
 
 
+def passes_impact_floor(
+    metrics: dict[str, Any],
+    min_citations: int,
+    min_citations_per_year: float = 0.0,
+    min_rcr: float = 0.0,
+) -> bool:
+    """Whether a candidate clears any one of the impact floors.
+
+    The floors are combined with OR on purpose. A raw citation count is the
+    right filter for settled literature and the wrong one for the current year,
+    where nothing has had time to be cited; a rate or a field-normalized ratio
+    lets recent work in on its own terms. A floor of 0 disables that clause.
+    """
+    if min_citations and (metrics.get("citations") or 0) >= min_citations:
+        return True
+    if min_citations_per_year and (metrics.get("citations_per_year") or 0) >= min_citations_per_year:
+        return True
+    if min_rcr and (metrics.get("rcr") or 0) >= min_rcr:
+        return True
+    return not (min_citations or min_citations_per_year or min_rcr)
+
+
+def collect_candidates(
+    start_year: int | None = None,
+    end_year: int | None = None,
+    min_citations: int | None = None,
+    min_citations_per_year: float | None = None,
+    min_rcr: float | None = None,
+    include_preprints: bool | None = None,
+    include_conference: bool | None = None,
+    query: str | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Candidates that clear an impact floor, keyed by :func:`record_key`.
+
+    Two sources. PubMed via :func:`candidate_pmids`, scored with NIH iCite
+    (citations, citations per year, relative citation ratio). OpenAlex
+    ``type:preprint`` for the same query, scored with its own citation count and
+    field-weighted citation impact, because PubMed does not index arXiv and
+    indexes medRxiv and bioRxiv only partially — so a count-only view of the
+    current year misses where much of the methods work first appears.
+
+    Preprints already represented in the PubMed set (same PMID, DOI or title)
+    are dropped, so a paper is not counted twice once it is published.
+    """
+    min_citations = config.PAPER_DB_MIN_CITATIONS if min_citations is None else min_citations
+    min_citations_per_year = (
+        config.PAPER_DB_MIN_CITATIONS_PER_YEAR
+        if min_citations_per_year is None
+        else min_citations_per_year
+    )
+    min_rcr = config.PAPER_DB_MIN_RCR if min_rcr is None else min_rcr
+    include_preprints = (
+        config.PAPER_DB_INCLUDE_PREPRINTS if include_preprints is None else include_preprints
+    )
+    include_conference = (
+        config.PAPER_DB_INCLUDE_CONFERENCE if include_conference is None else include_conference
+    )
+    start = start_year or config.PAPER_DB_START_YEAR
+    end = end_year or config.END_YEAR
+
+    out: dict[str, dict[str, Any]] = {}
+    years = candidate_pmids(start, end, query)
+    met = icite.metrics(list(years))
+    for pmid, year in years.items():
+        m = met.get(pmid, {})
+        if passes_impact_floor(m, min_citations, min_citations_per_year, min_rcr):
+            out[pmid] = {
+                "record_id": pmid, "pmid": pmid, "source": "pubmed", "is_preprint": False,
+                "year": year, "citations": m.get("citations", 0),
+                "citations_per_year": m.get("citations_per_year"),
+                "rcr": m.get("rcr"), "nih_percentile": m.get("nih_percentile"),
+            }
+
+    # Each extra source is tagged with where it came from, because a work's own
+    # metadata does not always say: OpenAlex files a MICCAI paper as an article
+    # in a book series, and a preprint stream result is a preprint whether or
+    # not its record admits it.
+    extra: list[dict[str, Any]] = []
+    if include_preprints:
+        for work in preprint_candidates(start, end, query):
+            extra.append({**work, "_origin": "preprint"})
+    if include_conference:
+        floor = min(x for x in (min_citations, int(min_citations_per_year)) if x > 0) \
+            if (min_citations or min_citations_per_year) else 0
+        for work in conference_candidates(start, end, min_cited=floor):
+            extra.append({**work, "_origin": "conference"})
+
+    if extra:
+        seen_doi = {(r.get("doi") or "").lower() for r in out.values() if r.get("doi")}
+        seen_title = {_norm_title(r.get("title")) for r in out.values() if r.get("title")}
+        for work in extra:
+            pmid = work.get("pmid")
+            doi = (work.get("doi") or "").lower()
+            title = _norm_title(work.get("title"))
+            if (pmid and pmid in out) or (doi and doi in seen_doi) or (title and title in seen_title):
+                continue
+            m = {
+                "citations": work.get("citation_count") or 0,
+                "citations_per_year": _per_year(work),
+                "rcr": None,
+                "fwci": work.get("fwci"),
+            }
+            # A preprint has no RCR, so the RCR clause cannot admit it; the
+            # count and rate clauses still apply.
+            if not passes_impact_floor(m, min_citations, min_citations_per_year, 0.0):
+                continue
+            rid = "oa:" + str(work.get("openalex_id") or "").rsplit("/", 1)[-1]
+            if not rid or rid == "oa:":
+                continue
+            out[rid] = {
+                "record_id": rid, "pmid": pmid or "", "source": "openalex",
+                "is_preprint": bool(work.get("is_preprint")) or work.get("_origin") == "preprint",
+                "venue_kind": work.get("venue_kind"),
+                "origin": work.get("_origin"),
+                "year": work.get("year"), "citations": m["citations"],
+                "citations_per_year": m["citations_per_year"], "rcr": None,
+                "nih_percentile": None, "fwci": work.get("fwci"), "_work": work,
+            }
+            if doi:
+                seen_doi.add(doi)
+            if title:
+                seen_title.add(title)
+    return out
+
+
+def conference_candidates(start: int, end: int, min_cited: int = 0) -> list[dict[str, Any]]:
+    """Conference proceedings matching the database query.
+
+    OpenAlex files a proceedings paper by *work* type — ``conference-paper`` —
+    and not by venue: MICCAI, IPMI and MIDL live inside the Lecture Notes in
+    Computer Science book series, NeurIPS and CVPR under their own sources, and
+    ``primary_location.source.type:conference`` catches almost none of them
+    while sweeping in a long tail of unrelated local proceedings. So the type is
+    the filter, with a second pass over LNCS for volumes typed some other way.
+
+    ``min_cited`` is pushed into the query rather than applied afterwards: the
+    unfiltered type is a few thousand works a year, and every one of them is a
+    page of a cursor walk. It is a floor on the raw count, which is a superset
+    of what :func:`passes_impact_floor` admits, so nothing that would survive
+    the floor is dropped here.
+
+    Most conference records carry no abstract in OpenAlex. Those are still
+    returned — the caller reports a record it cannot read rather than guessing
+    at one.
+    """
+    extra = [f"cited_by_count:>{min_cited - 1}"] if min_cited > 0 else []
+    works: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for label, filters, types in (
+        ("conference papers", extra, "conference-paper"),
+        ("Lecture Notes in Computer Science",
+         [f"primary_location.source.id:{config.PAPER_DB_LNCS_SOURCE}", *extra],
+         "article|book-chapter|conference-paper"),
+    ):
+        try:
+            found = openalex.search_all(
+                config.PAPER_DB_CONFERENCE_QUERY, min_year=start, max_year=end,
+                types=types, extra_filters=filters,
+                max_results=config.PAPER_DB_CONFERENCE_CAP, budget_s=240.0,
+            )
+        except Exception as exc:
+            print(f"    [warn] conference search failed for {label} ({exc})")
+            continue
+        fresh = [w for w in found if (w.get("openalex_id") or "") not in seen]
+        seen.update(w.get("openalex_id") or "" for w in found)
+        print(f"    {label}: {len(found)} works ({len(fresh)} new)")
+        works.extend(fresh)
+    return works
+
+
+def preprint_candidates(start: int, end: int, query: str | None = None) -> list[dict[str, Any]]:
+    """Preprints matching the database query, one OpenAlex pass per year."""
+    translated = openalex.translate_pubmed_query(query or config.PAPER_DB_QUERY)
+    works: list[dict[str, Any]] = []
+    for year in range(start, end + 1):
+        try:
+            works.extend(
+                openalex.search_all(
+                    translated, min_year=year, max_year=year,
+                    types=openalex.PREPRINT_TYPES,
+                    max_results=config.PAPER_DB_PREPRINT_CAP,
+                )
+            )
+        except Exception as exc:
+            print(f"    [warn] preprint search failed for {year} ({exc})")
+    return works
+
+
+def _per_year(work: dict[str, Any]) -> float | None:
+    """Citations per year since publication, for an OpenAlex work."""
+    year = work.get("year")
+    if not year:
+        return None
+    elapsed = max(1.0, config.END_YEAR - int(year) + 1)
+    return round((work.get("citation_count") or 0) / elapsed, 2)
+
+
+def _norm_title(title: str | None) -> str:
+    return re.sub(r"[^a-z0-9]+", "", (title or "").lower())
+
+
+# Preprint servers whose records PubMed does index, through the NIH preprint
+# pilot. A record reaching us via PubMed is still a preprint, and the release
+# column should say so rather than calling it a journal article.
+_PREPRINT_SERVERS = re.compile(r"\b(medrxiv|biorxiv|arxiv|research square|ssrn)\b", re.I)
+
+
+def looks_like_preprint(record: dict[str, Any]) -> bool:
+    """Whether a record is a preprint, from any of the signals available."""
+    if record.get("is_preprint"):
+        return True
+    if any("preprint" in str(t).lower() for t in record.get("publication_types") or []):
+        return True
+    if (record.get("doi") or "").lower().startswith("10.1101/"):
+        return True
+    return bool(_PREPRINT_SERVERS.search(str(record.get("journal") or "")))
+
+
+# Kept for callers written against the earlier single-floor signature.
 def candidates_with_citations(
     start_year: int | None = None,
     end_year: int | None = None,
     min_citations: int | None = None,
     query: str | None = None,
 ) -> dict[str, dict[str, Any]]:
-    """Candidate PMIDs that clear the citation floor: pmid -> {year, citations}.
-
-    The query returns roughly ten thousand records; most are never cited and
-    reading them would cost far more than it is worth. Citation counts come
-    from NIH iCite in batches, which is one request per 250 PMIDs.
-
-    The floor doubles as a recency filter — the current year's papers have had
-    no time to accrue citations — so callers that want the newest work should
-    lower it deliberately rather than assume the table is complete.
-    """
-    min_citations = config.PAPER_DB_MIN_CITATIONS if min_citations is None else min_citations
-    years = candidate_pmids(start_year, end_year, query)
-    counts = icite.citation_counts(list(years)) if min_citations >= 0 else {}
-    return {
-        pmid: {"year": year, "citations": counts.get(pmid, 0)}
-        for pmid, year in years.items()
-        if counts.get(pmid, 0) >= min_citations
-    }
+    """PubMed-only candidates above a raw citation floor."""
+    return collect_candidates(
+        start_year, end_year, min_citations,
+        min_citations_per_year=0.0, min_rcr=0.0,
+        include_preprints=False, include_conference=False, query=query,
+    )
 
 
 def needs_extraction(store: dict[str, Any], pmid: str) -> bool:
@@ -253,12 +483,55 @@ def stale_fingerprint(store: dict[str, Any], article: dict[str, Any]) -> bool:
     return rec.get("input_fingerprint") != extract.input_fingerprint(article)
 
 
-def fetch_articles(pmids: Iterable[str]) -> list[dict[str, Any]]:
-    """PubMed records with abstracts, for the PMIDs that need reading."""
-    pmids = list(pmids)
-    if not pmids:
+def fetch_articles(candidates: dict[str, dict[str, Any]] | Iterable[str]) -> list[dict[str, Any]]:
+    """Records ready for extraction, from whichever source each came from.
+
+    Accepts the candidate mapping from :func:`collect_candidates`, or a bare
+    iterable of PMIDs for the ``--pmid`` spot-check path. PubMed records are
+    fetched with EFetch; preprints are already in hand from the OpenAlex pass
+    and only need reshaping into the same field names, so that
+    :mod:`pedrad_ai.extract` sees one kind of input.
+    """
+    if not isinstance(candidates, dict):
+        candidates = {str(p): {"record_id": str(p), "pmid": str(p), "source": "pubmed"}
+                      for p in candidates}
+    if not candidates:
         return []
-    return pubmed.article_details(pmids, with_abstract=True)
+
+    pubmed_ids = [c["pmid"] for c in candidates.values()
+                  if c.get("source") != "openalex" and c.get("pmid")]
+    fetched = (
+        {a["pmid"]: a for a in pubmed.article_details(pubmed_ids, with_abstract=True)}
+        if pubmed_ids
+        else {}
+    )
+
+    out: list[dict[str, Any]] = []
+    for rid, cand in candidates.items():
+        if cand.get("source") == "openalex":
+            work = cand.get("_work") or {}
+            out.append(
+                {
+                    "record_id": rid,
+                    "pmid": cand.get("pmid") or "",
+                    "title": work.get("title") or "",
+                    "journal": work.get("venue_label") or work.get("venue")
+                    or ("conference proceedings" if cand.get("origin") == "conference" else "preprint"),
+                    "year": work.get("year"),
+                    "doi": work.get("doi"),
+                    "authors": work.get("authors") or [],
+                    "publication_types": [
+                        "Conference Proceedings" if cand.get("origin") == "conference" else "Preprint"
+                    ],
+                    "mesh_terms": [],
+                    "abstract": work.get("abstract") or "",
+                }
+            )
+            continue
+        article = fetched.get(cand.get("pmid") or rid)
+        if article is not None:
+            out.append({**article, "record_id": rid})
+    return out
 
 
 # --------------------------------------------------------------------------- #
@@ -340,22 +613,35 @@ def load_overrides(path: str | Path | None = None) -> dict[str, dict[str, Any]]:
 
 
 def build_row(
-    article: dict[str, Any], extraction: dict[str, Any], citations: int | None = None
+    article: dict[str, Any],
+    extraction: dict[str, Any],
+    citations: int | None = None,
+    metrics: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Merge a PubMed record and its extraction into one stored row.
+    """Merge a source record and its extraction into one stored row.
 
-    Hand overrides are *not* applied here — see :func:`presented`.
+    ``metrics`` is the candidate entry from :func:`collect_candidates`, carrying
+    the bibliometrics and which source the record came from. Hand overrides are
+    *not* applied here — see :func:`presented`.
     """
+    metrics = metrics or {}
     doi = (article.get("doi") or "").strip()
     row: dict[str, Any] = {
-        "pmid": article["pmid"],
+        "pmid": article.get("pmid") or "",
+        "record_id": article.get("record_id") or article.get("pmid") or "",
+        "source": metrics.get("source", "pubmed"),
+        "is_preprint": bool(metrics.get("is_preprint")) or looks_like_preprint(article),
         "title": article.get("title", ""),
         "journal": article.get("journal", ""),
         "year": article.get("year"),
         "doi": doi,
         "url": f"https://doi.org/{doi}" if doi else f"https://pubmed.ncbi.nlm.nih.gov/{article['pmid']}/",
         "first_author": (article.get("authors") or [""])[0],
-        "citations": article.get("citations") if citations is None else citations,
+        "citations": metrics.get("citations") if citations is None else citations,
+        "citations_per_year": metrics.get("citations_per_year"),
+        "rcr": metrics.get("rcr"),
+        "fwci": metrics.get("fwci"),
+        "nih_percentile": metrics.get("nih_percentile"),
         "citations_as_of": dt.date.today().isoformat(),
         "extracted_on": dt.date.today().isoformat(),
     }
@@ -377,6 +663,11 @@ def build_row(
 
     if row.get("include"):
         _apply_release_evidence(row, article)
+    if row.get("is_preprint") and row.get("include") and row.get("release_status") == "unclear":
+        # A preprint is by definition not a released product; saying "unclear"
+        # about its release status would read as if the question were open.
+        row["release_status"] = "unreleased"
+        row["release_evidence"] = (row.get("release_evidence") or "").strip() or "preprint, not yet published"
     return row
 
 
@@ -404,6 +695,62 @@ def _apply_release_evidence(row: dict[str, Any], article: dict[str, Any]) -> Non
 
 
 # --------------------------------------------------------------------------- #
+# Metric refresh
+# --------------------------------------------------------------------------- #
+def refresh_metrics(store: dict[str, Any], with_fwci: bool = False) -> int:
+    """Re-fetch the bibliometrics for every stored row, in place.
+
+    Citations, citations per year and RCR all move over time, and a row read a
+    year ago carries a stale snapshot. This updates them without re-reading a
+    single abstract, so it is cheap and involves no model calls at all — the
+    separation that makes the expensive half of the pipeline worth caching.
+    Returns the number of rows updated.
+
+    ``with_fwci`` adds OpenAlex's field-weighted citation impact by DOI. It is
+    off by default because OpenAlex throttles aggressively and RCR already
+    covers every PubMed row; preprints carry their FWCI from the search that
+    found them, so nothing is lost by leaving it off.
+    """
+    records = store["records"]
+    pmids = [r["pmid"] for r in records.values() if r.get("pmid")]
+    met = icite.metrics(pmids) if pmids else {}
+
+    by_doi: dict[str, dict[str, Any]] = {}
+    if with_fwci:
+        dois = [(r.get("doi") or "").strip() for r in records.values() if (r.get("doi") or "").strip()]
+        try:
+            by_doi = openalex.works_by_dois(dois)
+        except Exception as exc:
+            print(f"    [warn] OpenAlex impact lookup failed ({exc}); keeping stored values")
+
+    updated = 0
+    for rec in records.values():
+        changed = False
+        m = met.get(str(rec.get("pmid") or ""))
+        if m:
+            for key in ("citations", "citations_per_year", "rcr", "nih_percentile"):
+                if rec.get(key) != m.get(key):
+                    rec[key] = m.get(key)
+                    changed = True
+        work = by_doi.get((rec.get("doi") or "").strip().lower())
+        if work and rec.get("fwci") != work.get("fwci"):
+            rec["fwci"] = work.get("fwci")
+            changed = True
+        rec.setdefault("record_id", record_key(rec))
+        rec.setdefault("source", "pubmed")
+        was = rec.get("is_preprint")
+        rec["is_preprint"] = looks_like_preprint(rec)
+        if rec["is_preprint"] and rec.get("release_status") == "unclear":
+            rec["release_status"] = "unreleased"
+            rec["release_evidence"] = rec.get("release_evidence") or "preprint, not yet published"
+        changed = changed or (was != rec["is_preprint"])
+        if changed:
+            rec["citations_as_of"] = dt.date.today().isoformat()
+            updated += 1
+    return updated
+
+
+# --------------------------------------------------------------------------- #
 # Summary
 # --------------------------------------------------------------------------- #
 def summarize(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None = None) -> dict[str, Any]:
@@ -425,6 +772,8 @@ def summarize(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None
         "source_query": config.PAPER_DB_QUERY,
         "years": [config.PAPER_DB_START_YEAR, config.END_YEAR],
         "min_citations": config.PAPER_DB_MIN_CITATIONS,
+        "min_citations_per_year": config.PAPER_DB_MIN_CITATIONS_PER_YEAR,
+        "min_rcr": config.PAPER_DB_MIN_RCR,
         "median_citations": (
             sorted(r.get("citations") or 0 for r in rows)[len(rows) // 2] if rows else 0
         ),
@@ -433,6 +782,15 @@ def summarize(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None
         "n_excluded": len(store["records"]) - len(rows),
         "n_named_models": len(named),
         "n_with_code_url": sum(1 for r in rows if (r.get("code_url") or "").strip()),
+        "n_preprints": sum(1 for r in rows if r.get("is_preprint")),
+        "n_with_rcr": sum(1 for r in rows if r.get("rcr") is not None),
+        "median_rcr": (
+            sorted(r["rcr"] for r in rows if r.get("rcr") is not None)[
+                len([r for r in rows if r.get("rcr") is not None]) // 2
+            ]
+            if any(r.get("rcr") is not None for r in rows)
+            else None
+        ),
         "by_year": dict(sorted(_tally("year").items())),
         "by_modality": _tally("modality"),
         "by_task": _tally("task"),
@@ -457,6 +815,26 @@ def _md_cell(value: Any, limit: int = 0) -> str:
     return text or "—"
 
 
+def _floor_sentence(summary: dict[str, Any]) -> str:
+    """Describe the impact floors actually in force, in one sentence."""
+    clauses = []
+    if summary.get("min_citations"):
+        clauses.append(f"at least {summary['min_citations']} citations in NIH iCite")
+    if summary.get("min_citations_per_year"):
+        clauses.append(f"at least {summary['min_citations_per_year']:g} citations per year")
+    if summary.get("min_rcr"):
+        clauses.append(f"a relative citation ratio of at least {summary['min_rcr']:g}")
+    if not clauses:
+        return "Every paper the query returns is a candidate; no impact floor is applied."
+    return (
+        "Candidates are papers meeting " + " or ".join(clauses) + ", which keeps the database to "
+        "work the field has actually engaged with. A raw citation floor is also a recency filter — "
+        "a paper published this year has had no time to accrue citations — which is why the rate and "
+        "ratio clauses exist; even so the current year is thin by construction, and the trend "
+        "figures, not this table, are the place to read growth."
+    )
+
+
 def write_markdown(
     store: dict[str, Any],
     path: str | Path | None = None,
@@ -476,6 +854,10 @@ def write_markdown(
         (r for r in rows if (r.get("model_name") or "").strip()),
         key=lambda r: (-(r.get("citations") or 0), -(r.get("year") or 0)),
     )[:named_only_limit]
+    recent = sorted(
+        (r for r in rows if (r.get("year") or 0) >= config.END_YEAR - 2),
+        key=lambda r: (-(r.get("citations_per_year") or 0), -(r.get("citations") or 0)),
+    )[:40]
 
     def _counts_table(title: str, tally: dict[str, int], header: str) -> list[str]:
         if not tally:
@@ -494,11 +876,15 @@ def write_markdown(
         f"radiology-AI query (title/abstract fielded) for {summary['years'][0]}-{summary['years'][1]} "
         f"({summary['n_excluded']} were screened out as adult-only, non-radiologic, or non-AI).",
         "",
-        f"Candidates are limited to papers with at least {summary['min_citations']} citations in NIH "
-        "iCite, which keeps the database to work the field has actually engaged with. That floor is "
-        "also a recency filter: a paper published this year has had no time to accrue citations, so "
-        "the last two years are under-represented here by construction and the trend figures, not "
-        "this table, are the place to read growth.",
+        _floor_sentence(summary),
+        "",
+        "Impact is reported four ways because no one measure works across the whole range. "
+        "`citations` is the raw count and can only be compared within a year. `citations/yr` is that "
+        "count divided by years since publication. `RCR` is iCite's relative citation ratio, where "
+        "1.0 is the median NIH-funded paper of the same field and year, and is the column to use "
+        "when comparing a 2016 paper with a 2024 one; it is undefined until a paper is about two "
+        "years old. `fwci` is OpenAlex's field-weighted citation impact, on the same 1.0-is-average "
+        "scale, and covers some of what RCR does not.",
         "",
         "Each row is read from the paper's abstract under a fixed schema, so a field is blank when "
         "the abstract does not state it — most notably the release column, which abstracts are "
@@ -519,15 +905,17 @@ def write_markdown(
     lines += [
         f"## Named models ({len(named)} most cited)",
         "",
-        "| Model | Year | Cites | Modality | Population | Clinical problem | Release | Journal | Link |",
-        "| --- | ---: | ---: | --- | --- | --- | --- | --- | --- |",
+        "| Model | Year | Cites | /yr | RCR | Modality | Population | Clinical problem | Release | Journal | Link |",
+        "| --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- |",
     ]
     for rec in named:
         lines.append(
-            "| {model} | {year} | {cites} | {mod} | {pop} | {prob} | {rel} | {jrn} | [{lbl}]({url}) |".format(
+            "| {model} | {year} | {cites} | {rate} | {rcr} | {mod} | {pop} | {prob} | {rel} | {jrn} | [{lbl}]({url}) |".format(
                 model=_md_cell(rec.get("model_name")),
                 year=_md_cell(rec.get("year")),
                 cites=_md_cell(rec.get("citations")),
+                rate=_md_cell(rec.get("citations_per_year")),
+                rcr=_md_cell(rec.get("rcr") if rec.get("rcr") is not None else rec.get("fwci")),
                 mod=_md_cell(rec.get("modality")),
                 pop=_md_cell(rec.get("patient_population"), 70),
                 prob=_md_cell(rec.get("clinical_problem"), 50),
@@ -537,6 +925,34 @@ def write_markdown(
                 url=rec.get("url", ""),
             )
         )
+    if recent:
+        lines += [
+            "",
+            f"## Most-cited-per-year work from {config.END_YEAR - 2} onward ({len(recent)})",
+            "",
+            "Ranked by citations per year rather than raw count, because a paper from this year "
+            "has had no time to accumulate one. `RCR` is iCite's relative citation ratio (1.0 is "
+            "the median NIH-funded paper of the same field and year) and falls back to OpenAlex's "
+            "field-weighted citation impact where iCite has not computed it, which is most of the "
+            "last two years.",
+            "",
+            "| Title | Year | Cites | /yr | RCR/FWCI | Type | Clinical problem | Link |",
+            "| --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
+        ]
+        for rec in recent:
+            lines.append(
+                "| {title} | {year} | {cites} | {rate} | {norm} | {kind} | {prob} | [{lbl}]({url}) |".format(
+                    title=_md_cell(rec.get("model_name") or rec.get("title"), 64),
+                    year=_md_cell(rec.get("year")),
+                    cites=_md_cell(rec.get("citations")),
+                    rate=_md_cell(rec.get("citations_per_year")),
+                    norm=_md_cell(rec.get("rcr") if rec.get("rcr") is not None else rec.get("fwci")),
+                    kind="preprint" if rec.get("is_preprint") else "journal",
+                    prob=_md_cell(rec.get("clinical_problem"), 46),
+                    lbl="doi" if rec.get("doi") else "link",
+                    url=rec.get("url", ""),
+                )
+            )
     lines += [
         "",
         "The full table, including the model description, dataset size, validation and headline "

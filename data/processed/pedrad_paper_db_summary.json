@@ -1,0 +1,105 @@
+{
+  "generated_on": "2026-09-09",
+  "source_query": "(radiology[tiab] OR radiological[tiab] OR radiograph*[tiab] OR \"medical imaging\"[tiab] OR tomography[tiab] OR \"magnetic resonance\"[tiab] OR MRI[tiab] OR \"computed tomography\"[tiab] OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR mammograph*[tiab] OR \"chest x-ray\"[tiab]) AND (\"artificial intelligence\"[tiab] OR \"machine learning\"[tiab] OR \"deep learning\"[tiab] OR \"convolutional neural network\"[tiab] OR \"convolutional neural networks\"[tiab] OR \"neural network\"[tiab] OR \"neural networks\"[tiab] OR \"computer-aided diagnosis\"[tiab] OR radiomics[tiab] OR \"computer vision\"[tiab]) AND (pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR neonat*[tiab] OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR newborn*[tiab] OR preterm[tiab] OR \"children's hospital\"[tiab])",
+  "years": [
+    2015,
+    2026
+  ],
+  "min_citations": 20,
+  "min_citations_per_year": 10.0,
+  "min_rcr": 5.0,
+  "median_citations": 40,
+  "n_candidates_screened": 585,
+  "n_included": 325,
+  "n_excluded": 260,
+  "n_named_models": 73,
+  "n_with_code_url": 10,
+  "n_preprints": 7,
+  "n_with_rcr": 320,
+  "median_rcr": 4.44,
+  "by_year": {
+    "2015": 8,
+    "2016": 10,
+    "2017": 21,
+    "2018": 28,
+    "2019": 47,
+    "2020": 43,
+    "2021": 44,
+    "2022": 38,
+    "2023": 19,
+    "2024": 35,
+    "2025": 28,
+    "2026": 4
+  },
+  "by_modality": {
+    "MRI": 140,
+    "x-ray / radiography": 78,
+    "ultrasound": 73,
+    "CT": 35,
+    "multiple": 10,
+    "nuclear / PET": 7,
+    "other": 5
+  },
+  "by_task": {
+    "detection / diagnosis": 142,
+    "measurement / quantification": 85,
+    "segmentation": 73,
+    "outcome prediction": 56,
+    "workflow / non-interpretive": 32,
+    "reconstruction / imputation": 32,
+    "other": 8,
+    "report generation / LLM": 3,
+    "agent / autonomous": 1,
+    "foundation model / vision-language": 1
+  },
+  "by_release_status": {
+    "unclear": 265,
+    "commercial": 32,
+    "open-source": 24,
+    "unreleased": 4
+  },
+  "by_age_group": {
+    "pediatric (unspecified)": 98,
+    "fetal": 85,
+    "child": 75,
+    "adolescent": 53,
+    "mixed pediatric and adult": 41,
+    "infant": 28,
+    "neonate": 21
+  },
+  "by_validation": {
+    "internal only": 151,
+    "external / multi-center": 78,
+    "none / not stated": 46,
+    "reader study": 39,
+    "prospective": 11
+  },
+  "by_data_source": {
+    "single center": 128,
+    "not stated": 107,
+    "multi center": 73,
+    "public dataset": 17
+  },
+  "top_journals": {
+    "Pediatric radiology": 17,
+    "Medical image analysis": 16,
+    "IEEE transactions on medical imaging": 16,
+    "NeuroImage": 14,
+    "Scientific reports": 10,
+    "European radiology": 9,
+    "Radiology": 9,
+    "Ultrasound in obstetrics & gynecology : the official journal of the International Society of Ultrasound in Obstetrics and Gynecology": 8,
+    "Radiology. Artificial intelligence": 7,
+    "PloS one": 6,
+    "AJR. American journal of roentgenology": 5,
+    "Journal of digital imaging": 5,
+    "IEEE journal of biomedical and health informatics": 5,
+    "Neuro-oncology": 4,
+    "Skeletal radiology": 4,
+    "NPJ digital medicine": 4,
+    "Diagnostics (Basel, Switzerland)": 4,
+    "Journal of magnetic resonance imaging : JMRI": 4,
+    "NeuroImage. Clinical": 4,
+    "Children (Basel, Switzerland)": 3
+  }
+}

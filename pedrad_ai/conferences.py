@@ -150,3 +150,74 @@ def collect_societies(start: int | None = None, end: int | None = None) -> list[
                 }
             )
     return rows
+
+
+# --------------------------------------------------------------------------- #
+# Venue tables: the radiology-AI works that made it into each big venue
+# --------------------------------------------------------------------------- #
+def is_radiology_paper(title: str) -> bool:
+    """Title carries a radiology / medical-imaging signal and no excluded domain."""
+    t = title or ""
+    return (bool(t) and not _matches(t, config.PAPER_EXCLUDE_DOMAIN) and _matches(t, config.PAPER_MEDICAL_SIGNAL)
+            and _matches(t, config.PAPER_AI_SIGNAL))
+
+
+def is_pediatric_title(title: str) -> bool:
+    return _matches(title or "", config.PAPER_PEDIATRIC_SIGNAL)
+
+
+def _venue_works_s2(spec: dict[str, Any], start: int, end: int) -> list[dict[str, Any]]:
+    """Radiology-AI works at a venue. ML venues: radiology term query, title
+    filter. Radiology journals: AI term query (radiology is implicit)."""
+    from . import semantic_scholar
+
+    if spec.get("query") == "ai":
+        return semantic_scholar.venue_search(config.S2_AI_QUERY, spec["venue"], start, end)
+    papers = semantic_scholar.venue_search(config.S2_RADIOLOGY_QUERY, spec["venue"], start, end)
+    return [p for p in papers if is_radiology_paper(p.get("title") or "")]
+
+
+def collect_venue_works(start: int | None = None, end: int | None = None, top_n: int = 40) -> dict[str, Any]:
+    """Per venue: radiology-AI works over the window, ranked by citations.
+
+    Semantic Scholar rows carry no FWCI; ``scripts/enrich_fwci.py`` fills it
+    in afterwards from OpenAlex by DOI. Every row gets a ``pediatric`` flag
+    from its title.
+    """
+    start = start or config.VENUE_WORKS_START
+    end = end or config.END_YEAR
+    out: dict[str, Any] = {}
+    for name, spec in config.CONFERENCE_WORKS.items():
+        print(f"  {name} ({spec['kind']})")
+        works = _venue_works_s2(spec, start, end)
+        works.sort(key=lambda w: w.get("citation_count", 0), reverse=True)
+        by_year: dict[str, int] = {}
+        for w in works:
+            by_year[str(w.get("year"))] = by_year.get(str(w.get("year")), 0) + 1
+        rows: list[dict[str, Any]] = []
+        for w in works[:top_n]:
+            row = {
+                "title": w.get("title"),
+                "year": w.get("year"),
+                "citation_count": w.get("citation_count", 0),
+                "fwci": w.get("fwci"),
+                "doi": w.get("doi"),
+                "venue_label": w.get("venue_label") or spec.get("venue") or name,
+                "first_author": w.get("first_author") or ((w.get("authors") or [None])[0] or "").split()[-1:] or None,
+                "pediatric": is_pediatric_title(w.get("title") or ""),
+            }
+            if isinstance(row["first_author"], list):
+                row["first_author"] = row["first_author"][0] if row["first_author"] else None
+            rows.append(row)
+        out[name] = {
+            "kind": spec["kind"],
+            "full": spec.get("full", name),
+            "note": spec.get("note"),
+            "years": [start, end],
+            "n_works": len(works),
+            "n_pediatric": sum(1 for w in works if is_pediatric_title(w.get("title") or "")),
+            "by_year": dict(sorted(by_year.items())),
+            "works": rows,
+        }
+        print(f"    -> {len(works)} radiology-AI works, {out[name]['n_pediatric']} pediatric; top: {rows[0]['title'][:60] if rows else '-'}")
+    return out
