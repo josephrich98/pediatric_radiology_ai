@@ -894,7 +894,9 @@ REVIEW_START_YEAR = 2005  # covers the previous scoping review's window in full
 _REVIEW_MODALITY_TIAB = (
     '(radiology[tiab] OR radiological[tiab] OR radiograph*[tiab] OR "medical imaging"[tiab] '
     'OR "diagnostic imaging"[tiab] OR tomography[tiab] OR "magnetic resonance"[tiab] OR MRI[tiab] '
-    'OR "MR imaging"[tiab] OR "MR images"[tiab] OR "computed tomography"[tiab] OR CT[tiab] '
+    'OR "MR imaging"[tiab] OR "MR images"[tiab] OR MRIs[tiab] OR "MR image"[tiab] '
+    'OR "MR scan"[tiab] OR "MR scans"[tiab] '
+    'OR "computed tomography"[tiab] OR CT[tiab] '
     'OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] '
     'OR mammograph*[tiab] OR "chest x-ray"[tiab] OR "x-ray"[tiab] OR fluoroscop*[tiab] '
     'OR scintigraph*[tiab] OR "positron emission"[tiab] OR PET[tiab] OR SPECT[tiab] '
@@ -903,6 +905,12 @@ _REVIEW_MODALITY_TIAB = (
     'OR connectome*[tiab] OR "diffusion tensor"[tiab] OR DTI[tiab] OR "bone age"[tiab] '
     'OR "skeletal age"[tiab] OR "skeletal maturity"[tiab] OR "barium enema"[tiab])'
 )
+# `MRIs[tiab]` and the "MR image"/"MR scan" singular-plural variants were added
+# after the Embase cross-check (records_and_medline.csv, 3,728 MEDLINE records
+# retrieved by the same strategy in Embase). PubMed tokenizes "MRIs" separately
+# from "MRI", so a title such as "A generalist model for enhancing brain MRIs"
+# matched nothing in the modality block. The four variants cost 12 extra records
+# in total and close a pure tokenization gap rather than widening scope.
 # The second group was added after the external recall check against the 789
 # articles of Kamran et al. (scripts/overlap_check.py). Of 40 records their
 # review included and this search missed, 22 failed on the modality block alone:

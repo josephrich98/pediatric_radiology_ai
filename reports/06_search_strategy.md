@@ -142,29 +142,139 @@ Changes from the previous query, each made for a measured reason:
 `[ACTION: these require institutional access and a librarian run. A systematic review in this journal will be
 expected to search at least MEDLINE plus Embase. Translations are provided ready to paste.]`
 
-**Embase (Elsevier syntax)**
+**Embase (embase.com, Elsevier syntax)** — v2, matching `config.REVIEW_QUERY` term for term.
+
+Use **Advanced Search** (not Quick Search, which maps to Emtree automatically). Enter each block as its own
+numbered line so the line-by-line hit counts can be reported, as PRISMA 2020 item 7 requires.
 
 ```
 #1  (radiology:ti,ab OR radiological:ti,ab OR radiograph*:ti,ab OR 'medical imaging':ti,ab
      OR 'diagnostic imaging':ti,ab OR tomography:ti,ab OR 'magnetic resonance':ti,ab OR MRI:ti,ab
-     OR 'mr imaging':ti,ab OR 'computed tomography':ti,ab OR CT:ti,ab OR ultrasound:ti,ab
-     OR ultrasonograph*:ti,ab OR sonograph*:ti,ab OR echocardiograph*:ti,ab OR mammograph*:ti,ab
-     OR 'chest x ray':ti,ab OR 'x ray':ti,ab OR fluoroscop*:ti,ab OR scintigraph*:ti,ab
-     OR 'positron emission':ti,ab OR PET:ti,ab OR SPECT:ti,ab OR angiograph*:ti,ab
-     OR neuroimaging:ti,ab OR tractograph*:ti,ab OR elastograph*:ti,ab)
+     OR 'mr imaging':ti,ab OR 'mr images':ti,ab OR 'computed tomography':ti,ab OR CT:ti,ab
+     OR ultrasound:ti,ab OR ultrasonograph*:ti,ab OR sonograph*:ti,ab OR echocardiograph*:ti,ab
+     OR mammograph*:ti,ab OR 'chest x ray':ti,ab OR 'x ray':ti,ab OR fluoroscop*:ti,ab
+     OR scintigraph*:ti,ab OR 'positron emission':ti,ab OR PET:ti,ab OR SPECT:ti,ab
+     OR angiograph*:ti,ab OR neuroimaging:ti,ab OR tractograph*:ti,ab OR elastograph*:ti,ab
+     OR fMRI:ti,ab OR 'functional MRI':ti,ab OR 'functional magnetic resonance':ti,ab
+     OR connectome*:ti,ab OR 'diffusion tensor':ti,ab OR DTI:ti,ab OR 'bone age':ti,ab
+     OR 'skeletal age':ti,ab OR 'skeletal maturity':ti,ab OR 'barium enema':ti,ab)
 #2  ('artificial intelligence':ti,ab OR 'machine learning':ti,ab OR 'deep learning':ti,ab
      OR 'convolutional neural network*':ti,ab OR 'neural network*':ti,ab
      OR 'computer aided diagnosis':ti,ab OR 'computer aided detection':ti,ab OR radiomic*:ti,ab
      OR 'computer vision':ti,ab OR 'large language model*':ti,ab OR 'foundation model*':ti,ab
      OR 'transfer learning':ti,ab OR 'vision transformer':ti,ab OR 'self supervised':ti,ab
-     OR 'random forest':ti,ab OR 'support vector machine':ti,ab OR 'gradient boosting':ti,ab)
+     OR 'random forest':ti,ab OR 'support vector machine':ti,ab OR 'gradient boosting':ti,ab
+     OR 'natural language processing':ti,ab)
 #3  (pediatric*:ti,ab OR paediatric*:ti,ab OR child*:ti,ab OR infant*:ti,ab OR neonat*:ti,ab
      OR adolescen*:ti,ab OR fetal:ti,ab OR foetal:ti,ab OR fetus*:ti,ab OR foetus*:ti,ab
-     OR newborn*:ti,ab OR preterm:ti,ab OR 'premature infant*':ti,ab OR prenatal:ti,ab
-     OR antenatal:ti,ab OR perinatal:ti,ab OR youth:ti,ab OR juvenile:ti,ab
-     OR 'children s hospital':ti,ab OR toddler*:ti,ab)
+     OR newborn*:ti,ab OR preterm:ti,ab OR 'premature infant*':ti,ab OR 'premature birth':ti,ab
+     OR 'premature neonate*':ti,ab OR prenatal:ti,ab OR antenatal:ti,ab OR perinatal:ti,ab
+     OR youth:ti,ab OR juvenile:ti,ab OR 'children s hospital':ti,ab OR schoolchild*:ti,ab
+     OR toddler*:ti,ab)
 #4  #1 AND #2 AND #3 AND [2005-2026]/py
+#5  #4 NOT [medline]/lim      <- the records PubMed cannot reach. EXPORT THIS.
+#6  #4 AND [medline]/lim      <- the overlap. Export PMIDs only, as a recall audit.
 ```
+
+Notes on the translation. `:ti,ab` is the deliberate equivalent of PubMed's `[tiab]`: it keeps the two
+databases directly comparable and avoids Emtree explosion, which carries the same hazard that forced the
+PubMed query to be fully fielded (`'echography'/exp` attaches to almost any imaging paper). If the librarian
+prefers, `:ti,ab,kw` adds author keywords for a modest recall gain — a defensible variant, but it should be
+run as a labelled sensitivity search, not silently substituted. Hyphens are not significant in Embase, so
+`'x ray'` and `'self supervised'` match the hyphenated forms. No NOT clause and no publication-type limit
+appear anywhere except line #5, for the reason given in Section 3.2.
+
+**What lines #5 and #6 actually contain — corrected after the search was run (2026-09-10).**
+`[medline]/lim` flags records that are *MEDLINE-indexed*, which is **not** the same as "in PubMed". PubMed also
+carries a large PubMed-Central-only population — MDPI, Frontiers, and NIH-pilot preprint deposits — that Embase
+reports as non-MEDLINE. The executed search makes the size of that confusion concrete:
+
+| Line #5 records (`#4 NOT [medline]/lim`), by Embase publication type | Already in our PubMed corpus | In PubMed, not retrieved | Outside PubMed | No DOI | Total |
+|:--|--:|--:|--:|--:|--:|
+| Conference abstract | 0 | 194 | 1,330 | 189 | 1,713 |
+| Article | 727 | 1 | 378 | 23 | 1,129 |
+| Preprint | 65 | 1 | 251 | 3 | 320 |
+| Review | 178 | 0 | 98 | 3 | 279 |
+| Other (erratum, note, letter, chapter, …) | 28 | 9 | 23 | 62 | 119 |
+| **Total** | **998** | **205** | **2,080** | **277** | **3,560** |
+
+So of 3,560 Embase-unique records, **998 (28%) were already in the corpus** — chiefly *Diagnostics* (88),
+*Frontiers in Pediatrics* (60), *Journal of Clinical Medicine* (40), *Children* (31) and medRxiv/bioRxiv deposits.
+A further 48% of the layer is **conference abstracts**, which Embase indexes and MEDLINE does not: SPR/ESPR
+meeting abstracts published as *Pediatric Radiology* supplements (169), and psychiatry meeting supplements in
+*Biological Psychiatry* (104) and *Neuropsychopharmacology* (70) that the v2 fMRI/connectome/DTI terms reach.
+
+The genuinely new peer-reviewed journal material is therefore **about 400 articles**, not 3,560. Deduplication
+must be done on DOI against the PubMed corpus before any yield from this layer is reported; the `[medline]/lim`
+flag cannot stand in for it.
+
+**Consequences for anyone re-running this.** Line #5 is still the right thing to export, because it is the only
+line that *can* contain new material — but it must be deduplicated by DOI, not trusted as new. Line #6 remains a
+clean external audit of the PubMed query and is reported in Section 6.3. Do not attempt to shrink the export by
+adding publication-type limits in Embase: the split above is only visible because every type was exported.
+
+**Measured yield of the Embase layer (screened 2026-09-10).** 1,813 of the 3,560 Embase-unique records were
+screened against the Section 3 criteria — every Article, Article-in-Press and Preprint, plus random samples of 150
+of 341 Reviews and 200 of 1,713 Conference Abstracts. Only records that are *not* already in the PubMed corpus
+count toward the columns below.
+
+| Stratum | Records | New (not in PubMed) | Screened | Eligible & new | Primary studies | Projected new primary |
+|:--|--:|--:|--:|--:|--:|--:|
+| Article (+ in press) | 1,143 | 411 | 1,142 (all) | 247 (60%) | 213 | **213** |
+| Preprint | 320 | 254 | 320 (all) | 160 (63%) | 148 | 148 |
+| Review | 341 | 101 | 150 (44%) | 19 | 0 | 0 |
+| Conference abstract | 1,713 | 1,519 | 199 (12%) | 81 (46%) | 77 | ~665 |
+
+**Journal articles: adopt.** 213 new primary studies is a **6.5% addition to the 3,286-study corpus**, and 206 of
+the 247 eligible records carry enough method and result detail to extract a full database row. The largest single
+contributor is *Biomedical Signal Processing and Control* (45) — a legitimate Elsevier engineering journal outside
+MEDLINE — followed by a Chinese-language radiology and ultrasound literature (~60 records across six journals).
+
+**This layer is what makes the no-language-restriction criterion mean anything.** 83 of the 247 eligible new
+articles (34%) are not English-only and 67 (27%) carry no English at all: 57 Chinese, 15 Chinese/English,
+3 Persian, 3 Russian, 3 German, 1 Czech, 1 English/Polish. The PubMed layer contains roughly 32 non-English
+records in total. The previous scoping review excluded non-English articles
+and named this as a limitation that "may disproportionately underrepresent Global South research"; dropping the
+language restriction only answers that objection if the search actually reaches a non-English literature, and
+PubMed alone does not. Embase is the mechanism, not the criterion.
+
+**Preprints: cross-check, do not double count.** The 160 eligible new preprints (medRxiv 75, bioRxiv 47, SSRN 38)
+overlap the OpenAlex preprint layer of Section 4.4 by construction. Deduplicate by DOI against that layer and use
+the Embase set as a coverage check on it rather than as an independent source.
+
+**Conference abstracts: exclude by protocol, but report the count.** Section 3 already excludes "conference
+abstracts without full text", and the sample supports that: only 62 of the 81 eligible-and-new abstracts were
+judged substantive enough to extract, so admitting the stratum would add roughly 665 projected primary records of
+which a third carry no extractable n or performance figure — a 20% corpus expansion that degrades the extraction.
+The count is nevertheless a **finding worth reporting**: 1,713 Embase-unique conference abstracts, of which 169
+are SPR/ESPR meeting abstracts published as *Pediatric Radiology* supplements, are pediatric radiology AI work
+that was presented and never reached a full paper. That is the stage of the translational funnel that sits
+*before* publication, and it is invisible to any MEDLINE-only review. Report it as a bounded observation from a
+12% sample, not as a corpus.
+
+**A new risk this layer introduces.** MEDLINE indexing was performing quality control that the review was not
+crediting it for. The Embase-unique articles include journals that are delisted or of doubtful standing —
+*International Journal of Drug Delivery Technology* (17 records, 3 passed screening), *NeuroQuantology* (4/2,
+delisted from Scopus in 2023), *Genetics and Molecular Research* (3/1, delisted), *Journal of Medical Imaging and
+Health Informatics* (3). The absolute numbers are small (roughly 7 of 247) but they are concentrated and they were
+not present before.
+
+**Decision: no journal-standing exclusion. Record provenance and run a sensitivity analysis instead.** Every row
+carries two new mechanical fields — `source_database` (`pubmed` / `embase` / `openalex-preprint` / `conference`)
+and `journal_medline_indexed`, resolved per journal from the NLM Catalog rather than asserted. The headline
+results are then recomputed with the non-MEDLINE layer dropped, and both figures are reported.
+
+This is preferred to a named exclusion list for three reasons. A list assembled *after* seeing which papers it
+removes is not prespecification, whatever it is called in the methods. Journal standing is a reputational
+judgement about real publishers that this review has no independent means to adjudicate, whereas indexing status
+is a checkable fact. And an exclusion silently discards the non-English literature the layer was adopted to
+reach — the Chinese-language radiology journals are outside MEDLINE for the same structural reason the doubtful
+ones are, and a filter keyed on indexing would not tell them apart. A sensitivity analysis answers the reviewer's
+real question ("does this change your conclusions?") without requiring the review to rank journals.
+
+**Also record, at the time of the search:** the hit count of every line #1–#6, the exact date run, and the
+Embase segment coverage note the interface displays. PRISMA 2020 requires the full strategy for every
+database as run, not a paraphrase.
 
 **Web of Science Core Collection** — replace `:ti,ab` with `TS=` blocks and `AND` the three; add
 `PY=2005-2026`.
@@ -283,19 +393,72 @@ venues by DOI, then PMID, then normalized title + first author + year.
 
 ## 6. Search validation
 
-The search was validated against a set of 26 landmark pediatric radiology AI papers assembled from domain knowledge,
-the previous scoping review, and known pediatric datasets and products — **not** from the output of this query.
+The search has been validated three ways: against an internal landmark set, and against two independent
+external corpora that were assembled by other people for other purposes.
+
+### 6.1 Internal landmark set
+
+26 landmark pediatric radiology AI papers assembled from domain knowledge, the previous scoping review, and
+known pediatric datasets and products — **not** from the output of this query.
 
 | Query | Records (2005–2026) | Recall on validation set |
 |:--|---:|---:|
 | Previous strict query (v0) | 4,638 | 25/26 (96.2%) |
 | Previous query + topic NOTs + publication-type filters | 3,851 | 22/27 (81.5%) |
-| **This strategy** | **5,686** | **26/26 (100%)** |
+| **This strategy** | **6,002** | **26/26 (100%)** |
 
-`[ACTION: expand the validation set to ~50 papers before submission, and pre-register it. A 26-paper set is thin,
-and papers drawn from sources that overlap our own prior searching are partly circular. The strongest available
-test is Section 4.6(1): what fraction of the 789 articles in the previous review's supplementary list does this
-search retrieve? Run it and report the number, whatever it is.]`
+This set is thin and partly circular, since some of its papers come from sources that overlap our own prior
+searching. It is reported for completeness; the two external checks below carry the weight.
+
+### 6.2 External check 1 — the previous scoping review's included articles
+
+Kamran et al. published the full list of the 789 articles their scoping review included. Titles were resolved to
+PMIDs by a title-fielded word conjunction with Jaccard verification against the stored PubMed title
+(`scripts/overlap_check.py`), then tested for membership in `REVIEW_QUERY`.
+
+| | |
+|:--|---:|
+| Their included articles | 789 |
+| Resolved to a PubMed record | 663 |
+| Retrieved by this search (v1) | 623 (94.0%) |
+| Retrieved by this search (v2, after the fixes below) | **639 (96.4%)** |
+| Of the retrieved records, also judged eligible by our screen | 595/623 (95.5%) |
+| **No PubMed record at all** | **75 (9.5% of 789)** |
+
+The 40 v1 misses were classified by which concept block failed: 22 modality, 9 AI, 7 pediatric, 2 multiple. The
+modality failures were concentrated and fixable — PubMed tokenizes "fMRI" separately from "MRI", and connectome,
+diffusion-tensor and bone-age studies frequently name no scanner — and drove the v2 term additions recorded in
+`config.py`. Three further candidate terms were measured and rejected; see Section 4.2.
+
+### 6.3 External check 2 — Embase cross-run
+
+The same strategy was translated and run in Embase (Section 4.3). Its MEDLINE-overlapping half is a large,
+independently assembled set of records that the strategy *should* retrieve in PubMed, and so is a direct test of
+the PubMed query rather than of the concept design.
+
+| | |
+|:--|---:|
+| Embase records also in MEDLINE (line #6) | 3,728 |
+| Carrying a PMID | 3,728 |
+| Also retrieved by `REVIEW_QUERY` | **3,715 (99.7%)** |
+| Missed | 13 |
+| PMIDs retrieved by `REVIEW_QUERY` that the Embase run did **not** return | 2,277 |
+
+All 13 misses were read. Four are errata, one a tombstone record, one a research-highlight Note; two are digital
+pathology and two are neuroimaging with no learned model, all four correctly outside the eligibility criteria;
+one is an artifact of a publisher appending the field-of-research code "0801 Artificial Intelligence and Image
+Processing" to the article title, which Embase indexed as content.
+
+One genuine defect was found and fixed: PubMed tokenizes `MRIs` separately from `MRI`, so a title such as
+"A generalist model for enhancing brain MRIs" (*Nature Biomedical Engineering*) matched nothing in the modality
+block. Adding `MRIs`, `"MR image"`, `"MR scan"` and `"MR scans"` costs **12 records in total** and closes a pure
+tokenization gap. The final line — that the PubMed strategy returns 2,277 records the Embase translation did not
+— is the reason the PubMed layer is treated as the primary source and Embase as a supplement rather than the
+reverse.
+
+`[ACTION: expand the internal landmark set to ~50 papers and pre-register it before submission. Both external
+checks are now run and reported above; neither can be repeated as a blinded test, since the query was tuned
+against the first of them.]`
 
 ## 7. Data extraction and appraisal
 
