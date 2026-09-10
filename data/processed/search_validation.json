@@ -1,0 +1,45 @@
+{
+  "start": 2005,
+  "end": 2026,
+  "queries": {
+    "review": {
+      "query": "(radiology[tiab] OR radiological[tiab] OR radiograph*[tiab] OR \"medical imaging\"[tiab] OR \"diagnostic imaging\"[tiab] OR tomography[tiab] OR \"magnetic resonance\"[tiab] OR MRI[tiab] OR \"MR imaging\"[tiab] OR \"MR images\"[tiab] OR \"computed tomography\"[tiab] OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] OR mammograph*[tiab] OR \"chest x-ray\"[tiab] OR \"x-ray\"[tiab] OR fluoroscop*[tiab] OR scintigraph*[tiab] OR \"positron emission\"[tiab] OR PET[tiab] OR SPECT[tiab] OR angiograph*[tiab] OR neuroimaging[tiab] OR tractograph*[tiab] OR elastograph*[tiab]) AND (\"artificial intelligence\"[tiab] OR \"machine learning\"[tiab] OR \"deep learning\"[tiab] OR \"convolutional neural network\"[tiab] OR \"convolutional neural networks\"[tiab] OR \"neural network\"[tiab] OR \"neural networks\"[tiab] OR \"computer-aided diagnosis\"[tiab] OR \"computer aided diagnosis\"[tiab] OR \"computer-aided detection\"[tiab] OR radiomic*[tiab] OR \"computer vision\"[tiab] OR \"large language model\"[tiab] OR \"large language models\"[tiab] OR \"foundation model\"[tiab] OR \"foundation models\"[tiab] OR \"transfer learning\"[tiab] OR \"vision transformer\"[tiab] OR \"self-supervised\"[tiab] OR \"random forest\"[tiab] OR \"support vector machine\"[tiab] OR \"gradient boosting\"[tiab]) AND (pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR neonat*[tiab] OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR fetus*[tiab] OR foetus*[tiab] OR newborn*[tiab] OR preterm[tiab] OR \"premature infant\"[tiab] OR \"premature infants\"[tiab] OR \"premature birth\"[tiab] OR \"premature neonate\"[tiab] OR \"premature neonates\"[tiab] OR prenatal[tiab] OR antenatal[tiab] OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab] OR \"children's hospital\"[tiab] OR schoolchild*[tiab] OR toddler*[tiab])",
+      "yield": {
+        "per_year": {
+          "2005": 9,
+          "2006": 11,
+          "2007": 17,
+          "2008": 15,
+          "2009": 24,
+          "2010": 28,
+          "2011": 32,
+          "2012": 38,
+          "2013": 41,
+          "2014": 58,
+          "2015": 74,
+          "2016": 98,
+          "2017": 124,
+          "2018": 166,
+          "2019": 246,
+          "2020": 337,
+          "2021": 503,
+          "2022": 643,
+          "2023": 716,
+          "2024": 919,
+          "2025": 1302,
+          "2026": 1137
+        },
+        "sum_of_years": 6538,
+        "range_total": 5686,
+        "with_abstract": 5628
+      },
+      "recall": {
+        "n_testable": 26,
+        "n_retrieved": 26,
+        "recall": 1.0,
+        "missed": [],
+        "not_pubmed_indexed": []
+      }
+    }
+  }
+}

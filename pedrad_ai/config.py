@@ -871,6 +871,130 @@ _PEDIATRIC_TERMS_TIAB = (
 )
 PAPER_DB_QUERY = f"{STRICT_QUERIES['radiology_ai']} AND {_PEDIATRIC_TERMS_TIAB}"
 
+# ---------------------------------------------------------------------------
+# Systematic-review search strategy (reports/06_search_strategy.md)
+# ---------------------------------------------------------------------------
+# PAPER_DB_QUERY above is the *reading-list* query: strict, paired with a
+# citation floor, tuned to surface work the field has engaged with. That pairing
+# is indefensible for a systematic review — filtering on citations imports
+# language, geography and positive-result bias into the corpus and cannot be
+# written into a PRISMA flow — so the review uses its own query and decides
+# eligibility at screening instead.
+#
+# Design rule: **no NOT operators and no publication-type filters in the
+# search.** We measured the alternative. Adding topic exclusions (optical
+# coherence, dental, microscopy, endoscopy) and `NOT Review[pt]` to an otherwise
+# identical query cut recall on the validation set from 100% to 81.5%: the topic
+# clauses fire on incidental mentions (Kermany et al., Cell 2018 covers both OCT
+# and pediatric chest radiographs) and PubMed types some primary methods work as
+# Review (iBEAT V2.0 in Nature Protocols; the ACR pediatric AI white paper).
+# Recall is the search's job; precision is screening's job.
+REVIEW_START_YEAR = 2005  # covers the previous scoping review's window in full
+
+_REVIEW_MODALITY_TIAB = (
+    '(radiology[tiab] OR radiological[tiab] OR radiograph*[tiab] OR "medical imaging"[tiab] '
+    'OR "diagnostic imaging"[tiab] OR tomography[tiab] OR "magnetic resonance"[tiab] OR MRI[tiab] '
+    'OR "MR imaging"[tiab] OR "MR images"[tiab] OR "computed tomography"[tiab] OR CT[tiab] '
+    'OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] '
+    'OR mammograph*[tiab] OR "chest x-ray"[tiab] OR "x-ray"[tiab] OR fluoroscop*[tiab] '
+    'OR scintigraph*[tiab] OR "positron emission"[tiab] OR PET[tiab] OR SPECT[tiab] '
+    'OR angiograph*[tiab] OR neuroimaging[tiab] OR tractograph*[tiab] OR elastograph*[tiab] '
+    'OR "fMRI"[tiab] OR "functional MRI"[tiab] OR "functional magnetic resonance"[tiab] '
+    'OR connectome*[tiab] OR "diffusion tensor"[tiab] OR DTI[tiab] OR "bone age"[tiab] '
+    'OR "skeletal age"[tiab] OR "skeletal maturity"[tiab] OR "barium enema"[tiab])'
+)
+# The second group was added after the external recall check against the 789
+# articles of Kamran et al. (scripts/overlap_check.py). Of 40 records their
+# review included and this search missed, 22 failed on the modality block alone:
+# PubMed tokenizes "fMRI" separately from "MRI", so functional-imaging papers
+# were invisible, and connectome, diffusion-tensor and bone-age studies often
+# name no scanner at all. These ten terms recover 14 of the 40 for 275 extra
+# records — the best recall-per-record trade available.
+# "MR imaging" / "MR images" are load-bearing: neuroradiology journals do not
+# write "MRI", and without them the query loses the multi-institutional
+# pediatric posterior fossa tumor paper (AJNR 2020) and its neighbours.
+
+_REVIEW_AI_TIAB = (
+    '("artificial intelligence"[tiab] OR "machine learning"[tiab] OR "deep learning"[tiab] '
+    'OR "convolutional neural network"[tiab] OR "convolutional neural networks"[tiab] '
+    'OR "neural network"[tiab] OR "neural networks"[tiab] OR "computer-aided diagnosis"[tiab] '
+    'OR "computer aided diagnosis"[tiab] OR "computer-aided detection"[tiab] OR radiomic*[tiab] '
+    'OR "computer vision"[tiab] OR "large language model"[tiab] OR "large language models"[tiab] '
+    'OR "foundation model"[tiab] OR "foundation models"[tiab] OR "transfer learning"[tiab] '
+    'OR "vision transformer"[tiab] OR "self-supervised"[tiab] OR "random forest"[tiab] '
+    'OR "support vector machine"[tiab] OR "gradient boosting"[tiab] '
+    'OR "natural language processing"[tiab])'
+)
+# "natural language processing" was added for the same reason: three missed
+# records applied NLP to radiology reports, which is squarely in scope (the task
+# vocabulary already carries "report generation / LLM"), and it costs 23 extra
+# records. Two other candidates were REJECTED on the same evidence:
+# `computerized[tiab]` recovers two more misses for 1,878 extra records, and
+# `"computer-assisted"[tiab]` one more for 268 — both far past the point where
+# the screening burden outweighs the recall. `"knowledge-based reconstruction"`
+# would recover two for six records but is a vendor-specific phrase chosen
+# because it appears in the validation set, which is fitting to the test.
+# The classical-ML terms (random forest, SVM, gradient boosting) add 196 records
+# and are not optional: they carry the radiomics and pre-2018 literature.
+
+_REVIEW_PEDIATRIC_TIAB = (
+    '(pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR neonat*[tiab] '
+    'OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR fetus*[tiab] OR foetus*[tiab] '
+    'OR newborn*[tiab] OR preterm[tiab] OR "premature infant"[tiab] OR "premature infants"[tiab] '
+    'OR "premature birth"[tiab] OR "premature neonate"[tiab] OR "premature neonates"[tiab] '
+    'OR prenatal[tiab] OR antenatal[tiab] OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab] '
+    "OR \"children's hospital\"[tiab] OR schoolchild*[tiab] OR toddler*[tiab])"
+)
+# Bare `premature[tiab]` is deliberately absent: it retrieves premature
+# ventricular contractions and premature ovarian insufficiency in adults (83
+# records, near-zero yield). The phrase forms keep the neonatal sense.
+
+REVIEW_QUERY = f"{_REVIEW_MODALITY_TIAB} AND {_REVIEW_AI_TIAB} AND {_REVIEW_PEDIATRIC_TIAB}"
+
+# Landmark pediatric radiology-AI papers used to validate the search. Assembled
+# from domain knowledge, the previous scoping review and known pediatric
+# datasets and products — NOT from the output of this query, which would be
+# circular. REVIEW_QUERY retrieves 26/26 (100%); PAPER_DB_QUERY retrieves 25/26.
+REVIEW_GOLD_PAPERS = [
+    ("10.1148/radiol.2017170236", "Larson bone age (Radiology 2018)"),
+    ("10.1148/radiol.2018180736", "RSNA bone age challenge (Radiology 2019)"),
+    ("10.1148/radiol.2020202317", "Brady pediatric CT DL reconstruction (Radiology 2021)"),
+    ("10.1007/s00247-023-05789-1", "Deeplasia (Pediatr Radiol 2023)"),
+    ("10.1038/s41591-021-01342-5", "Arnaout fetal CHD ensemble (Nat Med 2021)"),
+    ("10.1002/uog.27503", "Athalye fetal CHD community setting (UOG 2024)"),
+    ("10.1007/s10278-024-01273-w", "Children are not small adults (J Imaging Inform Med 2025)"),
+    ("10.1007/s00330-025-11554-9", "Ziegner pediatric ED fracture (Eur Radiol 2025)"),
+    ("10.1016/j.media.2023.102833", "FeTA fetal brain challenge (Med Image Anal 2023)"),
+    ("10.1007/s00247-022-05295-w", "BoneXpert autonomous bone age (Pediatr Radiol 2022)"),
+    ("10.1097/rli.0000000000000615", "Supracondylar fracture CNN (Invest Radiol 2020)"),
+    ("10.3174/ajnr.a6704", "Posterior fossa tumor DL (AJNR 2020)"),
+    ("10.1259/bjr.20201263", "Pediatric pneumonia transfer learning (BJR 2021)"),
+    ("10.1007/s00247-023-05746-y", "Unintended consequences of AI in paediatric radiology (2024)"),
+    ("10.1016/j.jacr.2023.04.017", "Commercial AI of interest to pediatric radiology (JACR 2023)"),
+    ("10.1016/j.jacr.2023.06.003", "ACR pediatric AI white paper (JACR 2023)"),
+    ("10.3348/kjr.2024.0701", "Yoo accelerated pediatric brain MRI (Korean J Radiol 2025)"),
+    ("10.3389/fendo.2026.1741927", "Skaf Deeplasia in rare growth disorders (2026)"),
+    ("10.1016/j.cell.2018.02.010", "Kermany pediatric chest radiographs / OCT (Cell 2018)"),
+    ("10.1038/s41596-023-00806-x", "iBEAT V2.0 infant cortical surface (Nat Protoc 2023)"),
+    ("10.1038/s41597-023-02102-5", "PediCXR dataset (Sci Data 2023)"),
+    ("10.1002/mp.15485", "Pediatric-CT-SEG (Med Phys 2022)"),
+    ("10.1038/s41597-022-01328-z", "GRAZPEDWRI-DX wrist trauma dataset (Sci Data 2022)"),
+    ("10.1016/j.neuroimage.2022.119474", "SynthStrip (NeuroImage 2022)"),
+    ("10.1002/uog.22171", "SonoCNS fetal brain (UOG 2021)"),
+    ("10.1038/s41598-020-67076-5", "Fetal maternal plane CNN (Sci Rep 2020)"),
+]
+
+# Prespecified conference venues, hand-searched (Section 4.5 of the strategy).
+# A named venue list is the standard systematic-review treatment of conference
+# literature and is bounded, unlike an OpenAlex keyword sweep of
+# ``type:conference-paper`` (several thousand works a year), which the retired
+# impact floor was the only thing making tractable.
+REVIEW_CONFERENCE_VENUES = [
+    "MICCAI", "PIPPI", "FetalMIA", "MLMI", "DART", "IPMI", "MIDL",
+    "ISBI", "SPIE Medical Imaging", "NeurIPS", "CVPR", "ICCV", "ECCV",
+    "ICLR", "ICML", "ML4H", "MLHC", "CHIL",
+]
+
 # Citation floor. The query returns ~10,000 records from 2015 on, most of which
 # nobody has read: a threshold on NIH iCite's citedByPmidCount (PubMed-indexed
 # citing papers, so a conservative count) is the cheapest way to keep the
@@ -1009,3 +1133,46 @@ PAPER_DB_CODE_HOSTS = [
     "codeocean.com",
     "sourceforge.net",
 ]
+
+
+# --------------------------------------------------------------------------- #
+# Journal impact scatter
+# --------------------------------------------------------------------------- #
+# "Which high-impact journals publish pediatric radiology AI?" — one point per
+# journal, x = impact factor, y = cumulative pediatric radiology-AI papers.
+#
+# The corpus is PAPER_DB_QUERY (the strict, title/abstract-fielded query), not
+# QUERIES["pediatric_radiology_ai"]: attributing a paper to a journal is a claim
+# about that paper, so the broad query's MeSH-expansion hits (adult
+# neuroimaging, Global Burden of Disease) would put journals on the chart that
+# have never published pediatric radiology AI.
+# Retraction records are dropped here, and only here. A mass retraction files
+# one notice per retracted article, every notice carrying the same boilerplate
+# abstract, and if that boilerplate happens to name an imaging term the whole
+# batch matches the query: a single 2025 event put 60 papers on one journal,
+# enough to place it among the top publishers on the chart. Counting queries are
+# left alone so the headline series stay comparable across runs.
+JOURNAL_QUERY = (
+    f'{PAPER_DB_QUERY} NOT ("Retracted Publication"[pt] OR "Retraction of Publication"[pt])'
+)
+JOURNAL_START_YEAR = 2015
+JOURNAL_END_YEAR = END_YEAR
+# A journal is plotted only if it reaches this many papers by the end of the
+# window. Below it the chart is an unreadable cloud: 140 journals clear 8 papers
+# and every one of them would carry a label.
+JOURNAL_MIN_PAPERS = 25
+# Same, for the shorter 2023-present window.
+JOURNAL_MIN_PAPERS_RECENT = 20
+# A journal joins the animation the year its cumulative count reaches this, so
+# labels appear once and then stay put instead of flickering in and out.
+JOURNAL_APPEAR_AT = 3
+# Impact factor source. Clarivate's JIF is licensed and has no free API, so the
+# default x value is OpenAlex's ``2yr_mean_citedness`` for the journal: mean
+# citations in the last two years, the same construction as the JIF but over
+# OpenAlex's document set, so the values run lower than the published JIF
+# (Radiology: 6.3 here, 12.1 in JCR) while the ranking is close. Real JIFs can
+# be pasted into JOURNAL_IMPACT_OVERRIDES keyed by ISSN-L or journal name; any
+# journal found there is plotted with that value instead and the axis label
+# switches to "journal impact factor".
+JOURNAL_IMPACT_OVERRIDES = DATA_DIR / "journal_impact_overrides.json"
+JOURNAL_IMPACT_JSON = PROCESSED_DIR / "journal_impact.json"

@@ -12,11 +12,14 @@ partial year labelled "YTD" (a text label only; no shading).
 
 from __future__ import annotations
 
+import re
+import shutil
 import textwrap
 
 import matplotlib
 
 matplotlib.use("Agg")
+import matplotlib.transforms  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.ticker import MultipleLocator  # noqa: E402
 
@@ -425,6 +428,253 @@ def fda_figures(fda):
 
 
 # --------------------------------------------------------------------------- #
+# Journal impact scatter
+# --------------------------------------------------------------------------- #
+# Which journals publish pediatric radiology AI, and how high-impact are they?
+# One point per journal: x = journal impact, y = cumulative papers. Points are
+# colored by what kind of journal it is, because "who publishes this work" is
+# really a question about whether it lands in imaging journals, pediatrics
+# journals, or the general-medicine and computational literature.
+JOURNAL_KINDS = [
+    ("Radiology / imaging", BLUE),
+    ("Pediatrics", ORANGE),
+    ("General medicine / science", GREEN),
+    ("Other specialty / technical", GRAY),
+]
+_KIND_PATTERNS = [
+    ("Radiology / imaging", (
+        "radiolog", "roentgen", "imaging", "magnetic resonance", "ultrasound", "ultrason",
+        "sonograph", "tomograph", "nuclear medicine", "neuroimag", "radiograph", "radiat",
+        "medical physics", "echocardiograph",
+    )),
+    ("Pediatrics", ("pediatr", "paediatr", "child", "neonat", "fetal", "perinat", "adolescen")),
+    ("General medicine / science", (
+        "nature", "lancet", "jama", "new england journal", "science", "scientific reports",
+        "plos one", "bmj", "cell reports medicine", "npj", "communications medicine",
+        "annals of internal", "medicine (baltimore", "heliyon", "cureus", "plos digital",
+    )),
+]
+
+
+def _journal_kind(name: str) -> str:
+    low = (name or "").lower()
+    for kind, pats in _KIND_PATTERNS:
+        if any(p in low for p in pats):
+            return kind
+    return "Other specialty / technical"
+
+
+def _cumulative(counts: dict, upto: int, since: int) -> int:
+    return sum(n for y, n in counts.items() if since <= int(y) <= upto)
+
+
+# PubMed's full journal titles carry the subtitle ("Journal of ultrasound in
+# medicine : official journal of the American Institute of ..."), which is
+# unreadable as a point label. OpenAlex's display_name is used when the lookup
+# matched; this trims whatever is left.
+def _journal_label(name: str, limit: int = 34) -> str:
+    label = re.split(r"\s+:\s+|\.\s+(?:official|the official)\b", name, maxsplit=1)[0]
+    label = re.sub(r"\s*\([^)]*\)\s*$", "", label).strip(" .")
+    if len(label) > limit:
+        label = label[: limit - 1].rstrip() + "\u2026"
+    return label
+
+
+def _place_labels(ax, points, fontsize=7.0):
+    """Label every point without overlaps: greedy placement + leader lines.
+
+    Each label is tried at a ring of candidate offsets around its marker,
+    nearest first, and takes the first that collides with neither an
+    already-placed label nor another marker and stays inside the axes. Labels
+    that end up away from their dot get a thin leader line back to it. A
+    physics-style repel diverges on a cluster this dense — labels drift off the
+    axes and lose their points — so placement is discrete and greedy. Candidate
+    boxes are found by translating each label's measured size rather than by
+    redrawing the figure, which is what makes trying seventy positions per
+    label cheap enough to do twelve times for the animation.
+    """
+    fig = ax.figure
+    # The leader lines below are ordinary plot calls, and a plot call rescales
+    # the axes: a label anchor sitting just outside the data range would widen
+    # the axis under it, which across the animation means limits that no longer
+    # match frame to frame.
+    ax.set_autoscale_on(False)
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+
+    # Candidate offsets in points, ordered by distance. Right and left first (a
+    # label reads best beside its dot), then rings of diagonals.
+    candidates = [(8.0, 0.0), (-8.0, 0.0)]
+    for r in (9, 13, 18, 24, 31, 39, 48, 58, 70, 84, 100, 118, 140, 165):
+        for dx, dy in ((1, 0.5), (-1, 0.5), (1, -0.5), (-1, -0.5),
+                       (0.3, 1), (0.3, -1), (-0.3, 1), (-0.3, -1)):
+            candidates.append((r * dx + (8 if dx > 0 else -8), r * dy))
+
+    dpi_scale = fig.dpi / 72.0  # offsets are in points, bounding boxes in pixels
+    Bbox = matplotlib.transforms.Bbox
+
+    texts, sizes, xy_px = [], [], []
+    for x, y, label in points:
+        t = ax.annotate(label, (x, y), xytext=(8, 0), textcoords="offset points",
+                        fontsize=fontsize, color="0.15", va="center", ha="left",
+                        annotation_clip=False, zorder=4)
+        texts.append(t)
+        box = t.get_window_extent(renderer=renderer)
+        sizes.append((box.width, box.height))
+        xy_px.append(ax.transData.transform((x, y)))
+
+    marker_boxes = [Bbox.from_bounds(px - 5, py - 5, 10, 10) for px, py in xy_px]
+    axes_box = ax.get_window_extent(renderer=renderer)
+
+    placed = []
+    # Biggest counts first: the journals that matter most get the closest slots.
+    for i in sorted(range(len(points)), key=lambda k: -points[k][1]):
+        (px, py), (w, h) = xy_px[i], sizes[i]
+        chosen = None
+        for dx, dy in candidates:
+            ox, oy = dx * dpi_scale, dy * dpi_scale
+            x0 = px + ox if dx >= 0 else px + ox - w
+            box = Bbox.from_bounds(x0, py + oy - h / 2, w, h)
+            if (box.x0 < axes_box.x0 or box.x1 > axes_box.x1
+                    or box.y0 < axes_box.y0 or box.y1 > axes_box.y1):
+                continue
+            if any(box.overlaps(b) for b in placed):
+                continue
+            if any(box.overlaps(b) for j, b in enumerate(marker_boxes) if j != i):
+                continue
+            chosen = (dx, dy, box)
+            break
+        if chosen is None:  # keep the journal on the chart rather than dropping it
+            chosen = (8.0, 0.0, Bbox.from_bounds(px + 8 * dpi_scale, py - h / 2, w, h))
+        dx, dy, box = chosen
+        texts[i].set_ha("left" if dx >= 0 else "right")
+        texts[i].set_position((dx, dy))
+        placed.append(box)
+        if abs(dx) > 12 or abs(dy) > 6:
+            # Leader line from the dot to whichever end of the label faces it.
+            # Drawn as a plain line in data coordinates: an annotation anchored
+            # to the text artist (xycoords=text) makes tight_layout recurse.
+            end_px = (box.x0 - 1.5, box.y0 + h * 0.45) if dx >= 0 else (box.x1 + 1.5, box.y0 + h * 0.45)
+            lx, ly = ax.transData.inverted().transform(end_px)
+            ax.plot([points[i][0], lx], [points[i][1], ly], linewidth=0.5,
+                    color="0.72", zorder=2, solid_capstyle="butt")
+    return placed
+
+
+def _journal_scatter(rows, *, upto, since, appear_at, xlim, ylim, impact_label,
+                     title, subtitle=None, fontsize=7.0):
+    """One frame of the scatter. ``rows`` is already the plotted universe."""
+    pts = []
+    for r in rows:
+        n = _cumulative(r["counts"], upto, since)
+        if n < appear_at:
+            continue
+        pts.append((float(r["impact_factor"]), n, _journal_label(r["journal"]),
+                    _journal_kind(r["journal"])))
+
+    fig, ax = plt.subplots(figsize=(11.5, 6.3))
+    for kind, color in JOURNAL_KINDS:
+        sel = [p for p in pts if p[3] == kind]
+        ax.scatter([p[0] for p in sel], [p[1] for p in sel], s=46, color=color,
+                   edgecolor="white", linewidth=0.8, zorder=3,
+                   label=f"{kind} ({len(sel)})")
+    ax.set_xscale("log")
+    ax.set_xlim(*xlim)
+    ax.set_ylim(*ylim)
+    ax.set_xlabel(impact_label)
+    ax.set_ylabel(f"Pediatric radiology AI papers, {since}\u2013{upto} (cumulative)")
+    if title:
+        ax.set_title(title, loc="left")
+    if subtitle:
+        ax.set_title(subtitle, loc="right", fontsize=11, color="0.35")
+    # A log axis labelled only at 1 and 10 gives the reader nothing to place a
+    # point against, and this range spans barely one decade: label the halves.
+    lo, hi = xlim
+    ticks = [t for t in (0.3, 0.5, 0.7, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 50) if lo <= t <= hi]
+    ax.set_xticks(ticks)
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:g}"))
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.grid(color="#e8e8e8", linewidth=0.6)
+    ax.set_axisbelow(True)
+    ax.legend(loc="upper left", frameon=False, fontsize=8)
+    if pts:
+        _place_labels(ax, [(p[0], p[1], p[2]) for p in pts], fontsize=fontsize)
+    return fig
+
+
+def _impact_label(data):
+    return ("Journal impact factor" if data.get("n_overrides")
+            else "Journal impact (OpenAlex 2-year mean citedness)")
+
+
+def journal_impact_figures(data):
+    """Cumulative scatter per year, an animated GIF, and a 2023-present still."""
+    rows = [r for r in ((data or {}).get("journals") or []) if r.get("impact_factor") is not None]
+    if not rows:
+        print("  ! journal_impact.json has no impact numbers; skipping the scatter")
+        return
+    start, end = data["start_year"], data["end_year"]
+    label = _impact_label(data)
+    title = "Which journals publish pediatric radiology AI"
+
+    # The plotted universe is fixed by the *final* year, so a journal never pops
+    # into the middle of the animation; each point simply rises as its count
+    # accumulates. Axis limits are fixed for the same reason.
+    universe = [r for r in rows if _cumulative(r["counts"], end, start) >= config.JOURNAL_MIN_PAPERS]
+    if not universe:
+        return
+    ifs = [float(r["impact_factor"]) for r in universe]
+    ymax = max(_cumulative(r["counts"], end, start) for r in universe)
+    xlim = (min(ifs) * 0.8, max(ifs) * 1.45)
+    ylim = (0, ymax * 1.14)
+
+    frames = []
+    for year in range(start, end + 1):
+        fig = _journal_scatter(
+            universe, upto=year, since=start, appear_at=config.JOURNAL_APPEAR_AT,
+            xlim=xlim, ylim=ylim, impact_label=label, title=title,
+            subtitle=f"{start}\u2013{year}" + (" YTD" if year == config.PARTIAL_YEAR else ""),
+        )
+        name = f"journal_impact_{year}.png"
+        _save(fig, name)
+        frames.append(FIG / name)
+
+    # The slide still is re-rendered without the in-chart title: Beamer puts
+    # that title above the figure already, and the space buys a larger plot.
+    _save(_journal_scatter(
+        universe, upto=end, since=start, appear_at=config.JOURNAL_APPEAR_AT,
+        xlim=xlim, ylim=ylim, impact_label=label, title=None,
+        subtitle=f"{start}\u2013{end}" + (" YTD" if end == config.PARTIAL_YEAR else ""),
+    ), "journal_impact.png")
+
+    try:
+        from PIL import Image
+    except ImportError:
+        print("  ! Pillow not installed; skipping journal_impact.gif")
+    else:
+        imgs = [Image.open(f).convert("RGB") for f in frames]
+        # 900 ms a year, and the final complete frame holds for 4 s.
+        imgs[0].save(FIG / "journal_impact.gif", save_all=True, append_images=imgs[1:],
+                     duration=[900] * (len(imgs) - 1) + [4000], loop=0)
+        print(f"  wrote journal_impact.gif ({len(imgs)} frames)")
+
+    recent = 2023
+    recent_universe = [r for r in rows
+                       if _cumulative(r["counts"], end, recent) >= config.JOURNAL_MIN_PAPERS_RECENT]
+    if recent_universe:
+        rymax = max(_cumulative(r["counts"], end, recent) for r in recent_universe)
+        rifs = [float(r["impact_factor"]) for r in recent_universe]
+        fig = _journal_scatter(
+            recent_universe, upto=end, since=recent, appear_at=1,
+            xlim=(min(rifs) * 0.8, max(rifs) * 1.45), ylim=(0, rymax * 1.14),
+            impact_label=label, title=None,
+            subtitle=f"{recent}\u2013{end}" + (" YTD" if end == config.PARTIAL_YEAR else ""),
+        )
+        _save(fig, f"journal_impact_{recent}_{end}.png")
+
+
+# --------------------------------------------------------------------------- #
 def main() -> None:
     print(f"Writing figures to {FIG}")
     preprints = _load("preprint_counts.json") or {}
@@ -477,6 +727,7 @@ def main() -> None:
     github_figure(_load("github_repos.json") or {})
     newsletter_figures(_load("newsletter_summary.json") or {})
     fda_figures(_load("fda_ai_devices.json") or {})
+    journal_impact_figures(_load("journal_impact.json") or {})
     print("Done.")
 
 

@@ -872,9 +872,11 @@ def write_markdown(
         f"Generated {summary['generated_on']} from `data/processed/pedrad_paper_db.csv`.",
         "",
         f"{summary['n_included']} papers, {summary['n_named_models']} of which name a model or product, "
-        f"screened from {summary['n_candidates_screened']} PubMed records matching the pediatric "
+        f"screened from {summary['n_candidates_screened']} records matching the pediatric "
         f"radiology-AI query (title/abstract fielded) for {summary['years'][0]}-{summary['years'][1]} "
-        f"({summary['n_excluded']} were screened out as adult-only, non-radiologic, or non-AI).",
+        f"({summary['n_excluded']} were screened out as adult-only, non-radiologic, or non-AI). "
+        "Candidates come from three sources: PubMed, OpenAlex preprints, and conference proceedings "
+        "(MICCAI, ISBI, SPIE Medical Imaging, NeurIPS and the rest), deduplicated against each other.",
         "",
         _floor_sentence(summary),
         "",

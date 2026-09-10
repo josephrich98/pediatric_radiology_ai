@@ -1,0 +1,5040 @@
+{
+  "generated_on": "2026-09-10",
+  "flow": {
+    "screened": 5904,
+    "excluded_screening": 2246,
+    "in_scope": 3658,
+    "non_primary": 372,
+    "included": 3286
+  },
+  "exclusion_reasons": {
+    "no abstract is available in openalex, in semantic scholar by": 15,
+    "retracted article; part of a mass-retraction notice for an u": 13,
+    "retracted publication notice (disability and rehabilitation:": 11,
+    "retraction notice, no abstract content": 10,
+    "front matter for a lecture notes in computer science proceed": 5,
+    "retracted article; unrelated to pediatric radiology ai": 3,
+    "dental imaging (panoramic radiographs, dental age estimation": 3,
+    "tooth detection and numbering on dental panoramic radiograph": 3,
+    "dental age estimation from panoramic radiographs; dental ima": 2,
+    "non-imaging clinical/laboratory prediction model for materna": 2,
+    "adult hepatocellular carcinoma study, not pediatric": 2,
+    "non-radiologic imaging (dental panoramic radiographs, tooth ": 2,
+    "adult-only study (hepatocellular carcinoma treated with tace": 2,
+    "non-radiologic imaging (retinal oct for retinopathy of prema": 2,
+    "systematic review of ai-augmented clinical decision support ": 2
+  },
+  "modality": {
+    "MRI": {
+      "n": 1486,
+      "pct": 45.2
+    },
+    "ultrasound": {
+      "n": 808,
+      "pct": 24.6
+    },
+    "x-ray / radiography": {
+      "n": 614,
+      "pct": 18.7
+    },
+    "CT": {
+      "n": 308,
+      "pct": 9.4
+    },
+    "nuclear / PET": {
+      "n": 50,
+      "pct": 1.5
+    },
+    "other": {
+      "n": 46,
+      "pct": 1.4
+    },
+    "multiple": {
+      "n": 41,
+      "pct": 1.2
+    },
+    "fluoroscopy": {
+      "n": 11,
+      "pct": 0.3
+    }
+  },
+  "task": {
+    "detection / diagnosis": {
+      "n": 1248,
+      "pct": 38.0
+    },
+    "measurement / quantification": {
+      "n": 742,
+      "pct": 22.6
+    },
+    "segmentation": {
+      "n": 664,
+      "pct": 20.2
+    },
+    "outcome prediction": {
+      "n": 613,
+      "pct": 18.7
+    },
+    "reconstruction / imputation": {
+      "n": 264,
+      "pct": 8.0
+    },
+    "workflow / non-interpretive": {
+      "n": 169,
+      "pct": 5.1
+    },
+    "other": {
+      "n": 119,
+      "pct": 3.6
+    },
+    "foundation model / vision-language": {
+      "n": 31,
+      "pct": 0.9
+    },
+    "report generation / LLM": {
+      "n": 26,
+      "pct": 0.8
+    },
+    "agent / autonomous": {
+      "n": 5,
+      "pct": 0.2
+    }
+  },
+  "age_groups": {
+    "child": {
+      "n": 1202,
+      "pct": 36.6
+    },
+    "adolescent": {
+      "n": 794,
+      "pct": 24.2
+    },
+    "fetal": {
+      "n": 782,
+      "pct": 23.8
+    },
+    "infant": {
+      "n": 512,
+      "pct": 15.6
+    },
+    "pediatric (unspecified)": {
+      "n": 446,
+      "pct": 13.6
+    },
+    "neonate": {
+      "n": 327,
+      "pct": 10.0
+    },
+    "mixed pediatric and adult": {
+      "n": 284,
+      "pct": 8.6
+    }
+  },
+  "validation": {
+    "internal only": {
+      "n": 2261,
+      "pct": 68.8
+    },
+    "external / multi-center": {
+      "n": 592,
+      "pct": 18.0
+    },
+    "reader study": {
+      "n": 187,
+      "pct": 5.7
+    },
+    "none / not stated": {
+      "n": 147,
+      "pct": 4.5
+    },
+    "prospective": {
+      "n": 99,
+      "pct": 3.0
+    }
+  },
+  "data_source": {
+    "not stated": {
+      "n": 1277,
+      "pct": 38.9
+    },
+    "single center": {
+      "n": 1065,
+      "pct": 32.4
+    },
+    "multi center": {
+      "n": 632,
+      "pct": 19.2
+    },
+    "public dataset": {
+      "n": 312,
+      "pct": 9.5
+    }
+  },
+  "release_status": {
+    "unclear": {
+      "n": 2921,
+      "pct": 88.9
+    },
+    "open-source": {
+      "n": 157,
+      "pct": 4.8
+    },
+    "commercial": {
+      "n": 140,
+      "pct": 4.3
+    },
+    "unreleased": {
+      "n": 68,
+      "pct": 2.1
+    }
+  },
+  "body_region": {
+    "brain": {
+      "n": 580,
+      "pct": 17.7
+    },
+    "chest": {
+      "n": 157,
+      "pct": 4.8
+    },
+    "fetal brain": {
+      "n": 132,
+      "pct": 4.0
+    },
+    "spine": {
+      "n": 96,
+      "pct": 2.9
+    },
+    "hand and wrist": {
+      "n": 86,
+      "pct": 2.6
+    },
+    "fetal heart": {
+      "n": 82,
+      "pct": 2.5
+    },
+    "placenta": {
+      "n": 53,
+      "pct": 1.6
+    },
+    "heart": {
+      "n": 52,
+      "pct": 1.6
+    },
+    "hip": {
+      "n": 52,
+      "pct": 1.6
+    },
+    "fetus": {
+      "n": 52,
+      "pct": 1.6
+    },
+    "abdomen": {
+      "n": 43,
+      "pct": 1.3
+    },
+    "fetal head": {
+      "n": 39,
+      "pct": 1.2
+    },
+    "kidney": {
+      "n": 33,
+      "pct": 1.0
+    },
+    "hand": {
+      "n": 33,
+      "pct": 1.0
+    },
+    "not stated": {
+      "n": 23,
+      "pct": 0.7
+    },
+    "wrist": {
+      "n": 22,
+      "pct": 0.7
+    },
+    "brain (white matter)": {
+      "n": 19,
+      "pct": 0.6
+    },
+    "neonatal brain": {
+      "n": 19,
+      "pct": 0.6
+    },
+    "lung": {
+      "n": 19,
+      "pct": 0.6
+    },
+    "brain (functional connectivity)": {
+      "n": 16,
+      "pct": 0.5
+    },
+    "elbow": {
+      "n": 15,
+      "pct": 0.5
+    },
+    "abdomen (neuroblastoma)": {
+      "n": 15,
+      "pct": 0.5
+    },
+    "fetal lung": {
+      "n": 14,
+      "pct": 0.4
+    },
+    "chest / lung": {
+      "n": 14,
+      "pct": 0.4
+    },
+    "liver": {
+      "n": 14,
+      "pct": 0.4
+    },
+    "fetal abdomen": {
+      "n": 14,
+      "pct": 0.4
+    },
+    "brain (cortex)": {
+      "n": 13,
+      "pct": 0.4
+    },
+    "whole body": {
+      "n": 13,
+      "pct": 0.4
+    },
+    "brain (white matter tracts)": {
+      "n": 12,
+      "pct": 0.4
+    },
+    "knee": {
+      "n": 12,
+      "pct": 0.4
+    },
+    "brain (posterior fossa)": {
+      "n": 12,
+      "pct": 0.4
+    },
+    "brain (neonatal)": {
+      "n": 11,
+      "pct": 0.3
+    },
+    "fetal face": {
+      "n": 11,
+      "pct": 0.3
+    },
+    "hip / pelvis": {
+      "n": 9,
+      "pct": 0.3
+    },
+    "pelvis": {
+      "n": 9,
+      "pct": 0.3
+    },
+    "skull": {
+      "n": 8,
+      "pct": 0.2
+    },
+    "appendicular skeleton": {
+      "n": 8,
+      "pct": 0.2
+    },
+    "chest / lungs": {
+      "n": 8,
+      "pct": 0.2
+    },
+    "brain (glioma)": {
+      "n": 7,
+      "pct": 0.2
+    },
+    "chest and abdomen": {
+      "n": 7,
+      "pct": 0.2
+    },
+    "fetal (biometry)": {
+      "n": 6,
+      "pct": 0.2
+    },
+    "chest (lung)": {
+      "n": 6,
+      "pct": 0.2
+    },
+    "brain (tumor)": {
+      "n": 6,
+      "pct": 0.2
+    },
+    "fetal biometry": {
+      "n": 6,
+      "pct": 0.2
+    },
+    "brain white matter": {
+      "n": 6,
+      "pct": 0.2
+    },
+    "brain (hippocampus)": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "chest (lungs)": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "brain (pediatric low-grade glioma)": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "abdomen (appendix)": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "brain (connectome)": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "thyroid": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "brain (infant)": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "brain (whole-brain functional connectivity)": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "appendix": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "bone": {
+      "n": 5,
+      "pct": 0.2
+    },
+    "upper extremity": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "brain (cortical surface)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "cervix": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "lung (neonatal)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "fetal (multiple standard planes)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "heart (myocardium)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "coronary arteries": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "brain (resting-state functional networks)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "brain (functional)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "brain (diffuse midline glioma)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "brain (default mode network)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "head": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "brain (structural connectome)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "brain (cerebellum)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "heart (coronary arteries)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "chest (airways)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "orbit": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "whole fetal body": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "brain (gray matter)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "whole body (lymphoma)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "hand and wrist (carpal bones)": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "posterior fossa / brain": {
+      "n": 4,
+      "pct": 0.1
+    },
+    "pancreas": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "pituitary gland": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (ventricles)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "heart (echocardiography)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "spine (back surface topography)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brainstem (pons)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "knee (patellofemoral joint)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "esophagus": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (resting-state functional connectivity)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "placenta / uterus": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "liver (hepatoblastoma)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (amygdala)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (cortical thickness)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "pelvis / hip": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "fetal brain / central nervous system": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "heart (left ventricle)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "skull / craniofacial": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (pediatric brain tumor)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "heart (congenital heart disease)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "spine and pelvis": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (low-grade glioma)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "fetal (whole fetus, biometry)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (lateral ventricles)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "heart (cardiac)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (posterior fossa, medulloblastoma)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "bladder": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "neonatal brain (white matter)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (deep medullary veins)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "neck (cervical lymph nodes)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "hand / wrist": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (functional connectome)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain (cerebral ventricles)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "fetal head/brain": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "brain cortex": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "fetal (fetal weight estimation)": {
+      "n": 3,
+      "pct": 0.1
+    },
+    "fetal and neonatal brain": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal liver": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal brain (ventricles)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "lower limb (femur, tibia)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "heart (neonatal)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "kidney / renal pelvis": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen (neonatal)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "cervix (obstetric imaging)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal heart (aorta)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "posterior fossa (brain)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (choroid plexus)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain white matter tracts": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (myelination)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "whole fetal body, placenta, amniotic fluid": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (tuberous sclerosis complex lesions)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "cerebellum": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen (adipose tissue)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal heart (aortic arch)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "temporomandibular joint": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "skull / head": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal (head, abdomen, femur)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "appendicular skeleton (extremities)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen (intussusception)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen (neuroblastoma primary tumor)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "kidney (renal pelvis)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "heart (ductus arteriosus)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen / retroperitoneum (neuroblastoma)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "head (temporalis muscle)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (gray matter volume)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (fourth ventricle, posterior fossa)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "chest/lung": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal head / pelvis (intrapartum)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (medulloblastoma)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "head/brain": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (whole-brain connectome)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "hip / proximal femur": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (language regions)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (corpus callosum)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal lungs": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (cranial)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal brain and body": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "heart (ventricles)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "liver and spleen (abdomen)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal face (lip and palate)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "kidney (wilms tumor)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (limbic system)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal brain (cerebellum)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (cerebral perfusion)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (white matter and cortex)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "biliary tract": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (posterior fossa / medulloblastoma)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "placenta / uterus (prenatal)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal cerebellum / brain": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "kidney / urinary tract": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "skeletal muscle": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal neck (nuchal translucency)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (supratentorial)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "musculoskeletal": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "ovary / pelvis": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (pediatric glioma)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal (crown-rump length)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "forearm (radius/ulna)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal / obstetric": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "skull (craniosynostosis)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "lumbar spine": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal (general)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "spine (back surface)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal head, abdomen, femur": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "hand and wrist (bone age)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "cervix (prenatal)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "placenta / pelvis": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "pelvis (iliac crest)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen (ileocolic intussusception)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "head and neck": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "heart (mitral valve)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "umbilical cord": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal (first trimester)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (posterior fossa tumors)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "lower extremity (femur, tibia)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal head / maternal pubic symphysis (transperineal)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal brain (lateral ventricles)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal (weight estimation)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "chest / ribs": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal brain (cortical surface)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (language network)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "kidney/abdomen (wilms' tumor)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "gravid abdomen": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "chest / heart": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "gallbladder / biliary": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "lung/chest": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (functional network connectivity)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal (general obstetric ultrasound)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "infant brain": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain and spine": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (preterm infant)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "cervical spine": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (diffusion mri)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen (kidney)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen (peripheral neuroblastic tumors)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (cerebral cortex)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "bone (osteosarcoma)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (basal ganglia, neonatal)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "wrist / distal radius": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "posterior fossa": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "kidney (ureteropelvic junction)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "chest, abdomen and pelvis": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (optic pathway)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (basal ganglia)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "skull (sagittal suture)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (amygdala, hippocampus)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal thorax": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "abdomen and pelvis": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "hippocampus (brain)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal (biometry: head, abdomen, femur)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "lung / chest": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "skull/head shape": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal femur": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "brain (intraparietal sulcus)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "small bowel": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal skull": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "fetal heart (left ventricle)": {
+      "n": 2,
+      "pct": 0.1
+    },
+    "spine (whole-spine radiographs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain/spine (cranial signs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brainstem (diffuse midline glioma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cranium/skull (craniosynostosis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "appendicular skeleton and pelvis": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (csf via fontanelle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (lung, cystic fibrosis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole-brain: white matter, gray matter, csf)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal joints (whole body motion)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (neuroblastoma, pet/ct biodistribution)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (standard plane classification)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter, periventricular)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (epilepsy network)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "biceps, quadriceps, abdomen (body composition)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (posterior fossa tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "wrist and dentition (mandible/maxilla)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen/thorax (organs at risk for flank irradiation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bone (extremity, osteosarcoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervix (maternal, prenatal screening)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "elbow, wrist/forearm, knee, ankle (medicolegally relevant fracture sites)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "not specified (general pediatric imaging appropriateness across clinical scenarios)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "peripheral limbs (hand/wrist, elbow, shoulder, knee/leg, foot/ankle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "orbit / optic nerve (retinoblastoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lower leg, forearm, elbow": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lymphoma (target lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (skeletal survey)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / airway": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (growth)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal abdomen (liver, stomach, artery, umbilical vein)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "musculoskeletal (multiple anatomical regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole-brain functional networks)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervix (transvaginal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain vasculature (cerebral)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pharyngeal airway and hard palate": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (pet/ct)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (tissue-level)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (cardiac ct angiography)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "mediastinal/nodal region (hodgkin lymphoma involved sites)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal biometry (abdomen, femur, head)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pre-implant neuroanatomy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (default mode network, cerebellum, frontal control regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus (multiple anatomical planes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole-brain functional connectome)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "distal radius / wrist": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "soft-tissue sarcoma (rhabdomyosarcoma primary site)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole brain, functional and structural)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "extracranial tissue and cranium (skull, fat, muscle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head; pubic symphysis-fetal head": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal cephalic, thoracic and abdominal structures": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pituitary gland (adenohypophysis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "peripheral venous malformations (extremities)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hip (femoral head ossification center)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior cranial fossa / skull base": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hip / femoral neck": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "upper airway": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "nasopharynx / adenoid": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "embryonic/fetal brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "subcortical brain structures (caudate, putamen, globus pallidus, thalamus, hippocampus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal posterior fossa / brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical/subcortical regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "colon (contrast enema)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (functional connectivity networks)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (pulmonary vein-left atrium junction)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pubic symphysis and fetal head (intrapartum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "forearm (ulna and radius)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "head / brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (ventrotemporal / visual cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (intracranial)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (fetal/pediatric)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen/retroperitoneum (peripheral neuroblastic tumors)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain and vertebrae": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multi-organ (30 organs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (limbic system, prefrontal cortex, default mode network)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "obstetric (uteroplacental/fetal doppler)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain / ventricular shunt (shunt series radiographs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (salience network, visual cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter structural network)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cerebral vasculature (intracranial arteries)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thoracic spine (t1, t7, t12 vertebrae) on chest radiograph": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (coronal curve)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (cavum septum pellucidum et vergae, lateral posterior ventricle horn, choroid plexus, cerebellum, cortical plate)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (multimodal: diffusion tensor imaging, structural mri, resting-state functional connectivity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain and craniofacial structures": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (supratentorial and white matter volume)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal anatomy (first-trimester, biometry, anomaly scan planes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior fossa brain tumor": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (glioma and other brain tumors)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (left ventricular outflow tract)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "small bowel / abdomen": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal eye (cornea, ocular volume)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (limbic structures: amygdala, hippocampus, nucleus accumbens)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (basal ganglia, perivascular spaces)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / maternal pubic symphysis (intrapartum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (lymphoma lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver hilum (right hepatic artery)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head and bladder": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (obstetric ultrasound video)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical thickness, surface area, gray matter volume)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "elbow (supracondylar humerus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (adolescent idiopathic scoliosis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial skeleton (lateral cephalometric radiograph)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal lung / placenta": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (anomaly scan)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney / urinary tract (renal pelvis and calyces)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (lateral ventricles and choroid plexus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skeletal survey (whole body)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (adipose/skeletal muscle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / lumbar spine (bmd)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (full-spine radiographs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (crown-rump length, midsagittal plane)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "knee (musculoskeletal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (mid-trimester anatomy scan)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (raphe nuclei)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "obstetric (fetal/uterine sweep)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cerebellar-cerebral language regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (ventricular system)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (bone marrow, lymphatic regions, organs at risk)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis (iliac crest, ischial tuberosity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thoracic and musculoskeletal": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (kidney/adrenal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "large airways / chest": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (corpus callosum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal anatomy (head, neck, thorax, abdomen, extremities, spine)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "forearm": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain / nuchal translucency": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (gastrointestinal tract)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis (gonads: ovary, testicle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "gestational sac / early pregnancy": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (infant, postmortem)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervix (obstetric)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pediatric skeleton (grazpedwri-dx wrist dataset)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (lymphoma staging)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain / orbit (optic nerve sheath, pituitary, venous sinus, posterior fossa)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (csf spaces)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lung (pulmonary vasculature)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (multiple anomalies)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (epilepsy-associated tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (structural and functional)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (tetralogy of fallot)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter, leukodystrophy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (atrioventricular septal defect)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical thickness, surface area, subcortical volumes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pineal gland)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (gray matter and white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "tibia (lower leg)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (repaired tetralogy of fallot)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal face (orofacial)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (intracranial structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (hodgkin lymphoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (multiple structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervical spinal cord": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (pulmonary arteries, tetralogy of fallot)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonatal, cranial ultrasound)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (thalamus, default mode and frontoparietal networks)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (diffusion imaging, white matter tracts)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine/shoulder (t1 vertebra, clavicles, coracoids)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (peritumoral zone, glioma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine and pelvis (iliac apophysis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / fetal biometry": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal biometry (head, abdomen, femur), placental/umbilical doppler": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (ventromedial prefrontal cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neuroradiology (brain, generic)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole-brain and substructures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "appendicular skeleton (multiple sites)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "airway (mandible, oropharynx)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (ileocolic)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hand-wrist and knee": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain white matter (perivascular spaces)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniospinal (multiple organs at risk)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cranium": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (functional, whole-brain bold)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "elbow (humeroradial joint)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal spine": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (periventricular white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervix (maternal, for preterm birth risk)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (default mode network, structural-functional connectivity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bowel (small bowel/enterography)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "airway / lungs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal biometry (head, abdomen)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bowel (mr enterography)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (opportunistic bone age from chest radiograph)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "coronary arteries (heart)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head/pelvis (intrapartum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "obstetric / fetal": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (postsurgical resection cavity, epilepsy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bone (suspected osteomyelitis site)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "extracranial (germ cell tumors)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (pulmonary vasculature)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pituitary": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (midline glioma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial (cephalometric)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cerebellum, motor cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (whole heart, chest)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervix (transvaginal, prenatal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "knee and ankle": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (growing rod instrumentation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial / skull": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (language networks / white matter tracts)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdominal organs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lungs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pubic symphysis and fetal head": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (neurosonography: occipital white matter, cerebellum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (multiple anatomical structures, incl. four-chamber cardiac view)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / airway (foreign body aspiration)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain / face and ear regions": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "head / brain (epidural hematoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "deep gray matter": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cranial ultrasound, sylvian fissure)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (auditory/visual cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (perimembranous ventricular septal defect)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (prenatal biometry / growth parameters)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial bones": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal biometry / placenta-fetus (twins)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (full-spine sagittal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis (iliac region)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "adenoid / nasopharynx": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (lung and bronchi)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (26 organs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain/spine (craniocervical junction, spinal cord)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "biliary tract / pancreaticobiliary": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "peripheral neuroblastic tumors (abdomen/soft tissue)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (pleural effusion)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (cervical) and brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pineal/suprasellar region, intracranial germ cell tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "temporal bone (inner ear)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver / biliary system": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal biliary system / gallbladder": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (dopamine-related regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (fetal/perinatal organs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bowel": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "back and trunk": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head, abdomen, and thigh": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "soft tissue (rhabdomyosarcoma, various sites)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skull/cranium": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "muscle (lower limb)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (gestational age estimation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "nasopharynx (tonsils and adenoids)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "head (cranium)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hand and forearm": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lower leg (muscle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (first-trimester standard planes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (organs at risk for craniospinal irradiation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal biometry / maternal pelvis": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest/lung (bronchioles)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (liver, spleen)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver / biliary": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spinal cord": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "wrist and elbow": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "long bones": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (anterior cingulate, middle frontal gyrus, orbitofrontal cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior mediastinum": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter, glymphatic system)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (liver)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "forearm / wrist": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain and hand-wrist": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "upper abdomen": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney (nephroblastoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart / general fetal anatomy": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical thickness, subcortical volumes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cranial (brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain, fetal body, placenta": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (tumor and peritumoral region)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (pulmonary arteries)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter networks)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain ventricular system and cerebrospinal fluid (neonatal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis (hip)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (whole fetus/fetal growth)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal anatomy (brain, femur, thorax, cervix, abdomen)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (cervical to lumbar vertebrae)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (hypoxic-ischemic encephalopathy lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "upper airway / brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (thalamus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (general fetal anatomy segmentation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head (occiput-spine angle, intrapartum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "peripheral neuroblastic tumors": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter structural connectome)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart / pulmonary vasculature": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (arteriovenous malformation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior fossa (cerebellum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "not specified (site of vascular malformation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter, perivascular spaces)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (through fontanelle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal anatomy (unspecified structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (lung nodules, bone age hand radiographs, wrist trauma, brain tumor mri, covid-19 chest x-ray)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "breast (adult) and fetal (maternal-fetal common planes and brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (frontal cortex, cingulate, hippocampus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (nuchal translucency, fetal face midsagittal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (multiple sclerosis lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple / not specific (textbook pediatric radiology cases)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "adenoid / nasopharynx (neck and head)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (tumor / radiotherapy planning)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (multiple anatomical structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head/spine (intrapartum orientation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal/embryo (early pregnancy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (right ventricle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "uterus / placenta / fetal brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (putamen, hippocampus, ventral attention network)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen / bowel": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (periventricular/intraventricular)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniospinal axis (13 organs at risk)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervical spine (cephalometric)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal/newborn (general)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cranial (neonatal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonatal, basal ganglia/white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "not specified (general pediatric imaging, e.g. fractures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain white matter": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bone (extremity - osteosarcoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter, neonatal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (skull/head, newborn)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta (also gestational sac, thyroid nodules)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (hippocampus, precuneus, frontal pole, accumbens)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonatal cranial)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen / bowel (intussusception)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (thoracic)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal chest/heart (situs and four-chamber view)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / maternal pubic symphysis (labor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "aorta": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (preterm infant, pda)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "not specified (varied clinical vignettes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (basal ganglia, cerebellum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "shoulder joint": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (thalamocortical circuit)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (general anatomy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (intracranial pressure / hydrocephalus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest/abdomen (neonatal icu radiographs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head (hc18), heart (camus), and nerve (ultrasound nerve) \u2014 public benchmark images": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / thoracic spine": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "infant brain (white matter, diffusion)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal / placenta": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal body and lungs (congenital diaphragmatic hernia)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart / chest (pulmonary arterial hypertension)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / lungs (pulmonary vasculature)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cerebrovascular)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "extremities, pelvis and thorax (bone surfaces)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pediatric neuro-oncology)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "various pediatric tumors (unspecified)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "colon / gastrointestinal (hirschsprung's disease)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thorax and abdomen (lungs, kidneys, liver, spleen, skin boundary)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lungs (pulmonary vasculature)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal neck / face": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver / biliary tree": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (intraoperative)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (hemi-brain / csf)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (doppler cardiac signal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (non-targeted, any orientation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "foot (subtalar / calcaneus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / whole fetus": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (functional network)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (posterior fossa/supratentorial gliomas, whole brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior cranial fossa (brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal face / brain activity proxy": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervix (maternal, imaged during fetal mri)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (leptomeninges)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney and urinary tract": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "utero-placental and feto-placental circulation": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus (multiple anatomic structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "portal venous system / liver": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skeleton (multiple regions incl. pelvis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "subcortical brain structures (hippocampus, thalamus, caudate, lentiform nucleus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus (whole body, placenta, amniotic fluid)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "corpus callosum (brain, white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "white matter regions (25 rois, jhu atlas)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "upper urinary tract / kidney": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal biometry (estimated fetal weight)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "first-trimester obstetric ultrasound": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "body composition (biceps, abdomen, quadriceps)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / lungs (with extrapulmonary assessment)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal biometry (head, abdomen, femur)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart / umbilical cord": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine and clavicles": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal middle cerebral artery (brain vasculature)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pituitary gland, adenohypophysis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "terminal ileum and mesenteric fat": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (focal cortical dysplasia, epilepsy surgery)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney (hydronephrosis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bone marrow / axial skeleton (neuroblastoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (standard planes, general)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (thoracic and lumbar vertebrae)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neuroblastoma and diffuse intrinsic pontine glioma": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (airway)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thoracic spine (vertebral body tethering screws)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (fetal, four-chamber view)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (fetal anomaly screening, standard views)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (basal ganglia, thalamus, white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lower leg muscles": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (hypothalamus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "urinary tract (vesicoureteral reflux)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal body / subcutaneous fat": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (prefrontal cortex, occipital cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney and urinary tract (hydronephrosis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain/spine (cns demyelinating lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus (scan-plane detection) and breast (secondary adult task)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (pulmonary artery)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest/heart": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (lung, neonatal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "forearm, lower leg and elbow": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (among other body regions in other benchmark datasets)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (phantom-based)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (medulloblastoma / cerebellum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (general, obstetric biometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter, fiber orientation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "mandible / craniofacial": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvic/thoracic organs (spleen, bladder, liver, kidney)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (twin pregnancies)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (right inferior frontal gyrus functional connectivity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "gallbladder": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cranial, white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "adrenal gland (abdomen)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "basal ganglia and thalamus (brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "wrist/distal forearm": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (adrenal/renal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "knee and ankle joints": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "not specified (whole-body pet/ct lymphoma lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal genitalia": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (atrial septum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (second-trimester anatomy scan)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "not specified (interventional radiology, vascular)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus (morphology scan, multiple anatomical systems)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "sacroiliac joints": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (mid-trimester biometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (amygdala, hippocampus, white matter tracts)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (skull-stripping / brain extraction)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal lung and liver (chest/abdomen)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pancreas / abdomen": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole head)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal pulmonary vasculature": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "femur (fetal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lumbar spine (neuroblastoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "distal humerus / elbow": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical and subcortical structure)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple body regions": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (whole-body pediatric radiographs, various views)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (three-vessel view: pulmonary artery, aorta, superior vena cava)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (basal ganglia, thalamus, cerebellum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (ribs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pediatric low-grade neuroepithelial tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (standard imaging planes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical-cerebellar circuits)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal kidney/urinary tract": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (posterior fossa, craniospinal axis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (sellar/suprasellar region)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neuroblastic tumors": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (chiari ii malformation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "mandible": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (liver, spleen, pancreas)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical surface morphometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "infant skull (cranial sutures and fontanelles)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brachial plexus and fetal ultrasound images": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / pubic symphysis (intrapartum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney (wilms' tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "basal ganglia / subcortical brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / lung (thoracic)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (amygdala, hippocampus, anterior cingulate cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thoraco-abdominal organs (lungs, kidneys, liver, spleen, skin)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest wall (pectus excavatum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (four-chamber view)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head, maternal pelvis": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (clivus, midline sagittal t1wi)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (lung, mycoplasma pneumonia lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "peripheral bone microarchitecture (hr-pqct)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortex, subcortical structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lymph nodes / systemic (lymphoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "elbow / distal humerus": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (fetal and adult)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (neuroblastoma / neuroblastic tumors)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen/retroperitoneum (neuroblastic tumors)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neck (sternocleidomastoid muscle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (intracranial)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (t1-weighted, 148 rois)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (neuroradiology, gastrointestinal, genitourinary, musculoskeletal, chest, cardiovascular, breast, multisystem, and pediatric radiology cases)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skull / cranium": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (subcortex, functional connectivity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonatal cranial ultrasound)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta and fetal brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (second/third-trimester biometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal lip": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (cardiotocography doppler signal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis (iliac crest, abdominal radiograph)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thigh (muscle and subcutaneous adipose tissue)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart / cardiotocography": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial / cervical spine": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head; also left ventricle, left atrium, bladder (mixed pediatric/adult tasks)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (magnetically controlled growing rod)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "various (pediatric radiology cases)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head (intrapartum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spleen (surrogate for lymphoma subtyping)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (prenatal screening, combined with biochemical markers)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "distal tibia (leg)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart / whole fetus (delivery room monitoring)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / maternal pelvis (intrapartum, asynclitism and angle of progression)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "knee / bone": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "appendicular skeleton (limbs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (white matter tracts)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (intracranial germ cell tumors)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (doppler, gestational age/growth) and maternal (blood pressure)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "nasopharynx (adenoid)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cervix (maternal, for prenatal preterm-birth risk assessment)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal / obstetric standard views": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney (renal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (basal ganglia-thalamus, brainstem)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hip (acetabulum and proximal femur)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (diaphragm)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (trunk posture)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal/placental (umbilical and uterine arteries)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (multimodal with speech)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "appendix/abdomen": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pons)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lower extremity (long leg)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "feto-placental doppler (umbilical artery, middle cerebral artery, aortic isthmus, left ventricular inflow/outflow)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skull / cranial sutures": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal head/brain (germinal matrix)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (various anatomical structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (various organs/planes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "soft tissue / skin": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (amygdala functional connectivity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (organs-at-risk and lymph node areas) and brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (functional network topography)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (cardiac septal defects)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (heart / lung)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (whole-heart, congenital/acquired heart disease)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "sella / pituitary gland": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (lungs, cystic fibrosis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical-thalamic connectivity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal urinary tract": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple body parts (four regions in the study)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal anatomy (prenatal anomaly screening)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal / obstetric (labor monitoring)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (ventricles, parenchyma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "joints (knee, elbow, ankle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (anatomical planes) and maternal cervix": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal/obstetric": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (globus pallidus/basal ganglia)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (including sellar/suprasellar region)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (musculoskeletal, chest, neuroradiology, genitourinary, etc.)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hand and wrist (distal radius and ulna)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal / obstetric (gestational sac, early pregnancy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (oncologic pediatric pet/ct)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (three-vessel view)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pituitary gland)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cranial ultrasound)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (sellar region, craniopharyngioma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (general obstetric scan)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (gray matter, whole brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta (fetal mri)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "head/skull": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (infants/children up to 2 years)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "amygdala and hippocampus (brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal orbits/face": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial, shoulder and pelvic growth centers": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (cardiovascular flow)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bone marrow / whole body (neuroblastoma staging)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver (living-donor liver graft)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal femur, thalamus, abdomen": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (placenta, umbilical artery, ductus venosus, middle cerebral artery)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "vascular malformations (extremity/soft tissue, region not further specified)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart / aortic arch": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (whole fetus, cardiac blood flow)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal face/brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (first-trimester anatomy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (limb movement kinematics)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen/pelvis (neuroblastic tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal cranium, abdomen, femur": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "clavicle": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cerebral veins)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (short-range white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest and abdomen (ct scout views)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bladder / urinary tract": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (dsc perfusion)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lower extremities (femur/tibia)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "axial skeleton (bone marrow) - neuroblastoma": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (whole fetus/orientation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thorax (lymphoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta and fetus": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pancreaticobiliary system / bile ducts": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest/ribs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "temporal bone": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest and musculoskeletal (emergency radiographs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney (renal tumors)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bone (osteosarcoma primary site)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen/whole body (body composition - fat and muscle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "adenoids / upper airway": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pituitary, uterus/ovaries, carpal bones": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "head (sinus, middle ear, mastoid)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest wall (sternum, pectus excavatum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney (renal scintigraphy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head (and left ventricle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (bowel / intussusception)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (patent ductus arteriosus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "foot": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pediatric medulloblastoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta / cervix": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal anatomy (standard planes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney (abdomen)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (cranial, white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (multiple anomalies, whole fetus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (newborn)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (basal ganglia, thalami, deep medullary veins)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (fetal-neonatal connectome)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial skull": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cranial / craniofacial (skull)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (via chest radiograph)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (neuroblastic tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (right ventricular myocardial performance index)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (auditory system, temporal lobe)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (hydrocephalus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "head / orbit (globes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal face/whole body (facial features)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "muscle (lower leg and shoulder)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "tumor and bone marrow (neuroblastoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal body (multi-organ)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (back)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen/pelvis": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head/brain/face/skull": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal anatomy (biometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skeleton (eos biplanar radiograph)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (amniotic fluid)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (lungs, bronchi/arteries)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "nasopharynx (adenoid and airway)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal body (multi-organ: lungs, liver, kidneys, etc.)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis/hip": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine and hand": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior fossa brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (scoliosis screening)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (pons, vermis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (brain and general anatomy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (anatomical structures for biometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (pediatric brain tumors: ependymoma, medulloblastoma, brainstem glioma, pilocytic astrocytoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (preterm)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (cardiac septum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "knee (bone)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lumbar spine (pars interarticularis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (basal ganglia/putamen/globus pallidus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (myelination, infants/young children)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain / intracranial": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (preterm infant, near-infrared optical tomography)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis/adnexa": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (subcutaneous fat, femur/humerus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (whole-heart, great vessels)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (csf volumes, white matter tracts)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (head, abdomen, femur) and amniotic fluid": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thorax and abdomen": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial skeleton": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (demyelinating lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "limb (long bones)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (frontal lobe)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (cortical gyrification)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lung (neonatal, bronchopulmonary dysplasia)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head (and brachial plexus, non-pediatric)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (thalamus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (brain, abdomen)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (optic pathway glioma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bone marrow / whole body (neuroblastoma metastasis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain and maternal-fetal anatomy": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (bone marrow lesions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (pediatric lymphoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (diffusion mri quality control)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta / uterine cavity": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thoraco-abdominal organs (lungs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver/biliary system": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal body (multiple organs: lungs, liver, kidney, etc.)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole fetus": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical microstructure)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hip (newborn)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (percutaneous endoscopic gastrostomy site)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonate, basal ganglia)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta / myometrium": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain and leptomeninges": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lower extremity (hip-knee-ankle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis (ultrasound) and left hand (bone-age radiograph)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (structural connectome, white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "urinary tract / abdomen-pelvis": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen, chest (fast views: cardiac, pleural, upper quadrants, suprapubic)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thigh (quadriceps muscles and patella)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "vasculature (neck/chest/abdomen; takayasu arteritis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (subcortical and cortical regions of interest)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hippocampus/brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head and abdomen": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (germinal matrix)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (claustrum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart / pulmonary veins": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "knee (bone marrow)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cerebral arteries)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "craniofacial": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "distal tibia": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / whole body (neonatal and pediatric intensive care radiographs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonatal, among other datasets: cardiac, adult brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (neck/nuchal fold, abdominal circumference, uterine artery doppler)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (resting-state fmri)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (soft markers)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "soft tissue (sarcoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body / tumor (neuroblastoma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain, spinal cord, heart": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "head (mild traumatic brain injury)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "extremities": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (atrial septal defect)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (colonoscopy polyps, multi-site mri, and fetal ultrasound structures including crown-rump length and fetal foot)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (lymph nodes, fetal head, brachial plexus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (frontal, parietal, temporal, occipital, basal ganglia, limbic regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (colon)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver (abdomen)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "clavicle (infant)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal/neonatal brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skeletal (forensic fracture healing, various bones)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (genital area)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical and sub-cortical)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen and chest": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "paranasal sinuses/head": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (lungs, bronchiolitis obliterans)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (fusiform gyrus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver (maternal, intrahepatic cholestasis of pregnancy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skull / cranial bone": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal cerebellum": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal neck": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (general ct denoising)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (traumatic brain injury)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (whole fetal mri)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (pneumonia)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (preterm neonate)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head, body, heart, abdomen, face": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (structural connectivity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (phantom); head": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal/gestational sac": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "temporal bone (middle ear, otitis media)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta / pelvis (diffusion-weighted imaging)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "ankle, knee, and shoulder joints (musculoskeletal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "temporal bone / middle ear": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pituitary/sella": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thorax (lungs)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal / obstetric (fetal viability, multiple pregnancy, placenta, amniotic fluid, fetal presentation, biometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (thoracic vertebrae)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical thickness, subcortical volume)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / maternal pelvis (intrapartum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (gray and white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis/legs (iliac crest)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neonatal brain (posterior limb of internal capsule)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "ankle and shoulder joints (musculoskeletal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (fusiform, insula, prefrontal cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (general obstetric anatomy scan)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (gray matter: occipito-temporal cortex, insular, inferior frontal, supramarginal gyri)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hepatobiliary (liver)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hand and wrist (compared with elbow)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart / great vessels": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "urinary tract / bladder": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neuroblastoma (primary tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "thigh (muscle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lung (chest)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (aortic arch anomalies)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / maternal pelvis (transperineal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "uterus (lower uterine segment)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "liver (pediatric blunt hepatic trauma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hand and wrist (distal radius)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (first trimester, general)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "uterine cavity and placenta": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (obstetric standard planes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cns tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neurocranium (skull)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cranial bones / craniofacial": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "uterus and fetus": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (anterior cingulate cortex, ventrolateral prefrontal cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "aorta / chest (aortic coarctation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal kidney": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (corticospinal tract)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta and fetal brain (and skin lesions, non-radiologic)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter tracts, thalamus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cerebral ventricles": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain ventricles": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta, amniotic fluid and fetus (early pregnancy)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "amniotic fluid": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal face / brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (biparietal diameter, abdominal circumference, estimated fetal weight)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (21 body regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal spleen": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "calf muscles (soleus, gastrocnemius)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain / spine (central nervous system)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head, abdomen, femur, crown-rump": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter connectome)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brainstem": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis (uterus, prostate)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "prenatal ultrasound anatomy; cephalometric (skull/jaw)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "uterus; fetal brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "common bile duct": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis, humeral heads, femoral heads (iliac crests)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "airways and lungs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart and brain (operator scanning)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (hippocampus and extrahippocampal regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart and lungs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bladder and ureter": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (coronary)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest/upper extremity (catheter tip location)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hand and wrist (finger, hand, ankle joints)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lower leg": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (intestine)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (patent ductus arteriosus, premature infants)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "airway / lung (small airway)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "appendix / right lower quadrant": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "retroperitoneum": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (tricuspid valve)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter connectivity)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lung (metastasis screening) / bone": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal ultrasound scanning (task/plane classification)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (whole-fetus landmarks)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lungs (thorax)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (whole fetus/placenta)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "cerebellum and brain stem": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest/lungs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (frontostriatal circuits)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "spine (thoracolumbar)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior fossa / cerebellum": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain lateral ventricles": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen and brainstem": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (intrauterine cavity/placenta)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lower limb": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole pediatric mri volumes, t1/t2)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "uterus and placenta": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain/head": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "shoulder": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "whole body (distal femur, proximal tibia)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal abdominal aorta": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cerebral blood flow)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus and maternal cervix": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (organs at risk)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain / ventricles (hydrocephalus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "pelvis and hip": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (basal ganglia - dystonia)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "radius, distal tibia, proximal tibia, distal femur, calcaneus": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "internal auditory canal / cranial nerves": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (neurosonography, transventricular plane)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (optic pathway / chiasmatic region)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "multiple (brachial plexus, fetal head, lymph node; generalization tested on brain and lung)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "bone (osteosarcoma site, unspecified)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (pulmonary veins, left atrium)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (functional connectivity network)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / lung fields": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain / optic nerve": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hip and pelvis": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart (ventricular septum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "intracranial vessels (brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain and hand": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "humerus / chest (incidental bone)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "clavicle (sternoclavicular joint)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole-brain, hemispheres)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head / face (first trimester)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (subcortical structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (umbilical doppler) / maternal circulation": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neck (airway and soft tissues)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "not specified": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole brain, 132 regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "anterior visual pathway (brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta (and brain tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus, gestational sac and placenta": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal head, adult brain and heart": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus (scan planes) and abdominal organs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (sensorimotor cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical surface, white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "body (pulmonary veins / thoracic mra)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen/pelvis (multi-organ, including uterus/conceptus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus, abdomen, brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonatal skull stripping)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (and brain tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "back and spine": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (infant, skull stripping)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal abdomen, head, femur": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (left ventricle, left atrium)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "placenta / fetal ultrasound": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (spine, abdomen, heart, head)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (anomaly screening, including cardiac planes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (general anomaly scan)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonate)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cortical morphometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter tractography)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (regional volumetric measures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (plus retina and skin, non-radiologic)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter, diffusion mri)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "distal tibia and radius (extremities)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen (liver, spleen, spinal cord)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest (and retina, non-radiologic)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "trunk (neck-chest-abdomen-pelvis)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal cardiovascular/cerebral/placental circulation": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal organs and brain tumor": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "heart (pulmonary valve/artery)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (visual cortex)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (posterior fossa/embryonal tumor)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (whole fetus/fetal structures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (thalamus, hippocampus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "temporal bone / inner ear": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (white matter, dti)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain and lung": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hip (acetabulum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hip (neonatal)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cerebral vasculature)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (cerebral ventricles), cranial": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal body / amniotic fluid": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "lung/chest (respiratory muscle)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "head/cochlea": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal (first-trimester screening)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "corpus callosum": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (posterior fossa tumors, radiotherapy setup)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "anterior visual pathway": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (gray matter, fusiform, frontal regions)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior cranial fossa / cerebellum": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "neck, chest, abdomen and pelvis": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "extremity": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "chest / neck (endotracheal tube position)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hand (left hand bones)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (infant brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skin / vascular lesions (infantile hemangioma)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "kidney and bladder": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal/obstetric (whole composite volumes)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skull (cranial sutures)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal heart / fetal activity": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetus (whole-fetus motion)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "posterior fossa / inferior olivary nuclei (brain)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole-brain functional connectivity network)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "femur (fetal ultrasound) and brain (adult mri)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain, amygdala": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal brain (frontal lobe, basal ganglia, mesencephalon, cerebellum)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (auditory processing)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (caudate nucleus)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (radiotherapy patient setup)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (whole-brain morphometry)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "hippocampus / brain": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "skull (neonatal head)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (frontal lobe white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "fetal genital organs": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "abdomen and thorax (spine, diaphragm, pelvis, to assist neuroblastoma tumor segmentation)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "brain (neonatal head, white matter)": {
+      "n": 1,
+      "pct": 0.0
+    },
+    "frontal lobe brain": {
+      "n": 1,
+      "pct": 0.0
+    }
+  },
+  "fetal": {
+    "n": 784,
+    "pct": 23.9,
+    "modality": {
+      "ultrasound": 550,
+      "MRI": 235,
+      "multiple": 9,
+      "CT": 6,
+      "x-ray / radiography": 3,
+      "other": 2
+    },
+    "task": {
+      "segmentation": 238,
+      "detection / diagnosis": 228,
+      "measurement / quantification": 217,
+      "outcome prediction": 111,
+      "workflow / non-interpretive": 86,
+      "reconstruction / imputation": 59,
+      "other": 28,
+      "foundation model / vision-language": 16,
+      "report generation / LLM": 9,
+      "agent / autonomous": 4
+    }
+  },
+  "funnel": {
+    "included": 3286,
+    "external_or_multicenter": {
+      "n": 592,
+      "pct": 18.0
+    },
+    "reader_study": {
+      "n": 187,
+      "pct": 5.7
+    },
+    "prospective": {
+      "n": 99,
+      "pct": 3.0
+    },
+    "code_available": {
+      "n": 87,
+      "pct": 2.6
+    },
+    "open_source": {
+      "n": 157,
+      "pct": 4.8
+    },
+    "commercial": {
+      "n": 140,
+      "pct": 4.3
+    },
+    "named_model": {
+      "n": 763,
+      "pct": 23.2
+    }
+  },
+  "eras": {
+    "2005-2014": {
+      "n": 71,
+      "external_pct": 4.2,
+      "reader_pct": 4.2,
+      "prospective_pct": 2.8,
+      "internal_only_pct": 85.9,
+      "none_stated_pct": 2.8,
+      "multi_center_pct": 8.5,
+      "single_center_pct": 22.5,
+      "open_source_pct": 0.0,
+      "commercial_pct": 4.2,
+      "unclear_pct": 95.8
+    },
+    "2015-2019": {
+      "n": 385,
+      "external_pct": 12.7,
+      "reader_pct": 4.4,
+      "prospective_pct": 1.8,
+      "internal_only_pct": 74.0,
+      "none_stated_pct": 7.0,
+      "multi_center_pct": 10.6,
+      "single_center_pct": 36.9,
+      "open_source_pct": 1.6,
+      "commercial_pct": 0.8,
+      "unclear_pct": 96.6
+    },
+    "2020-2022": {
+      "n": 790,
+      "external_pct": 15.7,
+      "reader_pct": 7.5,
+      "prospective_pct": 1.6,
+      "internal_only_pct": 72.2,
+      "none_stated_pct": 3.0,
+      "multi_center_pct": 16.3,
+      "single_center_pct": 39.1,
+      "open_source_pct": 5.3,
+      "commercial_pct": 3.3,
+      "unclear_pct": 91.3
+    },
+    "2023-2026": {
+      "n": 2040,
+      "external_pct": 20.4,
+      "reader_pct": 5.3,
+      "prospective_pct": 3.8,
+      "internal_only_pct": 65.9,
+      "none_stated_pct": 4.6,
+      "multi_center_pct": 22.4,
+      "single_center_pct": 29.3,
+      "open_source_pct": 5.3,
+      "commercial_pct": 5.3,
+      "unclear_pct": 86.3
+    }
+  },
+  "by_year": {
+    "2005": 1,
+    "2006": 2,
+    "2007": 3,
+    "2008": 8,
+    "2009": 6,
+    "2010": 4,
+    "2011": 6,
+    "2012": 15,
+    "2013": 8,
+    "2014": 18,
+    "2015": 42,
+    "2016": 41,
+    "2017": 66,
+    "2018": 102,
+    "2019": 134,
+    "2020": 186,
+    "2021": 258,
+    "2022": 346,
+    "2023": 375,
+    "2024": 505,
+    "2025": 589,
+    "2026": 571
+  },
+  "top_venues": {
+    "Scientific reports": 133,
+    "Pediatric radiology": 98,
+    "Medical image analysis": 65,
+    "European radiology": 57,
+    "NeuroImage": 54,
+    "PloS one": 52,
+    "IEEE journal of biomedical and health informatics": 50,
+    "Lecture notes in computer science": 47,
+    "Diagnostics (Basel, Switzerland)": 46,
+    "Computers in biology and medicine": 45,
+    "Frontiers in neuroscience": 44,
+    "IEEE transactions on medical imaging": 42,
+    "Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE Engineering in Medicine and Biology Society. Annual International Conference": 40,
+    "Medical physics": 35,
+    "Quantitative imaging in medicine and surgery": 33,
+    "BMC medical imaging": 33,
+    "Frontiers in pediatrics": 33,
+    "Academic radiology": 31,
+    "NeuroImage. Clinical": 31,
+    "Radiology. Artificial intelligence": 30,
+    "medRxiv : the preprint server for health sciences": 30,
+    "Proceedings. IEEE International Symposium on Biomedical Imaging": 30,
+    "Human brain mapping": 29,
+    "Journal of imaging informatics in medicine": 28,
+    "AJNR. American journal of neuroradiology": 28
+  },
+  "conference_venue_share": {
+    "n": 261,
+    "pct": 7.9
+  },
+  "dataset_size": {
+    "n_reported": 1805,
+    "pct_reported": 54.9,
+    "median": 537,
+    "q1": 203,
+    "q3": 2017
+  }
+}

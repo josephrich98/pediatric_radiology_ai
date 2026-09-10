@@ -1,0 +1,2608 @@
+{
+  "40423258": {
+    "model_name": "",
+    "model_family": "CNN2D, CNN1D, LSTM, GRU (VGG16 feature extraction)",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "diagnosis of attention deficit hyperactivity disorder (ADHD) from brain imaging",
+    "patient_population": "ADHD200 dataset population (demographic and anatomical MRI data); background states ADHD affects ~5% of children and ~2.5% of adults",
+    "age_groups": [
+      "mixed pediatric and adult"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "3D anatomical MRI scans are converted to 2D feature maps using a pre-trained VGG16 network, then combined with personal attributes (age, sex, IQ, handedness) and classified by CNN2D, CNN1D, LSTM, and GRU architectures to output an ADHD diagnosis label. The best-performing LSTM model combined MRI-derived features with clinical attributes.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "ADHD200 dataset (diverse ADHD population); 10-fold cross-validation",
+    "data_source": "public dataset",
+    "validation": "internal only",
+    "headline_result": "LSTM model accuracy 0.86, AUC 0.90",
+    "study_design": "retrospective proof-of-concept diagnostic model development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "low"
+  },
+  "40511070": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "narrative review of clinical/biomarker preeclampsia prediction models; AI/ML mentioned only as a future research direction, not an evaluated method",
+    "confidence": "high"
+  },
+  "40513496": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "general review of intrapartum ultrasound technique; AI mentioned only as a future perspective, no AI model evaluated",
+    "confidence": "high"
+  },
+  "40514279": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "DTI tractography study using conventional statistical (AUC) prognostic analysis; no AI/ML model",
+    "confidence": "high"
+  },
+  "40515976": {
+    "model_name": "",
+    "model_family": "deep learning and traditional machine learning (hyperparameter-tuned)",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "heart / pulmonary vasculature",
+    "clinical_problem": "estimating pulmonary hemodynamics (mean pulmonary arterial pressure and pulmonary vascular resistance) noninvasively, avoiding cardiac catheterization",
+    "patient_population": "children with pulmonary arterial hypertension",
+    "age_groups": [
+      "pediatric (unspecified)"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "Cardiac MRI cine images are input to deep learning and traditional machine-learning models trained to classify severity profiles (low/high/extreme) of mean pulmonary arterial pressure (mPAP) and pulmonary vascular resistance index (PVRi), aiming to replace invasive catheterization for hemodynamic assessment.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "40 CMR studies from children with PAH",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "AUC 0.82 (mPAP), AUC 0.73 (PVRi)",
+    "study_design": "retrospective exploratory pilot study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40528527": {
+    "model_name": "",
+    "model_family": "diffusion probabilistic generative model",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "accelerating in-NICU neonatal brain MRI to reduce scan time",
+    "patient_population": "sick infants imaged with a permanent-magnet 1 Tesla scanner in the NICU",
+    "age_groups": [
+      "neonate"
+    ],
+    "task": [
+      "reconstruction / imputation"
+    ],
+    "model_description": "A diffusion probabilistic generative model reconstructs high-quality neonatal brain MR images from undersampled k-space data, trained on low-SNR, low-quantity real-world 1T NICU MRI data using self-supervised denoising and posterior-sample averaging, to shorten scan time while maintaining diagnostic quality.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "clinical 1T neonatal MR image dataset (Aspect Imaging and Sha'are Zedek Medical Center); reader study on 1.5x undersampled data",
+    "data_source": "single center",
+    "validation": "reader study",
+    "headline_result": "reader study suggests images reconstructed at R\u22481.5 undersampling are adequate for clinical use",
+    "study_design": "retrospective technical development with clinical reader study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40561751": {
+    "model_name": "",
+    "model_family": "causal discovery analysis (CDA), a machine learning algorithm",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "identifying neural and environmental factors causally related to psychosis proneness in youth",
+    "patient_population": "194 healthy adolescent and young adult twin/sibling pairs, aged 14-24 years",
+    "age_groups": [
+      "adolescent",
+      "mixed pediatric and adult"
+    ],
+    "task": [
+      "other"
+    ],
+    "model_description": "Working-memory fMRI activation is combined with sociodemographic, environmental, cognitive, and self-schema variables (37 variables total) and analyzed with causal discovery analysis, a machine-learning algorithm, to infer directional causal relationships underlying psychosis proneness.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "194 adolescent/young adult twin and sibling pairs",
+    "data_source": "not stated",
+    "validation": "internal only",
+    "headline_result": "negative self-schema effect size 0.54; social cohesion/trust effect size -0.18; PPS to DLPFC activation effect size 0.12",
+    "study_design": "cross-sectional observational study with causal discovery analysis",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40582483": {
+    "model_name": "",
+    "model_family": "deep learning (CNN, unspecified architecture)",
+    "modality": [
+      "CT"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "detecting hypoxic-ischemic brain injury on early head CT after cardiac arrest, including injury not visible to radiologists",
+    "patient_population": "children after out-of-hospital cardiac arrest, imaged within 24 hours",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "detection / diagnosis",
+      "outcome prediction"
+    ],
+    "model_description": "Deep learning models are trained on early head CT images to discriminate scans from children after out-of-hospital cardiac arrest from age-matched controls, to predict death and unfavorable neurologic outcome, and to identify hypoxic-ischemic brain injury not visually apparent to a radiologist.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "117 out-of-hospital cardiac arrest cases (age 3.1 [0.7-12.2] years) vs age-matched controls",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "mean AUC 0.87 (case vs control); AUC 0.79 (death), 0.69 (unfavorable outcome); AUC 0.98 (radiologist-identified HIBI vs control)",
+    "study_design": "retrospective diagnostic/prognostic model development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40582896": {
+    "model_name": "",
+    "model_family": "three-stage deep learning framework (CNN-based) with Grad-CAM explainability",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "brain (through fontanelle)",
+    "clinical_problem": "noninvasive screening for infant meningitis, reducing need for lumbar puncture",
+    "patient_population": "30 infants with suspected meningitis and a permeable fontanelle at three Spanish university hospitals",
+    "age_groups": [
+      "infant"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "High-resolution transfontanelle ultrasound images (Neosonics technology) are processed through a three-stage deep learning pipeline: quality control/vessel identification, classification of images as meningitis or control based on a white-blood-cell-count threshold, and Grad-CAM-based explainable AI visualization to support interpretability.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "30 infants (16 evaluable: 6 meningitis cases, 10 controls); 781 images in stage 2",
+    "data_source": "multi center",
+    "validation": "internal only",
+    "headline_result": "93% precision, 92% image-level accuracy, 94% patient-level accuracy, 100% sensitivity, 90% specificity",
+    "study_design": "retrospective diagnostic accuracy study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40587357": {
+    "model_name": "BiPCC (Bidirectional Prototype-guided Consistency Constraint)",
+    "model_family": "semi-supervised deep learning segmentation",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "fetal anatomy (unspecified structures)",
+    "clinical_problem": "fetal ultrasound image segmentation for fetal development assessment and intrauterine surgery planning",
+    "patient_population": "fetal ultrasound images",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "segmentation"
+    ],
+    "model_description": "A semi-supervised segmentation method uses prototypes generated from labeled fetal ultrasound images to create pseudo-labels for unlabeled images, and pseudo-prototypes to segment the labeled data inversely, achieving bidirectional consistency; uncertainty-based cross-supervision further refines pseudo-label quality, reducing the need for large annotated datasets.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "two fetal ultrasound datasets (plus two general medical segmentation datasets for generalization testing)",
+    "data_source": "public dataset",
+    "validation": "internal only",
+    "headline_result": "BiPCC outperforms state-of-the-art semi-supervised fetal US segmentation methods (no single metric stated)",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40593964": {
+    "model_name": "InBnFUS and CNNDen-GRU",
+    "model_family": "inception/inverted-bottleneck CNN fusion and dense CNN with GRU",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "breast (adult) and fetal (maternal-fetal common planes and brain)",
+    "clinical_problem": "automated classification of maternal-fetal ultrasound planes/anomalies (alongside breast cancer classification)",
+    "patient_population": "maternal-fetal ultrasound dataset (common planes and fetal brain) and a separate breast ultrasound dataset",
+    "age_groups": [
+      "fetal",
+      "mixed pediatric and adult"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "Two novel CNN architectures (an inception/inverted-bottleneck fusion network, and a dense CNN with an integrated GRU layer) are trained on ultrasound images to jointly classify breast cancer and maternal-fetal ultrasound findings (common planes and fetal brain), using data augmentation and global-average-pooling/GRU feature extraction feeding neural-network classifiers.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "breast cancer and maternal-fetal (common planes and brain) ultrasound datasets (sizes not stated)",
+    "data_source": "public dataset",
+    "validation": "internal only",
+    "headline_result": "accuracy 99.0% (breast), 96.6% (maternal-fetal common planes), 94.6% (maternal-fetal brain)",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40613839": {
+    "model_name": "",
+    "model_family": "neural networks (three compared architectures)",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "kidney / urinary tract",
+    "clinical_problem": "classifying urinary tract dilation (UTD) severity from renal ultrasound",
+    "patient_population": "infants \u22643 months old imaged for prenatal urinary tract dilation or urinary tract infection",
+    "age_groups": [
+      "infant"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "Sagittal renal ultrasound images from infants are input to three deep learning models trained with cross-entropy loss to predict urinary tract dilation (UTD) classification grade, with performance benchmarked against an expert pediatric uroradiologist's ground-truth labels using four-fold cross-validation.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "492 right and 487 left renal ultrasounds (infants \u22643 months, mean age 1.2 months)",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "prediction accuracy 88.7% (right) / 80.5% (left) kidney; weighted kappa 0.90/0.87; binarized mild vs severe accuracy 96.3%/91.3%",
+    "study_design": "retrospective diagnostic model development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40614758": {
+    "model_name": "D-BAFN (Dual-Branch Attention Fusion Network)",
+    "model_family": "ResNet-18 + Mamba Vision (state-space model) dual-branch CNN with self-attention fusion",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "chest",
+    "clinical_problem": "detecting pneumonia on chest radiographs",
+    "patient_population": "pediatric pneumonia chest radiograph dataset (binary classification) and a multi-source dataset including pneumonia, COVID-19, and normal cases (multiclass)",
+    "age_groups": [
+      "pediatric (unspecified)",
+      "mixed pediatric and adult"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "A dual-branch network combining a pretrained ResNet-18 CNN and a Mamba Vision state-space model extracts complementary local and global chest radiograph features, fused via self-attention, to classify images as normal versus pneumonia (and, on a second dataset, pneumonia/COVID-19/normal).",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "two publicly available chest x-ray datasets (a pediatric pneumonia dataset, and a multi-source pneumonia/COVID-19/normal dataset)",
+    "data_source": "public dataset",
+    "validation": "internal only",
+    "headline_result": "accuracy 97.78% (binary pediatric pneumonia dataset); accuracy 97.20%, AUC 0.997 (multiclass dataset)",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40618557": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "review of intraoperative biliary imaging modalities (IOC, ICG fluorescence, LUS, ERCP); AI mentioned only in passing as an emerging technology",
+    "confidence": "high"
+  },
+  "40624375": {
+    "model_name": "",
+    "model_family": "commercially available AI fracture-detection software",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "appendicular skeleton and pelvis",
+    "clinical_problem": "fracture detection in children with osteogenesis imperfecta",
+    "patient_population": "48 patients with osteogenesis imperfecta from a single OI clinic",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "A commercially available AI fracture-detection tool analyzes appendicular and pelvic radiographs from children with osteogenesis imperfecta to flag fractures; seven radiologists' accuracy was compared before and after seeing the AI output, against a consensus reference standard.",
+    "release_status": "commercial",
+    "release_evidence": "a commercially available AI tool for fracture detection",
+    "code_url": "",
+    "dataset_size": "336 images from 48 patients (mean age 12 years), 206 fractures",
+    "data_source": "single center",
+    "validation": "reader study",
+    "headline_result": "AI per-exam accuracy 74.8%, radiologists alone 83.4%, radiologists with AI 90.7%",
+    "study_design": "retrospective external validation, multireader study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40650735": {
+    "model_name": "ChatGPT-4V, Claude 3.5 Sonnet, Gemini 1.5 Pro",
+    "model_family": "large language models (multimodal, text-based case inputs)",
+    "modality": [],
+    "body_region": "multiple / not specific (textbook pediatric radiology cases)",
+    "clinical_problem": "generating differential diagnoses from text-based image descriptions and clinical presentations in pediatric radiology",
+    "patient_population": "164 cases retrospectively selected from a pediatric radiology textbook",
+    "age_groups": [
+      "pediatric (unspecified)"
+    ],
+    "task": [
+      "report generation / LLM"
+    ],
+    "model_description": "Text-based image descriptions (with and without clinical presentation) from pediatric radiology textbook cases were given to three commercial large language models, which generated a top-1 diagnosis and top-3 differential diagnosis list; accuracy was scored against the textbook's published diagnoses.",
+    "release_status": "commercial",
+    "release_evidence": "ChatGPT-4V, Claude 3.5 Sonnet, and Gemini 1.5 Pro are proprietary/commercial LLM products",
+    "code_url": "",
+    "dataset_size": "164 pediatric radiology textbook cases",
+    "data_source": "not stated",
+    "validation": "internal only",
+    "headline_result": "top-1 accuracy: ChatGPT-4V 56.1-64.0%, Claude 3.5 Sonnet 64.6-80.5%, Gemini 1.5 Pro 61.6%",
+    "study_design": "retrospective diagnostic accuracy comparison",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40660927": {
+    "model_name": "mViT (modified 3D Vision Transformer)",
+    "model_family": "vision transformer with sparse-coding network head, self-supervised",
+    "modality": [
+      "CT"
+    ],
+    "body_region": "heart",
+    "clinical_problem": "denoising pediatric cardiac photon-counting CT to preserve congenital heart defect anatomy at variable image quality",
+    "patient_population": "20 pediatric patients (ages 1-18 years) undergoing cardiac photon-counting CT",
+    "age_groups": [
+      "child",
+      "adolescent"
+    ],
+    "task": [
+      "reconstruction / imputation"
+    ],
+    "model_description": "A modified 3D Vision Transformer, trained self-supervised on pediatric cardiac photon-counting CT data with variable noise levels, denoises images by dynamically balancing data fidelity against sparse dictionary representation to match local noise estimates, aiming to preserve coronary, valve, and ventricular anatomy relevant to congenital heart defect diagnosis.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "20 patients (ages 1-18) on a NAEOTOM Alpha PCCT scanner; testing included 3 additional patients and a preclinical murine dataset",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "lower intensity variance and comparable intensity bias vs competing denoising methods (bilateral filtration, NLM, dictionary SC, BM4D, OMP, Noise2Void)",
+    "study_design": "retrospective technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40661653": {
+    "model_name": "CAD4TB",
+    "model_family": "computer-aided detection (CAD) software",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "chest",
+    "clinical_problem": "active case-finding for tuberculosis using portable digital chest x-ray with computer-aided detection",
+    "patient_population": "individuals 4 years and above presenting for TB screening during active case-finding activities in Nigeria",
+    "age_groups": [
+      "mixed pediatric and adult"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "An ultra-portable digital chest x-ray unit paired with CAD4TB computer-aided detection software screens chest radiographs for features suggestive of tuberculosis, generating an abnormality score used to flag presumptive TB cases for confirmatory testing.",
+    "release_status": "commercial",
+    "release_evidence": "the country acquired and rolled out 10 UPDX with computer-aided detection (CAD4TB) software",
+    "code_url": "",
+    "dataset_size": "94,694 subjects aged 4 years and above screened",
+    "data_source": "multi center",
+    "validation": "none / not stated",
+    "headline_result": "10% confirmed TB among screened; average presumptive TB proportion 10.84%",
+    "study_design": "retrospective cross-sectional program evaluation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40663247": {
+    "model_name": "",
+    "model_family": "deep learning (various, reviewed)",
+    "modality": [
+      "MRI",
+      "ultrasound"
+    ],
+    "body_region": "placenta",
+    "clinical_problem": "placental segmentation for quantitative prenatal imaging analysis",
+    "patient_population": "prenatal imaging (MRI and ultrasound) literature, 2019-2024",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "segmentation"
+    ],
+    "model_description": "A literature review synthesizing deep learning approaches for placental segmentation on MRI and ultrasound published 2019-2024, covering architectures, performance across datasets, and the value of combining both modalities for improved segmentation.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "narrative review",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40663667": {
+    "model_name": "",
+    "model_family": "unsupervised deep learning (CNN for slice-to-volume registration, deep image prior for super-resolution)",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "fetal brain",
+    "clinical_problem": "reconstructing high-resolution 3D fetal brain MRI from motion-corrupted 2D slices",
+    "patient_population": "fetal brain MRI (clinical and simulation data)",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "reconstruction / imputation"
+    ],
+    "model_description": "An unsupervised deep learning framework jointly performs slice-to-volume registration (via a CNN predicting rigid transformations) and super-resolution reconstruction (via a deep-image-prior decoder), producing an isotropic high-resolution 3D fetal brain MRI volume from motion-corrupted 2D slices without requiring large external high-resolution training datasets.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "large-magnitude motion-corrupted simulation data plus clinical fetal MRI data",
+    "data_source": "not stated",
+    "validation": "internal only",
+    "headline_result": "outperforms current state-of-the-art fetal brain reconstruction methods (no single metric given)",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40672516": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "machine learning model uses tabular/clinical maternal risk factors (demographic, medical history, toxicology, etc.); not an imaging-based model despite one input category labeled 'ultrasound'",
+    "confidence": "medium"
+  },
+  "40682020": {
+    "model_name": "",
+    "model_family": "support vector machine (SVM), object oriented data analysis",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "identifying functional connectivity correlates of autism spectrum disorder diagnosis and familial liability in toddlers",
+    "patient_population": "24-month-olds from the Infant Brain Imaging Study (IBIS) Network: high-familial-likelihood ASD-positive (n=23), high-likelihood ASD-negative (n=91), low-likelihood ASD-negative (n=27)",
+    "age_groups": [
+      "infant"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "Functional connectivity MRI matrices from 24-month-old infants are analyzed with object-oriented data analysis and classified using a support vector machine to distinguish infants with high familial likelihood and an ASD diagnosis from other groups, alongside network-level connectivity enrichment analyses.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "141 infants (23 HL-ASD-positive, 91 HL-ASD-negative, 27 low-likelihood)",
+    "data_source": "multi center",
+    "validation": "internal only",
+    "headline_result": "SVM accuracy 99% distinguishing HLP from HLN (PPV 96%, NPV 100%); 100% accuracy classifying LLN",
+    "study_design": "prospective cohort study, secondary neuroimaging analysis",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40693471": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "systematic review of fetal neurobehavior/consciousness via 4D ultrasound; AI mentioned only briefly as an emerging analysis tool, not the review's focus",
+    "confidence": "medium"
+  },
+  "40717019": {
+    "model_name": "PAIR (Perinatal Artificial Intelligence in ultrasound)",
+    "model_family": "proprietary AI model (deep learning, retrained across versions)",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "fetal / obstetric",
+    "clinical_problem": "predicting number of days until delivery, including preterm birth risk, from ultrasound images",
+    "patient_population": "pregnant women who delivered at the University of Kentucky, 2017-2021 (extended to 2023)",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "A proprietary AI model is trained on de-identified obstetric ultrasound images to estimate the number of days until delivery, secondarily classifying pregnancies as preterm or term; the model was iteratively retrained (versions 1-4) on growing image sets to improve accuracy.",
+    "release_status": "commercial",
+    "release_evidence": "a proprietary artificial intelligence (AI) model",
+    "code_url": "",
+    "dataset_size": "5,714 pregnant women initially, 19,940 ultrasound exams, 877,141 images; final validation cohort 1,209 patients",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "AUC 0.757 for preterm birth prediction (sensitivity 39%, specificity 93%); R2 up to 0.92 (V4) for days-to-delivery",
+    "study_design": "retrospective model development and validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40726846": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "broad review of AI across obstetrics/gynaecology (fetal monitoring, oncology, fertility, robotic surgery); not specific to pediatric/fetal radiology-AI",
+    "confidence": "medium"
+  },
+  "40726903": {
+    "model_name": "USPN (Ultrasound combined Serological Predict NEC)",
+    "model_family": "XGBoost (best of 12 ML algorithms evaluated)",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "abdomen / bowel",
+    "clinical_problem": "predicting necrotizing enterocolitis (NEC) in preterm neonates",
+    "patient_population": "191 neonates (NEC cases Bell's stage \u2265II and matched controls) in a tertiary NICU",
+    "age_groups": [
+      "neonate"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "Ultrasound findings (bowel wall thickness, edema, gas location, peristalsis, seroperitoneum) are combined with serological markers (WBC, CRP, procalcitonin, etc.) in an XGBoost model, selected from 12 candidate algorithms via cross-validation, to predict necrotizing enterocolitis; SHAP values identify the most influential predictors.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "191 neonates (case-control)",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "cross-validation AUC 0.97; validation-set AUC 0.88 (sensitivity 0.73, specificity 1.00), outperforming ultrasound-only (AUC 0.73) or serology-only (AUC 0.79) models",
+    "study_design": "retrospective case-control model development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40728538": {
+    "model_name": "periventricular IVH net",
+    "model_family": "deep learning with convolutional block attention module",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "brain (periventricular/intraventricular)",
+    "clinical_problem": "detecting and grading periventricular-intraventricular hemorrhage in infants via cranial ultrasound",
+    "patient_population": "1,060 cases and healthy controls from two hospitals, predominantly preterm infants (mean gestational age 32.7 weeks)",
+    "age_groups": [
+      "neonate",
+      "infant"
+    ],
+    "task": [
+      "detection / diagnosis",
+      "measurement / quantification"
+    ],
+    "model_description": "A deep learning model incorporating a convolutional block attention module analyzes cranial ultrasound images to detect and grade periventricular-intraventricular hemorrhage in infants, trained on retrospective two-hospital data and validated prospectively; significance maps and t-SNE visualize the regions and clustering driving model predictions.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "773 participants retrospective (training/validation), 287 prospective two-centre validation",
+    "data_source": "multi center",
+    "validation": "prospective",
+    "headline_result": "retrospective AUC 0.99; prospective validation AUC 0.961, accuracy 0.89",
+    "study_design": "retrospective model development with prospective multicenter validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40753199": {
+    "model_name": "",
+    "model_family": "radiomics with logistic regression nomogram",
+    "modality": [
+      "CT"
+    ],
+    "body_region": "chest / lungs",
+    "clinical_problem": "predicting interstitial lung disease in children with juvenile dermatomyositis",
+    "patient_population": "56 children with juvenile dermatomyositis (32 without ILD, 24 with ILD)",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "Lung tissue on chest HRCT is automatically segmented using 'lung intelligence kit' software, radiomic texture features are extracted, and a radiomics score combined with an autoantibody (anti-MDA5) is used in a logistic-regression nomogram to predict interstitial lung disease in children with juvenile dermatomyositis.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "56 children with juvenile dermatomyositis",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "AUC 0.92 (training), 0.93 (validation)",
+    "study_design": "retrospective single-center diagnostic model development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40758310": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "study population described only as 'young individuals' (adolescence/young adulthood); imaging modality and pediatric-specific age breakdown not stated",
+    "confidence": "low"
+  },
+  "40779006": {
+    "model_name": "",
+    "model_family": "AI-derived imaging indices with logistic regression",
+    "modality": [
+      "CT"
+    ],
+    "body_region": "chest / lungs",
+    "clinical_problem": "predicting respiratory failure in children with severe community-acquired pneumonia",
+    "patient_population": "230 children hospitalized with severe community-acquired pneumonia",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "AI-derived quantitative indices from chest CT (e.g., number and laterality of involved lung lobes) are combined with electronic health record data in logistic regression models to predict respiratory failure in children with severe pneumonia.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "230 children with severe CAP",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "Model 2 sensitivity 84.3%, specificity 59.8% at optimal cutoff (AUC not explicitly stated)",
+    "study_design": "retrospective cohort study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40785270": {
+    "model_name": "",
+    "model_family": "multiple machine learning classifiers (unspecified)",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "characterizing sex differences in brain network organization in preschool autism spectrum disorder",
+    "patient_population": "54 children with ASD (40 boys, 14 girls) and 44 typically developing children (28 boys, 16 girls), aged 2-6 years",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "Resting-state fMRI functional gradient and dynamic functional connectivity features from preschool-aged children are used to train multiple machine learning classifiers to distinguish ASD from typically developing children, separately for boys and girls.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "98 children (54 ASD, 44 typically developing), ages 2-6",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "classification performance evaluated for ASD vs TD (specific accuracy not given in abstract)",
+    "study_design": "cross-sectional case-control neuroimaging study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "low"
+  },
+  "40796464": {
+    "model_name": "",
+    "model_family": "machine learning algorithms (reviewed, not specified)",
+    "modality": [
+      "MRI",
+      "ultrasound"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "review of neuroimaging modalities and advances for assessing neonatal brain development and injury",
+    "patient_population": "neonates in the NICU",
+    "age_groups": [
+      "neonate"
+    ],
+    "task": [
+      "other"
+    ],
+    "model_description": "A narrative review of neonatal neuroimaging covering cranial ultrasound and conventional/advanced MRI (including low-field and portable systems), describing applications of machine learning algorithms, multimodal imaging, and motion-correction techniques to improve bedside assessment of brain development and neurologic injury.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "narrative review",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40800807": {
+    "model_name": "",
+    "model_family": "deep neural network",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "fetal brain white matter",
+    "clinical_problem": "fetal brain tractography for studying white matter development in utero",
+    "patient_population": "fetuses (11 test subjects, gestational ages 23-36 weeks); additional generalization testing on Developing Human Connectome Project data",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "segmentation"
+    ],
+    "model_description": "A deep neural network predicts streamline propagation for fetal brain tractography, taking as input diffusion tensor fiber orientation, prior propagation directions, spatial distance-to-cortex encodings, tissue segmentation, and an atlas-based orientation prior; anatomically constrained filtering rules prune implausible streamlines.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "manually-refined whole-brain fetal tractograms for training; 11 independent test subjects (23-36 weeks GA)",
+    "data_source": "not stated",
+    "validation": "external / multi-center",
+    "headline_result": "superior performance across all evaluated tracts vs comparison methods (no single metric given)",
+    "study_design": "technical development with independent test-set validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40819046": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "dental imaging (dental panoramic tomography); non-radiologic imaging excluded per protocol",
+    "confidence": "high"
+  },
+  "40830854": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "dental imaging (periapical radiographs of dental trauma); non-radiologic imaging excluded per protocol",
+    "confidence": "high"
+  },
+  "40846341": {
+    "model_name": "",
+    "model_family": "pretrained deep-learning transfer-learning features + LASSO + logistic regression (combined model)",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "abdomen / bowel (intussusception)",
+    "clinical_problem": "predicting need for surgical intervention (enema reduction failure) in infant intussusception",
+    "patient_population": "415 infants younger than 8 months with intussusception, from two centers in southeast China",
+    "age_groups": [
+      "infant"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "Deep transfer-learning features extracted from abdominal ultrasound images (via pretrained networks and LASSO feature selection) are combined with clinical variables in a logistic regression model to predict which infants with intussusception will require surgery after enema reduction, validated in an external-center and a prospective cohort.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "415 cases: 280 from Centre 1 (training/internal validation), 85 external validation (Centre 2), 50 prospective validation",
+    "data_source": "multi center",
+    "validation": "prospective",
+    "headline_result": "combined model AUC 0.911 (internal), 0.871 (external), 0.890 (prospective)",
+    "study_design": "retrospective model development with external and prospective validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40847001": {
+    "model_name": "",
+    "model_family": "keypoint region-based convolutional neural network (KR-CNN)",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "spine (thoracic)",
+    "clinical_problem": "automated thoracic Cobb angle measurement for adolescent idiopathic scoliosis screening",
+    "patient_population": "adolescents with adolescent idiopathic scoliosis; institutional AIS registry (83 patients pre/postoperative)",
+    "age_groups": [
+      "adolescent"
+    ],
+    "task": [
+      "measurement / quantification"
+    ],
+    "model_description": "A keypoint region-based CNN is trained on whole-spine standing radiographs to automatically identify landmark keypoints and calculate the thoracic Cobb angle, intended to support scoliosis screening where a trained radiologist may not be available.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "609 training radiographs; 83-patient institutional AIS registry (pre/postoperative) for validation",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "MAE 2.22\u00b0, MSE 9.1, SMAPE 4.29%, ICC 0.98",
+    "study_design": "retrospective model development and validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40860819": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "expert consensus on sinonasal tumor imaging across all ages; not pediatric-specific, AI mentioned only in passing",
+    "confidence": "high"
+  },
+  "40868320": {
+    "model_name": "",
+    "model_family": "series of deep learning networks (background-phase correction, noise masking, velocity anti-aliasing, 3D segmentation)",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "aorta",
+    "clinical_problem": "automating quantitative assessment of aortic hemodynamics from 4D flow MRI",
+    "patient_population": "379 subjects (mean age 43.5\u00b118.6 years) including 147 healthy controls, 147 with bicuspid aortic valve, 10 with mechanical valve prostheses, and 75 pediatric patients with hereditary aortic disease",
+    "age_groups": [
+      "mixed pediatric and adult"
+    ],
+    "task": [
+      "measurement / quantification"
+    ],
+    "model_description": "A fully automated pipeline integrates a series of previously validated deep learning networks to replace manual steps in 4D flow MRI processing (background-phase correction, noise masking, velocity anti-aliasing, aortic 3D segmentation), automatically quantifying pulse wave velocity, peak velocity, and flow energetics, including in a pediatric subgroup with hereditary aortic disease.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "379 subjects, including 75 pediatric patients with hereditary aortic disease",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "automated pipeline succeeded in 365/379 (96%); close correlation with manual analysis (r\u22650.99)",
+    "study_design": "retrospective technical validation study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40870387": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "AI assessed clinical photographs, not a defined radiologic imaging modality (radiography/CT/MRI/ultrasound/nuclear/fluoroscopy)",
+    "confidence": "medium"
+  },
+  "40870964": {
+    "model_name": "",
+    "model_family": "ensemble machine learning (XGBoost, SVM, Random Forest) on radiomic features",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "kidney",
+    "clinical_problem": "differentiating acute kidney injury from chronic kidney disease in children",
+    "patient_population": "31 pediatric subjects: 8 with oliguric AKI, 14 with CKD, 9 healthy controls",
+    "age_groups": [
+      "pediatric (unspecified)"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "Renal parenchyma is manually segmented on grayscale kidney ultrasound images, 124 texture (radiomic) features are extracted using open-source PyFeats, the top 10 features selected by PCA are used to train supervised machine learning classifiers (XGBoost, SVM, Random Forest) to distinguish AKI, CKD, and healthy kidneys.",
+    "release_status": "open-source",
+    "release_evidence": "124 advanced texture features were extracted using the open-source \u00a9PyFeats",
+    "code_url": "",
+    "dataset_size": "31 pediatric subjects (8 AKI, 14 CKD, 9 controls)",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "XGBoost macro-averaged F1 score 0.90",
+    "study_design": "retrospective cross-sectional pilot study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40871896": {
+    "model_name": "FBStrNet",
+    "model_family": "YOLOv5-based detection network with lightweight backbone",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "fetal brain",
+    "clinical_problem": "identifying key anatomical brain structures in early-pregnancy fetal ultrasound screening",
+    "patient_population": "early pregnancy fetal brain ultrasound images",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "FBStrNet, built on a lightweight YOLOv5 backbone with a decoupled detection head and clinical-knowledge-informed false-detection reduction, detects key fetal brain anatomical structures in early-pregnancy ultrasound images in real time (11.5 ms inference) to assist sonographers in anomaly screening.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "internal only",
+    "headline_result": "outperforms state-of-the-art methods; inference time 11.5 ms",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "low"
+  },
+  "40873377": {
+    "model_name": "",
+    "model_family": "DeepLabv3+ (ResNet50 backbone) for segmentation, AgeClassifier (dual ResNet18) for regression",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "lumbar spine",
+    "clinical_problem": "estimating newborn gestational age from plain radiographs",
+    "patient_population": "423 newborns imaged with cross-table lateral radiographs within 24 hours of birth, from two hospitals",
+    "age_groups": [
+      "neonate"
+    ],
+    "task": [
+      "measurement / quantification"
+    ],
+    "model_description": "Cross-table lateral radiographs of newborns are segmented for the five lumbar vertebral bodies using a DeepLabv3+/ResNet50 model, then a dual-ResNet18 AgeClassifier estimates gestational age from vertebral shape; the model was developed at one institution and externally tested at another.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "423 radiographs (256 development, 167 external test)",
+    "data_source": "multi center",
+    "validation": "external / multi-center",
+    "headline_result": "segmentation Dice 0.801; GA estimation MAE 5.2\u00b10.5 days; Bland-Altman bias -0.4 days",
+    "study_design": "retrospective model development with external testing",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40876099": {
+    "model_name": "HarmonicEchoNet",
+    "model_family": "harmonic-convolution deep learning model (DCT-based)",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "fetal heart",
+    "clinical_problem": "automated detection of standard fetal echocardiography views to identify congenital heart conditions",
+    "patient_population": "fetal echocardiography from two private studies (PULSE and CAIFE)",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "HarmonicEchoNet uses harmonic convolution blocks (DCT-based decomposition) and a harmonic spatial/channel squeeze-and-excitation module to automatically detect standard fetal heart views in transverse-sweep or freehand ultrasound video, aiding acquisition for congenital heart disease screening.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "four datasets from two private studies (PULSE, CAIFE)",
+    "data_source": "multi center",
+    "validation": "internal only",
+    "headline_result": "10-15x faster inference (3.9 ms) and 2-7% accuracy improvement over ConvNeXt/DeiT/VOLO baselines",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40890125": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "participant ages not stated as pediatric; uses 'Adolescent-Adult Sensory Profile' questionnaire suggesting possible adult inclusion, no clear pediatric population statement",
+    "confidence": "low"
+  },
+  "40892171": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "broad narrative review of TBI diagnostics/therapeutics/rehabilitation across all populations (pediatric, elderly, military); not specific to pediatric radiology AI",
+    "confidence": "high"
+  },
+  "40900685": {
+    "model_name": "CRL-2025 fetal brain atlas",
+    "model_family": "diffeomorphic deformable registration with kernel regression; deep learning multiclass segmentation models",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "fetal brain",
+    "clinical_problem": "providing a reference atlas and segmentation tools for studying typical/atypical in-utero brain development",
+    "patient_population": "160 fetuses with typically-developing brains, 21-37 gestational weeks",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "segmentation"
+    ],
+    "model_description": "A spatiotemporal (4D) fetal brain MRI atlas (CRL-2025) is built from 160 typically-developing fetal MRI scans via diffeomorphic registration and age-kernel regression, including detailed tissue segmentations and 126-region parcellation, released with deep-learning-based multiclass segmentation models for fine-grained fetal brain MRI segmentation.",
+    "release_status": "open-source",
+    "release_evidence": "these materials are publicly released to support the broader research community",
+    "code_url": "",
+    "dataset_size": "160 fetuses, 21-37 gestational weeks",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "technical development (atlas construction and tool release)",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40901833": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "prospective cohort of adults with presumed tuberculosis; pediatric population noted only as a future research direction",
+    "confidence": "high"
+  },
+  "40924767": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "blood biomarker (flow cytometry) classification of radiation exposure; not an imaging study despite 'radiological' in the title",
+    "confidence": "high"
+  },
+  "40929795": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "phonocardiogram (digital stethoscope audio) analysis; not an imaging modality",
+    "confidence": "high"
+  },
+  "40934807": {
+    "model_name": "SurfGNN (Surface Graph Neural Network)",
+    "model_family": "graph neural network",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain (cortical surface)",
+    "clinical_problem": "predicting neonatal (postmenstrual) brain age from cortical surface MRI features",
+    "patient_population": "481 subjects (503 scans) from a harmonized neonatal MRI dataset",
+    "age_groups": [
+      "neonate"
+    ],
+    "task": [
+      "measurement / quantification"
+    ],
+    "model_description": "SurfGNN models the cortical surface mesh as a sparse graph, using topology-sampling and region-specific learning modules to handle cortical morphometric features at multiple scales, with a score-weighted fusion of nodal representations to predict neonatal brain age and generate interpretable feature-level activation maps.",
+    "release_status": "open-source",
+    "release_evidence": "The codes will be available at https://github.com/ZhuoshL/SurfGNN",
+    "code_url": "https://github.com/ZhuoshL/SurfGNN",
+    "dataset_size": "481 subjects, 503 scans",
+    "data_source": "multi center",
+    "validation": "internal only",
+    "headline_result": "MAE 0.827\u00b10.056 postmenstrual weeks, \u22659.0% improvement over prior state-of-the-art",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40939910": {
+    "model_name": "",
+    "model_family": "AI-based approaches (subset of reviewed methods)",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "fetal brain",
+    "clinical_problem": "methodological approaches to fetal diffusion MRI for studying white matter development",
+    "patient_population": "fetal diffusion MRI literature",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "other"
+    ],
+    "model_description": "A scoping review of 54 articles on fetal diffusion-weighted MRI methodology across datasets, acquisition protocols, preprocessing/denoising, processing/modeling, and atlas construction, noting an emerging trend (n=8 studies) toward artificial-intelligence-based approaches to address fetal motion and development-related challenges.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "54 articles reviewed",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "scoping review",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40943716": {
+    "model_name": "",
+    "model_family": "neural network (best performer among machine learning models compared)",
+    "modality": [
+      "CT"
+    ],
+    "body_region": "chest / lungs",
+    "clinical_problem": "predicting recurrence of spontaneous pneumothorax in adolescents",
+    "patient_population": "299 adolescents with conservatively managed spontaneous pneumothorax",
+    "age_groups": [
+      "adolescent"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "Machine learning models, including a neural network, are trained on chest CT images from adolescents with spontaneous pneumothorax to predict recurrence, with Grad-CAM used to visually confirm that bleb/bulla presence and apical lung regions drive predictions.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "299 adolescents (164 right-sided, 135 left-sided pneumothorax)",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "neural network AUC 0.970 (right), 0.958 (left)",
+    "study_design": "retrospective cohort study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40945809": {
+    "model_name": "",
+    "model_family": "deep learning-based AI model",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "cervix",
+    "clinical_problem": "predicting spontaneous preterm birth from cervical ultrasound, compared to cervical length measurement",
+    "patient_population": "4,224 pregnancies (7,862 cervical ultrasound images) from women who underwent cervical ultrasound during antenatal care in Denmark, 2008-2018",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "A deep learning model is trained directly on cervical ultrasound images to predict spontaneous preterm birth, compared against the standard cervical-length measurement; saliency heat maps identify that the model attends to the inner lining of the lower uterine segment.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "4,224 pregnancies, 7,862 cervical ultrasound images, 19 hospital sites",
+    "data_source": "multi center",
+    "validation": "external / multi-center",
+    "headline_result": "AI AUC 0.75 vs cervical length AUC 0.67 (sensitivity 0.51 vs 0.41 at fixed specificity 0.85)",
+    "study_design": "retrospective multicenter model development and validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "40948501": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "predictive model based on continuous physiologic monitoring (heart rate, oxygen saturation, blood pressure); MRI used only as the outcome label, not as model input",
+    "confidence": "high"
+  },
+  "40976962": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "review of insomnia disorder neurobiology; not pediatric or radiology-AI specific",
+    "confidence": "high"
+  },
+  "40980558": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "adult population (FAI patients mean age 27\u00b19 years; asymptomatic controls also adult); not pediatric",
+    "confidence": "high"
+  },
+  "40989338": {
+    "model_name": "CurriMAE",
+    "model_family": "curriculum-based masked autoencoder (self-supervised pretraining)",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "chest",
+    "clinical_problem": "multi-labeled classification of pediatric thoracic diseases on chest radiographs",
+    "patient_population": "pretrained on CheXpert and ChestX-ray14 (adult datasets), fine-tuned and evaluated on PediCXR (pediatric chest radiograph dataset)",
+    "age_groups": [
+      "pediatric (unspecified)",
+      "mixed pediatric and adult"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "CurriMAE is a masked-autoencoder self-supervised pretraining approach that progressively increases the image masking ratio across four training stages; pretrained on adult chest radiograph datasets (CheXpert, ChestX-ray14) and fine-tuned on the pediatric PediCXR dataset for multi-label pediatric thoracic disease classification.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "pretraining on CheXpert and ChestX-ray14; fine-tuning/evaluation on PediCXR",
+    "data_source": "public dataset",
+    "validation": "internal only",
+    "headline_result": "CurriMAE outperforms ResNet, ViT-S, and standard MAE on PediCXR (specific metric not given)",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "40989812": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "study population explicitly described as 'autistic and non-autistic adults'; not pediatric",
+    "confidence": "high"
+  },
+  "40996343": {
+    "model_name": "ADM-ExNet",
+    "model_family": "adversarial diffusion model with feature-extraction network (GAN + diffusion model, U-Net structure)",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "fetal head (HC18), heart (CAMUS), and nerve (Ultrasound Nerve) \u2014 public benchmark images",
+    "clinical_problem": "reducing speckle noise in ultrasound images to improve image quality for analysis",
+    "patient_population": "public benchmark ultrasound datasets: fetal head circumference (HC18), cardiac (CAMUS), and peripheral nerve (Ultrasound Nerve); not a specific clinical cohort",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "reconstruction / imputation"
+    ],
+    "model_description": "ADM-ExNet replaces the reverse process of a diffusion denoising model with a GAN (U-Net generator/discriminator) and incorporates a structural feature-extraction network into the loss function, to remove simulated Gaussian speckle noise from ultrasound images (including fetal head circumference images) while preserving structural detail.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "three public datasets: HC18, CAMUS, Ultrasound Nerve, images resized to 256x256",
+    "data_source": "public dataset",
+    "validation": "internal only",
+    "headline_result": "PSNR improvement >12 dB, MSE reduction >90%, SSIM 0.941 (\u03c3=10 on HC18) vs 0.369 noisy",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "low"
+  },
+  "40996527": {
+    "model_name": "BoneView BoneAge (Gleamer)",
+    "model_family": "commercially available AI software",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "hand and wrist",
+    "clinical_problem": "bone age assessment for pediatric growth disorders",
+    "patient_population": "203 pediatric patients (mean age 9.0 years, range 2-17) undergoing hand/wrist radiographs for suspected endocrine or growth-related conditions",
+    "age_groups": [
+      "child",
+      "adolescent"
+    ],
+    "task": [
+      "measurement / quantification"
+    ],
+    "model_description": "BoneView BoneAge, a commercial AI software, estimates skeletal bone age from hand and wrist radiographs; its estimates were compared against radiologist-assessed Greulich-Pyle and pediatric-endocrinologist-assessed Tanner-Whitehouse 2 methods using chronological age as reference.",
+    "release_status": "commercial",
+    "release_evidence": "commercially available artificial intelligence-based software (BoneView BoneAge, Gleamer, Paris, France)",
+    "code_url": "",
+    "dataset_size": "203 patients, 157 analyzed with AI/GP; 35-patient subset with TW2",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "AI MAE 1.38 years vs GP 1.30 years vs TW2 2.86 years; AI bias -0.05 years, r=0.857",
+    "study_design": "retrospective proof-of-concept diagnostic accuracy study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41007067": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "review of 3D printing/modeling workflow in neonatal surgery; AI mentioned only as a future direction, no described AI/ML model in current practice",
+    "confidence": "medium"
+  },
+  "41008760": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "dental imaging (panoramic radiographs for dental age estimation); non-radiologic imaging excluded per protocol",
+    "confidence": "high"
+  },
+  "41015898": {
+    "model_name": "",
+    "model_family": "deep learning (reviewed across studies)",
+    "modality": [
+      "x-ray / radiography",
+      "ultrasound"
+    ],
+    "body_region": "hip / pelvis",
+    "clinical_problem": "detecting developmental dysplasia of the hip (DDH) on pelvic radiographs and hip ultrasound",
+    "patient_population": "children (<16 years) at risk of or suspected to have DDH, across 23 included studies",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "A systematic review of 23 studies (n=8,315 ultrasound, n=7,091 radiograph) evaluating deep-learning diagnostic accuracy for detecting developmental dysplasia of the hip on pelvic radiographs and hip ultrasound in children, appraised with the QUADAS-2 risk-of-bias tool.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "23 studies; n=8,315 (ultrasound), n=7,091 (radiographs)",
+    "data_source": "not stated",
+    "validation": "external / multi-center",
+    "headline_result": "AUC 0.80-0.99 (radiographs), 0.90-0.99 (ultrasound); sensitivity 92.9-100% (radiographs), 86.5-100% (ultrasound)",
+    "study_design": "systematic review",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41021277": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "machine learning model predicts liver stiffness from plasma proteome data, not from an image; elastography serves only as the reference outcome measurement",
+    "confidence": "high"
+  },
+  "41025074": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "editorial commentary on a machine-learning serum-biomarker fibrosis score (bile acids, cholinesterase); not an imaging-based model",
+    "confidence": "high"
+  },
+  "41043238": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "conventional fMRI language-lateralization study with statistical group comparisons; no AI/ML model described",
+    "confidence": "high"
+  },
+  "41057564": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "craniofacial/cephalometric radiographic analysis of orthodontic patients for forensic age estimation; classified as dental/orthodontic imaging, excluded per protocol",
+    "confidence": "medium"
+  },
+  "41066904": {
+    "model_name": "",
+    "model_family": "reinforcement-learning drift diffusion model",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "understanding age-related development of multisensory learning and decision-making in children",
+    "patient_population": "67 children, aged 5.7-13 years",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "other"
+    ],
+    "model_description": "Behavioral and fMRI data from children performing audio-visual and tactile-visual associative learning tasks are analyzed with a reinforcement-learning drift-diffusion computational model to characterize age-related changes in learning efficiency, linked to activation in cognitive-control and multisensory-integration brain regions.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "67 children, ages 5.7-13 years",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "",
+    "study_design": "cross-sectional developmental neuroimaging study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "low"
+  },
+  "41069436": {
+    "model_name": "",
+    "model_family": "support vector machine radiomics model combined into a clinical-radiomics nomogram",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain (posterior fossa)",
+    "clinical_problem": "predicting recurrence of medulloblastoma in children after surgical resection",
+    "patient_population": "95 children with medulloblastoma who underwent radical resection",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "Radiomic features extracted from pre-treatment T1WI, T2WI, and contrast-enhanced T1WI MRI are selected via correlation/ANOVA/recursive-elimination methods and used in a support-vector-machine model, combined with clinical variables into a nomogram, to predict two-year recurrence of pediatric medulloblastoma.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "95 children with medulloblastoma",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "hybrid model AUC 0.833 (training), 0.802 (test)",
+    "study_design": "retrospective single-center model development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41089155": {
+    "model_name": "",
+    "model_family": "artificial intelligence (deep learning, reviewed across studies)",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "appendicular skeleton",
+    "clinical_problem": "detecting fractures in children and adolescents on radiographs",
+    "patient_population": "patients under 21 years across 11 included studies",
+    "age_groups": [
+      "child",
+      "adolescent"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "A systematic review and meta-analysis of 11 studies (2019-2024) evaluating standalone and AI-assisted fracture detection accuracy on appendicular radiographs of patients under 21 years, comparing AI sensitivity/specificity to human interpretation.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "11 studies, patients under 21 years",
+    "data_source": "not stated",
+    "validation": "external / multi-center",
+    "headline_result": "standalone AI sensitivity mean difference +0.04 vs human (95% CI 0.02-0.07); AI-assisted clinician sensitivity improvement +0.07",
+    "study_design": "systematic review and meta-analysis",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41103446": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "bibliometric/scientometric analysis of AI applications to autism research broadly (diagnostics, behavioral assessment, interventions); not specific to radiology imaging AI",
+    "confidence": "medium"
+  },
+  "41104915": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "no abstract available; title indicates a point-of-care ultrasound protocol article with no stated AI/ML component",
+    "confidence": "low"
+  },
+  "41121097": {
+    "model_name": "",
+    "model_family": "deep learning integrating multimodal, self-supervised, and multi-instance learning",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "diagnosing acute bilirubin encephalopathy in neonates with hyperbilirubinemia",
+    "patient_population": "262 patients (neonates) with hyperbilirubinemia, with or without acute bilirubin encephalopathy",
+    "age_groups": [
+      "neonate"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "A deep learning model combining multimodal, self-supervised, and multi-instance learning is trained on brain MRI data to diagnose acute bilirubin encephalopathy in neonates with hyperbilirubinemia, with performance compared against radiologists in a held-out test cohort.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "1,048 MR images from 262 patients",
+    "data_source": "not stated",
+    "validation": "internal only",
+    "headline_result": "accuracy 86.3%/91.1%, AUC 91.2%/89.3% in test cohorts 1 and 2",
+    "study_design": "retrospective model development and comparison to radiologists",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41129910": {
+    "model_name": "",
+    "model_family": "Random Forest and Boosted machine learning models",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "wrist and dentition (mandible/maxilla)",
+    "clinical_problem": "combined skeletal and dental age estimation in children and adolescents (forensic)",
+    "patient_population": "453 Italian subadults (227 males, 226 females), ages 6-20 years",
+    "age_groups": [
+      "child",
+      "adolescent"
+    ],
+    "task": [
+      "measurement / quantification"
+    ],
+    "model_description": "Dental age (Demirjian 7-teeth, Demirjian 8-teeth, Willems methods on orthopantomography) and skeletal age (TW3-RUS and Greulich-Pyle methods on wrist radiographs) estimates are combined as inputs to Random Forest and Boosted machine learning models to produce a single combined age estimate for children and adolescents.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "453 subadults, ages 6-20 years",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "Boosted model mean prediction range 1087 days (\u00b11.48 years), smaller error than traditional single-method approaches",
+    "study_design": "retrospective model development and validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "41135419": {
+    "model_name": "",
+    "model_family": "hybrid motion-estimation and K-means clustering (unsupervised machine learning) with interpretable scoring framework",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "lung",
+    "clinical_problem": "automated, reproducible scoring of neonatal lung ultrasound for lung disease diagnosis",
+    "patient_population": "420 neonatal lung ultrasound videos from 70 patients",
+    "age_groups": [
+      "neonate"
+    ],
+    "task": [
+      "measurement / quantification"
+    ],
+    "model_description": "K-means clustering identifies the pleural line from intensity variations while motion estimation detects vertical B-line artifacts across consecutive ultrasound frames; a threshold-based interpretable scoring framework aggregates frame-level scores into a standard lung-ultrasound score, benchmarked against three human operators.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "420 neonatal lung ultrasound videos, 70 patients",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "video-level accuracy 0.72 (majority vote reference), 0.77 (full agreement reference)",
+    "study_design": "technical development and validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "41145659": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "conventional statistical/logistic-regression analysis of clinical and imaging (panoramic radiograph/MRI) characteristics of TMD; no AI/ML model",
+    "confidence": "high"
+  },
+  "41147843": {
+    "model_name": "",
+    "model_family": "artificial intelligence (various, reviewed)",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "review of AI applications across the clinical management of pediatric medulloblastoma, including radiological diagnosis and prognosis",
+    "patient_population": "children with medulloblastoma (literature review)",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "other"
+    ],
+    "model_description": "A review of AI applications across the medulloblastoma care pathway in children, covering radiological segmentation and diagnosis, noninvasive molecular subtyping, pathological analysis, tumor microenvironment characterization, and prognosis prediction, appraising evidence from proof-of-concept to clinical validation.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "narrative review",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "41152101": {
+    "model_name": "",
+    "model_family": "support vector machine radiomics model with SHAP interpretability",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "pituitary gland",
+    "clinical_problem": "predicting growth hormone deficiency in short-statured children, as an alternative to the GH stimulation test",
+    "patient_population": "202 children (internal cohort: 105 GHD, 97 idiopathic short stature) and 138 children (external validation: 61 GHD, 77 ISS)",
+    "age_groups": [
+      "child"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "Radiomic features are extracted from pituitary MRI, selected via SelectKBest and LASSO, and used to train an SVM classifier (and a combined clinical-radiomics model) to predict growth hormone deficiency in children with short stature, with SHAP used for interpretability.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "202 children internal cohort, 138 children external validation cohort (institutions II and III)",
+    "data_source": "multi center",
+    "validation": "external / multi-center",
+    "headline_result": "SVM radiomics AUC 0.877 (training), 0.878 (testing), 0.885 (external validation)",
+    "study_design": "retrospective multicenter model development and external validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41153249": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "dental imaging (panoramic radiographs, tooth segmentation/agenesis detection); non-radiologic imaging excluded per protocol",
+    "confidence": "high"
+  },
+  "41156086": {
+    "model_name": "",
+    "model_family": "six pretrained deep learning models (CNNs and transformer-based), ensembled",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "spine",
+    "clinical_problem": "predicting curve progression in adolescent idiopathic scoliosis from standing radiographs",
+    "patient_population": "542 patients with adolescent idiopathic scoliosis (multicenter), 294 progression and 196 non-progression after exclusions",
+    "age_groups": [
+      "adolescent"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "Six pretrained CNN and transformer-based deep learning models are trained on two regions of interest from standing frontal spinal radiographs (histogram-equalized) to predict whether adolescent idiopathic scoliosis curves will progress \u226510\u00b0 over 2 years; Grad-CAM visualizes model attention, and ensembling improves performance.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "542 patients, multicenter",
+    "data_source": "multi center",
+    "validation": "external / multi-center",
+    "headline_result": "ensemble model AUC 0.769 (ROI 1), 0.755 (ROI 2)",
+    "study_design": "retrospective multicenter model development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41167236": {
+    "model_name": "",
+    "model_family": "convolutional neural network with convolutional LSTM layers, reinforcement learning-guided",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "heart",
+    "clinical_problem": "enabling nonexpert operators to acquire diagnostic-quality neonatal cardiac ultrasound views for remote interpretation, to diagnose congenital heart disease in low-resource settings",
+    "patient_population": "neonates (0-28 days old) suspected of congenital heart disease in Cameroon and South Africa",
+    "age_groups": [
+      "neonate"
+    ],
+    "task": [
+      "detection / diagnosis",
+      "workflow / non-interpretive"
+    ],
+    "model_description": "A planned deep learning model (CNN with convolutional LSTM layers) will be trained on retrospective and prospective neonatal echocardiography video clips to perform real-time detection of 10 standard cardiac views, guiding nonexpert operators (nurses, midwives, doctors) to capture diagnostic-quality images for remote interpretation by a pediatric cardiologist.",
+    "release_status": "unreleased",
+    "release_evidence": "study protocol; project is in the intensive execution phase with final results expected within 10 months",
+    "code_url": "",
+    "dataset_size": "phase 1: ~500 neonates retrospective; phase 2: 1000 neonates prospective; 308 babies collected/labeled to date",
+    "data_source": "multi center",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "study protocol for model development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "41176552": {
+    "model_name": "",
+    "model_family": "3D U-Net convolutional neural network (two CNNs: segmentation and response prediction)",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "bone (extremity, osteosarcoma)",
+    "clinical_problem": "measuring tumor volume and predicting chemotherapy response in pediatric osteosarcoma",
+    "patient_population": "osteosarcoma patients: Centre A mean age 15\u00b15 years (52 males), Centre B mean age 13\u00b10 years (8 males)",
+    "age_groups": [
+      "child",
+      "adolescent"
+    ],
+    "task": [
+      "segmentation",
+      "outcome prediction"
+    ],
+    "model_description": "A 3D U-Net CNN segments osteosarcoma tumors on MRI to quantify volume at baseline and post-chemotherapy, and a second CNN predicts induction-chemotherapy response (using MRI-derived volume changes) against a histopathologic necrosis reference standard, validated across two centers.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "162 scans from 81 patients (Centre A, training); 40 scans from 20 patients (validation, 10 per centre)",
+    "data_source": "multi center",
+    "validation": "external / multi-center",
+    "headline_result": "volume correlation r=0.98 (Centre A)/0.95 (Centre B); response prediction 80% accuracy, 90% sensitivity, 70% specificity",
+    "study_design": "retrospective multicenter model development and validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41186980": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "AI-based gamified mHealth education/reminder intervention to improve antenatal care uptake; not an imaging-analysis AI model (ultrasound completion is only a service-uptake outcome measure)",
+    "confidence": "high"
+  },
+  "41192951": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "quality-improvement project on AI image reconstruction for MRI capacity/workflow across a general MSK/trauma population; pediatric patients mentioned only briefly as one subgroup, not the study's focus",
+    "confidence": "medium"
+  },
+  "41193818": {
+    "model_name": "",
+    "model_family": "deep learning-based image reconstruction",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "reducing MRI turnover time in infants by combining a sedation-free feed-and-wrap technique with deep-learning image reconstruction",
+    "patient_population": "48 infants aged \u22644 months undergoing brain MRI",
+    "age_groups": [
+      "infant",
+      "neonate"
+    ],
+    "task": [
+      "reconstruction / imputation",
+      "workflow / non-interpretive"
+    ],
+    "model_description": "Deep-learning-based image reconstruction shortens brain MRI acquisitions for infants imaged with a natural-sleep feed-and-wrap technique (using an infant MRI stabilizer), compared against general-anesthesia MRI, with MRI-room turnover time as the primary workflow outcome.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "48 infants (DL-feed-and-wrap n=22; general anesthesia n=26)",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "turnover time 23 min (DL-FW) vs 30 min (GA), 7-min reduction (~23%), P=0.013",
+    "study_design": "retrospective single-center comparative study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41203085": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "anterior segment OCT (ophthalmic imaging) review; ophthalmic imaging excluded per protocol, and review is not pediatric-specific",
+    "confidence": "high"
+  },
+  "41209270": {
+    "model_name": "",
+    "model_family": "convolutional neural network (EfficientNet-b0 selected among six architectures)",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "abdomen",
+    "clinical_problem": "diagnosing necrotizing enterocolitis and predicting need for surgery from abdominal radiographs",
+    "patient_population": "576 preterm infants across three medical centers",
+    "age_groups": [
+      "neonate",
+      "infant"
+    ],
+    "task": [
+      "detection / diagnosis",
+      "outcome prediction"
+    ],
+    "model_description": "Six CNN architectures were trained on abdominal radiographs labeled non-NEC, medical-NEC, or surgical-NEC; the best-performing EfficientNet-b0 model was tested at an external, third-center site, and used to generate AI-assisted visualizations shown to clinicians to measure improvement in their diagnostic accuracy.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "738 abdominal radiographs from 576 preterm infants across three centers",
+    "data_source": "multi center",
+    "validation": "external / multi-center",
+    "headline_result": "external test AUC 0.883 (non-NEC), 0.640 (medical-NEC), 0.837 (surgical-NEC); AI assistance improved clinician accuracy by 2.0-26.2%",
+    "study_design": "retrospective multicenter model development with external testing and reader study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41209560": {
+    "model_name": "",
+    "model_family": "attention-enhanced YOLOv11 (with CSP modules and C2PSA spatial attention)",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "hip",
+    "clinical_problem": "real-time automated diagnosis of developmental dysplasia of the hip on ultrasound",
+    "patient_population": "hip ultrasound images (pediatric DDH screening population, size not further specified)",
+    "age_groups": [
+      "pediatric (unspecified)"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "An attention-enhanced YOLOv11 model, incorporating Cross-Stage Partial modules and C2PSA spatial attention and trained with Focal and IoU loss, automatically classifies developmental dysplasia of the hip from ultrasound images, with Grad-CAM confirming attention to the acetabular roof and femoral head landmarks used in Graf classification.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "6,075 hip ultrasound images",
+    "data_source": "not stated",
+    "validation": "internal only",
+    "headline_result": "accuracy 95.05%, inference 11.5 ms/image",
+    "study_design": "technical development",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "41213058": {
+    "model_name": "",
+    "model_family": "AI, machine learning, and deep learning models (various, reviewed)",
+    "modality": [
+      "CT",
+      "multiple"
+    ],
+    "body_region": "craniofacial skeleton",
+    "clinical_problem": "review of AI applications across craniofacial surgery, including prenatal diagnosis of cleft lip/palate, craniosynostosis diagnosis, and CT-based fracture detection/segmentation",
+    "patient_population": "craniofacial surgery patients (literature review, including prenatal diagnosis population)",
+    "age_groups": [
+      "fetal",
+      "pediatric (unspecified)"
+    ],
+    "task": [
+      "detection / diagnosis",
+      "segmentation",
+      "other"
+    ],
+    "model_description": "A review of AI/ML/DL applications across the perioperative stages of craniofacial surgery, including prenatal ultrasound diagnosis of cleft lip and palate, cephalometric analysis for craniosynostosis, CT segmentation and fracture detection, predictive analytics, automated CAD design for patient-specific implants, and augmented-reality navigation.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "narrative review",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "medium"
+  },
+  "41217622": {
+    "model_name": "",
+    "model_family": "logistic regression AI model on morphological ultrasound features",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "liver / biliary tree",
+    "clinical_problem": "differential diagnosis of biliary atresia from other causes of obstructive jaundice",
+    "patient_population": "348 children with obstructive jaundice across six Chinese medical centers",
+    "age_groups": [
+      "infant",
+      "pediatric (unspecified)"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "Morphological operators extract features from ultrasound images of the biliary tree, combined with serum MMP-7 levels in a logistic regression model to diagnose biliary atresia versus other causes of obstructive jaundice, validated in a prospective multicenter cohort.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "187 infants (training cohort: 56 BA, 131 non-BA); 161 patients (prospective validation: 100 BA)",
+    "data_source": "multi center",
+    "validation": "prospective",
+    "headline_result": "combined AI model AUROC 0.985, sensitivity 98.2%, specificity 93.1%",
+    "study_design": "multicenter diagnostic study with prospective validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41219520": {
+    "model_name": "",
+    "model_family": "deep learning-based MRI reconstruction",
+    "modality": [
+      "MRI"
+    ],
+    "body_region": "brain",
+    "clinical_problem": "improving image quality of sedation-free 'silent' infant brain MRI to reduce need for sedation",
+    "patient_population": "78 infants (postmenstrual age \u226416 months)",
+    "age_groups": [
+      "infant",
+      "neonate"
+    ],
+    "task": [
+      "reconstruction / imputation"
+    ],
+    "model_description": "Deep-learning-based reconstruction is applied to an unsedated zero-echo-time (ZTE) 'silent' brain MRI sequence acquired with the feed-and-wrap technique, and image quality is compared against conventional sedated MPRAGE and against ZTE without deep-learning reconstruction, rated by three radiologists.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "78 infants",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "ZTE-DL showed no significant difference from sedated MPRAGE except reduced noisiness, and significantly outperformed ZTE without DL on all metrics (P<0.017)",
+    "study_design": "retrospective single-center comparative study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41222631": {
+    "model_name": "SmartUrgence (Milvue)",
+    "model_family": "commercial AI software",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "elbow, wrist/forearm, knee, ankle (medicolegally relevant fracture sites)",
+    "clinical_problem": "detecting rare but medicolegally high-risk pediatric fractures (lateral humeral condyle, Monteggia, trampoline proximal tibia, medial malleolar)",
+    "patient_population": "125 pediatric patients (ages 2-17 years) with specific high-risk fracture types",
+    "age_groups": [
+      "child",
+      "adolescent"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "SmartUrgence, a commercial AI software, analyzes pediatric radiographs to detect predefined medicolegally high-risk fracture types (lateral humeral condyle, Monteggia, trampoline proximal tibia, medial malleolar fractures); its output is compared against a reference standard set by two pediatric radiologists using imaging and intraoperative data.",
+    "release_status": "commercial",
+    "release_evidence": "a commercial AI-based software (SmartUrgence, Milvue, Paris, France)",
+    "code_url": "",
+    "dataset_size": "125 patients, ages 2-17 years",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "sensitivity 100% (trampoline tibia), 78% (medial malleolar), 73% (lateral condyle), 81% ulnar/2% radial head dislocation (Monteggia)",
+    "study_design": "retrospective single-center diagnostic accuracy study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41231745": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "review of neurosurgical epilepsy surgery techniques (resections/disconnections); AI mentioned only briefly as a future direction",
+    "confidence": "high"
+  },
+  "41238604": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "population and dataset not stated as pediatric-specific; generic 'publicly available CXR dataset' without a named pediatric source",
+    "confidence": "low"
+  },
+  "41250095": {
+    "model_name": "CR-FGR (Cardiac Remodeling for FGR prediction model)",
+    "model_family": "machine-learning-selected logistic regression model",
+    "modality": [
+      "ultrasound"
+    ],
+    "body_region": "fetal heart",
+    "clinical_problem": "predicting fetal growth restriction using fetal cardiac remodeling as a direct marker",
+    "patient_population": "multicenter singleton pregnancies: retrospective development n=663, prospective internal validation n=224, external validation n=51",
+    "age_groups": [
+      "fetal"
+    ],
+    "task": [
+      "outcome prediction"
+    ],
+    "model_description": "From 938 fetal echocardiography videos, 222 cardiac parameters are extracted; a machine learning process selects the five most predictive parameters (right/left ventricular stroke volume and cardiac output, end-systolic area) to build a logistic regression model (CR-FGR) predicting fetal growth restriction, including cases missed by conventional umbilical artery Doppler.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "938 echocardiography videos; development n=663, internal validation n=224, external validation n=51",
+    "data_source": "multi center",
+    "validation": "external / multi-center",
+    "headline_result": "AUC 0.872 (internal validation), 0.831 (external validation); AUC 0.876 for late-onset FGR",
+    "study_design": "multicenter model development with prospective internal and external validation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41251696": {
+    "model_name": "",
+    "model_family": "commercially available AI software (three vendors compared)",
+    "modality": [
+      "x-ray / radiography"
+    ],
+    "body_region": "lower leg, forearm, elbow",
+    "clinical_problem": "detecting posttraumatic findings (fractures, effusions, dislocations) in pediatric emergency radiographs",
+    "patient_population": "3,013 patients (3,414 radiographs), ages 2-17 years, presenting to the emergency department after trauma",
+    "age_groups": [
+      "child",
+      "adolescent"
+    ],
+    "task": [
+      "detection / diagnosis"
+    ],
+    "model_description": "Three commercially available AI software packages are evaluated on pediatric emergency radiographs (lower leg, forearm, elbow) for detecting fractures, joint effusions, and dislocations, with sensitivity, specificity, PPV, and NPV calculated against a reference standard.",
+    "release_status": "commercial",
+    "release_evidence": "three commercially available AI software",
+    "code_url": "",
+    "dataset_size": "3,013 patients, 3,414 radiographs",
+    "data_source": "not stated",
+    "validation": "external / multi-center",
+    "headline_result": "sensitivity 88.4-94.7% (lower leg/forearm), 72.8-91.6% (elbow); posterior fat pad sign sensitivity 40.6-82.3%",
+    "study_design": "retrospective multivendor diagnostic accuracy comparison",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41254528": {
+    "model_name": "CE-Boost (with SR-DLR)",
+    "model_family": "super-resolution deep learning reconstruction (SR-DLR) combined with contrast-enhancement-boost postprocessing",
+    "modality": [
+      "CT"
+    ],
+    "body_region": "heart",
+    "clinical_problem": "reducing contrast agent dose in pediatric congenital heart disease CT angiography while maintaining image quality",
+    "patient_population": "72 pediatric patients with congenital heart disease",
+    "age_groups": [
+      "pediatric (unspecified)"
+    ],
+    "task": [
+      "reconstruction / imputation"
+    ],
+    "model_description": "Contrast enhancement boost (CE-Boost) postprocessing is combined with super-resolution deep learning reconstruction (SR-DLR) to allow a lower contrast agent dose (0.5 vs 1.5 mL/kg) in pediatric congenital heart disease CT angiography, with image quality and diagnostic accuracy compared to the standard-dose protocol.",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "72 pediatric CHD patients (36 low-dose CE-Boost, 36 standard-dose)",
+    "data_source": "single center",
+    "validation": "internal only",
+    "headline_result": "62.3% reduction in contrast agent usage with comparable image quality (P>0.05)",
+    "study_design": "retrospective comparative study",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41255988": {
+    "model_name": "",
+    "model_family": "systematic review and empirical bias evaluation (adult-trained chest radiograph models)",
+    "modality": [
+      "multiple"
+    ],
+    "body_region": "multiple (public imaging datasets generally; chest radiograph bias analysis)",
+    "clinical_problem": "quantifying underrepresentation of children in public medical imaging datasets and resulting age bias in AI models",
+    "patient_population": "180 publicly available medical imaging datasets reviewed; adult-trained chest radiograph models evaluated on pediatric populations",
+    "age_groups": [
+      "pediatric (unspecified)",
+      "mixed pediatric and adult"
+    ],
+    "task": [
+      "other"
+    ],
+    "model_description": "A systematic review of 180 public medical imaging datasets quantifies pediatric representation, surveys data sources used in a machine-learning imaging conference, and evaluates adult-trained chest radiograph AI models applied to pediatric patients to measure age-related performance bias (false positive rates).",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "180 public medical imaging datasets reviewed",
+    "data_source": "public dataset",
+    "validation": "none / not stated",
+    "headline_result": "children represent <1% of data in public medical imaging datasets; only 17% of FDA-approved medical AI devices are labeled for pediatric use; adult-trained CXR models show higher false-positive rates in younger children",
+    "study_design": "systematic review with empirical bias evaluation",
+    "is_pediatric_radiology_ai": true,
+    "exclusion_reason": "",
+    "confidence": "high"
+  },
+  "41268301": {
+    "model_name": "",
+    "model_family": "",
+    "modality": [],
+    "body_region": "",
+    "clinical_problem": "",
+    "patient_population": "",
+    "age_groups": [],
+    "task": [],
+    "model_description": "",
+    "release_status": "unclear",
+    "release_evidence": "",
+    "code_url": "",
+    "dataset_size": "",
+    "data_source": "not stated",
+    "validation": "none / not stated",
+    "headline_result": "",
+    "study_design": "",
+    "is_pediatric_radiology_ai": false,
+    "exclusion_reason": "review of maternal gut microbiota mechanisms in offspring ASD risk; fetal neuroimaging and AI mentioned only as proposed future research directions",
+    "confidence": "high"
+  }
+}

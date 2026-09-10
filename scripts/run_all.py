@@ -39,6 +39,9 @@ def main() -> None:
     run("collect_preprints.py", *pub_args)
     run("collect_landscape.py")
     run("collect_conferences.py")
+    # Journals before FWCI: both spend the OpenAlex daily budget and the
+    # journal lookup is a handful of requests, while enrich_fwci can drain it.
+    run("collect_journals.py")
     run("enrich_fwci.py")
     run("collect_patents.py")
     run("collect_newsletters.py")

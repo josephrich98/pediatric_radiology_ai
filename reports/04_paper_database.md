@@ -1,8 +1,8 @@
 # Pediatric radiology AI: paper database
 
-Generated 2026-09-09 from `data/processed/pedrad_paper_db.csv`.
+Generated 2026-09-10 from `data/processed/pedrad_paper_db.csv`.
 
-325 papers, 73 of which name a model or product, screened from 585 PubMed records matching the pediatric radiology-AI query (title/abstract fielded) for 2015-2026 (260 were screened out as adult-only, non-radiologic, or non-AI).
+3658 papers, 767 of which name a model or product, screened from 5904 records matching the pediatric radiology-AI query (title/abstract fielded) for 2015-2026 (2246 were screened out as adult-only, non-radiologic, or non-AI). Candidates come from three sources: PubMed, OpenAlex preprints, and conference proceedings (MICCAI, ISBI, SPIE Medical Imaging, NeurIPS and the rest), deduplicated against each other.
 
 Candidates are papers meeting at least 20 citations in NIH iCite or at least 10 citations per year or a relative citation ratio of at least 5, which keeps the database to work the field has actually engaged with. A raw citation floor is also a recency filter — a paper published this year has had no time to accrue citations — which is why the rate and ratio clauses exist; even so the current year is thin by construction, and the trend figures, not this table, are the place to read growth.
 
@@ -16,78 +16,89 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 
 | Status | Papers |
 | --- | ---: |
-| unclear | 265 |
-| commercial | 32 |
-| open-source | 24 |
-| unreleased | 4 |
+| unclear | 3280 |
+| open-source | 157 |
+| commercial | 149 |
+| unreleased | 72 |
 
 ### Modality
 
 | Modality | Papers |
 | --- | ---: |
-| MRI | 140 |
-| x-ray / radiography | 78 |
-| ultrasound | 73 |
-| CT | 35 |
-| multiple | 10 |
-| nuclear / PET | 7 |
-| other | 5 |
+| MRI | 1605 |
+| ultrasound | 922 |
+| x-ray / radiography | 664 |
+| CT | 347 |
+| multiple | 95 |
+| nuclear / PET | 64 |
+| other | 59 |
+| fluoroscopy | 11 |
 
 ### Task
 
 | Task | Papers |
 | --- | ---: |
-| detection / diagnosis | 142 |
-| measurement / quantification | 85 |
-| segmentation | 73 |
-| outcome prediction | 56 |
-| workflow / non-interpretive | 32 |
-| reconstruction / imputation | 32 |
-| other | 8 |
-| report generation / LLM | 3 |
-| agent / autonomous | 1 |
-| foundation model / vision-language | 1 |
+| detection / diagnosis | 1427 |
+| measurement / quantification | 798 |
+| segmentation | 715 |
+| outcome prediction | 683 |
+| reconstruction / imputation | 290 |
+| other | 204 |
+| workflow / non-interpretive | 203 |
+| foundation model / vision-language | 34 |
+| report generation / LLM | 31 |
+| agent / autonomous | 6 |
 
 ### Age group
 
 | Age group | Papers |
 | --- | ---: |
-| pediatric (unspecified) | 98 |
-| fetal | 85 |
-| child | 75 |
-| adolescent | 53 |
-| mixed pediatric and adult | 41 |
-| infant | 28 |
-| neonate | 21 |
+| child | 1274 |
+| fetal | 884 |
+| adolescent | 830 |
+| pediatric (unspecified) | 590 |
+| infant | 551 |
+| neonate | 358 |
+| mixed pediatric and adult | 303 |
 
 ### Validation
 
 | Strongest validation claimed | Papers |
 | --- | ---: |
-| internal only | 151 |
-| external / multi-center | 78 |
-| none / not stated | 46 |
-| reader study | 39 |
-| prospective | 11 |
+| internal only | 2279 |
+| external / multi-center | 613 |
+| none / not stated | 478 |
+| reader study | 188 |
+| prospective | 100 |
 
 ### Papers per year
 
 | Year | Papers |
 | --- | ---: |
-| 2015 | 8 |
-| 2016 | 10 |
-| 2017 | 21 |
-| 2018 | 28 |
-| 2019 | 47 |
-| 2020 | 43 |
-| 2021 | 44 |
-| 2022 | 38 |
-| 2023 | 19 |
-| 2024 | 35 |
-| 2025 | 28 |
-| 2026 | 4 |
+| 2005 | 1 |
+| 2006 | 2 |
+| 2007 | 3 |
+| 2008 | 8 |
+| 2009 | 6 |
+| 2010 | 4 |
+| 2011 | 7 |
+| 2012 | 15 |
+| 2013 | 8 |
+| 2014 | 18 |
+| 2015 | 45 |
+| 2016 | 43 |
+| 2017 | 67 |
+| 2018 | 104 |
+| 2019 | 139 |
+| 2020 | 195 |
+| 2021 | 279 |
+| 2022 | 383 |
+| 2023 | 410 |
+| 2024 | 555 |
+| 2025 | 682 |
+| 2026 | 684 |
 
-## Named models (73 most cited)
+## Named models (120 most cited)
 
 | Model | Year | Cites | /yr | RCR | Modality | Population | Clinical problem | Release | Journal | Link |
 | --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- |
@@ -99,6 +110,7 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 | GANCS | 2019 | 230 | 32.86 | 14.69 | MRI | pediatric patients undergoing contrast-enhanced abdominal MRI | shortening contrast-enhanced MRI in children by r… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2018.2858752) |
 | SonoNet | 2017 | 193 | 21.44 | 10.91 | ultrasound | fetuses undergoing routine mid-pregnancy anomaly screening ultrasound | finding and labelling the standard views required… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2017.2712367) |
 | DeepIGeoS | 2019 | 185 | 26.43 | 10.13 | MRI | fetal MRI studies; brain tumor FLAIR MRI is the second test case | producing clinically usable placental contours on… | unclear | IEEE transactions on pattern an… | [doi](https://doi.org/10.1109/TPAMI.2018.2840695) |
+| LINKS | 2015 | 147 | 13.36 | 6.72 | MRI | 119 infants | Segmenting infant brain MRI into gray matter, whi… | unclear | NeuroImage | [doi](https://doi.org/10.1016/j.neuroimage.2014.12.042) |
 | DeepCut | 2017 | 138 | 15.33 | 6.62 | MRI | fetuses in a fetal MRI dataset | segmenting fetal brain and lung on MRI without pi… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2016.2621185) |
 | iBEAT V2.0 | 2023 | 106 | 35.33 | 15.28 | MRI | infants from birth to 6 years of age, across many imaging sites, prot… | measuring cortical development in infants, whose… | open-source | Nature protocols | [doi](https://doi.org/10.1038/s41596-023-00806-x) |
 | BR-Net | 2020 | 97 | 16.17 | 5.03 | MRI; x-ray / radiography | adolescents in the NCANDA alcohol and neurodevelopment cohort, childr… | stopping a model from learning a confounder inste… | open-source | Nature communications | [doi](https://doi.org/10.1038/s41467-020-19784-9) |
@@ -107,6 +119,7 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 | Auto-Net | 2017 | 90 | 10.0 | 4.82 | MRI | public adult benchmark datasets plus reconstructed fetal brain MRI | extracting the brain from surrounding tissue on M… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2017.2721362) |
 | time-dependent deep image prior | 2021 | 86 | 17.2 | 8.17 | MRI | fetuses in retrospective and real fetal cardiac MRI datasets | reconstructing a moving fetal heart from sparsely… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2021.3084288) |
 | DPA-HNN | 2019 | 86 | 12.29 | 5.4 | CT | adult and pediatric patients whose thoracic CT reports were collected… | extracting whether a CT report says there is a pu… | unclear | Artificial intelligence in medi… | [doi](https://doi.org/10.1016/j.artmed.2018.11.004) |
+| GPT-4V; Gemini Pro Vision | 2024 | 82 | 41.0 | 14.3 | multiple | 190 'Diagnosis Please' teaching cases published in Radiology (Jan 200… | generate differential diagnoses directly from rad… | commercial | Radiology | [doi](https://doi.org/10.1148/radiol.240273) |
 | DeepUTE | 2018 | 81 | 11.57 | 4.88 | nuclear / PET; MRI | 79 pediatric brain tumor examinations, 36 with active tumor volume ab… | quantitatively accurate FET-PET/MRI in children w… | unclear | Frontiers in neuroscience | [doi](https://doi.org/10.3389/fnins.2018.01005) |
 | DeepFMRI | 2020 | 72 | 12.0 | 4.89 | MRI | children in the public ADHD-200 dataset, contributed by several imagi… | diagnosing ADHD, which currently rests entirely o… | unclear | Journal of neuroscience methods | [doi](https://doi.org/10.1016/j.jneumeth.2019.108506) |
 | Rayvolve | 2022 | 71 | 17.75 | 8.64 | x-ray / radiography | 2,549 children aged 0-17 (mean 8.5 years) referred from a pediatric e… | detecting fractures on radiographs of children pr… | commercial | Diagnostic and interventional i… | [doi](https://doi.org/10.1016/j.diii.2021.10.007) |
@@ -114,14 +127,17 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 | MF R-CNN | 2019 | 63 | 9.0 | 4.43 | ultrasound | fetuses undergoing prenatal ultrasound | deciding whether a fetal head ultrasound image is… | unclear | Medical image analysis | [doi](https://doi.org/10.1016/j.media.2019.101548) |
 | ARVBNet | 2020 | 60 | 10.0 | 3.89 | ultrasound | fetuses undergoing cardiac screening ultrasound | deciding whether a fetal cardiac four-chamber vie… | unclear | IEEE journal of biomedical and… | [doi](https://doi.org/10.1109/JBHI.2019.2948316) |
 | quantusFLM | 2015 | 60 | 5.45 | 2.89 | ultrasound | 144 neonates delivered between 28 and 39 weeks, imaged within 48 hour… | predicting neonatal respiratory morbidity before… | commercial | Ultrasound in obstetrics & gyne… | [doi](https://doi.org/10.1002/uog.13441) |
+| Fracture Detection Using YOLOv8 App | 2023 | 58 | 19.33 | 12.59 | x-ray / radiography | children presenting with wrist trauma (public GRAZPEDWRI-DX pediatric… | detecting wrist fractures on trauma radiographs | unclear | Scientific reports | [doi](https://doi.org/10.1038/s41598-023-47460-7) |
 | BoneView | 2022 | 55 | 13.75 | 7.05 | x-ray / radiography | 300 radiographic examinations from patients aged 2-21 (167 boys, 133… | detecting acute appendicular fractures in children | commercial | Skeletal radiology | [doi](https://doi.org/10.1007/s00256-022-04070-0) |
 | deepee | 2021 | 53 | 10.6 | 3.46 | x-ray / radiography | children in the public pediatric pneumonia chest radiograph dataset,… | training diagnostic models on children's images w… | open-source | Scientific reports | [doi](https://doi.org/10.1038/s41598-021-93030-0) |
 | CHN-PD | 2019 | 53 | 7.57 | 2.66 | MRI | 328 cognitively normal Chinese children aged 6-12, with two independe… | whether a pediatric brain atlas built on one popu… | open-source | NeuroImage | [doi](https://doi.org/10.1016/j.neuroimage.2019.01.006) |
 | Appendicitis Prediction Tool | 2021 | 52 | 10.4 | 5.4 | ultrasound | 430 children and adolescents aged 0-18 with suspected appendicitis | three separate decisions in suspected pediatric a… | open-source | Frontiers in pediatrics | [doi](https://doi.org/10.3389/fped.2021.662183) |
 | AutoRAPNO | 2022 | 49 | 12.25 | 4.44 | MRI | 794 children with preoperative MRI and 122 with serial postoperative… | measuring tumor burden reproducibly across serial… | unclear | Neuro-oncology | [doi](https://doi.org/10.1093/neuonc/noab151) |
 | DAG V-Net | 2021 | 49 | 9.8 | 4.78 | ultrasound | fetuses across trimesters in the public HC18 challenge dataset (355 t… | measuring head circumference from a fetal ultraso… | open-source | Journal of digital imaging | [doi](https://doi.org/10.1007/s10278-020-00410-5) |
+| DGACNN | 2020 | 49 | 8.17 | 3.78 | ultrasound | fetuses undergoing echocardiographic screening for congenital heart d… | screening for fetal congenital heart disease on e… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2019.2946059) |
 | DW-Net | 2020 | 47 | 7.83 | 3.94 | ultrasound | 895 apical four-chamber views from fetal echocardiography | outlining the seven key structures of the apical… | unclear | Computerized medical imaging an… | [doi](https://doi.org/10.1016/j.compmedimag.2019.101690) |
 | Cropping-Segmentation-Calibration (CSC) | 2020 | 47 | 7.83 | 2.54 | ultrasound | 615 annotated frames from 421 normal fetal cardiac ultrasound videos… | delineating the ventricular septum during fetal c… | unclear | Biomolecules | [doi](https://doi.org/10.3390/biom10111526) |
+| EchoNet-Peds | 2023 | 45 | 15.0 | 5.7 | ultrasound | pediatric patients undergoing echocardiography (4,467 echocardiogram… | automated assessment of left ventricular ejection… | unclear | Journal of the American Society… | [doi](https://doi.org/10.1016/j.echo.2023.01.015) |
 | Smartplanes | 2018 | 43 | 5.38 | 2.6 | ultrasound | 30 fetuses at 17-30 weeks gestation, each with two 3D volumes and a c… | finding the transthalamic plane and measuring bip… | commercial | Diagnostic and interventional i… | [doi](https://doi.org/10.1016/j.diii.2018.08.001) |
 | childfx | 2023 | 42 | 14.0 | 8.58 | x-ray / radiography | 58,846 upper extremity radiographs from 14,873 pediatric and young ad… | pediatric upper extremity fractures, which respon… | open-source | Pediatric radiology | [doi](https://doi.org/10.1007/s00247-023-05754-y) |
 | MABAL | 2018 | 42 | 5.25 | 2.96 | x-ray / radiography | 10,289 skeletal age examinations, 8,909 from one institution's archiv… | bone age assessment, which is tedious and time co… | unclear | Journal of digital imaging | [doi](https://doi.org/10.1007/s10278-018-0053-3) |
@@ -137,6 +153,7 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 | CarMEN | 2019 | 37 | 5.29 | 2.48 | MRI | trained and tested on 150 cardiac MRI patients, then validated on a s… | estimating three-dimensional deformable cardiac m… | unclear | Radiology. Artificial intellige… | [doi](https://doi.org/10.1148/ryai.2019180080) |
 | 2017 RSNA Pediatric Bone Age Challenge ensembles | 2019 | 37 | 5.29 | 2.51 | x-ray / radiography | 12 611 pediatric hand radiographs for development and a 200-radiograp… | automated skeletal age estimation from hand radio… | unclear | Radiology. Artificial intellige… | [doi](https://doi.org/10.1148/ryai.2019190053) |
 | 2017 RSNA Bone Age Challenge winning model | 2023 | 36 | 12.0 | 5.34 | x-ray / radiography | trained on 12 611 pediatric hand radiographs from two U.S. hospitals;… | whether an expert-level bone age model holds up o… | unclear | Radiology | [doi](https://doi.org/10.1148/radiol.220505) |
+| PN-UNet (Pyramid Non-local UNet) | 2020 | 36 | 6.0 | 3.19 | x-ray / radiography | infants and young children undergoing pelvis radiography for suspecte… | detecting misshapen pelvis anatomical landmarks t… | open-source | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2020.3008382) |
 | ScolioNets | 2023 | 35 | 11.67 | 8.13 | other | adolescent patients attending spine clinics, with radiographs and sma… | classifying severity and curve type in adolescent… | commercial | JAMA network open | [doi](https://doi.org/10.1001/jamanetworkopen.2023.30617) |
 | DLIR (deep learning image reconstruction) | 2021 | 35 | 7.0 | 2.97 | CT | 46 children (mean age 5.9 +/- 4.2 years) scanned at 70 kVp with 0.8-1… | cutting both radiation and iodinated contrast dos… | commercial | La Radiologia medica | [doi](https://doi.org/10.1007/s11547-021-01384-2) |
 | DeepMedic | 2020 | 34 | 5.67 | 1.67 | nuclear / PET | 100 pediatric Hodgkin lymphoma patients with baseline 18F-FDG PET/CT,… | extracting metabolic tumor volume and the other b… | open-source | EJNMMI physics | [doi](https://doi.org/10.1186/s40658-020-00346-3) |
@@ -152,18 +169,59 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 | CortexODE | 2023 | 30 | 10.0 | 4.81 | MRI | large-scale neuroimaging datasets across age groups including neonate… | reconstructing cortical surfaces from brain MRI,… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2022.3206221) |
 | SpineHRNet+ | 2022 | 30 | 7.5 | 3.87 | x-ray / radiography | 1542 consecutive patients with scoliosis at two Hong Kong clinics fro… | automatic measurement of spine alignment in scoli… | unclear | EClinicalMedicine | [doi](https://doi.org/10.1016/j.eclinm.2021.101252) |
 | MEDO-Hip | 2023 | 29 | 9.67 | 6.08 | ultrasound | 369 scans in 306 infants, scanned by nurses or family physicians at t… | universal newborn screening for developmental dys… | commercial | Scientific reports | [doi](https://doi.org/10.1038/s41598-023-35603-9) |
+| Brain Maturation Index | 2015 | 29 | 2.64 | 1.13 | MRI | 303 healthy subjects aged 4.88-18.35 years (115 rescanned after 2 yea… | predicting individual brain maturation (biologica… | unclear | NeuroImage | [doi](https://doi.org/10.1016/j.neuroimage.2015.05.071) |
+| Pediatric-CT-SEG | 2022 | 28 | 7.0 | 3.23 | CT | 359 pediatric chest-abdomen-pelvis or abdomen-pelvis CT exams (180 ma… | organ autosegmentation has been developed almost… | open-source | Medical physics | [doi](https://doi.org/10.1002/mp.15485) |
+| SonoCNS Fetal Brain | 2021 | 28 | 5.6 | 2.78 | ultrasound | 143 women at routine anatomical survey between 18+0 and 22+6 weeks, e… | obtaining the five standard fetal intracranial me… | commercial | Ultrasound in obstetrics & gyne… | [doi](https://doi.org/10.1002/uog.22171) |
+| Temporal SonoEyeNet (TSEN) | 2020 | 28 | 4.67 | 2.36 | ultrasound | 280 video clips of 3-7 seconds each, one per biometry plane, with sim… | how an experienced sonographer navigates to a sta… | unclear | Medical image analysis | [doi](https://doi.org/10.1016/j.media.2020.101762) |
+| StrainNet | 2023 | 27 | 9.0 | 3.88 | MRI | 161 patients with various heart diseases, 99 healthy adults, and 45 h… | measuring myocardial strain from ordinary cine MR… | unclear | Radiology. Cardiothoracic imagi… | [doi](https://doi.org/10.1148/ryct.220196) |
+| Multi-Frame + Cylinder method (MFCY) | 2020 | 27 | 4.5 | 1.29 | ultrasound | 538 four-chamber-view ultrasound frames from 256 normal cases, five-f… | segmenting the fetal thoracic wall on the four-ch… | unclear | Biomolecules | [doi](https://doi.org/10.3390/biom10121691) |
+| SSLDEC | 2019 | 27 | 3.86 | 1.48 | MRI | isointense-phase infant brain MRI, alongside MNIST and SVHN benchmark… | the cost of expert annotation in medical image se… | unclear | IEEE access : practical innovat… | [doi](https://doi.org/10.1109/ACCESS.2019.2891970) |
+| FBNetGen | 2022 | 26 | 6.5 | 2.65 | MRI | the Adolescent Brain Cognitive Development (ABCD) cohort and the Phil… | clinical prediction from functional brain network… | open-source | Proceedings of machine learning… | [pubmed](https://pubmed.ncbi.nlm.nih.gov/37377881/) |
+| DLR (deep learning reconstruction) | 2021 | 26 | 5.2 | 2.67 | CT | 51 children aged 1-18 years (34 boys, 17 girls) scanned February to O… | reducing radiation dose in pediatric body CT, whe… | commercial | BMC medical imaging | [doi](https://doi.org/10.1186/s12880-021-00677-2) |
+| TW3-AI | 2020 | 26 | 4.33 | 2.31 | x-ray / radiography | 9059 clinical left hand radiographs from PACS between January 2012 an… | bone age assessment by the Tanner-Whitehouse 3 me… | unclear | Quantitative imaging in medicin… | [doi](https://doi.org/10.21037/qims.2020.02.20) |
+| TDL-BAAM | 2020 | 26 | 4.33 | 1.74 | x-ray / radiography | 15 129 frontal pediatric trauma hand radiographs from Children's Hosp… | whether bone age assessment should still be ancho… | unclear | Radiology. Artificial intellige… | [doi](https://doi.org/10.1148/ryai.2020190198) |
+| DUnet / ResDUnet | 2019 | 26 | 3.71 | 1.47 | MRI | infant brain MRI | segmenting hippocampal subfields in infants, wher… | unclear | Frontiers in neuroinformatics | [doi](https://doi.org/10.3389/fninf.2019.00030) |
+| VP-Nets | 2018 | 26 | 3.25 | 1.25 | ultrasound | 3D fetal neurosonography volumes | locating key brain structures in 3D fetal neuroso… | unclear | Medical image analysis | [doi](https://doi.org/10.1016/j.media.2018.04.004) |
+| Pneumo-CAD | 2008 | 26 | 1.44 | 0.84 | x-ray / radiography | children with clinical suspicion of pneumonia, chest radiographs clas… | computer-aided diagnosis of pneumonia in children… | unclear | International journal of medica… | [doi](https://doi.org/10.1016/j.ijmedinf.2007.10.010) |
 | Deeplasia | 2024 | 25 | 12.5 | 6.53 | x-ray / radiography | the public RSNA challenge set for training, plus 568 radiographs from… | bone age in children with skeletal dysplasia, whe… | open-source | Pediatric radiology | [doi](https://doi.org/10.1007/s00247-023-05789-1) |
+| CAD4TB | 2023 | 25 | 8.33 | 3.64 | x-ray / radiography | 620 children under 13 years with presumptive tuberculosis in South Af… | computer-aided detection of intrathoracic tubercu… | commercial | PLOS global public health | [doi](https://doi.org/10.1371/journal.pgph.0001799) |
+| AF-net | 2021 | 25 | 5.0 | 2.32 | ultrasound | antenatal ultrasound examinations, sizes not stated | measuring the amniotic fluid index, which informs… | unclear | Medical image analysis | [doi](https://doi.org/10.1016/j.media.2020.101951) |
+| H-DenseUNet | 2021 | 25 | 5.0 | 2.71 | MRI | T1-weighted lower leg MRI of 20 children, six of them with cerebral p… | segmenting individual lower leg muscles and bones… | unclear | NMR in biomedicine | [doi](https://doi.org/10.1002/nbm.4609) |
 | childfx | 2024 | 24 | 12.0 | 8.19 | x-ray / radiography | 240 patients (mean age 11.3 years, range 0-22, 37.9% female) with elb… | upper extremity fractures missed by residents and… | open-source | Skeletal radiology | [doi](https://doi.org/10.1007/s00256-024-04698-0) |
+| DeepMNF | 2023 | 24 | 8.0 | 4.27 | MRI | the ABIDE-1 repository, including data from all available screening s… | computer-aided diagnosis of autism spectrum disor… | unclear | Artificial intelligence in medi… | [doi](https://doi.org/10.1016/j.artmed.2022.102475) |
+| S3Reg | 2021 | 24 | 4.8 | 1.93 | MRI | two datasets covering adult and infant multimodal cortical features | cortical surface registration, the prerequisite f… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2021.3069645) |
+| Multi-task SonoEyeNet (M-SEN) | 2018 | 24 | 3.0 | 1.55 | ultrasound | fetal ultrasound video frames with sonographer gaze tracking data | detecting the standardized abdominal circumferenc… | unclear | Medical image computing and com… | [doi](https://doi.org/10.1007/978-3-030-00928-1_98) |
+| ALFA (Accurate Learning with Few Atlases) | 2016 | 24 | 2.4 | 1.15 | MRI | multi-modal brain MRI of 50 newborns | brain extraction from neonatal MRI - the first st… | unclear | Scientific reports | [doi](https://doi.org/10.1038/srep23470) |
+| NEOCIVET 2.0 | 2021 | 23 | 4.6 | 1.74 | MRI | three independent datasets comprising 736 pre-term and 97 term neonat… | measuring cortical thickness in neonates, where s… | open-source | Frontiers in neuroscience | [doi](https://doi.org/10.3389/fnins.2021.650082) |
+| BOUNTI | 2023 | 22 | 7.33 | 3.64 | MRI | trained on 360 fetal MRI datasets with different acquisition paramete… | fetal brain volumetry has no universally accepted… | open-source | bioRxiv : the preprint server f… | [doi](https://doi.org/10.1101/2023.04.18.537347) |
+| TrueFidelity | 2022 | 22 | 5.5 | 2.66 | CT | 120 pediatric patients (mean age 8.7 +/- 5.2 years, 60 male) who had… | image quality in pediatric abdominopelvic CT, whe… | commercial | Korean journal of radiology | [doi](https://doi.org/10.3348/kjr.2021.0466) |
+| msResNet | 2022 | 22 | 5.5 | 2.42 | MRI | children with drug-resistant epilepsy undergoing clinically acquired… | localizing the seizure onset zone non-invasively… | unclear | IEEE journal of biomedical and… | [doi](https://doi.org/10.1109/JBHI.2022.3196330) |
+| APPLAUSE | 2021 | 22 | 4.4 | 2.1 | MRI | 108 placental datasets at 3 T including 20 high-risk pregnancies with… | assessing placental maturation and health from T2… | unclear | Medical image analysis | [doi](https://doi.org/10.1016/j.media.2021.102145) |
+| Attention MFP-Unet | 2021 | 22 | 4.4 | 1.96 | ultrasound | the public HC18 grand challenge dataset plus clinical data from 1334… | measuring biparietal diameter, head circumference… | unclear | Physica medica : PM : an intern… | [doi](https://doi.org/10.1016/j.ejmp.2021.06.020) |
+| LiviaNET / HyperDense-Net | 2020 | 22 | 3.67 | 1.53 | MRI | 24 pairs of neonatal T1 and T2 data from the Developing Human Connect… | segmenting gray matter, white matter and cerebros… | open-source | Frontiers in neuroscience | [doi](https://doi.org/10.3389/fnins.2020.00207) |
+| TL-CNN | 2020 | 22 | 3.67 | 1.53 | MRI | 110 very preterm infants (≤32 weeks gestational age) | early prediction of cognitive deficit at 2 years… | unclear | Frontiers in neuroscience | [doi](https://doi.org/10.3389/fnins.2020.00858) |
+| US-GuideNet | 2020 | 22 | 3.67 | 1.76 | ultrasound | 464 routine clinical scans by 17 accredited sonographers, with real-w… | the operator expertise required to find standard… | unclear | Medical image computing and com… | [doi](https://doi.org/10.1007/978-3-030-59716-0_56) |
+| PIN (Patch-based Iterative Network) | 2018 | 22 | 2.75 | 1.49 | ultrasound | 72 3D ultrasound images from fetal screening examinations | locating anatomical landmarks in 3D fetal screeni… | unclear | Medical image computing and com… | [doi](https://doi.org/10.1007/978-3-030-00928-1_64) |
+| SpineTK | 2023 | 21 | 7.0 | 4.65 | x-ray / radiography | 1310 anterior-posterior low-dose stereoradiographic images and radiog… | Cobb angle measurement, the definitional measurem… | unclear | Radiology. Artificial intellige… | [doi](https://doi.org/10.1148/ryai.220158) |
+| UPL-SFDA | 2023 | 21 | 7.0 | 4.14 | MRI | validated on a multi-site cardiac MRI dataset, a cross-modality fetal… | adapting a segmentation model to a new hospital w… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2023.3318364) |
+| DenseNet169 | 2023 | 21 | 7.0 | 4.59 | ultrasound | fetal ultrasound images from two datasets from different regions, rec… | identifying which fetal organ an ultrasound image… | unclear | Scientific reports | [doi](https://doi.org/10.1038/s41598-023-44689-0) |
+| Light_U-Net | 2022 | 21 | 5.25 | 2.89 | MRI; CT | 39 pediatric and adult patients with both bone MRI and CT of the head… | generating CT-equivalent images from bone MRI so… | unclear | AJNR. American journal of neuro… | [doi](https://doi.org/10.3174/ajnr.A7588) |
+| dilated-dense U-Net | 2019 | 21 | 3.0 | 1.18 | MRI | infants at risk of autism spectrum disorder scanned at 6, 12 and 24 m… | measuring amygdala and hippocampal subfield volum… | unclear | Graph Learning in Medical Imagi… | [doi](https://doi.org/10.1007/978-3-030-35817-4_20) |
+| PSFFGAN | 2023 | 20 | 6.67 | 3.94 | ultrasound | fetal four-chamber ultrasound views, healthy and with congenital hear… | the shortage of large, high-quality fetal four-ch… | unclear | IEEE journal of biomedical and… | [doi](https://doi.org/10.1109/JBHI.2022.3143319) |
+| LungQ bronchus-artery analysis | 2023 | 20 | 6.67 | 2.81 | CT | 113 baseline and 102 48-week chest CT scans from 115 children aged 3-… | measuring bronchial wall thickening and bronchial… | commercial | Journal of cystic fibrosis : of… | [doi](https://doi.org/10.1016/j.jcf.2023.05.013) |
+| MEDO-Hip | 2023 | 20 | 6.67 | 3.91 | ultrasound | 306 infants (369 scans) screened at routine 6-10 week well-child visi… | screening every infant for developmental dysplasi… | commercial | Paediatrics & child health | [doi](https://doi.org/10.1093/pch/pxad013) |
+| phasrGAN / phasrresnet | 2022 | 20 | 5.0 | 2.05 | MRI | 28 fetuses at a median gestational week of 36 (IQR 33-38), imaged at… | fetal cardiac MRI improves diagnosis of congenita… | unclear | Journal of magnetic resonance i… | [doi](https://doi.org/10.1002/jmri.27956) |
+| PTNet3D | 2022 | 20 | 5.0 | 2.43 | MRI | the high-resolution Developing Human Connectome Project and the longi… | infants sleep irregularly, cannot follow instruct… | unclear | IEEE transactions on medical im… | [doi](https://doi.org/10.1109/TMI.2022.3174827) |
+| TTTS-GPS | 2019 | 20 | 2.86 | 1.38 | MRI; ultrasound | pregnancies with twin-to-twin transfusion syndrome, imaged with MRI a… | planning minimally invasive fetoscopic laser surg… | unclear | Computer methods and programs i… | [doi](https://doi.org/10.1016/j.cmpb.2019.104993) |
 | BIBSNet | 2025 | 19 | 19.0 | 6.83 | MRI | 90 participants aged 0-8 months (median 4.6 months) | segmenting the infant brain in the first months o… | open-source | bioRxiv : the preprint server f… | [doi](https://doi.org/10.1101/2023.03.22.533696) |
 | ChatGPT-4 | 2024 | 19 | 9.5 | 5.68 | ultrasound | 103 randomly selected anonymized ultrasound and operative records fro… | turning free-text ultrasound and operative report… | commercial | Journal of pediatric surgery | [doi](https://doi.org/10.1016/j.jpedsurg.2024.01.033) |
-| BoneXpert, PANDA, BoneView | 2025 | 13 | 13.0 | 5.28 | x-ray / radiography | 306 children aged 1-18, stratified by sex and age, at a Central Europ… | which of the bone age products approved for the E… | commercial | European radiology | [doi](https://doi.org/10.1007/s00330-024-11169-6) |
-| TotalSegmentator | 2025 | 12 | 12.0 | 3.65 | CT | 300 adult and 359 pediatric abdominal CT scans from external datasets | whether the field's default open organ segmentati… | open-source | Journal of imaging informatics… | [doi](https://doi.org/10.1007/s10278-024-01273-w) |
-| BoneMetrics | 2025 | 11 | 11.0 | 4.35 | x-ray / radiography | 345 patients (mean age 33, range over 2 years), of whom 179 were unde… | measuring Cobb angles on full spine radiographs,… | commercial | Skeletal radiology | [doi](https://doi.org/10.1007/s00256-024-04853-7) |
-| BoneView, RBfracture | 2025 | 11 | 11.0 | 4.69 | x-ray / radiography | 998 emergency musculoskeletal radiographs (585 normal, 413 abnormal)… | choosing between competing commercial fracture de… | commercial | Emergency radiology | [doi](https://doi.org/10.1007/s10140-025-02353-2) |
-| TrueLung | 2025 | 10 | 10.0 | 3.61 | MRI | 75 children with cystic fibrosis imaged at 1.5 T | measuring regional ventilation and perfusion in c… | unclear | Zeitschrift fur medizinische Ph… | [doi](https://doi.org/10.1016/j.zemedi.2024.08.001) |
-| LAS-Net | 2025 | 10 | 10.0 | 3.44 | nuclear / PET; CT | 297 children in two Children's Oncology Group trials (median age 15.4… | deciding from the interim PET whether a child's H… | unclear | Radiology. Artificial intellige… | [doi](https://doi.org/10.1148/ryai.240229) |
-| ChatGPT-o4-mini-high, ChatGPT-4.5, Gemini 2.5 Pro | 2025 | 10 | 10.0 | 3.93 | x-ray / radiography | 180 left-hand wrist radiographs of children aged 0-18 from the RSNA P… | whether a general-purpose chatbot can substitute… | commercial | Academic radiology | [doi](https://doi.org/10.1016/j.acra.2025.07.058) |
-| MONAIfbs | 2021 | — | — | — | MRI | fetuses with suspected pathology, particularly spina bifida | brain masking for super-resolution reconstruction… | open-source | arXiv (preprint) | [doi](https://doi.org/10.48550/arxiv.2103.13314) |
+| SynthSR | 2024 | 19 | 9.5 | 4.46 | MRI | 70 individuals, mean age 20.39 years (range 9-26 years) | improving correspondence between low-field and hi… | unclear | Frontiers in neurology | [doi](https://doi.org/10.3389/fneur.2024.1339223) |
+| TorchXRayVision | 2023 | 19 | 6.33 | 2.98 | x-ray / radiography | pediatric patients aged 1 to 5 years (publicly available pediatric ch… | detecting pneumonia on pediatric chest radiograph… | unclear | Journal of the American College… | [doi](https://doi.org/10.1016/j.jacr.2023.07.004) |
+| Medo Hip | 2022 | 19 | 4.75 | 2.44 | ultrasound | 240 infant hips (120 single 2D images, 120 sweeps) spanning normal to… | detecting developmental dysplasia of the hip on i… | commercial | Journal of pediatric orthopedics | [doi](https://doi.org/10.1097/BPO.0000000000002065) |
+| ST-DAG-Att | 2022 | 19 | 4.75 | 1.96 | MRI | Adolescent Brain Cognitive Development cohort (n=7,693, children) and… | predicting cognition and age from resting-state f… | unclear | Medical image analysis | [doi](https://doi.org/10.1016/j.media.2022.102370) |
+| BA-GCA Net | 2022 | 19 | 4.75 | 2.33 | MRI | adolescents with osteosarcoma | segmenting osteosarcoma tumor boundaries on MRI | unclear | Computational intelligence and… | [doi](https://doi.org/10.1155/2022/3881833) |
+| ETLM (Ensemble Transfer Learning Model) | 2022 | 19 | 4.75 | 2.76 | ultrasound | fetuses undergoing obstetric ultrasound (public HC18 dataset) | segmenting the fetal head on ultrasound and estim… | unclear | Diagnostics (Basel, Switzerland) | [doi](https://doi.org/10.3390/diagnostics12092229) |
+| MA-Net | 2020 | 19 | 3.17 | 1.39 | ultrasound; MRI; CT | not specifically described; evaluated on several public/benchmark ult… | general-purpose segmentation of ultrasound images… | unclear | Medical physics | [doi](https://doi.org/10.1002/mp.14512) |
 
 ## Most-cited-per-year work from 2024 onward (40)
 
@@ -171,12 +229,19 @@ Ranked by citations per year rather than raw count, because a paper from this ye
 
 | Title | Year | Cites | /yr | RCR/FWCI | Type | Clinical problem | Link |
 | --- | ---: | ---: | ---: | ---: | --- | --- | --- |
+| GPT-4V; Gemini Pro Vision | 2024 | 82 | 41.0 | 14.3 | journal | generate differential diagnoses directly from… | [doi](https://doi.org/10.1148/radiol.240273) |
+| A foundation model for enhancing magnetic resonance images and… | 2025 | 34 | 34.0 | 10.8 | journal | improving MR image quality (motion artifact,… | [doi](https://doi.org/10.1038/s41551-024-01283-7) |
+| Prediction of mental health risk in adolescents. | 2025 | 34 | 34.0 | 11.34 | journal | predicting future risk of general psychiatric… | [doi](https://doi.org/10.1038/s41591-025-03560-7) |
 | Multimodal deep learning improves recurrence risk prediction in… | 2025 | 26 | 26.0 | 7.84 | journal | predicting which children will recur after su… | [doi](https://doi.org/10.1093/neuonc/noae173) |
+| Artificial Intelligence for Neuroimaging in Pediatric Cancer. | 2025 | 24 | 24.0 | 8.3 | journal | use of AI to improve pediatric cancer neuroim… | [doi](https://doi.org/10.3390/cancers17040622) |
 | Lack of children in public medical imaging data points to growi… | 2025 | 22 | 22.0 | 8.08 | preprint | whether children are represented at all in th… | [doi](https://doi.org/10.1101/2025.06.06.25328913) |
 | Predicting pediatric patient rehabilitation outcomes after spin… | 2025 | 21 | 21.0 | 7.96 | journal | telling an adolescent before scoliosis surger… | [doi](https://doi.org/10.1038/s43856-024-00726-1) |
 | BIBSNet | 2025 | 19 | 19.0 | 6.83 | preprint | segmenting the infant brain in the first mont… | [doi](https://doi.org/10.1101/2023.03.22.533696) |
 | Multiparametric MRI along with machine learning predicts progno… | 2025 | 18 | 18.0 | 4.63 | journal | identifying which children with low-grade gli… | [doi](https://doi.org/10.1038/s41467-024-55659-z) |
+| Using Artificial Intelligence for Rheumatic Heart Disease Detec… | 2024 | 34 | 17.0 | 7.32 | journal | detecting rheumatic heart disease via mitral… | [doi](https://doi.org/10.1161/JAHA.123.031257) |
+| Cognitive Impairment Is Related to Glymphatic System Dysfunctio… | 2024 | 34 | 17.0 | 6.92 | journal | predicting cognitive impairment in pediatric… | [doi](https://doi.org/10.1002/ana.26911) |
 | Assessment of glymphatic function and white matter integrity in… | 2025 | 17 | 17.0 | 5.78 | journal | detecting autism spectrum disorder on imaging… | [doi](https://doi.org/10.1007/s00330-025-11359-w) |
+| Integrated brain connectivity analysis with fMRI, DTI, and sMRI… | 2025 | 17 | 17.0 | 6.01 | journal | Integrating multimodal brain imaging (fMRI, D… | [doi](https://doi.org/10.1016/j.media.2025.103570) |
 | Deep-learning model for prenatal congenital heart disease scree… | 2024 | 33 | 16.5 | 8.72 | journal | congenital heart defects missed at the routin… | [doi](https://doi.org/10.1002/uog.27503) |
 | TransferX | 2024 | 33 | 16.5 | 5.96 | journal | determining BRAF mutational status in pediatr… | [doi](https://doi.org/10.1148/ryai.230333) |
 | Diagnostic Accuracy of an Integrated AI Tool to Estimate Gestat… | 2024 | 32 | 16.0 | 7.17 | journal | dating a pregnancy where no trained sonograph… | [doi](https://doi.org/10.1001/jama.2024.10770) |
@@ -198,18 +263,11 @@ Ranked by citations per year rather than raw count, because a paper from this ye
 | Deeplasia | 2024 | 25 | 12.5 | 6.53 | journal | bone age in children with skeletal dysplasia,… | [doi](https://doi.org/10.1007/s00247-023-05789-1) |
 | Using brain structural neuroimaging measures to predict psychos… | 2024 | 25 | 12.5 | 4.82 | journal | predicting which clinically high-risk individ… | [doi](https://doi.org/10.1038/s41380-024-02426-7) |
 | Role of artificial-intelligence-assisted automated cardiac biom… | 2024 | 25 | 12.5 | 7.51 | journal | coarctation of the aorta, which is missed bef… | [doi](https://doi.org/10.1002/uog.27608) |
+| Training and Comparison of nnU-Net and DeepMedic Methods for Au… | 2024 | 25 | 12.5 | 6.21 | journal | automated segmentation of pediatric brain tum… | [doi](https://doi.org/10.3174/ajnr.A8293) |
+| Estimating cortical thickness trajectories in children across d… | 2024 | 24 | 12.0 | 4.94 | journal | estimating individual cortical thickness deve… | [doi](https://doi.org/10.1002/hbm.26565) |
 | AI-Assisted X-ray Fracture Detection in Residency Training: Eva… | 2024 | 24 | 12.0 | 7.5 | journal | whether AI assistance helps radiology residen… | [doi](https://doi.org/10.3390/diagnostics14060596) |
 | childfx | 2024 | 24 | 12.0 | 8.19 | journal | upper extremity fractures missed by residents… | [doi](https://doi.org/10.1007/s00256-024-04698-0) |
 | TotalSegmentator | 2025 | 12 | 12.0 | 3.65 | journal | whether the field's default open organ segmen… | [doi](https://doi.org/10.1007/s10278-024-01273-w) |
 | Artificial intelligence (AI) in radiological paediatric fractur… | 2025 | 12 | 12.0 | 4.81 | journal | detecting bone injury in children, now that b… | [doi](https://doi.org/10.1007/s00330-025-11449-9) |
-| Advances in Artificial Intelligence and Machine Learning for Pr… | 2025 | 12 | 12.0 | 4.67 | journal | predicting and diagnosing necrotizing enteroc… | [doi](https://doi.org/10.3390/children12040498) |
-| MRI-based synthetic CT for assessment of the bony elements of t… | 2024 | 22 | 11.0 | 6.69 | journal | assessing the bony sacroiliac joints in child… | [doi](https://doi.org/10.1186/s13244-023-01603-6) |
-| Towards consistency in pediatric brain tumor measurements: Chal… | 2024 | 22 | 11.0 | 3.46 | journal | why two readers measuring the same pediatric… | [doi](https://doi.org/10.1093/neuonc/noae093) |
-| Radiomics and artificial intelligence applications in pediatric… | 2024 | 22 | 11.0 | 4.19 | journal | characterizing, grading and prognosticating c… | [doi](https://doi.org/10.1007/s12519-024-00823-0) |
-| Out-of-Distribution Detection and Radiological Data Monitoring… | 2025 | 11 | 11.0 | 3.49 | journal | knowing when a deployed model is being shown… | [doi](https://doi.org/10.1007/s10278-024-01212-9) |
-| BoneMetrics | 2025 | 11 | 11.0 | 4.35 | journal | measuring Cobb angles on full spine radiograp… | [doi](https://doi.org/10.1007/s00256-024-04853-7) |
-| Clinical validation of explainable AI for fetal growth scans th… | 2025 | 11 | 11.0 | 3.82 | journal | giving the sonographer usable feedback during… | [doi](https://doi.org/10.1038/s41598-025-86536-4) |
-| Review of the Current State of Artificial Intelligence in Pedia… | 2025 | 11 | 11.0 | 3.96 | journal | cardiac MRI in congenital heart disease is sl… | [doi](https://doi.org/10.3390/children12040416) |
-| BoneView, RBfracture | 2025 | 11 | 11.0 | 4.69 | journal | choosing between competing commercial fractur… | [doi](https://doi.org/10.1007/s10140-025-02353-2) |
 
 The full table, including the model description, dataset size, validation and headline result for every paper, is `data/processed/pedrad_paper_db.csv`.

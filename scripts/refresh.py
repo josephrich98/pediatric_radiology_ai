@@ -51,6 +51,9 @@ COLLECTORS = {
     "preprints": "collect_preprints.py",
     "landscape": "collect_landscape.py",
     "conferences": "collect_conferences.py",
+    # Journals before FWCI: both spend the OpenAlex daily budget, and the
+    # journal lookup is a handful of requests while enrich_fwci can drain it.
+    "journals": "collect_journals.py",
     "fwci": "enrich_fwci.py",
     "patents": "collect_patents.py",
     "newsletters": "collect_newsletters.py",

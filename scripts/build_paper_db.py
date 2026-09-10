@@ -76,6 +76,12 @@ def main() -> int:
                     help=f"max papers to read this run (default {config.PAPER_DB_RUN_LIMIT})")
     ap.add_argument("--all", action="store_true", help="no limit: read every outstanding paper")
     ap.add_argument("--since", type=int, default=config.PAPER_DB_START_YEAR, help="first publication year")
+    ap.add_argument("--review", action="store_true",
+                    help="systematic-review mode: use config.REVIEW_QUERY from REVIEW_START_YEAR "
+                         "with every impact floor off, so eligibility is decided at screening "
+                         "rather than by citation count (see reports/06_search_strategy.md)")
+    ap.add_argument("--no-impact-floor", action="store_true",
+                    help="turn off the citation / rate / RCR floors, keeping the current query")
     ap.add_argument("--until", type=int, default=config.END_YEAR, help="last publication year")
     ap.add_argument("--min-citations", type=int, default=config.PAPER_DB_MIN_CITATIONS,
                     help=f"raw citation floor from NIH iCite (default {config.PAPER_DB_MIN_CITATIONS}; "
@@ -128,6 +134,23 @@ def main() -> int:
                          "of querying PubMed. Required for preprints, which have no PMID to fetch")
     args = ap.parse_args()
 
+    # Systematic-review mode. The impact floor is a reading-list device: it
+    # filters on citations, which imports language, geography and
+    # positive-result bias and cannot be written into a PRISMA flow. For the
+    # review the search is high-recall and every eligibility decision happens at
+    # screening instead.
+    if args.review:
+        args.query = config.REVIEW_QUERY
+        if args.since == config.PAPER_DB_START_YEAR:
+            args.since = config.REVIEW_START_YEAR
+        args.no_impact_floor = True
+    else:
+        args.query = None
+    if args.no_impact_floor:
+        args.min_citations = 0
+        args.min_citations_per_year = 0.0
+        args.min_rcr = 0.0
+
     store = paper_db.load()
     overrides = paper_db.load_overrides()
     print(f"Store: {len(store['records'])} screened papers, "
@@ -164,16 +187,22 @@ def main() -> int:
             min_rcr=args.min_rcr,
             include_preprints=args.preprints,
             include_conference=args.conference,
+            query=args.query,
         )
-        floors = [f"{args.min_citations} citations"]
-        if args.min_citations_per_year:
-            floors.append(f"{args.min_citations_per_year:g}/year")
-        if args.min_rcr:
-            floors.append(f"RCR {args.min_rcr:g}")
         n_pre = sum(1 for c in wanted.values() if c.get("is_preprint"))
         n_conf = sum(1 for c in wanted.values() if c.get("origin") == "conference")
-        print(f"Candidates: {len(wanted)} works clear a floor of " + " or ".join(floors)
-              + f" ({n_pre} preprints, {n_conf} conference papers)")
+        provenance = f"({n_pre} preprints, {n_conf} conference papers)"
+        if args.min_citations or args.min_citations_per_year or args.min_rcr:
+            floors = [f"{args.min_citations} citations"]
+            if args.min_citations_per_year:
+                floors.append(f"{args.min_citations_per_year:g}/year")
+            if args.min_rcr:
+                floors.append(f"RCR {args.min_rcr:g}")
+            print(f"Candidates: {len(wanted)} works clear a floor of " + " or ".join(floors)
+                  + f" {provenance}")
+        else:
+            print(f"Candidates: {len(wanted)} records identified, no impact floor "
+                  f"{provenance} — eligibility is decided at screening")
 
     outstanding = [
         pmid for pmid in wanted
@@ -397,13 +426,17 @@ def _ingest(store: dict, overrides: dict, path: Path, extractor: str,
             "prompt_fingerprint": extract.prompt_fingerprint(),
             "input_fingerprint": extract.input_fingerprint(article),
         }
-        is_preprint = not rid.isdigit()
+        # An OpenAlex-keyed record is not automatically a preprint: the conference
+        # pass keys proceedings papers the same way. Let the record's own signals
+        # decide, so a MICCAI paper is not filed as "unreleased".
+        from_openalex = not rid.isdigit()
+        is_preprint = paper_db.looks_like_preprint(article)
         row = paper_db.build_row(
             article, extraction,
             metrics={
                 **metrics.get(rid, {}),
                 **{k: v for k, v in (fields.get("_metrics") or {}).items()},
-                "source": "openalex" if is_preprint else "pubmed",
+                "source": "openalex" if from_openalex else "pubmed",
                 "is_preprint": is_preprint or None,
             },
         )

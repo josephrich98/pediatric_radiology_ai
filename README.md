@@ -54,6 +54,10 @@ Outputs land in:
   (`reports/04_paper_database.md` is the readable view of it)
 - `reports/references.bib` — doi2bib output for cited papers
 - `figures/*.png` — trend and breakdown plots
+- `figures/journal_impact.png` / `.gif` — which journals publish pediatric
+  radiology AI: one point per journal, x = journal impact, y = cumulative
+  papers; the GIF is the same chart built up year by year, as a standalone
+  file (both decks show the final cumulative still)
 - `slides/pedrad_ai_slides.pdf` — Beamer deck summarizing the whole story
   (regenerate with `python scripts/build_slides.py` then `latexmk -pdf` in `slides/`)
 - `slides/pedrad_ai_slides.pptx` — the same deck as an editable PowerPoint file:
@@ -64,7 +68,7 @@ Outputs land in:
 
 `data/processed/pedrad_paper_db.csv` is built by code, not maintained by hand.
 Candidates are the strict (title/abstract-fielded) pediatric radiology-AI PubMed
-query plus OpenAlex preprints, filtered by impact: a raw citation count from NIH
+query plus OpenAlex preprints and conference proceedings, filtered by impact: a raw citation count from NIH
 iCite, a citations-per-year rate, or iCite's relative citation ratio (RCR, where
 1.0 is the median NIH-funded paper of the same field and year). Each row carries
 `citations`, `citations_per_year`, `rcr` and `fwci`, so a 2016 paper and a 2025
@@ -84,7 +88,8 @@ python scripts/build_paper_db.py --refresh-metrics     # update citations/RCR/FW
 python scripts/build_paper_db.py --since 2024 --min-citations 20 \
     --min-citations-per-year 10 --min-rcr 5 --order rate
 
-python scripts/build_paper_db.py --no-preprints   # PubMed records only
+python scripts/build_paper_db.py --no-preprints    # skip the OpenAlex preprint pass
+python scripts/build_paper_db.py --no-conference   # skip the MICCAI/ISBI/SPIE/NeurIPS proceedings pass
 
 # API path (needs credentials)
 pip install -e ".[db]" && export ANTHROPIC_API_KEY=...

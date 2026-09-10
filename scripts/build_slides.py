@@ -315,6 +315,78 @@ def problem_facts(prob):
 
 
 # --------------------------------------------------------------------------- #
+def _journal_short(name, limit=40):
+    """Trim a PubMed journal title down to something a caption can carry."""
+    short = re.split(r"\s+:\s+", name, maxsplit=1)[0]
+    return short if len(short) <= limit else short[: limit - 1].rstrip() + "\u2026"
+
+
+def journal_note(data, *, since, min_papers):
+    """Caption for a journal-impact slide: what is plotted and what it shows."""
+    if not data:
+        return "(journal counts not collected in this run)"
+    end = data["end_year"]
+    rows = [r for r in data["journals"] if r.get("impact_factor") is not None]
+    plotted = sorted(
+        (r for r in rows if sum(n for y, n in r["counts"].items() if since <= int(y) <= end) >= min_papers),
+        key=lambda r: -sum(n for y, n in r["counts"].items() if since <= int(y) <= end),
+    )
+    if not plotted:
+        return "(no journal cleared the plotting threshold)"
+
+    def n_of(r):
+        return sum(n for y, n in r["counts"].items() if since <= int(y) <= end)
+
+    total = sum(n_of(r) for r in data["journals"])
+    shown = sum(n_of(r) for r in plotted)
+    top = plotted[0]
+    hi = [r for r in plotted if r["impact_factor"] >= 10]
+    mid = sorted(r["impact_factor"] for r in plotted)[len(plotted) // 2]
+    axis = ("Journal Impact Factor (JCR)" if data.get("n_overrides")
+            else "OpenAlex 2-year mean citedness (a free JIF analogue; runs below the published JIF)")
+    # The reading of the chart follows the numbers rather than being asserted:
+    # where the mass sits is exactly what the slide is for.
+    verdict = (
+        "this work reaches journals well above the median of the field"
+        if len(hi) > len(plotted) / 2 else
+        "this work lands mostly in mid-impact specialty and technical journals"
+    )
+    # medRxiv and the MICCAI proceedings publish plenty of this work and have no
+    # impact number of any kind; saying so is better than dropping them quietly.
+    no_impact = sorted(
+        (r for r in data["journals"]
+         if r.get("impact_factor") is None
+         and sum(n for y, n in r["counts"].items() if since <= int(y) <= end) >= min_papers),
+        key=lambda r: -sum(n for y, n in r["counts"].items() if since <= int(y) <= end),
+    )
+    missing = ""
+    if no_impact:
+        n_missing = sum(n_of(r) for r in no_impact)
+        # Naming them is not worth it: PubMed calls the two biggest
+        # "Proceedings of the Annual International Conference of the IEEE ..."
+        # and "Proceedings". What matters is what kind of source they are.
+        kinds = ("proceedings", "conference", "preprint", "arxiv", "medrxiv", "biorxiv")
+        what = ("conference proceedings and preprint servers"
+                if all(any(k in r["journal"].lower() for k in kinds) for r in no_impact)
+                else "sources")
+        if len(no_impact) == 1:
+            missing = (f" {_journal_short(no_impact[0]['journal'], 30)} clears the threshold "
+                       f"({n_missing:,} papers) but has no impact number of any kind, so it is not plotted.")
+        else:
+            missing = (f" A further {len(no_impact)} {what} clear the threshold ({n_missing:,} papers) "
+                       f"but have no impact number of any kind and are not plotted.")
+    gif = ""
+    if since == data["start_year"] and (config.FIGURE_DIR / "journal_impact.gif").exists():
+        gif = " The same chart animated year by year: \\texttt{figures/journal\\_impact.gif}."
+    return _tex(
+        f"x = {axis}. y = cumulative pediatric radiology-AI papers {since}-{end} (PubMed, strict "
+        f"title/abstract query). The {len(plotted)} journals with at least {min_papers} of them are shown, "
+        f"carrying {shown:,} of {total:,}; the rest is a long tail. Largest: {top['journal']} "
+        f"({n_of(top):,}); median impact {mid:.1f}, {len(hi)} at 10 or above -- {verdict}.{missing}"
+    ) + gif
+
+
+
 def main() -> None:
     preprints = _load("preprint_counts.json", {})
     counts = analysis.add_preprints(_load("pubmed_yearly_counts.json", {}), preprints)
@@ -326,6 +398,7 @@ def main() -> None:
     news = _load("newsletter_summary.json", {})
     news_items = _load("newsletter_items.json", [])
     fda = _load("fda_ai_devices.json", {})
+    journals = _load("journal_impact.json", {})
     manifest_p = config.FIGURE_DIR / "examples" / "manifest.json"
     manifest = json.loads(manifest_p.read_text()) if manifest_p.exists() else []
 
@@ -356,6 +429,12 @@ def main() -> None:
         "@@fig_mod_task@@": _fig("modality_by_task.png", 0.47),
         "@@fig_ped_mod_task@@": _fig("ped_modality_by_task.png", 0.47),
         "@@fig_problems@@": _fig("ped_problems.png", 0.82),
+        "@@fig_journal_impact@@": _fig("journal_impact.png", 0.66),
+        "@@fig_journal_impact_recent@@": _fig(f"journal_impact_2023_{config.JOURNAL_END_YEAR}.png", 0.70),
+        "@@journal_note@@": journal_note(journals, since=config.JOURNAL_START_YEAR,
+                                         min_papers=config.JOURNAL_MIN_PAPERS),
+        "@@journal_note_recent@@": journal_note(journals, since=2023,
+                                                min_papers=config.JOURNAL_MIN_PAPERS_RECENT),
         "@@fig_news_ped@@": _fig("newsletter_watch.png", 0.82),
         "@@fig_news_all@@": _fig("newsletter_radiology_ai.png", 0.82),
         "@@task_gloss@@": task_gloss_columns(),
@@ -494,6 +573,18 @@ segments = which task terms those papers use (overlapping). What each task means
 \vspace{-2pt}
 \tiny
 @@task_gloss@@
+\end{frame}
+
+\begin{frame}{Which journals publish pediatric radiology AI}
+@@fig_journal_impact@@
+\vspace{-8pt}
+{\tiny @@journal_note@@}
+\end{frame}
+
+\begin{frame}{Which journals publish pediatric radiology AI, 2023--present}
+@@fig_journal_impact_recent@@
+\vspace{-8pt}
+{\tiny @@journal_note_recent@@}
 \end{frame}
 
 \begin{frame}{Cross-check: an independent 2025 scoping review of pediatric radiology AI}

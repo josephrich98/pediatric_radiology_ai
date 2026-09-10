@@ -1,0 +1,197 @@
+{
+ "instructions": "You are building a structured database of pediatric radiology artificial-intelligence papers for the clinical and research leadership of a children's hospital. You are given one PubMed record \u2014 title, journal, year, publication types, MeSH headings, and abstract \u2014 and you fill in one row of that database.\n\nRules, in order of importance:\n\n1. Use only what the record says. If a field is not supported by the abstract, leave it empty (empty string or empty list) or choose the \"not stated\" / \"unclear\" option. Never infer a value from your own knowledge of the model, the vendor, or the authors, and never carry a value over from a paper that sounds similar.\n2. Screen first. Many records match the search only incidentally \u2014 adult studies that mention children in a limitation, non-radiologic imaging (retina, endoscopy, pathology slides, dental, dermoscopy), non-imaging clinical prediction, or bibliometric pieces about AI rather than uses of it. Set is_pediatric_radiology_ai to false for those and give a short exclusion_reason; the remaining fields may then be left empty.\n3. Reviews, guidelines, editorials and challenge reports stay in the database when they are about pediatric radiology AI. They have no model_name; describe the scope of the review in model_description and set study_design accordingly.\n4. Write for a radiologist, not for an ML audience. clinical_problem is the clinical question, not the loss function. model_description says what goes in and what comes out.\n5. Do not repeat the authors' promotional language. \"Promising\", \"revolutionary\" and \"outperformed radiologists\" are claims; report the number instead.\n6. release_status is the column the audience cares about most, so be strict with it. A stated repository URL or \"code is available\" means open-source. A named vendor product, a cleared device, or software described as commercially available means commercial. Say unclear when the abstract is silent, which it usually is.\n",
+ "schema": {
+  "description": "One row of the pediatric radiology-AI paper database.\n\nEvery field is required. \"Not stated in the abstract\" is expressed as an\nempty string or an empty list, never as a guess.",
+  "properties": {
+   "is_pediatric_radiology_ai": {
+    "description": "True only if the paper develops, evaluates, or reviews an AI/ML model applied to diagnostic imaging (radiography, CT, MRI, ultrasound, nuclear medicine, fluoroscopy) in a population that is at least partly pediatric (fetal through adolescent). False for adult-only work, for non-imaging AI, for imaging that is not radiology (retinal photography, endoscopy, histopathology, dermoscopy, dental), and for papers where 'child' appears only incidentally.",
+    "title": "Is Pediatric Radiology Ai",
+    "type": "boolean"
+   },
+   "exclusion_reason": {
+    "description": "If is_pediatric_radiology_ai is false, one short clause saying why. Otherwise an empty string.",
+    "title": "Exclusion Reason",
+    "type": "string"
+   },
+   "model_name": {
+    "description": "The name the authors give their model, system, or product (e.g. 'BoneXpert', 'nnU-Net', 'PedsNet'). Empty string if the model is unnamed. Do not invent a name and do not put the architecture here.",
+    "title": "Model Name",
+    "type": "string"
+   },
+   "model_family": {
+    "description": "The method in a few words as the authors describe it: e.g. '3D U-Net', 'ResNet-50 transfer learning', 'random forest on radiomic features', 'GPT-4', 'vision transformer'. Empty string if the abstract does not say.",
+    "title": "Model Family",
+    "type": "string"
+   },
+   "modality": {
+    "description": "Imaging modalities the model operates on. Empty list if none is named.",
+    "items": {
+     "enum": [
+      "x-ray / radiography",
+      "CT",
+      "MRI",
+      "ultrasound",
+      "nuclear / PET",
+      "fluoroscopy",
+      "mammography",
+      "multiple",
+      "other"
+     ],
+     "type": "string"
+    },
+    "title": "Modality",
+    "type": "array"
+   },
+   "body_region": {
+    "description": "Anatomy or organ system imaged, in a few words (e.g. 'hand and wrist', 'brain', 'chest').",
+    "title": "Body Region",
+    "type": "string"
+   },
+   "clinical_problem": {
+    "description": "The clinical question in one short phrase, as a clinician would say it: 'skeletal maturity assessment', 'appendicitis on ultrasound', 'hydrocephalus shunt failure'. Not the ML task.",
+    "title": "Clinical Problem",
+    "type": "string"
+   },
+   "patient_population": {
+    "description": "Who the children were, in one clause: age range, disease state, and setting if stated (e.g. 'neonates under 32 weeks with suspected NEC', 'children 0-18 undergoing hand radiography for endocrine referral').",
+    "title": "Patient Population",
+    "type": "string"
+   },
+   "age_groups": {
+    "description": "Age bands actually covered by the study population.",
+    "items": {
+     "enum": [
+      "fetal",
+      "neonate",
+      "infant",
+      "child",
+      "adolescent",
+      "pediatric (unspecified)",
+      "mixed pediatric and adult"
+     ],
+     "type": "string"
+    },
+    "title": "Age Groups",
+    "type": "array"
+   },
+   "task": {
+    "description": "What the model produces, using the fixed categories. Most papers have one; list a second only when the paper genuinely does both.",
+    "items": {
+     "enum": [
+      "detection / diagnosis",
+      "segmentation",
+      "measurement / quantification",
+      "outcome prediction",
+      "reconstruction / imputation",
+      "report generation / LLM",
+      "foundation model / vision-language",
+      "agent / autonomous",
+      "workflow / non-interpretive",
+      "other"
+     ],
+     "type": "string"
+    },
+    "title": "Task",
+    "type": "array"
+   },
+   "model_description": {
+    "description": "Two or three plain sentences for a radiologist who has not read the paper: what goes in, what comes out, how it was trained, and what it is for. Written from the abstract only \u2014 no outside knowledge, no praise, no hedging language copied from the authors' conclusions.",
+    "title": "Model Description",
+    "type": "string"
+   },
+   "release_status": {
+    "description": "'open-source' if code or weights are stated to be publicly available (a repository URL, a model hub, 'code is available at ...'); 'commercial' if the model is a named vendor product, a CE-marked or FDA-cleared device, or is described as commercially available software; 'unreleased' if the abstract makes clear it is a research prototype with no release; 'unclear' if the abstract simply does not say. Most academic papers are 'unclear' \u2014 prefer it over guessing 'unreleased'.",
+    "enum": [
+     "open-source",
+     "commercial",
+     "unreleased",
+     "unclear"
+    ],
+    "title": "Release Status",
+    "type": "string"
+   },
+   "release_evidence": {
+    "description": "The words in the abstract that justify release_status, quoted or closely paraphrased. Empty if none.",
+    "title": "Release Evidence",
+    "type": "string"
+   },
+   "code_url": {
+    "description": "Repository or model-hub URL if the abstract gives one, else an empty string.",
+    "title": "Code Url",
+    "type": "string"
+   },
+   "dataset_size": {
+    "description": "Study size as stated, keeping the authors' units (e.g. '1,286 radiographs from 743 children').",
+    "title": "Dataset Size",
+    "type": "string"
+   },
+   "data_source": {
+    "description": "Where the data came from.",
+    "enum": [
+     "single center",
+     "multi center",
+     "public dataset",
+     "not stated"
+    ],
+    "title": "Data Source",
+    "type": "string"
+   },
+   "validation": {
+    "description": "The strongest validation the abstract claims: 'external / multi-center' for a held-out site or cohort, 'prospective' for prospectively collected evaluation, 'reader study' for comparison against radiologists, 'internal only' for a split of one institution's data.",
+    "enum": [
+     "internal only",
+     "external / multi-center",
+     "prospective",
+     "reader study",
+     "none / not stated"
+    ],
+    "title": "Validation",
+    "type": "string"
+   },
+   "headline_result": {
+    "description": "The main quantitative result as stated, with its metric (e.g. 'AUC 0.94 vs 0.88 for residents'). Empty if none.",
+    "title": "Headline Result",
+    "type": "string"
+   },
+   "study_design": {
+    "description": "A few words: 'retrospective single-center diagnostic accuracy', 'systematic review', 'technical development', 'survey'.",
+    "title": "Study Design",
+    "type": "string"
+   },
+   "confidence": {
+    "description": "How well the abstract supported these fields. 'low' when most fields had to be left empty.",
+    "enum": [
+     "high",
+     "medium",
+     "low"
+    ],
+    "title": "Confidence",
+    "type": "string"
+   }
+  },
+  "required": [
+   "is_pediatric_radiology_ai",
+   "exclusion_reason",
+   "model_name",
+   "model_family",
+   "modality",
+   "body_region",
+   "clinical_problem",
+   "patient_population",
+   "age_groups",
+   "task",
+   "model_description",
+   "release_status",
+   "release_evidence",
+   "code_url",
+   "dataset_size",
+   "data_source",
+   "validation",
+   "headline_result",
+   "study_design",
+   "confidence"
+  ],
+  "title": "PaperExtraction",
+  "type": "object"
+ }
+}

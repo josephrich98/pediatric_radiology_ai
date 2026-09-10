@@ -1,0 +1,1055 @@
+{
+ "generated_on": "2026-09-09",
+ "n_papers": 31,
+ "prompt_version": 1,
+ "prompt_fingerprint": "32a29aea415c",
+ "instructions": "You are building a structured database of pediatric radiology artificial-intelligence papers for the clinical and research leadership of a children's hospital. You are given one PubMed record \u2014 title, journal, year, publication types, MeSH headings, and abstract \u2014 and you fill in one row of that database.\n\nRules, in order of importance:\n\n1. Use only what the record says. If a field is not supported by the abstract, leave it empty (empty string or empty list) or choose the \"not stated\" / \"unclear\" option. Never infer a value from your own knowledge of the model, the vendor, or the authors, and never carry a value over from a paper that sounds similar.\n2. Screen first. Many records match the search only incidentally \u2014 adult studies that mention children in a limitation, non-radiologic imaging (retina, endoscopy, pathology slides, dental, dermoscopy), non-imaging clinical prediction, or bibliometric pieces about AI rather than uses of it. Set is_pediatric_radiology_ai to false for those and give a short exclusion_reason; the remaining fields may then be left empty.\n3. Reviews, guidelines, editorials and challenge reports stay in the database when they are about pediatric radiology AI. They have no model_name; describe the scope of the review in model_description and set study_design accordingly.\n4. Write for a radiologist, not for an ML audience. clinical_problem is the clinical question, not the loss function. model_description says what goes in and what comes out.\n5. Do not repeat the authors' promotional language. \"Promising\", \"revolutionary\" and \"outperformed radiologists\" are claims; report the number instead.\n6. release_status is the column the audience cares about most, so be strict with it. A stated repository URL or \"code is available\" means open-source. A named vendor product, a cleared device, or software described as commercially available means commercial. Say unclear when the abstract is silent, which it usually is.\n",
+ "how_to_return": "Write a JSON file mapping each PMID to an object with exactly the fields in 'schema' below, then run: python scripts/build_paper_db.py --ingest <that file>. Every row is validated against the schema, so a wrong enum value or a missing field is rejected rather than silently stored.",
+ "schema": {
+  "description": "One row of the pediatric radiology-AI paper database.\n\nEvery field is required. \"Not stated in the abstract\" is expressed as an\nempty string or an empty list, never as a guess.",
+  "properties": {
+   "is_pediatric_radiology_ai": {
+    "description": "True only if the paper develops, evaluates, or reviews an AI/ML model applied to diagnostic imaging (radiography, CT, MRI, ultrasound, nuclear medicine, fluoroscopy) in a population that is at least partly pediatric (fetal through adolescent). False for adult-only work, for non-imaging AI, for imaging that is not radiology (retinal photography, endoscopy, histopathology, dermoscopy, dental), and for papers where 'child' appears only incidentally.",
+    "title": "Is Pediatric Radiology Ai",
+    "type": "boolean"
+   },
+   "exclusion_reason": {
+    "description": "If is_pediatric_radiology_ai is false, one short clause saying why. Otherwise an empty string.",
+    "title": "Exclusion Reason",
+    "type": "string"
+   },
+   "model_name": {
+    "description": "The name the authors give their model, system, or product (e.g. 'BoneXpert', 'nnU-Net', 'PedsNet'). Empty string if the model is unnamed. Do not invent a name and do not put the architecture here.",
+    "title": "Model Name",
+    "type": "string"
+   },
+   "model_family": {
+    "description": "The method in a few words as the authors describe it: e.g. '3D U-Net', 'ResNet-50 transfer learning', 'random forest on radiomic features', 'GPT-4', 'vision transformer'. Empty string if the abstract does not say.",
+    "title": "Model Family",
+    "type": "string"
+   },
+   "modality": {
+    "description": "Imaging modalities the model operates on. Empty list if none is named.",
+    "items": {
+     "enum": [
+      "x-ray / radiography",
+      "CT",
+      "MRI",
+      "ultrasound",
+      "nuclear / PET",
+      "fluoroscopy",
+      "mammography",
+      "multiple",
+      "other"
+     ],
+     "type": "string"
+    },
+    "title": "Modality",
+    "type": "array"
+   },
+   "body_region": {
+    "description": "Anatomy or organ system imaged, in a few words (e.g. 'hand and wrist', 'brain', 'chest').",
+    "title": "Body Region",
+    "type": "string"
+   },
+   "clinical_problem": {
+    "description": "The clinical question in one short phrase, as a clinician would say it: 'skeletal maturity assessment', 'appendicitis on ultrasound', 'hydrocephalus shunt failure'. Not the ML task.",
+    "title": "Clinical Problem",
+    "type": "string"
+   },
+   "patient_population": {
+    "description": "Who the children were, in one clause: age range, disease state, and setting if stated (e.g. 'neonates under 32 weeks with suspected NEC', 'children 0-18 undergoing hand radiography for endocrine referral').",
+    "title": "Patient Population",
+    "type": "string"
+   },
+   "age_groups": {
+    "description": "Age bands actually covered by the study population.",
+    "items": {
+     "enum": [
+      "fetal",
+      "neonate",
+      "infant",
+      "child",
+      "adolescent",
+      "pediatric (unspecified)",
+      "mixed pediatric and adult"
+     ],
+     "type": "string"
+    },
+    "title": "Age Groups",
+    "type": "array"
+   },
+   "task": {
+    "description": "What the model produces, using the fixed categories. Most papers have one; list a second only when the paper genuinely does both.",
+    "items": {
+     "enum": [
+      "detection / diagnosis",
+      "segmentation",
+      "measurement / quantification",
+      "outcome prediction",
+      "reconstruction / imputation",
+      "report generation / LLM",
+      "foundation model / vision-language",
+      "agent / autonomous",
+      "workflow / non-interpretive",
+      "other"
+     ],
+     "type": "string"
+    },
+    "title": "Task",
+    "type": "array"
+   },
+   "model_description": {
+    "description": "Two or three plain sentences for a radiologist who has not read the paper: what goes in, what comes out, how it was trained, and what it is for. Written from the abstract only \u2014 no outside knowledge, no praise, no hedging language copied from the authors' conclusions.",
+    "title": "Model Description",
+    "type": "string"
+   },
+   "release_status": {
+    "description": "'open-source' if code or weights are stated to be publicly available (a repository URL, a model hub, 'code is available at ...'); 'commercial' if the model is a named vendor product, a CE-marked or FDA-cleared device, or is described as commercially available software; 'unreleased' if the abstract makes clear it is a research prototype with no release; 'unclear' if the abstract simply does not say. Most academic papers are 'unclear' \u2014 prefer it over guessing 'unreleased'.",
+    "enum": [
+     "open-source",
+     "commercial",
+     "unreleased",
+     "unclear"
+    ],
+    "title": "Release Status",
+    "type": "string"
+   },
+   "release_evidence": {
+    "description": "The words in the abstract that justify release_status, quoted or closely paraphrased. Empty if none.",
+    "title": "Release Evidence",
+    "type": "string"
+   },
+   "code_url": {
+    "description": "Repository or model-hub URL if the abstract gives one, else an empty string.",
+    "title": "Code Url",
+    "type": "string"
+   },
+   "dataset_size": {
+    "description": "Study size as stated, keeping the authors' units (e.g. '1,286 radiographs from 743 children').",
+    "title": "Dataset Size",
+    "type": "string"
+   },
+   "data_source": {
+    "description": "Where the data came from.",
+    "enum": [
+     "single center",
+     "multi center",
+     "public dataset",
+     "not stated"
+    ],
+    "title": "Data Source",
+    "type": "string"
+   },
+   "validation": {
+    "description": "The strongest validation the abstract claims: 'external / multi-center' for a held-out site or cohort, 'prospective' for prospectively collected evaluation, 'reader study' for comparison against radiologists, 'internal only' for a split of one institution's data.",
+    "enum": [
+     "internal only",
+     "external / multi-center",
+     "prospective",
+     "reader study",
+     "none / not stated"
+    ],
+    "title": "Validation",
+    "type": "string"
+   },
+   "headline_result": {
+    "description": "The main quantitative result as stated, with its metric (e.g. 'AUC 0.94 vs 0.88 for residents'). Empty if none.",
+    "title": "Headline Result",
+    "type": "string"
+   },
+   "study_design": {
+    "description": "A few words: 'retrospective single-center diagnostic accuracy', 'systematic review', 'technical development', 'survey'.",
+    "title": "Study Design",
+    "type": "string"
+   },
+   "confidence": {
+    "description": "How well the abstract supported these fields. 'low' when most fields had to be left empty.",
+    "enum": [
+     "high",
+     "medium",
+     "low"
+    ],
+    "title": "Confidence",
+    "type": "string"
+   }
+  },
+  "required": [
+   "is_pediatric_radiology_ai",
+   "exclusion_reason",
+   "model_name",
+   "model_family",
+   "modality",
+   "body_region",
+   "clinical_problem",
+   "patient_population",
+   "age_groups",
+   "task",
+   "model_description",
+   "release_status",
+   "release_evidence",
+   "code_url",
+   "dataset_size",
+   "data_source",
+   "validation",
+   "headline_result",
+   "study_design",
+   "confidence"
+  ],
+  "title": "PaperExtraction",
+  "type": "object"
+ },
+ "batch": 49,
+ "papers": [
+  {
+   "pmid": "35102269",
+   "citations": 0,
+   "year": 2022,
+   "title": "Author Correction: Evaluation of deep convolutional neural networks for automatic classification of common maternal fetal ultrasound planes.",
+   "journal": "Scientific reports",
+   "doi": "10.1038/s41598-022-06173-z",
+   "url": "https://doi.org/10.1038/s41598-022-06173-z",
+   "authors": [
+    "Burgos-Artizzu XP",
+    "Coronado-Guti\u00e9rrez D",
+    "Valenzuela-Alcaraz B",
+    "Bonet-Carne E",
+    "Eixarch E",
+    "Crispi F",
+    "Gratac\u00f3s E"
+   ],
+   "publication_types": [
+    "Published Erratum"
+   ],
+   "mesh_terms": [],
+   "abstract": ""
+  },
+  {
+   "pmid": "35261283",
+   "citations": 0,
+   "year": 2022,
+   "title": "Editorial Comment: Doing More With Less-Deep Learning Iterative Reconstruction Can Improve Diagnostic Image Quality in Pediatric Low-Dose Body CT.",
+   "journal": "AJR. American journal of roentgenology",
+   "doi": "10.2214/AJR.22.27613",
+   "url": "https://doi.org/10.2214/AJR.22.27613",
+   "authors": [
+    "Hodes AD"
+   ],
+   "publication_types": [
+    "Editorial",
+    "Comment"
+   ],
+   "mesh_terms": [
+    "Child",
+    "Deep Learning",
+    "Drug Tapering",
+    "Humans",
+    "Phantoms, Imaging",
+    "Radiographic Image Interpretation, Computer-Assisted",
+    "Tomography, X-Ray Computed"
+   ],
+   "abstract": ""
+  },
+  {
+   "pmid": "35756412",
+   "citations": 0,
+   "year": 2022,
+   "title": "Influences of Magnetic Resonance Imaging Superresolution Algorithm-Based Transition Care on Prognosis of Children with Severe Viral Encephalitis.",
+   "journal": "Computational and mathematical methods in medicine",
+   "doi": "10.1155/2022/5909922",
+   "url": "https://doi.org/10.1155/2022/5909922",
+   "authors": [
+    "Wang Y",
+    "Zhang Y",
+    "Su L"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Child",
+    "Deep Learning",
+    "Encephalitis, Viral",
+    "Humans",
+    "Image Processing, Computer-Assisted",
+    "Magnetic Resonance Imaging",
+    "Prognosis",
+    "Quality of Life",
+    "Transitional Care"
+   ],
+   "abstract": "OBJECTIVE: Its goal was to see how convolutional neural network- (CNN-) based superresolution (SR) technology magnetic resonance imaging- (MRI-) assisted transition care (TC) affected the prognosis of children with severe viral encephalitis (SVE) and how effective it was.\nMETHODS: 90 SVE children were selected as the research objects and divided into control group (39 cases receiving conventional nursing intervention) and observation group (51 cases performed with conventional nursing intervention and TC intervention) according to their nursing purpose. Based on SR-CNN-optimized MRI images, diagnosis was implemented. Life treatment and sequelae in two groups were compared.\nRESULTS: After the processing by CNN algorithm-based SR, peak signal to noise ratio (PSNR) (40.08\u2009dB) and structural similarity (SSIM) (0.98) of MRI images were both higher than those of fully connected neural network (FNN) (38.01\u2009dB, 0.93) and recurrent neural network (RNN) (37.21\u2009dB, 0.93) algorithms. Diagnostic sensitivity (95.34%), specificity (75%), and accuracy (94.44%) of MRI images were obviously superior to those of conventional MRI (81.40%, 50%, and 80%). PedsQLTM 4.0 scores of the observation group 1 to 3 months after discharge were all higher than those of the control group (54.55 \u00b1 5.76 vs. 52.32 \u00b1 5.12 and 66.32 \u00b1 8.89 vs. 55.02 \u00b1 5.87). Sequela incidence in the observation group (13.73%) was apparently lower than that in the control group (43.59%) (P < 0.05).\nCONCLUSION: (1) SR-CNN algorithm could increase the definition and diagnostic ability of MRI images. (2) TC could reduce sequelae incidence among SVE children and improve their quality of life (QOL)."
+  },
+  {
+   "pmid": "35898478",
+   "citations": 0,
+   "year": 2022,
+   "title": "Auxiliary Pneumonia Classification Algorithm Based on Pruning Compression.",
+   "journal": "Computational and mathematical methods in medicine",
+   "doi": "10.1155/2022/8415187",
+   "url": "https://doi.org/10.1155/2022/8415187",
+   "authors": [
+    "Yang CP",
+    "Zhu JQ",
+    "Yan T",
+    "Su QL",
+    "Zheng LX"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Child",
+    "Child, Preschool",
+    "Data Compression",
+    "Deep Learning",
+    "Humans",
+    "Neural Networks, Computer",
+    "Pneumonia"
+   ],
+   "abstract": "Pneumonia infection is the leading cause of death in young children. The commonly used pneumonia detection method is that doctors diagnose through chest X-ray, and external factors easily interfere with the results. Assisting doctors in diagnosing pneumonia in patients based on deep learning methods can effectively eliminate similar problems. However, the complex network structure and redundant parameters of deep neural networks and the limited storage and computing resources of clinical medical hardware devices make it difficult for this method to use widely in clinical practice. Therefore, this paper studies a lightweight pneumonia classification network, CPGResNet50 (ResNet50 with custom channel pruning and ghost methods), based on ResNet50 pruning and compression to better meet the application requirements of clinical pneumonia auxiliary diagnosis with high precision and low memory. First, based on the hierarchical channel pruning method, the channel after the convolutional layer in the bottleneck part of the backbone network layer is used as the pruning object, and the pruning operation is performed after its normalization to obtain a network model with a high compression ratio. Second, the pruned convolutional layers are decomposed into original convolutions and cheap convolutions using the optimized convolution method. The feature maps generated by the two convolution parts are combined as the input to the next convolutional layer. Further, we conducted many experiments using pneumonia X-ray medical image data. The results show that the proposed method reduces the number of parameters of the ResNet50 network model from 23.7\u2009M to 3.455\u2009M when the pruning rate is 90%, a reduction is more than 85%, FIOPs dropped from 4.12G to 523.09\u2009M, and the speed increased by more than 85%. The model training accuracy error remained within 1%. Therefore, the proposed method has a good performance in the auxiliary diagnosis of pneumonia and obtained good experimental results."
+  },
+  {
+   "pmid": "35940553",
+   "citations": 0,
+   "year": 2022,
+   "title": "Optimization assisted framework for thyroid detection and classification: A new ensemble technique.",
+   "journal": "Gene expression patterns : GEP",
+   "doi": "10.1016/j.gep.2022.119268",
+   "url": "https://doi.org/10.1016/j.gep.2022.119268",
+   "authors": [
+    "Bhausaheb Namdeo R",
+    "Vitthal Janardan G"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Humans",
+    "Neural Networks, Computer",
+    "Support Vector Machine",
+    "Thyroid Gland"
+   ],
+   "abstract": "Ultrasound (US) is an inexpensive and non-invasive technique for capturing the image of the thyroid gland and nearby tissue. The classification and detection of thyroid disorders is still in its infant stage. This study aims to present a new thyroid diagnosis approach, which consists of three phases like \"(i) feature extraction, (ii) feature dimensionality reduction, and (iii) classification\". Initially, the thyroid images as well as its related data are given as input. From the input image, the features such as\" Grey Level Co-occurrence Matrix(GLCM), Grey level Run Length Matrix(GLRM), proposed Local Binary Pattern(LBP), and Local Tetra Patterns (LTrP)\" are extracted. Meanwhile, from the input data, the higher-order statistical features like skewness, kurtosis, entropy, as well as moment get retrieved. Consequently, the Linear Discriminant Analysis (LDA) based dimensionality reduction is processed to resolve the problem of \"curse of dimensionality\". Finally, the classification is carried out via two phases: Image features are classified using an ensemble classifier that includes Support Vector Machine (SVM)& Neural Network(NN) models. The data features are subjected to Recurrent Neural Network(RNN) based classification, which is optimized by an Adaptive Elephant Herding Algorithm (AEHO) via tuning the optimal weight. At last, the performance of the adopted scheme is compared to the extant models in terms of various measures. Especially, the mean value of the suggested RNN\u00a0+\u00a0AEHO model is 4.35%, 3.54%, 6.07%, 3.8%, 1.69%, 2.85%, 2.07%, 2.54%, 0.13%, 0.035%, and 8.53% better than the existing CNN, NB, RF, KNN, Levenberg, RNN\u00a0+\u00a0EHO, RNN\u00a0+\u00a0FF, RNN\u00a0+\u00a0WOA, WF-CS, FU-SLnO and HFBO methods respectively."
+  },
+  {
+   "pmid": "35990366",
+   "citations": 0,
+   "year": 2022,
+   "title": "Editorial: Deep learning for neurological disorders in children.",
+   "journal": "Frontiers in computational neuroscience",
+   "doi": "10.3389/fncom.2022.984882",
+   "url": "https://doi.org/10.3389/fncom.2022.984882",
+   "authors": [
+    "Sargolzaei S"
+   ],
+   "publication_types": [
+    "Editorial"
+   ],
+   "mesh_terms": [],
+   "abstract": ""
+  },
+  {
+   "pmid": "36035290",
+   "citations": 0,
+   "year": 2022,
+   "title": "Efficacy Evaluation of Ultrasound with Active Contour Model for Hemodialysis in Children with Renal Failure.",
+   "journal": "Computational and mathematical methods in medicine",
+   "doi": "10.1155/2022/3665841",
+   "url": "https://doi.org/10.1155/2022/3665841",
+   "authors": [
+    "Huo J",
+    "Peng A",
+    "Chen F",
+    "Chen F",
+    "Shen L",
+    "Yan H"
+   ],
+   "publication_types": [
+    "Journal Article",
+    "Retracted Publication"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Child",
+    "Humans",
+    "Kidney Failure, Chronic",
+    "Renal Dialysis",
+    "Ultrasonography"
+   ],
+   "abstract": "This study was aimed to explore the efficacy of ultrasound with active contour model (ACM) for hemodialysis in children with renal failure. The pulse coupled neural network (PCNN) was used to extract the initial contour of the ultrasound images, and the cloud model-based ACM was used to accurately segment the images, whose effect was compared with the classic Snake model. 84 children with chronic renal failure who received hemodialysis treatment in hospital were selected as research objects. There were 42 cases in the control group who were diagnosed by conventional ultrasound and 42 cases in the observation group who were diagnosed by ultrasound with the algorithm. Then, 42 children who underwent healthy physical examination (health group) were selected for comparison of related analysis indicators. The error rates of different algorithms were compared to analyze the levels of inflammatory factors in different groups of patients after hemodialysis. The results showed that the error rate of classical Snake model was 18.87% and that of ACM algorithm model was 11.01%, and the error rate of ACM algorithm model was significantly lower (P < 0.05). After hemodialysis, the level of tumor necrosis factor (TNF)-\u03b1 was 38.76\u2009pg/mL in the observation group and 40.05\u2009pg/mL in the control group, which was notably decreased in both groups, especially in the observation group (P < 0.05). After hemodialysis, transforming growth factor (TGF)-\u03b21 was 7.76\u2009ng/mL in the observation group and 7.60\u2009ng/mL in the control group, which was significantly reduced in both groups. After treatment, UA and Scr in both groups were significantly reduced, and the reduction was more significant in the observation group (P < 0.05). HGB and RBC were significantly increased in both groups, and the increase was more significant in the observation group (P < 0.05). In summary, ACM algorithm had a good segmentation effect on the ultrasonic images of children with renal failure. This study provided guidance for clinicians to choose the algorithm for the application of ultrasonic imaging diagnosis."
+  },
+  {
+   "pmid": "36070936",
+   "citations": 0,
+   "year": 2022,
+   "title": "[Relationship between Image Quality and Reconstruction FOV in Deep Learning Reconstructed Images of CT].",
+   "journal": "Nihon Hoshasen Gijutsu Gakkai zasshi",
+   "doi": "10.6009/jjrt.2022-1228",
+   "url": "https://doi.org/10.6009/jjrt.2022-1228",
+   "authors": [
+    "Odagiri K",
+    "Onodera S",
+    "Takano H",
+    "Kayano S",
+    "Sakamoto H"
+   ],
+   "publication_types": [
+    "English Abstract",
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Child",
+    "Humans",
+    "Abdomen",
+    "Deep Learning",
+    "Radiographic Image Enhancement",
+    "Radiographic Image Interpretation, Computer-Assisted",
+    "Tomography, X-Ray Computed"
+   ],
+   "abstract": "In this study, we compared the image quality of deep learning reconstruction (DLR) with that of conventional image reconstruction methods under the same conditions of reconstruction FOV and acquisition dose assuming abdomen computed tomography (CT) in children. Standard deviation (SD) of the CT value, noise power spectrum (NPS), and task-based modulation transfer function (TTF) were evaluated. DLR reduced image noise while maintaining sharpness, and the noise reduction effect showed a different characteristic depending on the size of reconstruction FOV from the conventional image reconstruction methods. The SD of CT value increased gradually in the range from 320\u2009mm to 240\u2009mm, but there was almost no change from 240\u2009mm to 200\u2009mm. The NPS showed completely different characteristics. The low-frequency component increased, and the high-frequency component decreased at 240\u2009mm. However, the frequency component below 0.5\u2009cycle/mm decreased at 200\u2009mm and the peak frequency moved to the lower side at 320\u2009mm. DLR showed the highest TTF value compared to the conventional reconstruction methods."
+  },
+  {
+   "pmid": "36259008",
+   "citations": 0,
+   "year": 2022,
+   "title": "Role of Technology in Detection of COVID-19.",
+   "journal": "Cureus",
+   "doi": "10.7759/cureus.29138",
+   "url": "https://doi.org/10.7759/cureus.29138",
+   "authors": [
+    "Lohiya DV",
+    "Pathak SS"
+   ],
+   "publication_types": [
+    "Journal Article",
+    "Review"
+   ],
+   "mesh_terms": [],
+   "abstract": "The severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) virus caused coronavirus infection termed as COVID-19, an illness that has spread devastation all over the world. It was developed first in China\u00a0and had swiftly spread throughout the world. COVID has created imposed burden on health in the lives of all individuals around the globe. This article provides a number of\u00a0unprecedented detection technologies used in the detection of infection. COVID has created a large number of symptoms in the young, adolescent\u00a0as well as elderly population. Old age people are susceptible\u00a0to fatal serious symptoms because of low immunity. With these goals in mind,\u00a0this article includes substantial condemning descriptions of the majority of initiatives in order to create diagnostic tools for easy diagnosis. It also provides the reader with a multidisciplinary viewpoint on how traditional approaches such as serology and reverse transcriptase polymerase chain reaction (RT-PCR) along with the frontline techniques such as clustered regularly interspaced short palindromic repeats (CRISPR)/Cas and artificial intelligence/machine learning have been\u00a0utilized to gather\u00a0information. The story will inspire creative new ways for successful detection therapy and to prevent\u00a0this pandemic among a wide audience of operating and aspiring biomedical scientists and engineers."
+  },
+  {
+   "pmid": "36644063",
+   "citations": 0,
+   "year": 2022,
+   "title": "Using Machine Learning Technique to Predict the Most Reliable Diagnostic Finding for Foreign Body Aspiration in Children: Symptoms, Chest X-ray, or Auscultation?",
+   "journal": "Cureus",
+   "doi": "10.7759/cureus.32461",
+   "url": "https://doi.org/10.7759/cureus.32461",
+   "authors": [
+    "Genisol I",
+    "Uzunlu O"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [],
+   "abstract": "Foreign body aspiration (FBA) is one of the most critical and life-threatening pediatric emergency situations. Prompt diagnosis in these cases is very important as they are associated with high mortality among children. When diagnosing FBA, symptoms of the patient, auscultation findings, and chest X-ray findings are usually evaluated. In this study, we conducted a retrospective analysis of all the cases involving\u00a0suspicion of FBA in children under the age of 18 years who were hospitalized in the\u00a0Department of Pediatric Surgery at Denizli Pamukkale University Hospital, Turkey\u00a0from January 2005 to September 2020. Instead of traditional statistical methods, we used machine learning techniques such as random forest and logistic regression to determine which\u00a0finding was diagnostically the most reliable. The variables included in the analysis that were considered to be significant were as follows: symptoms, auscultation findings, chest X-ray findings, patient gender, age, location of the foreign body, and the time of admission. For the purpose of this study, we developed four different models. Model 1 included gender, age, time of admission, location, and symptoms as variables; the correct classification rate of the model was found to be 82.3%. Model 2 included auscultation findings in addition to Model 1, and the correct classification rate of the model was 84.8%. Model 3 included chest X-ray findings in addition to Model 1, and the correct classification rate of the model was 87.4%. Model 4, on the other hand, included both auscultation findings and chest X-ray findings in addition to Model 1, and the correct classification rate of the model was 87.6%. Based on our findings, a definitive diagnosis of FBA using only symptoms, auscultation findings, or chest X-ray findings in isolation does not seem possible. Additionally, using only symptoms and chest X-ray findings is also insufficient to make a diagnosis."
+  },
+  {
+   "pmid": "39540004",
+   "citations": 0,
+   "year": 2022,
+   "title": "NEC-NET : Segmentation and Feature Extraction Network for the Neurocranium in Early Childhood.",
+   "journal": "Proceedings of SPIE--the International Society for Optical Engineering",
+   "doi": "10.1117/12.2670281",
+   "url": "https://doi.org/10.1117/12.2670281",
+   "authors": [
+    "Fan D",
+    "Gajawelli N",
+    "Paulli A",
+    "Perry E",
+    "Tanedo J",
+    "Deoni S",
+    "Wang Y",
+    "Linguraru MG"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [],
+   "abstract": "In early life, the neurocranium undergoes rapid changes to accommodate the expanding brain. Neurocranial maturation can be disrupted by developmental abnormalities and environmental factors such as sleep position. To establish a baseline for the early detection of anomalies, it is important to understand how this structure typically grows in healthy children. Here, we designed a deep neural network pipeline NEC-NET, including segmentation and classification, to analyze the normative development of the neurocranium in T1 MR images from healthy children aged 12 to 60 months old. The pipeline optimizes the segmentation of the neurocranium and shows the preliminary results of age-based regional differences among infants."
+  },
+  {
+   "pmid": "33618941",
+   "citations": 0,
+   "year": 2021,
+   "title": "Job-Readiness After Pediatric Neuroradiology Training: Defining Trainee Needs.",
+   "journal": "Academic radiology",
+   "doi": "10.1016/j.acra.2020.08.025",
+   "url": "https://doi.org/10.1016/j.acra.2020.08.025",
+   "authors": [
+    "Gokli A",
+    "Shekdar KV",
+    "Reid JR"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Child",
+    "Curriculum",
+    "Education, Medical, Graduate",
+    "Fellowships and Scholarships",
+    "Humans",
+    "Needs Assessment",
+    "Radiology",
+    "Surveys and Questionnaires"
+   ],
+   "abstract": "RATIONALE AND OBJECTIVES: To describe and analyze the pediatric neuroradiology implicit curriculum for general-pediatric and neuro-pediatric radiology fellowship training in order to define specific trainee needs and inform an explicit pediatric neuroradiology curriculum.\nMATERIALS AND METHODS: A focus group of pediatric radiologists, pediatric neuroradiologists and fellows was conducted to create a needs assessment questionnaire that focused on training experience, current job, and a list of essential competency items. The questionnaire was distributed to 175 members of the Society for Pediatric Radiology. Data were derived from categorical and continuous survey variables. Using an inductive approach, we analyzed and systematically inspected the data to derive themes regarding trainee needs and how they might inform an explicit curriculum.\nRESULTS: Fifty-seven pediatric radiologists (response rate of 33%) responded to the survey. Sixty-three percent of respondents were fellowship trained in general pediatric radiology, 21% in pediatric neuroradiology, and 16% in both. In their current jobs, 75% of respondents were responsible for interpreting some pediatric neuroradiology. 50% or greater reported limited or no fellowship instruction in five areas of imaging interpretation: fetal neuroimaging; ear and/or nose and/or throat imaging; head and neck imaging; neuroembryology; neuro-spectroscopy and four areas of technical skills and/or image quality: reducing imaging time; choice of contrast agents; sedation; understanding clinical management pathways.\nCONCLUSION: Trainees endorse inadequate training in certain aspects of imaging interpretation and technical skills which are known to remain a significant and vital aspect of pediatric neuroradiology practice, revealing an opportunity to emphasize these aspects in an explicit curriculum and dedicate educational resources towards this cause."
+  },
+  {
+   "pmid": "33885957",
+   "citations": 0,
+   "year": 2021,
+   "title": "Fetal MRI-based artificial intelligence in gestational age prediction--a practical solution to an unsolved problem?",
+   "journal": "European radiology",
+   "doi": "10.1007/s00330-021-07972-0",
+   "url": "https://doi.org/10.1007/s00330-021-07972-0",
+   "authors": [
+    "Kasprian G",
+    "Langs G",
+    "Cortes MS"
+   ],
+   "publication_types": [
+    "Editorial"
+   ],
+   "mesh_terms": [
+    "Artificial Intelligence",
+    "Fetus",
+    "Gestational Age",
+    "Humans",
+    "Magnetic Resonance Imaging"
+   ],
+   "abstract": ""
+  },
+  {
+   "pmid": "34034349",
+   "citations": 0,
+   "year": 2022,
+   "title": "Pediatric Buried Bumper Syndrome: Diagnostic Validity of Transabdominal Ultrasound and Artificial Intelligence.",
+   "journal": "Ultraschall in der Medizin (Stuttgart, Germany : 1980)",
+   "doi": "10.1055/a-1471-3039",
+   "url": "https://doi.org/10.1055/a-1471-3039",
+   "authors": [
+    "Aguilar C",
+    "Regensburger AP",
+    "Knieling F",
+    "Wagner AL",
+    "Siebenlist G",
+    "Woelfle J",
+    "Koehler H",
+    "Hoerning A"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Artificial Intelligence",
+    "Child",
+    "Device Removal",
+    "Enteral Nutrition",
+    "Gastrostomy",
+    "Humans",
+    "Retrospective Studies",
+    "Syndrome"
+   ],
+   "abstract": "PURPOSE: Buried bumper syndrome (BBS) is a severe complication of percutaneous endoscopic gastrostomy (PEG) resulting from overgrowth of gastric mucosa and penetration of the inner holding plate into the gastric wall. The aim of this study was to evaluate the diagnostic value of transabdominal ultrasound (US) in comparison to an artificial intelligence (AI) model for the diagnosis of BBS in children.\nMATERIALS AND METHODS: In this monocentric retrospective study, pediatric US data concerning BBS from a ten-year period (2009-2019) were analyzed. US findings were compared to a clinical multiparameter-based AI model and reference standard endoscopy. Clinical risk factors for the occurrence of pediatric BBS were determined.\nRESULTS: In n\u200a=\u200a121 independent examinations of n\u200a= 82\u00a0patients, the placement of the inner holding plate of the PEG was assessed by US.\u200aIn n\u200a=\u200a18 cases BBS was confirmed. Recall and precision rates were 100\u200a% for US and 88\u200a% for the AI-based assessment. Risk factors for the occurrence of BBS were mobilization problems of the PEG (rs\u200a=\u200a0.66, p\u200a<\u200a0.001), secretion/exudation (rs\u200a=\u200a0.29, p\u200a=\u200a0.002), time between 1st\u00a0PEG placement and US (rs\u200a=\u200a0.38, p\u200a<\u200a0.001), and elevated leukocyte count (rs\u200a=\u200a0.24, p\u200a=\u200a0.016).\nCONCLUSION: Transabdominal US enables correct, rapid, and noninvasive diagnosis of BBS in pediatric patients. Preceding AI models could aid during diagnostic workup.\u200aTo avoid unnecessary invasive procedures, US could be considered as a primary diagnostic procedure in suspected BBS.\u200a."
+  },
+  {
+   "pmid": "34060698",
+   "citations": 0,
+   "year": 2021,
+   "title": "Editorial for \"Image Quality Assessment of Fetal Brain MRI Using Multi-Instance Deep Learning Methods\".",
+   "journal": "Journal of magnetic resonance imaging : JMRI",
+   "doi": "10.1002/jmri.27759",
+   "url": "https://doi.org/10.1002/jmri.27759",
+   "authors": [
+    "Chen L"
+   ],
+   "publication_types": [
+    "Editorial"
+   ],
+   "mesh_terms": [
+    "Brain",
+    "Deep Learning",
+    "Fetus",
+    "Humans",
+    "Magnetic Resonance Imaging",
+    "Neuroimaging"
+   ],
+   "abstract": ""
+  },
+  {
+   "pmid": "34621144",
+   "citations": 0,
+   "year": 2021,
+   "title": "Convolutional Neural Network-Processed MRI Images in the Diagnosis of Plastic Bronchitis in Children.",
+   "journal": "Contrast media & molecular imaging",
+   "doi": "10.1155/2021/2748830",
+   "url": "https://doi.org/10.1155/2021/2748830",
+   "authors": [
+    "Chen X",
+    "Lu R",
+    "Zhao F"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Bronchitis",
+    "Child",
+    "Female",
+    "Humans",
+    "Image Processing, Computer-Assisted",
+    "Lung",
+    "Magnetic Resonance Imaging",
+    "Male",
+    "Neural Networks, Computer"
+   ],
+   "abstract": "OBJECTIVE: The study focused on the features of the convolutional neural networks- (CNN-) processed magnetic resonance imaging (MRI) images for plastic bronchitis (PB) in children.\nMETHODS: 30 PB children were selected as subjects, including 19 boys and 11 girls. They all received the MRI examination for the chest. Then, a CNN-based algorithm was constructed and compared with Active Appearance Model (AAM) algorithm for segmentation effects of MRI images in 30 PB children, factoring into occurring simultaneously than (OST), Dice, and Jaccard coefficient.\nRESULTS: The maximum Dice coefficient of CNN algorithm reached 0.946, while that of active AAM was 0.843, and the Jaccard coefficient of CNN algorithm was also higher (0.894 vs. 0.758, P < 0.05). The MRI images showed pulmonary inflammation in all subjects. Of 30 patients, 14 (46.66%) had complicated pulmonary atelectasis, 9 (30%) had the complicated pleural effusion, 3 (10%) had pneumothorax, 2 (6.67%) had complicated mediastinal emphysema, and 2 (6.67%) had complicated pneumopericardium. Also, of 30 patients, 19 (63.33%) had lung consolidation and atelectasis in a single lung lobe and 11 (36.67%) in both two lung lobes.\nCONCLUSION: The algorithm based on CNN can significantly improve the segmentation accuracy of MRI images for plastic bronchitis in children. The pleural effusion was a dangerous factor for the occurrence and development of PB."
+  },
+  {
+   "pmid": "34745505",
+   "citations": 0,
+   "year": 2021,
+   "title": "Chest Computed Tomography Images in Neonatal Bronchial Pneumonia under the Adaptive Statistical Iterative Reconstruction Algorithm.",
+   "journal": "Journal of healthcare engineering",
+   "doi": "10.1155/2021/6183946",
+   "url": "https://doi.org/10.1155/2021/6183946",
+   "authors": [
+    "Sun Y",
+    "Wu L",
+    "Tian Z",
+    "Bao T"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Artificial Intelligence",
+    "Bronchopneumonia",
+    "Humans",
+    "Infant, Newborn",
+    "Pneumonia",
+    "Radiation Dosage",
+    "Radiographic Image Interpretation, Computer-Assisted",
+    "Tomography, X-Ray Computed"
+   ],
+   "abstract": "This study was to explore the application value of chest computed tomography (CT) images processed by artificial intelligence (AI) algorithms in the diagnosis of neonatal bronchial pneumonia (NBP). The AI adaptive statistical iterative reconstruction (ASiR) algorithm was adopted to reconstruct the chest CT image to compare and analyze the effect of the reconstruction of CT image under the ASiR algorithm under different preweight and postweight values based on the objective measurement and subjective evaluation. 85 neonates with pneumonia treated in hospital from September 1, 2015, to July 1, 2020, were selected as the research objects to analyze their CT imaging characteristics. Subsequently, the peripheral blood of healthy neonates during the same period was collected, and the levels of C-reactive protein (CRP) and erythrocyte sedimentation rate (ESR) were detected. The efficiency of CT examination, CRP, ESR, and combined examination in the diagnosis of NBP was analyzed. The results showed that the subjective quality score, lung window subjective score, and mediastinal window subjective score were the highest after CT image reconstruction when the preweight value of the ASiR algorithm was 50%. After treatment, 79 NBP cases (92.9%) showed ground-glass features in CT images. Compared with the healthy neonates, the levels of CRP and ESR in the peripheral blood of neonates with bronchial pneumonia were much lower (P < 0.05). The accuracy rates of CT examination, CRP examination, ESR examination, CRP\u2009+\u2009ESR examination, and CRP\u2009+\u2009ESR\u2009+\u2009CT examination for the diagnosis of NBP were 80.7%, 75.3%, 75.1%, 80.3%, and 98.6%, respectively. CT technology based on AI algorithm showed high clinical application value in the feature analysis of NBP."
+  },
+  {
+   "pmid": "34761828",
+   "citations": 0,
+   "year": 2022,
+   "title": "Aren't Pediatric Patients Just Little Adults? Artificial Intelligence Ultrasound Algorithms Beg to Differ.",
+   "journal": "Journal of ultrasound in medicine : official journal of the American Institute of Ultrasound in Medicine",
+   "doi": "10.1002/jum.15879",
+   "url": "https://doi.org/10.1002/jum.15879",
+   "authors": [
+    "Blaivas M",
+    "Blaivas LN",
+    "Tsung JW",
+    "Corl K"
+   ],
+   "publication_types": [
+    "Letter"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Artificial Intelligence",
+    "Child",
+    "Humans",
+    "Ultrasonography"
+   ],
+   "abstract": ""
+  },
+  {
+   "pmid": "34821968",
+   "citations": 0,
+   "year": 2022,
+   "title": "Editorial comment on \"Diagnosing autism spectrum disorder in children using conventional MRI and apparent diffusion coefficient based deep learning algorithms\".",
+   "journal": "European radiology",
+   "doi": "10.1007/s00330-021-08371-1",
+   "url": "https://doi.org/10.1007/s00330-021-08371-1",
+   "authors": [
+    "Tang JS"
+   ],
+   "publication_types": [
+    "Editorial"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Autism Spectrum Disorder",
+    "Child",
+    "Deep Learning",
+    "Diffusion Magnetic Resonance Imaging",
+    "Humans",
+    "Magnetic Resonance Imaging"
+   ],
+   "abstract": "This editorial comment refers to the article: \"Diagnosing autism spectrum disorder in children using conventional MRI and apparent diffusion coefficient based deep learning algorithms\" by Guo et al. (Eur Radiol, 2021). KEY POINTS: \u2022Deep learning may help to uncover imaging features of autism spectrum disorder on MRI."
+  },
+  {
+   "pmid": "32671625",
+   "citations": 0,
+   "year": 2020,
+   "title": "Matrix Deformation with Ectopic Cells Induced by Rotational Motion in Bioengineered Neural Tissues.",
+   "journal": "Annals of biomedical engineering",
+   "doi": "10.1007/s10439-020-02561-6",
+   "url": "https://doi.org/10.1007/s10439-020-02561-6",
+   "authors": [
+    "Rouleau N",
+    "Murugan NJ",
+    "Rusk W",
+    "Koester C",
+    "Kaplan DL"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Animals",
+    "Brain",
+    "Brain Injuries",
+    "Extracellular Matrix",
+    "Models, Neurological",
+    "Rats",
+    "Rats, Sprague-Dawley"
+   ],
+   "abstract": "The brain's extracellular matrix (ECM) is a dynamic protein-based scaffold within which neural networks can form, self-maintain, and re-model. When the brain incurs injuries, microscopic tissue tears and active ECM re-modelling give way to abnormal brain structure and function including the presence of ectopic cells. Post-mortem and neuroimaging data suggest that the brains of jet pilots and astronauts, who are exposed to rotational forces, accelerations, and microgravity, display brain anomalies which could be indicative of a mechanodisruptive pathology. Here we present a model of non-impact-based brain injury induced by matrix deformation following mechanical shaking. Using a bioengineered 3D neural tissue platform, we designed a repetitive shaking paradigm to simulate subtle rotational acceleration. Our results indicate shaking induced ectopic cell clustering that could be inhibited by physically restraining tissue movement. Imaging revealed that the collagen substrate surrounding cells was deformed following shaking. Applied to neonatal rat brains, shaking induced deformation of extracellular spaces within the cerebral cortices and reduced the number of cell bodies at higher accelerations. We hypothesize that ECM deformation may represent a more significant role in brain injury progression than previously assumed and that the present model system contributes to its understanding as a phenomenon."
+  },
+  {
+   "pmid": "32844605",
+   "citations": 0,
+   "year": 2020,
+   "title": "The neural correlates of Chinese children's spontaneous trait inferences: Behavioral and electrophysiological evidence.",
+   "journal": "PsyCh journal",
+   "doi": "10.1002/pchj.392",
+   "url": "https://doi.org/10.1002/pchj.392",
+   "authors": [
+    "Jia L",
+    "Zhang C",
+    "Heyman GD",
+    "Wang C",
+    "Wang J"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Child",
+    "China",
+    "Electroencephalography",
+    "Evoked Potentials",
+    "Female",
+    "Humans",
+    "Male"
+   ],
+   "abstract": "The results of multiple behavioral investigations indicate that children can develop spontaneous trait inferences (STIs) starting from when they are 8-9\u2009years of age. However, little is known about the neural correlates of STIs when they first develop. In the present study, we measured event-related potentials (ERPs) and event-related spectral perturbation (ERSP) using an N400 paradigm. Seventeen 9-year-old Chinese children were first instructed to remember facial photos and paired trait-implying behaviors. Subsequently, they performed a lexical decision task in which faces were used to prime the inferred traits or their antonyms. Compared to the inferred traits, the antonyms exhibited a stronger amplitude on both N400 (370-500\u2009ms) and negative slow wave (NSW; 550-800\u2009ms). However, only N400 showed a right hemispheric dominance of STIs. In addition, ERSP results revealed stronger lower alpha band (7-10\u2009Hz) activity for antonyms than inferred traits over the right parieto-occipital area from 420\u2009ms to 800\u2009ms. These findings, coupled with the electroencephalography (EEG) source localization (standardized low-resolution electromagnetic tomography [sLORETA]), provide evidence for a \"monitoring-control\" two-stage neural network."
+  },
+  {
+   "pmid": "32895097",
+   "citations": 0,
+   "year": 2020,
+   "title": "[Application Values of Gadolinium-ethoxybenzyl Diethylenetriaminepentaacetic Acid Enhanced Magnetic Resonance Imaging-based Radiomics in the Quantitative Assessment of Liver Reserve Function of Patients with Liver Cirrhosis].",
+   "journal": "Zhongguo yi xue ke xue yuan xue bao. Acta Academiae Medicinae Sinicae",
+   "doi": "10.3881/j.issn.1000-503X.12620",
+   "url": "https://doi.org/10.3881/j.issn.1000-503X.12620",
+   "authors": [
+    "Zhou W",
+    "Hu HJ",
+    "Shen B",
+    "Shen WQ",
+    "Chen H",
+    "Wu X",
+    "Yan Q",
+    "Pang PP"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Contrast Media",
+    "Gadolinium DTPA",
+    "Humans",
+    "Liver Cirrhosis",
+    "Magnetic Resonance Imaging"
+   ],
+   "abstract": "Objective To evaluate the correlation between the radiomics signature of hepatobiliary phase imaging of gadolinium-ethoxybenzyl diethylenetriaminepentaacetic acid(Gd-EOB-DTPA)enhanced magnetic resonance imaging(MRI)and Child-Pugh of liver cirrhosis,establish nomogram prediction model,and assess the predictive value of quantitative assessment of liver reserve function of patients with liver cirrhosis. Methods One hundred patients with liver cirrhosis who met the inclusion criteria were divided into 52 patients with Child-Pugh grade A and 48 patients with Child-Pugh grade B+C according to Child-Pugh classification criteria,and were randomly divided into training set and test set at a proportion of 7\u22363.The AK software was used to extract the imaging features of the Gd-EOB-DTPA-enhanced MRI hepatobiliary images of the patients in the training set,and the least absolute shrinkage and selection operator feature selection algorithm was used to reduce the dimension of the data,select the features,and construct the radiomics tags.According to the radiomics label Rad-score,a line chart(nomogram)prediction model was established to predict the Child-Pugh B+C level of liver reserve function.The model was applied to the training set and test set respectively,and the diagnostic efficiency was quantitatively evaluated by receiver operating characteristic(ROC)curve. Results After dimension reduction and screening of 396 texture feature parameters extracted by AK software,7 image feature parameters were obtained.According to the above characteristics,the radiomics tag Rad-score was constructed and the nomogram prediction model was created.The differences of Rad-score scores between Child-Pugh A and Child-Pugh B+C groups in training set and test set were statistically analyzed by Wilcoxon rank sum test(P=0.000, P=0.001).The diagnostic efficacy of nomogram prediction model for predicting Child-Pugh B+C grade of liver reserve function in the ROC curve of training set and test set was 0.88 and 0.86 respectively. Conclusions The nomogram prediction model created according to the radiomics tag Rad-score of patients with liver cirrhosis with different liver reserve functions can be used as a more accurate and reliable auxiliary detection tool for liver reserve function.It provides a new means for clinicians to evaluate liver reserve function more accurately."
+  },
+  {
+   "pmid": "33140597",
+   "citations": 0,
+   "year": 2020,
+   "title": "[Comparative research on brain networks of children with attention deficit hyperactivity disorder and normal children based on visual cognitive tasks].",
+   "journal": "Sheng wu yi xue gong cheng xue za zhi = Journal of biomedical engineering = Shengwu yixue gongchengxue zazhi",
+   "doi": "10.7507/1001-5515.201912058",
+   "url": "https://doi.org/10.7507/1001-5515.201912058",
+   "authors": [
+    "Song Z",
+    "Li W",
+    "Bi H",
+    "Wang S",
+    "Zou L"
+   ],
+   "publication_types": [
+    "Comparative Study",
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Attention Deficit Disorder with Hyperactivity",
+    "Brain",
+    "Brain Mapping",
+    "Child",
+    "Child, Preschool",
+    "Cognition",
+    "Humans",
+    "Magnetic Resonance Imaging"
+   ],
+   "abstract": "Aiming at the difference between the brain networks of children with attention deficit hyperactivity disorder (ADHD) and normal children in the task-executing state, this paper conducted a comparative study using the network features of the visual function area. Functional magnetic resonance imaging (fMRI) data of 23 children with ADHD \uff3bage: (8.27 \u00b1 2.77) years\uff3d and 23 normal children \uff3bage: (8.70 \u00b1 2.58) years\uff3d were obtained by the visual capture paradigm when the subjects were performing the guessing task. First, fMRI data were used to build a visual area brain function network. Then, the visual area brain function network characteristic indicators including degree distribution, average shortest path, network density, aggregation coefficient, intermediary, etc. were obtained and compared with the traditional whole brain network. Finally, support vector machines (SVM) and other classifiers in the machine learning algorithm were used to classify the feature indicators to distinguish ADHD children from normal children. In this study, visual brain function network features were used for classification, with a classification accuracy of up to 96%. Compared with the traditional method of constructing a whole brain network, the accuracy was improved by about 10%. The test results show that the use of visual area brain function network analysis can better distinguish ADHD children from normal children. This method has certain help to distinguish the brain network between ADHD children and normal children, and is helpful for the auxiliary diagnosis of ADHD children."
+  },
+  {
+   "pmid": "33229843",
+   "citations": 0,
+   "year": 2020,
+   "title": "[Volume Measurements of Post-transplanted Liver of Pediatric Recipients Using Workstations and Deep Learning].",
+   "journal": "Nihon Hoshasen Gijutsu Gakkai zasshi",
+   "doi": "10.6009/jjrt.2020_JSRT_76.11.1133",
+   "url": "https://doi.org/10.6009/jjrt.2020_JSRT_76.11.1133",
+   "authors": [
+    "Esaki T",
+    "Furukawa R"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Child",
+    "Deep Learning",
+    "Humans",
+    "Image Processing, Computer-Assisted",
+    "Liver",
+    "Liver Transplantation",
+    "Tomography, X-Ray Computed"
+   ],
+   "abstract": "PURPOSE: The purpose of this study was to propose a method for segmentation and volume measurement of graft liver and spleen of pediatric transplant recipients on digital imaging and communications in medicine (DICOM) -format images using U-Net and three-dimensional (3-D) workstations (3DWS) .\nMETHOD: For segmentation accuracy assessments, Dice coefficients were calculated for the graft liver and spleen. After verifying that the created DICOM-format images could be imported using the existing 3DWS, accuracy rates between the ground truth and segmentation images were calculated via mask processing.\nRESULT: As per the verification results, Dice coefficients for the test data were as follows: graft liver, 0.758 and spleen, 0.577. All created DICOM-format images were importable using the 3DWS, with accuracy rates of 87.10\u00b14.70% and 80.27\u00b111.29% for the graft liver and spleen, respectively.\nCONCLUSION: The U-Net could be used for graft liver and spleen segmentations, and volume measurement using 3DWS was simplified by this method."
+  },
+  {
+   "pmid": "33295161",
+   "citations": 0,
+   "year": 2020,
+   "title": "[Comparison of Three CNN Models Applied in Bone Age Assessment of Pelvic Radiographs of Adolescents].",
+   "journal": "Fa yi xue za zhi",
+   "doi": "10.12116/j.issn.1004-5619.2020.05.004",
+   "url": "https://doi.org/10.12116/j.issn.1004-5619.2020.05.004",
+   "authors": [
+    "Peng LQ",
+    "Wan L",
+    "Wang MW",
+    "Li Z",
+    "Wang P",
+    "Liu TA",
+    "Wang YH",
+    "Zhao H"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Adolescent",
+    "Adult",
+    "Age Determination by Skeleton",
+    "Child",
+    "China",
+    "Female",
+    "Humans",
+    "Male",
+    "Pelvis",
+    "Radiography",
+    "Young Adult"
+   ],
+   "abstract": "Objective To compare the performance of three deep-learning models \uff08VGG19, Inception-V3 and Inception-ResNet-V2\uff09 in automatic bone age assessment based on pelvic X-ray radiographs. Methods A total of 962 pelvic X ray radiographs taken from adolescents \uff08481 males, 481 females\uff09 aged from 11.0 to 21.0 years in five provinces and cities of China were collected, preprocessed and used as objects of study. Eighty percent of these X ray radiographs were divided into training set and validation set with random sampling method and used for model fitting and hyper-parameters adjustment. Twenty percent were used as test sets, to evaluate the ability of model generalization. The performances of the three models were assessed by comparing the root mean square error \uff08RMSE\uff09, mean absolute error \uff08MAE\uff09 and Bland-Altman plots between the model estimates and the chronological ages. Results The mean RMSE and MAE between bone age estimates of the VGG19 model and the chronological ages were 1.29 and 1.02 years, respectively. The mean RMSE and MAE between bone age estimates of the Inception-V3 model and the chronological ages were 1.17 and 0.82 years, respectively. The mean RMSE and MAE between bone age estimates of the Inception-ResNet-V2 model and the chronological ages were 1.11 and 0.84 years, respectively. The Bland-Altman plots showed that the mean value of differences between bone age estimates of Inception-ResNet-V2 model and the chronological ages was the lowest. Conclusion In the automatic bone age assessment of adolescent pelvis, the Inception-ResNet-V2 model performs the best while the Inception-V3 model achieves a similar accuracy as VGG19 model."
+  },
+  {
+   "pmid": "33295162",
+   "citations": 0,
+   "year": 2020,
+   "title": "[Establishment of Mathematical Models for Skeletal Age Determination of Extremitas Sternalis of Clavicle in Shanxi Adolescents].",
+   "journal": "Fa yi xue za zhi",
+   "doi": "10.12116/j.issn.1004-5619.2020.05.005",
+   "url": "https://doi.org/10.12116/j.issn.1004-5619.2020.05.005",
+   "authors": [
+    "Zhang HH",
+    "Zhao C",
+    "Liu HY",
+    "Li N",
+    "Wang YH",
+    "Sun JH",
+    "Lu L"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Adolescent",
+    "Age Determination by Skeleton",
+    "Clavicle",
+    "Epiphyses",
+    "Female",
+    "Forensic Anthropology",
+    "Humans",
+    "Male",
+    "Models, Theoretical",
+    "Osteogenesis",
+    "Reproducibility of Results"
+   ],
+   "abstract": "Objective To develop mathematical models for skeletal age determination with multiple statistic method based on the correlation between age and the growth of the epiphysis of extremitas sternalis of clavicle in Shanxi adolescents. Methods The 562 Shanxi sternoclavicular joint samples \uff08454 cases of modelling, 108 cases of external verification\uff09 were scanned by the thin-section computed tomography. After volume rendering was obtained, indicators such as area of epiphysis, area of metaphysis, longest diameter of epiphysis and longest diameter of metaphysis of both extremitas sternalis of clavicle were collected. Indicators such as the ratio of area of epiphysis to area of metaphysis, and the ratio of longest diameter of epiphysis to longest diameter of metaphysis of both sides were calculated. Then multiple linear regression and random forest discriminant models were used to build mathematical models for age determination of adolescents. Results The obtained indicators exhibited a strong correlation with age \uff08r>0.85\uff09. The multiple linear regression model for males and females \uff08all 4 indicators entering the model\uff09 based on the ratio of longest diameter of epiphysis to longest diameter of metaphysis and the ratio of area of epiphysis to area of metaphysis had an internal validation accuracy rate \uff08\u00b11.0 year\uff09 of over 92% and 108 cases had an external validation accuracy rate of over 70% \uff08\u00b11.0 year\uff09. The out of bag error rates of random forest discriminant models were less than 2% for people over 18.0 years old \uff08\u226518.0 years old\uff09 and under 18.0 years old. The external validation accuracy rates of the 108 cases were over 80%. Conclusion The regression and discriminant models established in this study have certain reliability and accuracy and can be used in age determination of Shanxi adolescents."
+  },
+  {
+   "pmid": "26737740",
+   "citations": 0,
+   "year": 2015,
+   "title": "A semi-automatic process for estimating fetus velocity using ultrasound imaging and videos.",
+   "journal": "Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE Engineering in Medicine and Biology Society. Annual International Conference",
+   "doi": "10.1109/EMBC.2015.7319840",
+   "url": "https://doi.org/10.1109/EMBC.2015.7319840",
+   "authors": [
+    "Mitrou M",
+    "Agrafiotis P",
+    "Georgopoulos A",
+    "Sideris A"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Fetus",
+    "Humans",
+    "Image Processing, Computer-Assisted",
+    "Ultrasonography, Prenatal",
+    "Video Recording"
+   ],
+   "abstract": "Contemporary technologies have positively affected everyday medical practice for the benefit of faster and more objective diagnoses. Image and video processing techniques have added potential to this effort, but still there is a long road ahead. In this paper a specially developed video processing methodology is described which determines the fetus velocity using B-mode ultrasonic video imaging. For that purpose, a semi-automated process using advanced computer vision and image processing tools is presented and evaluated. The results are presented with a detailed statistical analysis to verify the repeatability ad reliability of the method."
+  },
+  {
+   "pmid": "28520024",
+   "citations": 0,
+   "year": 2012,
+   "title": "WE-E-213CD-10: A Robust 2D/3D Image Registration System for Pediatric Patient Setup in External Beam Radiotherapy.",
+   "journal": "Medical physics",
+   "doi": "10.1118/1.4736166",
+   "url": "https://doi.org/10.1118/1.4736166",
+   "authors": [
+    "Wu J",
+    "Su Z",
+    "Li Z"
+   ],
+   "publication_types": [
+    "Journal Article"
+   ],
+   "mesh_terms": [],
+   "abstract": "PURPOSE: To develop a neural network based registration quality evaluator (RQE) that can improve the 2D/3D image registration robustness for pediatric patient setup in external beam radiotherapy.\nMETHODS: X-ray setup images of six pediatric patients with brain tumors received proton therapies were retrospectively registered with their treatment planning computed tomography (CT) images. A neural network based pattern classifier was used as an RQE to classify 2D/3D rigid registration solutions as successful or unsuccessful based on features of the similarity value surfaces near the point-of-solution. The supervised training and test datasets were generated by rigidly registering a pair of orthogonal daily setup x-ray images to the treatment planning CTs. The best solution for each registration task was selected from 50 optimizing attempts that differed only by the initial transformation parameters. The distance from each individual solution to the best solution in the normalized parametrical space was compared to a user- defined error threshold to determine whether that solution was successful. The supervised training was then used to train the RQE. The performance of the RQE was evaluated using the test dataset that consisted of registration results that were not used in training.\nRESULTS: With the optimized sampling step size, i.e., 5 mm, in the feature space, the RQE has the sensitivity and the specificity in the ranges of 0.865-0.964 and 0.797-0.990, respectively, when it was used to detect the registration error with the mean voxel displacement (MVD) greater than 1 mm.\nCONCLUSIONS: The proposed RQE can potentially be used in a 2D/3D rigid image registration system to improve its robustness by rejecting unsuccessful registration solutions. The RQE is non-patient specific and needs only to be trained once for each treatment site. The implementation the RQE in a 2D/3D registration system results only 10% to 20% increase of the overall computation time. The authors have no conflict of interest to disclose."
+  },
+  {
+   "pmid": "21528366",
+   "citations": 0,
+   "year": 2011,
+   "title": "[Functional MRI and neurophysiological aspects of obesity].",
+   "journal": "Der Radiologe",
+   "doi": "10.1007/s00117-010-2089-3",
+   "url": "https://doi.org/10.1007/s00117-010-2089-3",
+   "authors": [
+    "Sztrokay A",
+    "Gutyrchik E",
+    "Reiser M",
+    "Meindl T"
+   ],
+   "publication_types": [
+    "English Abstract",
+    "Journal Article"
+   ],
+   "mesh_terms": [
+    "Brain",
+    "Brain Mapping",
+    "Feeding Behavior",
+    "Humans",
+    "Magnetic Resonance Imaging",
+    "Models, Neurological",
+    "Nerve Net",
+    "Obesity"
+   ],
+   "abstract": "Functional magnetic resonance imaging studies have revealed that metabolic signals and food stimuli activate the mesocorticolimbic neural network involved in processing the reward system. Activation is influenced by obesity and hunger and many recent brain imaging studies have detected that food and drug stimuli activate many of the same reward circuits. These findings have implications for obesity prevention and therapy. Educational efforts need to be directed towards those at increased risk of becoming obese and the food industry has to be involved in providing and promoting healthier food options. Given that visual food stimuli are potent triggers of desire, seductive advertising of high calorie foods directed towards children should be curtailed. The application of non-invasive brain imaging methodologies to the study of hedonic and homeostatic eating behavior represents a novel and important experimental approach. Further advances in imaging technology and improved experimental designs will provide new and important insights into human ingestive behavior that may lead to new developments in behavioral and pharmacological therapies."
+  },
+  {
+   "pmid": "22097275",
+   "citations": 0,
+   "year": 2011,
+   "title": "[Application of pulse-coupled neural network combined with genetic algorithm on MR images of hypoxic-ischemic encephalopathy].",
+   "journal": "Sheng wu yi xue gong cheng xue za zhi = Journal of biomedical engineering = Shengwu yixue gongchengxue zazhi",
+   "doi": "",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/22097275/",
+   "authors": [
+    "Liu L",
+    "Shi H",
+    "Huo L",
+    "Zhang F",
+    "Zheng C",
+    "You J",
+    "He X",
+    "Zhang J"
+   ],
+   "publication_types": [
+    "Journal Article",
+    "Research Support, Non-U.S. Gov't"
+   ],
+   "mesh_terms": [
+    "Algorithms",
+    "Female",
+    "Humans",
+    "Hypoxia-Ischemia, Brain",
+    "Image Processing, Computer-Assisted",
+    "Infant, Newborn",
+    "Magnetic Resonance Imaging",
+    "Male",
+    "Neural Networks, Computer"
+   ],
+   "abstract": "This paper is to provide a basis for the establishment of an early diagnostic system for hypoxic-ischemic encephalopathy (HIE) by performing segmentation and feature extraction of lesions on the MR images of neonatal babies with HIE. The segmentation on MR images of HIE based on the genetic algorithm (GA) combined with a pulse-coupled neural network (PCNN) were carried out. There were better segmentation results by using PCNN segmentation based on GA than PCNN segmentation with fixed parameters. The data suggested that a PCNN based on GA could provide effective assistance for diagnosis and research."
+  },
+  {
+   "pmid": "20802242",
+   "citations": 0,
+   "year": 2011,
+   "title": "Morphological changes and synaptogenesis of corticothalamic neurons in the somatosensory cortex of rat during perinatal development.",
+   "journal": "Cerebral cortex (New York, N.Y. : 1991)",
+   "doi": "10.1093/cercor/bhq156",
+   "url": "https://doi.org/10.1093/cercor/bhq156",
+   "authors": [
+    "Hsu CI",
+    "Ho TS",
+    "Liou YR",
+    "Chang YC"
+   ],
+   "publication_types": [
+    "Journal Article",
+    "Research Support, Non-U.S. Gov't"
+   ],
+   "mesh_terms": [
+    "Animals",
+    "Immunohistochemistry",
+    "Microscopy, Confocal",
+    "Neurogenesis",
+    "Neurons",
+    "Rats",
+    "Rats, Sprague-Dawley",
+    "Somatosensory Cortex",
+    "Synapses"
+   ],
+   "abstract": "When rat fetuses grew from embryonic day (E) 18 to the day of birth (P0), the corticothalamic (CT) neurons, as identified by back labeling with 1,1'-dioctadecyl-3,3,3',3'-tetramethylindocarbocyanine (DiI), in the somatosensory cortex underwent gradual changes in the shape of their cell bodies, in their distribution in the cortical plate and in the complexity of dendritic branching. Fluorescence immunocytochemical studies indicated that in the marginal zone (MZ) the apical dendrites of the CT neurons formed contacts with horizontally oriented axons and contained putative glutamatergic, as clusters exhibiting both synaptophysin and \u03b1-amino-3-hydroxy-5-methyl-4-isoxazolepropionic acid (AMPA) receptor GluR1 subunit immunoreactivities, and \u03b3-aminobutyric acid (GABA)-ergic synapses, as clusters exhibiting both synaptophysin and gephyrin immunoreactivities. Quantitative analyses further revealed that during this perinatal period, the proportion of CT neurons containing glutamatergic synapses increased significantly, whereas the proportion of CT neurons containing GABAergic synapses remained virtually unchanged. Our results indicate that glutamatergic and GABAergic synapses between the CT neurons and the axons in the MZ are already formed in rat cortices as early as E18 and further suggest that the activities of the neural networks in the somatosensory cortex could be conveyed to their targets in the thalamus in rat brains at least 3 days before birth."
+  }
+ ]
+}

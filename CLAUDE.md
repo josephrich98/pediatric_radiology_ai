@@ -113,6 +113,24 @@ The questions it answers:
     object, not text to scrape); `paper_db.py` owns the store, the candidate
     search, the release-status cross-checks, and the CSV / markdown exports.
     See "Paper database" below.
+  - `journals.py` — **which journals publish pediatric radiology AI, and how
+    high-impact are they.** Counts papers per journal per year from PubMed
+    (`config.PAPER_DB_QUERY`, the strict title/abstract query, because
+    attributing a paper to a journal is a claim about that paper and the broad
+    counting query's MeSH-expansion hits would put journals on the chart that
+    have never published pediatric radiology AI), then joins each journal to an
+    impact number. Clarivate's JIF is licensed and has no free API, so the x
+    value is OpenAlex's `2yr_mean_citedness` from the `/sources` endpoint by
+    ISSN — the same construction as the JIF over a wider document set, so
+    values run below the published JIF (Radiology: 6.3 against 12.1 in JCR)
+    while the ranking is close. Real JIFs pasted into
+    `data/journal_impact_overrides.json` (keyed by ISSN-L or journal name) win,
+    and the figures then relabel the axis "Journal Impact Factor". Only
+    journals above the plotting threshold are looked up: OpenAlex bills per
+    request against a small daily budget and the corpus has a thousand-journal
+    tail that no figure shows. `--impact-only` redoes just the lookup over the
+    stored counts (no PubMed calls) after the budget resets at midnight UTC or
+    after the overrides file is edited.
   - `curated.py` — hand-written context that follows the data: the clinical
     question each most-cited paper answers (keyed by DOI), what each
     well-known repository is, and the "worth knowing" list.
@@ -149,6 +167,7 @@ python scripts/collect_pubmed.py
 python scripts/collect_preprints.py     # arXiv preprint layer for the count-based views (~400 requests)
 python scripts/collect_landscape.py     # most-cited papers: overall, per era, per year (2023-), Semantic Scholar
 python scripts/enrich_fwci.py           # FWCI from OpenAlex by DOI, batched (after landscape + conferences)
+python scripts/collect_journals.py     # papers per journal per year + journal impact (the impact scatter)
 python scripts/collect_conferences.py
 python scripts/collect_patents.py
 python scripts/collect_newsletters.py   # or --source "RSNA News" to restrict
@@ -226,6 +245,25 @@ is built by code and must stay that way:
     rather than by PMID and are marked `is_preprint`; their release status is
     recorded as `unreleased` rather than `unclear`, because "not yet published"
     is a known fact rather than an open question.
+  - **Conference proceedings** are a third source, because much of the methods
+    work in this field is published at MICCAI, ISBI, IPMI, MIDL, SPIE Medical
+    Imaging, NeurIPS and CVPR rather than in journals. PubMed indexes some
+    proceedings outright and the arXiv preprint stream carries many author
+    versions, so this source is a top-up rather than the whole picture. It
+    filters OpenAlex on the **work type** `conference-paper` — *not* on the
+    venue: OpenAlex files MICCAI under the Lecture Notes in Computer Science
+    book series, and `primary_location.source.type:conference` catches almost
+    none of the venues that matter while sweeping in a long tail of unrelated
+    local proceedings. A second pass covers LNCS
+    (`PAPER_DB_LNCS_SOURCE`) for volumes typed some other way.
+    `PAPER_DB_CONFERENCE_QUERY` pairs the pediatric terms with an **imaging**
+    clause (modality names and imaging phrases), not with machine-learning task
+    words: across all proceedings, "child" and "detection" co-occur in papers on
+    cyberbullying, crowd counting and blockchain. The impact floor is pushed
+    into the query rather than applied afterwards, because the unfiltered type is
+    thousands of works a year. `--no-conference` skips the pass.
+    OpenAlex holds **no abstract for most conference records**; a record that
+    cannot be read is reported as unread, not guessed at.
   - **Metrics are refreshed separately from extraction.**
     `--refresh-metrics` re-fetches citations, citations/year and RCR for every
     stored row and rebuilds the exports without re-reading a single abstract or
@@ -379,6 +417,19 @@ Rules now in force in `config.py`:
   and `curated.WORTH_KNOWING`. The pediatric modality chart omits mammography
   (its pediatric-query hits are adult breast papers). The trade-press section
   lists every pediatric story per year from 2023 (`newsletter_items.json`).
+- The journal-impact scatter (`figures/journal_impact*.png`, `.gif`) is one
+  point per journal: x = journal impact, y = cumulative pediatric radiology-AI
+  papers, colored by journal kind (radiology/imaging, pediatrics, general
+  medicine/science, other specialty/technical). The plotted set is fixed by the
+  *final* year (`config.JOURNAL_MIN_PAPERS`) so a journal never pops into the
+  middle of the animation; each point simply rises, and the axis limits are
+  fixed for the same reason. Labels are placed greedily at a ring of candidate
+  offsets with leader lines (`_place_labels` in `make_figures.py`) — a
+  physics-style repel diverges on a cluster this dense. Both decks carry the
+  final cumulative still, not the GIF: Beamer cannot embed one at all, and
+  PowerPoint would play it but the deck is presented from the PDF. The GIF is
+  still written, as a standalone file. A second still covers the 2023-present window
+  (`config.JOURNAL_MIN_PAPERS_RECENT`).
 - The deck has one slide summarizing Kamran et al. 2025 (Pediatr Radiol
   scoping review, `reference.pdf`) as an independent cross-check; that is the
   only place it is cited.
