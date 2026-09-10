@@ -44,7 +44,8 @@ strategies does it use, and how much of it reaches code release, regulatory clea
 | **Intervention / index test** | Any artificial-intelligence or machine-learning method — deep learning, classical ML (SVM, random forest, gradient boosting), radiomics with an ML classifier, foundation models, large language models — that is developed, trained, fine-tuned, applied, validated or clinically evaluated | Papers that mention AI only in the introduction or discussion; conventional statistical modelling (logistic regression, standard survival analysis) with no ML component; rule-based software |
 | **Modality** | Diagnostic radiology: radiography, fluoroscopy, CT, MRI, ultrasound and echocardiography, nuclear medicine/PET/SPECT, angiography, and radiology reports or worklists derived from them | Ophthalmic imaging (fundus, OCT), dental/orthodontic, endoscopy, dermoscopy, histopathology and whole-slide imaging, microscopy, EEG/ECG and other non-imaging signals |
 | **Outcome** | Any reported model output or performance measure, or any descriptive/implementation outcome (dataset descriptors, workflow, education, policy, stakeholder studies) | — |
-| **Study type** | Primary research: model development, validation, reader study, prospective or clinical evaluation, implementation study, dataset descriptor, challenge report, regulatory-database analysis | Narrative and systematic reviews, editorials, letters, comments, case reports, errata, retractions, conference abstracts without full text, protocol-only papers |
+| **Publication form** | **Peer-reviewed journal articles only.** | **Preprints** (not peer reviewed) and **conference abstracts and proceedings** (see Section 4.4) |
+| **Study type** | Primary research: model development, validation, reader study, prospective or clinical evaluation, implementation study, dataset descriptor, challenge report, regulatory-database analysis | Narrative and systematic reviews, editorials, letters, comments, case reports, errata, retractions, protocol-only papers |
 | **Language** | **No restriction.** Non-English records are translated at screening | — |
 | **Date** | 2005-01-01 to the collection date | — |
 
@@ -178,9 +179,12 @@ numbered line so the line-by-line hit counts can be reported, as PRISMA 2020 ite
 
 Notes on the translation. `:ti,ab` is the deliberate equivalent of PubMed's `[tiab]`: it keeps the two
 databases directly comparable and avoids Emtree explosion, which carries the same hazard that forced the
-PubMed query to be fully fielded (`'echography'/exp` attaches to almost any imaging paper). If the librarian
-prefers, `:ti,ab,kw` adds author keywords for a modest recall gain — a defensible variant, but it should be
-run as a labelled sensitivity search, not silently substituted. Hyphens are not significant in Embase, so
+PubMed query to be fully fielded (`'echography'/exp` attaches to almost any imaging paper).
+
+**`:ti,ab,kw` was tested and rejected — it returns about 437,000 records against 7,288 for `:ti,ab`, a 60-fold
+increase.** Embase's `kw` is not the author-keyword field its name suggests; it searches Emtree index and
+candidate terms, so `:ti,ab,kw` is Emtree explosion by another route. This is the same failure the PubMed
+query hit in v1 and is the strongest single piece of evidence for the fully-fielded design in Section 4.1. Hyphens are not significant in Embase, so
 `'x ray'` and `'self supervised'` match the hyphenated forms. No NOT clause and no publication-type limit
 appear anywhere except line #5, for the reason given in Section 3.2.
 
@@ -213,64 +217,68 @@ line that *can* contain new material — but it must be deduplicated by DOI, not
 clean external audit of the PubMed query and is reported in Section 6.3. Do not attempt to shrink the export by
 adding publication-type limits in Embase: the split above is only visible because every type was exported.
 
-**Measured yield of the Embase layer (screened 2026-09-10).** 1,813 of the 3,560 Embase-unique records were
-screened against the Section 3 criteria — every Article, Article-in-Press and Preprint, plus random samples of 150
-of 341 Reviews and 200 of 1,713 Conference Abstracts. Only records that are *not* already in the PubMed corpus
-count toward the columns below.
+**Measured yield of the Embase layer (screened 2026-09-10, journal articles only).** Of the 3,560 Embase-unique
+records, 1,775 are conference material and 320 are preprints (Section 4.4), leaving **1,465 journal records**.
+933 of those were already in the PubMed corpus and 9 are in PubMed but not retrieved, so **523 are genuinely
+new**. 458 of the 523 were screened — every Article and Article-in-Press, plus 150 of 341 Reviews.
 
-| Stratum | Records | New (not in PubMed) | Screened | Eligible & new | Primary studies | Projected new primary |
-|:--|--:|--:|--:|--:|--:|--:|
-| Article (+ in press) | 1,143 | 411 | 1,142 (all) | 247 (60%) | 213 | **213** |
-| Preprint | 320 | 254 | 320 (all) | 160 (63%) | 148 | 148 |
-| Review | 341 | 101 | 150 (44%) | 19 | 0 | 0 |
-| Conference abstract | 1,713 | 1,519 | 199 (12%) | 81 (46%) | 77 | ~665 |
+| | Records |
+|:--|--:|
+| Embase-unique journal records | 1,465 |
+| — already in the PubMed corpus | 933 |
+| — in PubMed, not retrieved by `REVIEW_QUERY` | 9 |
+| **Genuinely new** | **523** |
+| Screened | 458 (88%) |
+| Eligible | 266 (58% of screened) |
+| **New primary studies** | **213** |
+| Of those, extractable in full | 208 |
 
-**Journal articles: adopt.** 213 new primary studies is a **6.5% addition to the 3,286-study corpus**, and 206 of
-the 247 eligible records carry enough method and result detail to extract a full database row. The largest single
-contributor is *Biomedical Signal Processing and Control* (45) — a legitimate Elsevier engineering journal outside
-MEDLINE — followed by a Chinese-language radiology and ultrasound literature (~60 records across six journals).
+213 new primary studies is a **6.5% addition to the 3,286-study corpus**, and the Article stratum was screened
+completely, so that is a count rather than a projection. The ~65 unscreened Reviews would add roughly 17 further
+non-primary records. The largest single contributor is *Biomedical Signal Processing and Control* (45), an
+Elsevier engineering journal outside MEDLINE.
 
-**This layer is what makes the no-language-restriction criterion mean anything.** 83 of the 247 eligible new
-articles (34%) are not English-only and 67 (27%) carry no English at all: 57 Chinese, 15 Chinese/English,
-3 Persian, 3 Russian, 3 German, 1 Czech, 1 English/Polish. The PubMed layer contains roughly 32 non-English
-records in total. The previous scoping review excluded non-English articles
-and named this as a limitation that "may disproportionately underrepresent Global South research"; dropping the
-language restriction only answers that objection if the search actually reaches a non-English literature, and
-PubMed alone does not. Embase is the mechanism, not the criterion.
+**The layer's real value is who wrote it.** Corresponding-author country, parsed from the Embase address field,
+for the 266 eligible new records:
 
-**Preprints: cross-check, do not double count.** The 160 eligible new preprints (medRxiv 75, bioRxiv 47, SSRN 38)
-overlap the OpenAlex preprint layer of Section 4.4 by construction. Deduplicate by DOI against that layer and use
-the Embase set as a coverage check on it rather than as an independent source.
+| Country | Records | | Country | Records |
+|:--|--:|:-:|:--|--:|
+| China | 129 | | Turkey | 6 |
+| India | 24 | | Indonesia | 6 |
+| United States | 14 | | Poland | 5 |
+| Canada | 9 | | United Kingdom | 4 |
+| Iran | 9 | | Russia | 4 |
+| Germany | 7 | | Malaysia | 4 |
 
-**Conference abstracts: exclude by protocol, but report the count.** Section 3 already excludes "conference
-abstracts without full text", and the sample supports that: only 62 of the 81 eligible-and-new abstracts were
-judged substantive enough to extract, so admitting the stratum would add roughly 665 projected primary records of
-which a third carry no extractable n or performance figure — a 20% corpus expansion that degrades the extraction.
-The count is nevertheless a **finding worth reporting**: 1,713 Embase-unique conference abstracts, of which 169
-are SPR/ESPR meeting abstracts published as *Pediatric Radiology* supplements, are pediatric radiology AI work
-that was presented and never reached a full paper. That is the stage of the translational funnel that sits
-*before* publication, and it is invisible to any MEDLINE-only review. Report it as a bounded observation from a
-12% sample, not as a corpus.
+**189 of 266 (71%) have a corresponding author outside North America and Western Europe**, against 14 records
+(5%) from the United States; 34 countries are represented. On language, 90 of the 266 are not English-only and
+67 carry no English at all (62 Chinese, 15 Chinese/English, 5 German, 3 Persian, 3 Russian, 1 Czech, 1
+English/Polish) — against roughly 32 non-English records in the entire PubMed layer.
 
-**A new risk this layer introduces.** MEDLINE indexing was performing quality control that the review was not
-crediting it for. The Embase-unique articles include journals that are delisted or of doubtful standing —
-*International Journal of Drug Delivery Technology* (17 records, 3 passed screening), *NeuroQuantology* (4/2,
-delisted from Scopus in 2023), *Genetics and Molecular Research* (3/1, delisted), *Journal of Medical Imaging and
-Health Informatics* (3). The absolute numbers are small (roughly 7 of 247) but they are concentrated and they were
-not present before.
+This is what makes the no-language-restriction criterion mean something. The previous scoping review excluded
+non-English articles and named this as a limitation that "may disproportionately underrepresent Global South
+research" [Kamran 2026]. Dropping the restriction only answers that objection if the search actually reaches a
+non-English literature, and PubMed alone does not — Embase is the mechanism, not the criterion. It is also the
+one finding here that is strictly better measured than stated: country of correspondence is a fact in the
+record, where language is a proxy for it.
+
+**A risk the layer introduces.** MEDLINE indexing was performing quality control this review was not crediting
+it for. The new journal records include titles that are delisted or of doubtful standing — *International
+Journal of Drug Delivery Technology* (17 records, 3 passed screening), *NeuroQuantology* (4/2), *Genetics and
+Molecular Research* (3/1), *Journal of Medical Imaging and Health Informatics* (3). Roughly 7 of 266, small but
+concentrated, and absent before.
 
 **Decision: no journal-standing exclusion. Record provenance and run a sensitivity analysis instead.** Every row
-carries two new mechanical fields — `source_database` (`pubmed` / `embase` / `openalex-preprint` / `conference`)
-and `journal_medline_indexed`, resolved per journal from the NLM Catalog rather than asserted. The headline
-results are then recomputed with the non-MEDLINE layer dropped, and both figures are reported.
+carries two mechanical fields — `source_database` (`pubmed` / `embase`) and `journal_medline_indexed`, resolved
+per journal from the NLM Catalog rather than asserted — and the headline results are recomputed with the
+non-MEDLINE layer dropped, with both figures reported.
 
 This is preferred to a named exclusion list for three reasons. A list assembled *after* seeing which papers it
-removes is not prespecification, whatever it is called in the methods. Journal standing is a reputational
+removes is not prespecification, whatever the methods section calls it. Journal standing is a reputational
 judgement about real publishers that this review has no independent means to adjudicate, whereas indexing status
-is a checkable fact. And an exclusion silently discards the non-English literature the layer was adopted to
-reach — the Chinese-language radiology journals are outside MEDLINE for the same structural reason the doubtful
-ones are, and a filter keyed on indexing would not tell them apart. A sensitivity analysis answers the reviewer's
-real question ("does this change your conclusions?") without requiring the review to rank journals.
+is a checkable fact. And an exclusion keyed on indexing would silently discard the non-English literature the
+layer was adopted to reach: the Chinese-language radiology journals sit outside MEDLINE for the same structural
+reason the doubtful ones do, and no indexing-based filter can tell them apart.
 
 **Also record, at the time of the search:** the hit count of every line #1–#6, the exact date run, and the
 Embase segment coverage note the interface displays. PRISMA 2020 requires the full strategy for every
@@ -283,35 +291,38 @@ database as run, not a paraphrase.
 IEEE indexes the engineering literature (ISBI, TMI) that MEDLINE covers unevenly.
 **Cochrane Library** — run for completeness; expected yield near zero, as in the previous review.
 
-### 4.4 Preprints
+### 4.4 Publication forms that are searched but not included
 
-OpenAlex `type:preprint` (arXiv, medRxiv, bioRxiv, Research Square, SSRN) with the Block 1–3 vocabulary translated
-to OpenAlex search syntax, one pass per year, plus the arXiv API directly for records OpenAlex has not ingested.
-Preprints are deduplicated against the indexed literature by DOI, PMID and normalized title, so a preprint drops
-out of the corpus once its journal version appears.
+The corpus is **peer-reviewed journal articles only**. Preprints and conference material are still retrieved,
+counted and reported — a systematic review has to say what it found and set aside — but they do not enter the
+database and no result is computed over them. Three reasons, in order of weight:
 
-### 4.5 Conference proceedings — prespecified venue list
+1. **They are not peer reviewed** (preprints) or are **peer reviewed to a different standard and length**
+   (meeting abstracts). The review's central claims are about the strength of evidence behind pediatric
+   radiology AI — external validation, reader studies, prospective evaluation. An abstract that reports an AUC
+   in 250 words cannot support a judgement about study design.
+2. **They are not extractable.** Of the eligible Embase conference abstracts screened, only 62 of 81 carried
+   enough method and result detail to fill a database row; OpenAlex holds no abstract at all for most
+   conference records.
+3. **They double-count.** A preprint and its journal version are the same study, and meeting abstracts are
+   routinely superseded by a full paper one to three years later. Including both inflates every count and
+   silently overweights whichever work happens to be slow to publish.
 
-Much pediatric methods work never reaches a MEDLINE-indexed journal. The previous review excluded conference
-material entirely; the v0 database swept OpenAlex `type:conference-paper` by keyword, which is unbounded (several
-thousand works per year) and was only made tractable by the impact floor we are removing.
+**What was retrieved and set aside.** From the Embase layer alone: **1,775 conference records** (1,713
+conference abstracts and 62 conference reviews, identified mechanically by the presence of a `CONFERENCE NAME`
+field, not inferred from journal supplements) and **320 preprints** (medRxiv 151, bioRxiv 97, SSRN 72). The
+previously planned OpenAlex preprint layer and named-venue conference hand-search are **withdrawn**; the
+`REVIEW_CONFERENCE_VENUES` list in `config.py` is retained only for the descriptive publication-venue analysis,
+which is a different question from corpus construction.
 
-The replacement is a **named venue list, hand-searched** — the standard systematic-review treatment of conference
-literature, and bounded by construction:
+`[ACTION: 89 records in the current PubMed corpus carry the publication type "Preprint" (NIH preprint pilot
+deposits). They must be removed and the PRISMA flow updated before the results are recomputed.]`
 
-| Venue | Coverage | Route |
-|:--|:--|:--|
-| MICCAI + workshops (PIPPI, Perinatal/Preterm Imaging, FetalMIA, MLMI, DART) | 2005– | LNCS series (OpenAlex source `S106296714`) + DBLP |
-| IPMI | 2005– | LNCS + DBLP |
-| MIDL | 2018– | PMLR + DBLP |
-| IEEE ISBI | 2005– | IEEE Xplore + OpenAlex |
-| SPIE Medical Imaging | 2005– | SPIE Digital Library |
-| NeurIPS, CVPR, ICCV, ECCV, ICLR, ICML | 2005– | DBLP |
-| ML4H, MLHC, CHIL | 2016– | PMLR |
-
-Within each venue, records are retained if the title or abstract carries a Block 3 (pediatric) term and a Block 1
-(modality) or Block 2 (AI) term, then screened normally. OpenAlex holds no abstract for many proceedings records;
-those are reported as **unread**, never guessed at.
+**Worth reporting as a finding, not as a corpus.** 169 of the conference records are SPR/ESPR meeting abstracts
+published as *Pediatric Radiology* supplements. Pediatric radiology AI that is presented and never published is
+a stage of the translational funnel that sits *before* the first box of the funnel this review measures, and it
+is invisible to any MEDLINE-only search. From a 12% sample, roughly 46% of the Embase conference abstracts would
+meet the topic criteria. Report that as a bounded observation with its sampling fraction stated.
 
 ### 4.6 Supplementary searching
 

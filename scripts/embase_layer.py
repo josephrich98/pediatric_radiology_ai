@@ -83,21 +83,71 @@ def _joined(v) -> str:
     return str(v or "")
 
 
+COUNTRY_FIX = {
+    "usa": "United States", "u.s.a": "United States", "united states of america": "United States",
+    "uk": "United Kingdom", "u.k": "United Kingdom", "england": "United Kingdom",
+    "scotland": "United Kingdom", "wales": "United Kingdom", "northern ireland": "United Kingdom",
+    "pr china": "China", "p.r. china": "China", "peoples republic of china": "China",
+    "republic of korea": "South Korea", "korea": "South Korea",
+    "russian federation": "Russia", "viet nam": "Vietnam",
+}
+
+
+def country(addr: str) -> str:
+    """Country of a correspondence address.
+
+    Embase writes these as ``Name, Dept, Institution, City, Country. Email: x@y``.
+    The country is the last comma-separated segment once the trailing e-mail is
+    removed — dropping segments that merely *contain* an "@" strips the country
+    along with the address, which is what an earlier version of this did.
+    """
+    if not addr:
+        return ""
+    head = addr.split("Email:")[0]
+    parts = [x.strip(" .;") for x in head.split(",") if x.strip(" .;")]
+    if not parts:
+        return ""
+    last = parts[-1]
+    return COUNTRY_FIX.get(last.lower().strip(" ."), last)
+
+
 def flatten(recs: list[dict], prefix: str) -> list[dict]:
-    return [
-        {
-            "id": f"{prefix}{i:05d}",
-            "title": _one(r.get("TITLE")),
-            "journal": _one(r.get("SOURCE TITLE")),
-            "year": _one(r.get("PUBLICATION YEAR")),
-            "embase_type": _joined(r.get("PUBLICATION TYPE")).split(";")[0].strip(),
-            "language": _joined(r.get("LANGUAGE OF ARTICLE")),
-            "doi": _one(r.get("DOI")),
-            "pmid": _one(r.get("MEDLINE PMID")).split("http")[0].strip(),
-            "abstract": _joined(r.get("ABSTRACT")),
-        }
-        for i, r in enumerate(recs)
-    ]
+    """One flat row per Embase record.
+
+    ``PUI`` is Embase's own record identifier and is present on every record;
+    it is the dedup key of last resort for the ~8% of rows that carry no DOI.
+    ``CONFERENCE NAME`` is the mechanical test for conference material — it is
+    populated for exactly the Conference Abstract and Conference Review types
+    and for nothing else, so the review never has to infer a meeting from a
+    journal supplement.
+    """
+    out = []
+    for i, r in enumerate(recs):
+        corr = _one(r.get("CORRESPONDENCE ADDRESS"))
+        conf = _one(r.get("CONFERENCE NAME"))
+        ptype = _joined(r.get("PUBLICATION TYPE")).split(";")[0].strip()
+        out.append(
+            {
+                "id": f"{prefix}{i:05d}",
+                "pui": _one(r.get("PUI")),
+                "title": _one(r.get("TITLE")),
+                "original_title": _one(r.get("ORIGINAL (NON-ENGLISH) TITLE")),
+                "journal": _one(r.get("SOURCE TITLE")),
+                "issn": _one(r.get("ISSN")),
+                "year": _one(r.get("PUBLICATION YEAR")),
+                "embase_type": ptype,
+                "language": _joined(r.get("LANGUAGE OF ARTICLE")),
+                "doi": _one(r.get("DOI")),
+                "pmid": _one(r.get("MEDLINE PMID")).split("http")[0].strip(),
+                "conference_name": conf,
+                "correspondence_country": country(corr),
+                "is_conference": bool(conf),
+                "is_preprint": ptype == "Preprint",
+                "is_journal_article": (not conf) and ptype != "Preprint",
+                "abstract": _joined(r.get("ABSTRACT")),
+            }
+        )
+    return out
 
 
 def review_pmids(refresh: bool = False) -> set[str]:
@@ -202,9 +252,19 @@ def main() -> None:
     ours = review_pmids(refresh=args.pmids)
     print(f"REVIEW_QUERY PMID set: {len(ours)}")
 
-    uniq = flatten(parse_export(RAW / "embase_unique.csv"), "E")
+    uniq_all = flatten(parse_export(RAW / "embase_unique.csv"), "E")
     over = flatten(parse_export(RAW / "embase_medline_overlap.csv"), "M")
-    print(f"Embase-unique (#5): {len(uniq)}   MEDLINE overlap (#6): {len(over)}")
+    print(f"Embase-unique (#5): {len(uniq_all)}   MEDLINE overlap (#6): {len(over)}")
+
+    # Journal articles only. Conference material and preprints are retrieved,
+    # counted and reported, but never enter the corpus (see Section 3).
+    dropped = collections.Counter(
+        "conference" if r["is_conference"] else "preprint"
+        for r in uniq_all
+        if not r["is_journal_article"]
+    )
+    uniq = [r for r in uniq_all if r["is_journal_article"]]
+    print(f"  journal articles: {len(uniq)}   set aside: {dict(dropped)}")
 
     print("Resolving DOIs to PMIDs...")
     classify(uniq, resolve_dois(uniq), ours)
@@ -215,6 +275,9 @@ def main() -> None:
 
     summary = {
         "generated_on": time.strftime("%Y-%m-%d"),
+        "scope": "journal articles only; conference material and preprints reported, not included",
+        "set_aside": dict(dropped),
+        "embase_unique_all_types": len(uniq_all),
         "review_query_records": len(ours),
         "embase_unique_records": len(uniq),
         "embase_medline_overlap_records": len(over),
