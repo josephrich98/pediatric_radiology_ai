@@ -1,13 +1,13 @@
 {
  "generated_on": "2026-09-10",
- "scope": "journal articles only; conference material and preprints reported, not included",
+ "scope": "journal articles and preprints; conference material reported, not included",
  "set_aside": {
-  "conference": 1775,
-  "preprint": 320
+  "Conference Abstract": 1713,
+  "Conference Review": 62
  },
  "embase_unique_all_types": 3560,
  "review_query_records": 5988,
- "embase_unique_records": 1465,
+ "embase_unique_records": 1785,
  "embase_medline_overlap_records": 3728,
  "unique_by_type_and_status": {
   "Review": {
@@ -19,6 +19,12 @@
    "already in our corpus": 727,
    "outside PubMed": 378,
    "no DOI (cannot check)": 23,
+   "in PubMed, not retrieved": 1
+  },
+  "Preprint": {
+   "outside PubMed": 251,
+   "already in our corpus": 65,
+   "no DOI (cannot check)": 3,
    "in PubMed, not retrieved": 1
   },
   "Erratum": {
@@ -53,10 +59,10 @@
   }
  },
  "status_totals": {
-  "already in our corpus": 933,
-  "outside PubMed": 497,
-  "no DOI (cannot check)": 26,
-  "in PubMed, not retrieved": 9
+  "already in our corpus": 998,
+  "outside PubMed": 748,
+  "no DOI (cannot check)": 29,
+  "in PubMed, not retrieved": 10
  },
  "recall_audit": {
   "records": 3728,
@@ -179,6 +185,17 @@
    "projected_new_primary": 0,
    "population": 279,
    "new_population": 101
+  },
+  "Preprint": {
+   "screened": 320,
+   "new_screened": 254,
+   "new_eligible": 160,
+   "new_primary": 148,
+   "new_substantive": 147,
+   "projected_new_eligible": 160,
+   "projected_new_primary": 148,
+   "population": 320,
+   "new_population": 254
   },
   "Article in Press": {
    "screened": 14,

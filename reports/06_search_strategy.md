@@ -44,7 +44,7 @@ strategies does it use, and how much of it reaches code release, regulatory clea
 | **Intervention / index test** | Any artificial-intelligence or machine-learning method — deep learning, classical ML (SVM, random forest, gradient boosting), radiomics with an ML classifier, foundation models, large language models — that is developed, trained, fine-tuned, applied, validated or clinically evaluated | Papers that mention AI only in the introduction or discussion; conventional statistical modelling (logistic regression, standard survival analysis) with no ML component; rule-based software |
 | **Modality** | Diagnostic radiology: radiography, fluoroscopy, CT, MRI, ultrasound and echocardiography, nuclear medicine/PET/SPECT, angiography, and radiology reports or worklists derived from them | Ophthalmic imaging (fundus, OCT), dental/orthodontic, endoscopy, dermoscopy, histopathology and whole-slide imaging, microscopy, EEG/ECG and other non-imaging signals |
 | **Outcome** | Any reported model output or performance measure, or any descriptive/implementation outcome (dataset descriptors, workflow, education, policy, stakeholder studies) | — |
-| **Publication form** | **Peer-reviewed journal articles only.** | **Preprints** (not peer reviewed) and **conference abstracts and proceedings** (see Section 4.4) |
+| **Publication form** | Journal articles and **preprints** (arXiv, medRxiv, bioRxiv, SSRN, Research Square), deduplicated so a preprint drops out once its journal version appears | **Conference abstracts and proceedings** (see Section 4.4) |
 | **Study type** | Primary research: model development, validation, reader study, prospective or clinical evaluation, implementation study, dataset descriptor, challenge report, regulatory-database analysis | Narrative and systematic reviews, editorials, letters, comments, case reports, errata, retractions, protocol-only papers |
 | **Language** | **No restriction.** Non-English records are translated at screening | — |
 | **Date** | 2005-01-01 to the collection date | — |
@@ -217,50 +217,56 @@ line that *can* contain new material — but it must be deduplicated by DOI, not
 clean external audit of the PubMed query and is reported in Section 6.3. Do not attempt to shrink the export by
 adding publication-type limits in Embase: the split above is only visible because every type was exported.
 
-**Measured yield of the Embase layer (screened 2026-09-10, journal articles only).** Of the 3,560 Embase-unique
-records, 1,775 are conference material and 320 are preprints (Section 4.4), leaving **1,465 journal records**.
-933 of those were already in the PubMed corpus and 9 are in PubMed but not retrieved, so **523 are genuinely
-new**. 458 of the 523 were screened — every Article and Article-in-Press, plus 150 of 341 Reviews.
+**Measured yield of the Embase layer (screened 2026-09-10).** Of the 3,560 Embase-unique records, 1,775 are
+conference material and are set aside (Section 4.4), leaving **1,785 in-scope records** — journal articles and
+preprints. 998 of those were already in the PubMed corpus and 10 are in PubMed but not retrieved, so **777 are
+genuinely new**. 712 of the 777 were screened: every Article, Article-in-Press and Preprint, plus 150 of 341
+Reviews.
 
 | | Records |
 |:--|--:|
-| Embase-unique journal records | 1,465 |
-| — already in the PubMed corpus | 933 |
-| — in PubMed, not retrieved by `REVIEW_QUERY` | 9 |
-| **Genuinely new** | **523** |
-| Screened | 458 (88%) |
-| Eligible | 266 (58% of screened) |
-| **New primary studies** | **213** |
-| Of those, extractable in full | 208 |
+| Embase-unique, in-scope forms | 1,785 |
+| — already in the PubMed corpus | 998 |
+| — in PubMed, not retrieved by `REVIEW_QUERY` | 10 |
+| **Genuinely new** | **777** |
+| Screened | 712 (92%) |
+| Eligible | 426 (60% of screened) |
+| **New primary studies** | **361** |
+| Of those, extractable in full | 355 |
 
-213 new primary studies is a **6.5% addition to the 3,286-study corpus**, and the Article stratum was screened
-completely, so that is a count rather than a projection. The ~65 unscreened Reviews would add roughly 17 further
-non-primary records. The largest single contributor is *Biomedical Signal Processing and Control* (45), an
-Elsevier engineering journal outside MEDLINE.
+| By publication form | Eligible | Primary |
+|:--|--:|--:|
+| Journal articles | 266 | 213 |
+| Preprints (medRxiv 75, bioRxiv 47, SSRN 38) | 160 | 148 |
 
-**The layer's real value is who wrote it.** Corresponding-author country, parsed from the Embase address field,
-for the 266 eligible new records:
+361 new primary studies is an **11.0% addition to the 3,286-study corpus**. The Article and Preprint strata were
+screened completely, so those are counts rather than projections; the ~65 unscreened Reviews would add roughly
+17 further non-primary records. The largest single journal contributor is *Biomedical Signal Processing and
+Control* (45), an Elsevier engineering journal outside MEDLINE.
 
-| Country | Records | | Country | Records |
-|:--|--:|:-:|:--|--:|
-| China | 129 | | Turkey | 6 |
-| India | 24 | | Indonesia | 6 |
-| United States | 14 | | Poland | 5 |
-| Canada | 9 | | United Kingdom | 4 |
-| Iran | 9 | | Russia | 4 |
-| Germany | 7 | | Malaysia | 4 |
+`[ACTION: the 148 new preprint primaries overlap the OpenAlex preprint layer of Section 4.4 by construction.
+Deduplicate by DOI and normalized title before either is added, and report the union, not the sum.]`
 
-**189 of 266 (71%) have a corresponding author outside North America and Western Europe**, against 14 records
-(5%) from the United States; 34 countries are represented. On language, 90 of the 266 are not English-only and
-67 carry no English at all (62 Chinese, 15 Chinese/English, 5 German, 3 Persian, 3 Russian, 1 Czech, 1
-English/Polish) — against roughly 32 non-English records in the entire PubMed layer.
+**The layer's real value is who wrote it — and that differs sharply by form.** Corresponding-author country,
+parsed from the Embase address field:
+
+| | Eligible records | Outside North America / Western Europe | Not English-only |
+|:--|--:|--:|--:|
+| Journal articles | 266 | **189 (71%)** | 90 (34%) |
+| Preprints | 160 | 42 (26%) | 0 |
+| Combined | 426 | 231 (54%) | 90 (21%) |
+
+The journal layer is where the geographic breadth is: China 129, India 24, Iran 9, Turkey 6, Indonesia 6, against
+14 records from the United States, across 34 countries. The preprint layer runs the other way — medRxiv, bioRxiv
+and SSRN are overwhelmingly North American and Western European and entirely English. Combining them dilutes the
+finding, so the two are reported separately.
 
 This is what makes the no-language-restriction criterion mean something. The previous scoping review excluded
 non-English articles and named this as a limitation that "may disproportionately underrepresent Global South
 research" [Kamran 2026]. Dropping the restriction only answers that objection if the search actually reaches a
 non-English literature, and PubMed alone does not — Embase is the mechanism, not the criterion. It is also the
-one finding here that is strictly better measured than stated: country of correspondence is a fact in the
-record, where language is a proxy for it.
+one finding here that is measured rather than inferred: country of correspondence is a fact in the record, where
+language is only a proxy for it.
 
 **A risk the layer introduces.** MEDLINE indexing was performing quality control this review was not crediting
 it for. The new journal records include titles that are delisted or of doubtful standing — *International
@@ -291,38 +297,44 @@ database as run, not a paraphrase.
 IEEE indexes the engineering literature (ISBI, TMI) that MEDLINE covers unevenly.
 **Cochrane Library** — run for completeness; expected yield near zero, as in the previous review.
 
-### 4.4 Publication forms that are searched but not included
+### 4.4 Preprints (included) and conference material (excluded)
 
-The corpus is **peer-reviewed journal articles only**. Preprints and conference material are still retrieved,
-counted and reported — a systematic review has to say what it found and set aside — but they do not enter the
-database and no result is computed over them. Three reasons, in order of weight:
+**Preprints are included.** PubMed does not index arXiv and covers medRxiv and bioRxiv only through the NIH
+preprint pilot, so a preprint layer is what keeps the current year from being an artifact of indexing lag —
+much of the methods work in this field appears as a preprint a year or more before it appears anywhere else.
+Preprints are drawn from OpenAlex `type:preprint` with the Block 1–3 vocabulary translated to OpenAlex search
+syntax, plus the arXiv API directly for records OpenAlex has not ingested, plus the 320 preprints the Embase
+layer returns (medRxiv 151, bioRxiv 97, SSRN 72). All three are deduplicated against the indexed literature and
+against each other by DOI, PMID and normalized title, so **a preprint drops out of the corpus as soon as its
+journal version appears** and no study is counted twice. Preprint rows are marked `is_preprint` and their
+release status is recorded as `unreleased` rather than `unclear`, because "not yet published" is a known fact
+rather than an open question. Every result that turns on peer review — external validation, reader studies,
+prospective evaluation — is reported with and without the preprint layer.
 
-1. **They are not peer reviewed** (preprints) or are **peer reviewed to a different standard and length**
-   (meeting abstracts). The review's central claims are about the strength of evidence behind pediatric
-   radiology AI — external validation, reader studies, prospective evaluation. An abstract that reports an AUC
-   in 250 words cannot support a judgement about study design.
+**Conference abstracts and proceedings are excluded.** Three reasons, in order of weight:
+
+1. **They cannot support the review's central claims.** Those claims are about the strength of evidence behind
+   pediatric radiology AI. An abstract reporting an AUC in 250 words cannot sustain a judgement about study
+   design, and the funnel this review measures — external validation, reader study, prospective evaluation —
+   is precisely what an abstract omits.
 2. **They are not extractable.** Of the eligible Embase conference abstracts screened, only 62 of 81 carried
-   enough method and result detail to fill a database row; OpenAlex holds no abstract at all for most
+   enough method and result detail to fill a database row, and OpenAlex holds no abstract at all for most
    conference records.
-3. **They double-count.** A preprint and its journal version are the same study, and meeting abstracts are
-   routinely superseded by a full paper one to three years later. Including both inflates every count and
-   silently overweights whichever work happens to be slow to publish.
+3. **They double-count without ever resolving.** A meeting abstract is routinely superseded by a full paper
+   one to three years later, but unlike a preprint it carries no DOI linking the two, so the deduplication that
+   works for preprints does not work here.
 
-**What was retrieved and set aside.** From the Embase layer alone: **1,775 conference records** (1,713
-conference abstracts and 62 conference reviews, identified mechanically by the presence of a `CONFERENCE NAME`
-field, not inferred from journal supplements) and **320 preprints** (medRxiv 151, bioRxiv 97, SSRN 72). The
-previously planned OpenAlex preprint layer and named-venue conference hand-search are **withdrawn**; the
-`REVIEW_CONFERENCE_VENUES` list in `config.py` is retained only for the descriptive publication-venue analysis,
-which is a different question from corpus construction.
+The previously planned named-venue conference hand-search (MICCAI, IPMI, MIDL, ISBI, SPIE, NeurIPS, CVPR …) is
+therefore **withdrawn**. `config.REVIEW_CONFERENCE_VENUES` is retained only for the descriptive
+publication-venue analysis, which is a different question from corpus construction.
 
-`[ACTION: 89 records in the current PubMed corpus carry the publication type "Preprint" (NIH preprint pilot
-deposits). They must be removed and the PRISMA flow updated before the results are recomputed.]`
-
-**Worth reporting as a finding, not as a corpus.** 169 of the conference records are SPR/ESPR meeting abstracts
-published as *Pediatric Radiology* supplements. Pediatric radiology AI that is presented and never published is
-a stage of the translational funnel that sits *before* the first box of the funnel this review measures, and it
-is invisible to any MEDLINE-only search. From a 12% sample, roughly 46% of the Embase conference abstracts would
-meet the topic criteria. Report that as a bounded observation with its sampling fraction stated.
+**What was set aside, reported as a finding.** The Embase layer alone returns **1,775 conference records** —
+1,713 conference abstracts and 62 conference reviews, identified mechanically by the presence of a
+`CONFERENCE NAME` field rather than inferred from journal supplements — of which **169 are SPR/ESPR meeting
+abstracts published as *Pediatric Radiology* supplements**. From a 12% sample, roughly 46% would meet the topic
+criteria. Pediatric radiology AI that is presented and never published is a stage of the translational funnel
+sitting *before* the first box this review measures, and it is invisible to any MEDLINE-only search. Report it
+as a bounded observation with the sampling fraction stated, never as a corpus.
 
 ### 4.6 Supplementary searching
 

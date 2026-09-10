@@ -143,7 +143,8 @@ def flatten(recs: list[dict], prefix: str) -> list[dict]:
                 "correspondence_country": country(corr),
                 "is_conference": bool(conf),
                 "is_preprint": ptype == "Preprint",
-                "is_journal_article": (not conf) and ptype != "Preprint",
+                # Preprints are in scope; only conference material is set aside.
+                "in_scope_form": not conf,
                 "abstract": _joined(r.get("ABSTRACT")),
             }
         )
@@ -256,15 +257,13 @@ def main() -> None:
     over = flatten(parse_export(RAW / "embase_medline_overlap.csv"), "M")
     print(f"Embase-unique (#5): {len(uniq_all)}   MEDLINE overlap (#6): {len(over)}")
 
-    # Journal articles only. Conference material and preprints are retrieved,
-    # counted and reported, but never enter the corpus (see Section 3).
+    # Journal articles and preprints are in scope; conference material is
+    # retrieved, counted and reported, but never enters the corpus (Section 4.4).
     dropped = collections.Counter(
-        "conference" if r["is_conference"] else "preprint"
-        for r in uniq_all
-        if not r["is_journal_article"]
+        r["embase_type"] for r in uniq_all if not r["in_scope_form"]
     )
-    uniq = [r for r in uniq_all if r["is_journal_article"]]
-    print(f"  journal articles: {len(uniq)}   set aside: {dict(dropped)}")
+    uniq = [r for r in uniq_all if r["in_scope_form"]]
+    print(f"  in-scope forms: {len(uniq)}   conference material set aside: {sum(dropped.values())}")
 
     print("Resolving DOIs to PMIDs...")
     classify(uniq, resolve_dois(uniq), ours)
@@ -275,7 +274,7 @@ def main() -> None:
 
     summary = {
         "generated_on": time.strftime("%Y-%m-%d"),
-        "scope": "journal articles only; conference material and preprints reported, not included",
+        "scope": "journal articles and preprints; conference material reported, not included",
         "set_aside": dict(dropped),
         "embase_unique_all_types": len(uniq_all),
         "review_query_records": len(ours),
