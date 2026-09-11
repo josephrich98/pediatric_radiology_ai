@@ -8,12 +8,13 @@
 
 **Status:** draft, 2026-09-10. Placeholders needing author action are marked `[ACTION]`.
 
-> **Corpus complete for the PubMed layer.** The citation-based inclusion rule used in the first draft has been
+> **Corpus complete for PubMed and Embase.** The citation-based inclusion rule used in the first draft has been
 > retired (it is selection bias and cannot appear in a PRISMA flow). The replacement search is specified in
-> `reports/06_search_strategy.md` and wired into `config.REVIEW_QUERY`. All 5,686 PubMed records were screened;
-> **3,286 primary studies are included**. Every structured-review number below is computed from
-> `scripts/review_stats.py` on that corpus. The preprint (1,580) and conference (2,134) layers are identified but
-> **not yet screened**, and the other databases have not been run — see Limitations.
+> `reports/06_search_strategy.md` and wired into `config.REVIEW_QUERY`. 13,508 records were identified across
+> PubMed/MEDLINE and Embase, 6,600 were screened after duplicate and publication-form removal, and **3,494
+> primary studies are included**. Every structured-review number below is computed from
+> `scripts/review_stats.py` on that corpus. Web of Science, Scopus and IEEE Xplore have not been run — see
+> Limitations.
 
 ---
 
@@ -29,33 +30,39 @@ analysis as a reproducible database that is refreshed monthly rather than fixed 
 
 **Materials and methods** We combined two layers. A bibliometric layer counted PubMed records from 2008 to 2026
 for four fielded boolean queries, stratified by modality and clinical task, with an arXiv preprint layer added
-because PubMed does not index arXiv. A structured-review layer applied a high-recall search with no citation,
-language, publication-type or topic filter (5,686 PubMed records, 2005-2026; 100% recall against a 26-paper
-validation set), screened every record against explicit eligibility criteria, and extracted 20 structured fields
-per included study under a fixed schema. Screening agreement between two independent automated screeners running
-different models was 94.7% (Cohen's kappa 0.885). We cross-linked the corpus to the FDA AI-enabled device list
-(1,164 radiology-panel devices) and to 7,967 radiology AI stories in seven trade-press archives.
+because PubMed does not index arXiv. A structured-review layer applied a high-recall search of PubMed/MEDLINE and
+Embase with no citation, language, publication-type or topic filter, screened every record against explicit
+eligibility criteria, and extracted 20 structured fields per included study under a fixed schema. The search
+retrieved 96.4% of the previous scoping review's independently assembled article list and 99.7% of 3,728
+MEDLINE-indexed records returned by the same strategy run in Embase. Screening agreement between two independent
+automated screeners running different models was 94.7% (Cohen's kappa 0.885). We cross-linked the corpus to the
+FDA AI-enabled device list (1,164 radiology-panel devices) and to 7,967 radiology AI stories in seven trade-press
+archives.
 
 **Results** Radiology AI publications grew from 715 (2008) to 20,831 (2025) PubMed records; pediatric records
 grew from 58 to 2,348. AI accounted for 11.4% of all radiology publishing in 2025 but only 7.4% of pediatric
-radiology publishing, a penetration ratio of 0.65 that has not exceeded 0.81 in eighteen years. Of 5,904 records
-screened, 2,246 were excluded and 372 were non-primary, leaving **3,286 included studies** — 4.2 times the size of
-the previous scoping review's corpus. MRI (45.2%) and ultrasound (24.6%) led radiography (18.7%) and CT (9.4%).
-By age, children (36.6%) led adolescents (24.2%) and fetal imaging (23.8%); fetal work was nonetheless the single
-largest coherent segment by modality, being 68% ultrasound. By what the model produces, detection/diagnosis
-accounted for 38.0% of studies, measurement/quantification 22.6%, segmentation 20.2%, outcome prediction 18.7% and
-reconstruction/imputation 8.0%. Validation was internal only in 68.8%, external or multi-center in 18.0%, a reader
-study in 5.7% and prospective in 3.0%. Data source was unstated in 38.9%. Code was available for 2.6%. External
-validation rose across eras from 4.2% (2005-2014) to 20.4% (2023-2026) and multi-center data from 8.5% to 22.4%,
-while prospective evaluation remained near 4%. Of 1,164 FDA-cleared radiology AI devices, 11 (0.9%) carry a
+radiology publishing, a penetration ratio of 0.65 that has not exceeded 0.81 in eighteen years. Of 6,600 records
+screened, 2,650 were excluded and 456 were non-primary, leaving **3,494 included studies** — 4.4 times the size of
+the previous scoping review's corpus. MRI (45.5%) and ultrasound (23.7%) led radiography (19.3%) and CT (9.3%).
+By age, children (37.2%) led adolescents (25.4%) and fetal imaging (22.4%); fetal work was nonetheless the single
+largest coherent segment by modality, being 71% ultrasound. By what the model produces, detection/diagnosis
+accounted for 38.2% of studies, measurement/quantification 23.9%, outcome prediction 19.5%, segmentation 18.9% and
+reconstruction/imputation 7.9%. Validation was internal only in 67.3%, external or multi-center in 18.7%, a reader
+study in 6.2% and prospective in 3.3%. Data source was unstated in 39.1%. Code was available for 2.6%. External
+validation rose across eras from 4.2% (2005-2014) to 20.3% (2023-2026) and multi-center data from 8.5% to 22.3%,
+while reader studies did not improve (7.0% to 5.7%) and prospective evaluation, having fallen to 1.6% in
+2020-2022, reached only 4.0%. Embase contributed 365 included studies that PubMed does not index; 71% of its
+eligible new journal articles had a corresponding author outside North America and Western Europe. Of 1,164 FDA-cleared radiology AI devices, 11 (0.9%) carry a
 pediatric device name, from five companies, covering bone age, fracture detection and fetal echocardiography.
 Pediatric stories were 2.0% of radiology AI trade-press coverage.
 
 **Conclusion** Pediatric radiology AI is growing as fast as adult radiology AI but has never closed the relative
-gap. Reporting rigor is improving measurably on every axis except prospective evaluation, which has not moved in
-twenty years. The funnel from publication to a tool a child benefits from remains extremely narrow: fewer than one
-study in five is externally validated, one in seventeen involves a reader, one in thirty-three is prospective, one
-in thirty-eight releases code, and eleven of 1,164 cleared radiology AI devices carry a pediatric name. We release
+gap. Reporting rigor is improving measurably on the axes that can be improved retrospectively, and not on the two
+that require prospective contact with patients: reader studies are no more common than twenty years ago, and
+prospective evaluation remains below one study in twenty. The funnel from publication to a tool a child benefits
+from remains extremely narrow: fewer than one study in five is externally validated, one in sixteen involves a
+reader, one in thirty is prospective, one in thirty-eight releases code, and eleven of 1,164 cleared radiology AI
+devices carry a pediatric name. We release
 the screened corpus and the code that produced it so these estimates can be audited and updated rather than
 re-derived.
 
@@ -169,15 +176,24 @@ deliberate departure from the previous scoping review, which excluded non-Englis
 limitation likely to under-represent research from the Global South [1]. The full criteria are given in
 Supplementary Table S2.
 
-**Information sources and search.** The search covered PubMed/MEDLINE, Embase, Web of Science, Scopus and IEEE
-Xplore; OpenAlex records typed `preprint` (arXiv, medRxiv, bioRxiv, Research Square, SSRN); and a prespecified list
-of conference venues (MICCAI and its perinatal and fetal-imaging workshops, IPMI, MIDL, IEEE ISBI, SPIE Medical
-Imaging, NeurIPS, CVPR, ICCV, ECCV, ICLR, ICML, ML4H, MLHC, CHIL), searched by venue rather than by keyword sweep.
-Reference lists of all included reviews, and the supplementary article list of the previous scoping review [1], were
-hand-searched; the latter doubles as an external recall check against an independently assembled corpus. Sources were
-deduplicated by DOI, then PMID, then normalized title with first author and year, so that a preprint drops out of the
-corpus once its journal version appears. The search covered 2005 onward, which contains the previous review's window
-in full and extends it by two years.
+**Information sources and search.** Two databases were searched and are complete: **PubMed/MEDLINE** (6,000
+records) and **Embase** (7,288 records), the latter run in two halves so that its MEDLINE-indexed portion could
+serve as an audit of the PubMed query and its non-MEDLINE portion as new material. Preprints (arXiv, medRxiv,
+bioRxiv, SSRN) are included and were drawn from the Embase layer and from OpenAlex records typed `preprint`.
+Reference lists of all included reviews, and the supplementary article list of the previous scoping review [1],
+were hand-searched; the latter doubles as an external recall check against an independently assembled corpus.
+Sources were deduplicated by DOI resolved through the NCBI ID converter, then PMID, then normalized title with
+first author and year, so that a preprint drops out of the corpus once its journal version appears. The search
+covered 2005 onward, which contains the previous review's window in full and extends it by two years. Web of
+Science, Scopus and IEEE Xplore were not run; their translations are given in Supplementary Table S1 and the
+consequence is stated in Limitations.
+
+**Publication forms.** Journal articles and preprints are included. **Conference abstracts and proceedings are
+excluded**: they cannot support a judgement about study design, most are not extractable (only 62 of 81 eligible
+conference abstracts sampled carried enough method and result detail to fill a database row), and unlike a
+preprint a meeting abstract carries no DOI linking it to the full paper that supersedes it, so deduplication
+cannot resolve the double count. 2,168 conference records were retrieved, removed before screening, and are
+reported in the Discussion as a finding rather than analyzed as a corpus.
 
 The PubMed strategy combined three `[tiab]`-fielded concept blocks — imaging modality, artificial intelligence, and
 pediatric population — with AND. Every term is fielded because PubMed's automatic term mapping silently expands bare
@@ -192,13 +208,26 @@ the same paper also covers optical coherence tomography; iBEAT V2.0 and the ACR 
 were removed because PubMed types *Nature Protocols* articles and white papers as `Review[pt]`. Recall is the
 search's responsibility and precision is screening's; conflating the two loses records that no human ever reads.
 
-**Search validation.** The strategy was validated against 26 landmark pediatric radiology AI papers assembled from
-domain knowledge, the previous scoping review, and known pediatric datasets and cleared products, and not from the
-output of this query. The final strategy retrieved 26 of 26 (100%); the earlier, narrower query used in the first
-version of this database retrieved 25 of 26 (96.2%), missing a multi-institutional pediatric posterior fossa tumor
-study because the query lacked the phrase "MR imaging", which neuroradiology journals use in place of "MRI".
-`[ACTION: expand the validation set to ~50 papers and pre-register it; report the proportion of the previous
-review's 789 included articles that this search retrieves.]`
+**Search validation.** The strategy was validated three ways. Against 26 landmark pediatric radiology AI papers
+assembled from domain knowledge and known pediatric datasets and cleared products — not from the output of this
+query — it retrieved 26 of 26 (100%).
+
+Two external checks carry more weight, because both corpora were assembled by other people for other purposes.
+First, the previous scoping review publishes the full list of its 789 included articles. 663 resolved to a PubMed
+record, and this search retrieves **639 of them (96.4%)**; of the records it retrieves, our screen independently
+agreed with their inclusion decision in 95.5%. Second, the same strategy translated into Embase returned 3,728
+MEDLINE-indexed records, of which `REVIEW_QUERY` retrieves **3,715 (99.7%)**. All thirteen misses were read: four
+errata, one tombstone record, one research-highlight note, two digital pathology and two neuroimaging studies with
+no learned model (all four correctly outside the criteria), and one artifact of a publisher appending a
+field-of-research code to an article title.
+
+Each check found a real defect, and both were fixed rather than reported around. The first showed that PubMed
+tokenizes "fMRI" separately from "MRI", hiding the functional-imaging literature; the second that it tokenizes
+"MRIs" separately from "MRI". Three further candidate terms were measured and rejected, including one that would
+have raised the score for six extra records but was chosen only because it appears in the validation set — tuning a
+query on the corpus used to validate it destroys the validation. The full accounting is in
+`reports/06_search_strategy.md` §6. `[ACTION: expand the internal landmark set to ~50 papers and pre-register it.
+Neither external check can be repeated as a blinded test, since the query was tuned against the first of them.]`
 
 **Why there is no citation threshold.** The first version of this database admitted a paper only if it reached 20
 citations, 10 citations per year, or an NIH relative citation ratio of 5.0. That rule has been retired. Filtering on
@@ -350,50 +379,55 @@ growth in those venues; pediatric imaging within that is a rounding error.
 
 ### What the corpus contains
 
-Of 5,904 records screened, 2,246 were excluded as adult-only, non-radiologic or without an AI/ML component, and 372
-were in scope but not primary research (reviews, editorials, guidelines and position statements, reported
-separately below). **3,286 primary studies were included** (Fig. 1) — 4.2 times the 789 articles in the previous
-scoping review [1], and the largest structured corpus of pediatric radiology AI assembled to date.
+13,508 records were identified across PubMed/MEDLINE (6,000), Embase (7,288) and an earlier OpenAlex pass (220).
+6,908 were removed before screening — 4,726 as duplicates of the PubMed layer, 2,168 as conference abstracts or
+proceedings excluded by the publication-form criterion, and 14 unresolved. Of the 6,600 records screened, 2,650
+were excluded as adult-only, non-radiologic or without an AI/ML component, and 456 were in scope but not primary
+research (reviews, editorials, guidelines and position statements, reported separately below). **3,494 primary
+studies were included** (Fig. 1) — 4.4 times the 789 articles in the previous scoping review [1], and the largest
+structured corpus of pediatric radiology AI assembled to date. 3,122 came from PubMed and 365 from Embase records
+PubMed does not index; 231 are preprints.
 
-Growth is steep and continuing: 42 included studies in 2015, 186 in 2020, 505 in 2024 and 589 in 2025, with 571
-already indexed for 2026 at the collection date (Fig. 2). The composition (Table 2) is dominated by MRI (45.2%) and
-ultrasound (24.6%); radiography, which led the previous review's count, is third at 18.7%, and CT is a distant
-fourth at 9.4%.
+Growth is steep and continuing: 29 included studies in 2015, 166 in 2020, 555 in 2024 and 685 in 2025, with 686
+already indexed for 2026 at the collection date (Fig. 2). The composition (Table 2) is dominated by MRI (45.5%) and
+ultrasound (23.7%); radiography, which led the previous review's count, is third at 19.3%, and CT is a distant
+fourth at 9.3%.
 
-**Table 2** Composition of the included corpus (n = 3,286 primary studies, 2005-2026)
+**Table 2** Composition of the included corpus (n = 3,494 primary studies, 2005-2026)
 
 | Axis | Category | n | % |
 |:--|:--|---:|---:|
-| **Modality** | MRI | 1,486 | 45.2 |
-| | Ultrasound | 808 | 24.6 |
-| | Radiography / x-ray | 614 | 18.7 |
-| | CT | 308 | 9.4 |
-| | Nuclear / PET | 50 | 1.5 |
-| | Other / multiple / fluoroscopy | 98 | 3.0 |
-| **Task (by model output)** | Detection / diagnosis (label or box) | 1,248 | 38.0 |
-| | Measurement / quantification (number) | 742 | 22.6 |
-| | Segmentation (mask) | 664 | 20.2 |
-| | Outcome prediction (future risk) | 613 | 18.7 |
-| | Reconstruction / imputation (better image) | 264 | 8.0 |
-| | Workflow / non-interpretive | 169 | 5.1 |
-| | Foundation / vision-language model | 31 | 0.9 |
-| | Report generation / LLM (text) | 26 | 0.8 |
-| **Age group** | Child | 1,202 | 36.6 |
-| | Adolescent | 794 | 24.2 |
-| | Fetal | 782 | 23.8 |
-| | Infant | 512 | 15.6 |
-| | Pediatric (unspecified) | 446 | 13.6 |
-| | Neonate | 327 | 10.0 |
-| | Mixed pediatric and adult | 284 | 8.6 |
+| **Modality** | MRI | 1,589 | 45.5 |
+| | Ultrasound | 827 | 23.7 |
+| | Radiography / x-ray | 676 | 19.3 |
+| | CT | 325 | 9.3 |
+| | Nuclear / PET | 53 | 1.5 |
+| | Other / multiple / fluoroscopy | 101 | 2.9 |
+| **Task (by model output)** | Detection / diagnosis (label or box) | 1,336 | 38.2 |
+| | Measurement / quantification (number) | 836 | 23.9 |
+| | Outcome prediction (future risk) | 683 | 19.5 |
+| | Segmentation (mask) | 660 | 18.9 |
+| | Reconstruction / imputation (better image) | 277 | 7.9 |
+| | Workflow / non-interpretive | 167 | 4.8 |
+| | Other | 123 | 3.5 |
+| | Report generation / LLM (text) | 28 | 0.8 |
+| | Foundation / vision-language model | 26 | 0.7 |
+| **Age group** | Child | 1,301 | 37.2 |
+| | Adolescent | 889 | 25.4 |
+| | Fetal | 784 | 22.4 |
+| | Infant | 515 | 14.7 |
+| | Pediatric (unspecified) | 498 | 14.3 |
+| | Neonate | 346 | 9.9 |
+| | Mixed pediatric and adult | 316 | 9.0 |
 
 *Modality, task and age group are multi-label; columns exceed 100%.*
 
 ### Fetal imaging is a quarter of the field and structurally distinct
 
-Fetal and perinatal work accounts for 784 studies, 23.9% of the corpus. It does not lead on age group — children
-(36.6%) and adolescents (24.2%) are ahead — but it is the most internally coherent segment in the review: **68% of
-it is ultrasound** (550 of 784), against 24.6% ultrasound in the corpus overall, and its task profile is distinct,
-led by segmentation (238) and detection (228) with measurement close behind (217).
+Fetal and perinatal work accounts for 785 studies, 22.5% of the corpus. It does not lead on age group — children
+(37.2%) and adolescents (25.4%) are ahead — but it is the most internally coherent segment in the review: **71% of
+it is ultrasound** (560 of 785), against 23.7% ultrasound in the corpus overall, and its task profile is distinct,
+led by segmentation (238) and detection (236) with measurement close behind (231).
 
 This matters because the previous scoping review's subspecialty taxonomy contains no fetal or obstetric category,
 and none of its ten most common clinical applications is a fetal one [1]. A quarter of the literature this search
@@ -430,7 +464,7 @@ ends.
 
 *Their term lists are transcribed from the supplementary material of [1]; ours from `config.REVIEW_QUERY`.
 Neither strategy is wrong — theirs buys precision and a manageable hand-screening burden, ours buys recall at the
-cost of screening 5,904 records. But the difference determines what each review can see, and a reader comparing the
+cost of screening 6,600 records. But the difference determines what each review can see, and a reader comparing the
 two should know that the fetal literature is outside one of them by construction.*
 
 *A correction to our own earlier analysis is worth recording, because it shows the hazard the impact floor
@@ -442,51 +476,107 @@ not.
 
 ### The translational funnel
 
-The methodological picture (Table 3, Fig. 5) is the central result. Of 3,286 included studies:
+The methodological picture (Table 3, Fig. 5) is the central result. Of 3,494 included studies:
 
-- **68.8%** reported internal validation only; a further **4.5%** reported no validation strategy at all.
-- **18.0%** reported external or multi-center validation.
-- **5.7%** included a reader study — a radiologist in the loop, with a measured effect.
-- **3.0%** were prospective.
-- **2.6%** (87 studies) provided a working code or model URL.
-- **4.3%** involved a commercial product; **88.9%** said nothing about model availability.
+- **67.3%** reported internal validation only; a further **4.5%** reported no validation strategy at all.
+- **18.7%** reported external or multi-center validation.
+- **6.2%** included a reader study — a radiologist in the loop, with a measured effect.
+- **3.3%** were prospective.
+- **2.6%** (92 studies) provided a working code or model URL.
+- **4.6%** involved a commercial product; **84.6%** said nothing about model availability.
 
-On data, **38.9%** did not state the data source at all, **32.4%** used a single center, **19.2%** were
-multi-center and **9.5%** used a public dataset. Where a dataset size could be parsed (1,805 studies, 54.9%), the
-median was 537 subjects or images (IQR 203-2,017). A named model or product appeared in 23.2% of studies.
+On data, **39.1%** did not state the data source at all, **31.0%** used a single center, **20.1%** were
+multi-center and **9.7%** used a public dataset. Where a dataset size could be parsed (2,005 studies, 57.4%), the
+median was 548 subjects or images (IQR 204-2,022). A named model or product appeared in 23.4% of studies.
 
 **Table 3** Methodological characteristics and their trajectory
 
-| Characteristic | 2005-2014 (n=71) | 2015-2019 (n=385) | 2020-2022 (n=790) | 2023-2026 (n=2,040) | All (n=3,286) |
+| Characteristic | 2005-2014 (n=71) | 2015-2019 (n=295) | 2020-2022 (n=792) | 2023-2026 (n=2,336) | All (n=3,494) |
 |:--|---:|---:|---:|---:|---:|
-| Internal validation only | 85.9% | 74.0% | 72.2% | 65.9% | 68.8% |
-| External / multi-center validation | 4.2% | 12.7% | 15.7% | **20.4%** | 18.0% |
-| Reader study | 4.2% | 4.4% | 7.5% | 5.3% | 5.7% |
-| Prospective | 2.8% | 1.8% | 1.6% | 3.8% | 3.0% |
-| No validation stated | 2.8% | 7.0% | 3.0% | 4.6% | 4.5% |
-| Single-center data | 22.5% | 36.9% | 39.1% | 29.3% | 32.4% |
-| Multi-center data | 8.5% | 10.6% | 16.3% | **22.4%** | 19.2% |
-| Open-source | 0.0% | 1.6% | 5.3% | 5.3% | 4.8% |
-| Commercial product involved | 4.2% | 0.8% | 3.3% | 5.3% | 4.3% |
-| Release status unclear | 95.8% | 96.6% | 91.3% | 86.3% | 88.9% |
+| Internal validation only | 81.7% | 74.9% | 71.1% | 64.6% | 67.3% |
+| External / multi-center validation | 4.2% | 14.2% | 16.9% | **20.3%** | 18.7% |
+| Reader study | 7.0% | 6.1% | 7.7% | 5.7% | 6.2% |
+| Prospective | 2.8% | 2.4% | 1.6% | 4.0% | 3.3% |
+| No validation stated | 4.2% | 2.4% | 2.7% | 5.4% | 4.5% |
+| Single-center data | 22.5% | 33.6% | 37.8% | 28.7% | 31.0% |
+| Multi-center data | 8.5% | 12.9% | 17.6% | **22.3%** | 20.1% |
+| Open-source | 0.0% | 2.4% | 5.2% | 5.1% | 4.8% |
+| Commercial product involved | 4.2% | 1.4% | 3.4% | 5.4% | 4.6% |
+| Release status unclear | 95.8% | 94.9% | 88.4% | 81.6% | 84.6% |
 
 *The 2023-2026 stratum is the largest because the field is growing, not because of any selection rule; 2026 is a
 partial year. The 2005-2014 stratum is small (n=71) and its percentages are unstable.*
 
-Two things are true at once. **Reporting rigor is improving**: external validation rose five-fold across the
-eras, multi-center data nearly tripled, and the share of studies silent about model availability fell from 95.8% to
-86.3%. And **the improvement has a ceiling that has not moved**: prospective evaluation was 2.8% in 2005-2014 and
-is 3.8% today, reader studies have hovered between 4% and 8% for twenty years, and code release has been flat at
-about 5% since 2020. The field is getting better at the things a reviewer can demand in a revision and no better at
-the things that require a different study design.
+Two things are true at once. **Reporting rigor is improving**: external validation rose almost five-fold across
+the eras, multi-center data nearly tripled, and the share of studies silent about model availability fell from
+95.8% to 81.6%. And **the improvement is confined to what can be done retrospectively**: reader studies are no
+more common now (5.7%) than in 2005-2014 (7.0%), prospective evaluation fell to 1.6% in 2020-2022 before reaching
+4.0%, and code release has been flat at about 5% since 2020. Every axis that improved can be satisfied by
+re-analyzing data already collected. The two that did not — putting a radiologist in the loop, and evaluating
+prospectively — are the two that require new contact with patients. The field is getting better at what a
+reviewer can demand in a revision and no better at what requires a different study design.
 
 ### What the non-primary literature says
 
-The 372 in-scope records excluded as non-primary — reviews, editorials, guidelines and multi-society position
-statements — are themselves a finding: **10.2% of the in-scope pediatric radiology AI literature is commentary
-rather than primary research.** For a field with 3,286 primary studies, one commentary for every nine studies is a
+The 456 in-scope records excluded as non-primary — reviews, editorials, guidelines and multi-society position
+statements — are themselves a finding: **11.5% of the in-scope pediatric radiology AI literature is commentary
+rather than primary research.** For a field with 3,494 primary studies, one commentary for every eight studies is a
 high ratio, and it is concentrated in the last three years. This is the literature clinical leadership is most
 likely to encounter, and it is not where the evidence is.
+
+### Who writes this literature, and where a MEDLINE-only search stops
+
+The Embase layer is not simply more of the same records. Of its 1,785 in-scope non-MEDLINE records, 998 were
+already in the PubMed corpus — PubMed indexes a large Central-only population that Embase reports as non-MEDLINE —
+leaving 777 genuinely new records, of which 426 were eligible and **365 entered the corpus as primary studies**.
+
+The striking property of that material is authorship. For the 266 eligible new **journal articles**,
+corresponding-author country was parsed from the Embase address field:
+
+| Country | n | | Country | n |
+|:--|--:|:-:|:--|--:|
+| China | 129 | | Turkey | 6 |
+| India | 24 | | Indonesia | 6 |
+| United States | 14 | | Poland | 5 |
+| Canada | 9 | | United Kingdom | 4 |
+| Iran | 9 | | Russia | 4 |
+| Germany | 7 | | Malaysia | 4 |
+
+**189 of 266 (71%) have a corresponding author outside North America and Western Europe, against 14 (5%) from the
+United States, across 34 countries.** 90 are not English-only and 67 carry no English at all. The whole PubMed
+layer, by comparison, contains roughly 32 non-English records.
+
+This is the concrete content of the no-language-restriction criterion. The previous review excluded non-English
+articles and named this as a limitation likely to "disproportionately underrepresent Global South research" [1].
+Dropping the restriction only answers that objection if the search reaches a non-English literature, and PubMed
+alone does not: Embase is the mechanism, not the criterion. It is also better evidence than the criterion itself,
+because country of correspondence is recorded in the record while language is only a proxy for it.
+
+The **preprint** half of the same layer runs the other way — 160 eligible records, 26% non-Western, entirely in
+English. medRxiv, bioRxiv and SSRN are North American and Western European venues. Combining the two halves
+dilutes the finding, so they are reported separately.
+
+### A sensitivity analysis a reader will ask for
+
+The corpus contains a large body of work in which a machine-learning model is trained on pediatric brain MRI, fMRI,
+DTI or connectome features to predict a psychiatric, cognitive or developmental outcome — ADHD, autism, depression,
+IQ, treatment response. These meet every eligibility criterion (a trained model, a diagnostic radiology image, a
+pediatric population) but are not what a radiologist would recognize as reporting. They are **916 of 3,494 studies
+(26.2%)**, and they are the obvious candidate explanation for our MRI-first ranking.
+
+They do not explain it. Removing the subgroup entirely leaves MRI first at **37.0%**, still well ahead of
+radiography at 22.0% and against the previous review's radiography-first ordering. External validation is
+**unchanged at 18.7%**, reader studies move from 6.2% to 6.1%, and prospective evaluation from 3.3% to 2.8%.
+Neither headline result — the modality reversal or the narrowness of the funnel — depends on this literature.
+
+### What never reaches a paper
+
+2,168 conference records were retrieved and set aside by the publication-form criterion. They are worth reporting
+as a count. **169 are SPR and ESPR meeting abstracts published as *Pediatric Radiology* supplements**, and from a
+12% sample roughly 46% of the conference abstracts would meet this review's topic criteria. That is pediatric
+radiology AI presented to this journal's own society and never converted into a full paper — a stage of the
+translational funnel sitting *before* the first box this review measures, and invisible to any MEDLINE-only
+search. We report it as a bounded observation from a sample, not as a corpus.
 
 ### Where the work is published
 
@@ -567,7 +657,7 @@ static since 2011, dipping during the deep-learning boom rather than rising. The
 pediatric AI as "lagging but catching up" is not supported by the data; "growing in parallel, at a permanent
 discount" fits better, and implies that the gap will not close on its own.
 
-**A quarter of the field is fetal, and syntheses have been missing it.** Fetal and perinatal work is 23.9% of the
+**A quarter of the field is fetal, and syntheses have been missing it.** Fetal and perinatal work is 22.5% of the
 included corpus and is 68% ultrasound, making it the most internally coherent segment in the review; its share of
 the most-cited work is higher still. This is a substantial divergence from Kamran et al., whose subspecialty taxonomy contains no fetal or
 obstetric category and whose ten most common clinical applications include no fetal entry [1]. We believe the
@@ -583,17 +673,18 @@ first expert-level results were achieved, and where a children's hospital's imag
 encounter a cleared product with a genuinely pediatric indication. A review of pediatric radiology AI that omits
 fetal imaging omits both its largest research segment and its most commercially advanced one.
 
-**The funnel is much narrower than the count.** Of 3,286 included studies, 18.0% were validated outside the
-developing institution, 5.7% put a radiologist in the loop, 3.0% were prospective, and 2.6% released code. Eleven
+**The funnel is much narrower than the count.** Of 3,494 included studies, 18.7% were validated outside the
+developing institution, 6.2% put a radiologist in the loop, 3.3% were prospective, and 2.6% released code. Eleven
 cleared devices carry a pediatric name. The distance between "pediatric radiology AI research is booming" and "a
 child benefits" spans several order-of-magnitude reductions, each of them measurable. We would encourage that this
 funnel, rather than the publication count, become the standard summary statistic for the field.
 
 **Rigor is improving and prospective evidence is not.** This is the finding we did not expect and the one we would
-most like others to check. Between 2005-2014 and 2023-2026 external validation rose from 4.2% to 20.4% and
-multi-center data from 8.5% to 22.4% — real, sustained movement on exactly the axes that reviews and reporting
-checklists have pressed. Over the same twenty years prospective evaluation went from 2.8% to 3.8% and reader
-studies from 4.2% to 5.3%. Retrospective external validation is something an author can add during revision;
+most like others to check. Between 2005-2014 and 2023-2026 external validation rose from 4.2% to 20.3% and
+multi-center data from 8.5% to 22.3% — real, sustained movement on exactly the axes that reviews and reporting
+checklists have pressed. Over the same twenty years reader studies went from 7.0% to 5.7% — no improvement at
+all — and prospective evaluation from 2.8% to 4.0%, having fallen to 1.6% in between. Retrospective external
+validation is something an author can add during revision;
 a prospective study is a different protocol, a different budget and a different year. The field has responded to
 the critiques it can respond to cheaply.
 
@@ -607,7 +698,7 @@ since in both cases the difference is methodological and both answers are defens
 CT fourth (11.4%) [1]. We find MRI first (43.6%), ultrasound second (27.6%), radiography third (21.7%) and CT fourth
 (8.4%). Three factors separate these. Their corpus is weighted toward musculoskeletal imaging (33.0% of articles),
 where bone age and fracture radiographs dominate; ours includes the fetal ultrasound literature that theirs largely
-does not; and our corpus includes conference proceedings and the neurodevelopmental MRI literature, which is
+does not; and our corpus includes the neurodevelopmental and psychiatric neuroimaging-ML literature, which is
 disproportionately MRI-based
 (neurodevelopmental cohorts, fetal and neonatal brain segmentation). Neither ranking is wrong. They answer "what has
 been published on children" and "what pediatric imaging AI work the field has read", respectively.
@@ -615,9 +706,9 @@ been published on children" and "what pediatric imaging AI work the field has re
 **Task distribution, and what follows from it.** Kamran et al. report that 91.1% of articles address image
 interpretation or diagnosis, with 5.6% on artifact and motion reduction and under 2% on acquisition, communication,
 consultation, education and policy combined, and they recommend redirecting funding and protected time toward those
-neglected non-interpretive areas [1]. Our product-based taxonomy gives detection/diagnosis 38.0%,
-measurement/quantification 22.6%, segmentation 20.2%, outcome prediction 18.7%, reconstruction/imputation 8.0% and
-workflow/non-interpretive 5.1%.
+neglected non-interpretive areas [1]. Our product-based taxonomy gives detection/diagnosis 38.2%,
+measurement/quantification 23.9%, outcome prediction 19.5%, segmentation 18.9%, reconstruction/imputation 7.9% and
+workflow/non-interpretive 4.8%.
 
 These are not contradictory measurements; they are different partitions of the same space. The Canadian Association
 of Radiologists category "image interpretation/diagnosis" that Kamran et al. adopted absorbs segmentation,
@@ -646,11 +737,19 @@ in front of a radiologist.
 
 **Trajectory.** Kamran et al. characterize reporting quality largely as a static deficit — 88.8% of articles
 discussed bias, but 11.2% showed reporting bias, 6.6% did not report their dataset, and 64.8% relied on local
-hospital data [1]. Our era comparison shows measurable improvement on every axis we can track: external validation
-rose from 15.5% to 29.6%, multi-center data from 10.3% to 31.3%, reader studies from 5.6% to 14.8%, and the fraction
-of papers silent about model availability fell from 95.3% to 71.3%. The field is responding to precisely the
-critiques that reviews like theirs have made. This is worth saying, both because it is true and because a literature
-that only ever hears that it is inadequate has no way to tell whether its corrections are working.
+hospital data [1]. Our era comparison shows measurable improvement, but not on every axis. External validation rose
+from 4.2% to 20.3%, multi-center data from 8.5% to 22.3%, and the fraction of papers silent about model
+availability fell from 95.8% to 81.6%. Reader studies did not improve at all (7.0% to 5.7%), and prospective
+evaluation reached only 4.0% after falling to 1.6% in 2020-2022. The field is responding to precisely the critiques
+that reviews like theirs have made — and the split is informative rather than incidental. Every axis that improved
+can be satisfied by re-analyzing data already collected; the two that did not are the two requiring new contact
+with patients. This is worth saying in both directions: a literature that only ever hears it is inadequate has no
+way to tell whether its corrections are working, and a literature praised for improving in general will not notice
+that its improvement stops exactly where cost begins.
+
+*(These era figures supersede those in the first version of this database, which were computed on the
+citation-filtered corpus and overstated every rigor measure — heavily cited papers are more likely to be externally
+validated and to involve readers. The direction of the trend survived; the levels did not.)*
 
 ### Why a living database
 
@@ -718,29 +817,28 @@ cross-checked against external evidence, but this does not establish extraction 
 `[ACTION: the human dual-extraction sample described in Methods must be completed and its agreement statistics
 reported here.]`
 
-**The corpus is the PubMed layer only.** All 5,686 PubMed records were screened, but the preprint (1,580) and
-conference (2,134) layers were identified and not screened, and Embase, Web of Science, Scopus and IEEE Xplore have
-not been run. This review is therefore, at present, a MEDLINE-plus-hand-search review rather than the
-multi-database review its protocol specifies, and should be described that way until those layers are added. The
-direction of the resulting bias is knowable: the missing layers are disproportionately methods work, so the true
-share of segmentation, reconstruction and foundation-model studies is higher than Table 2 reports, and the true
-conference-venue share is higher than 7.9%.
+**Three databases remain unsearched.** PubMed/MEDLINE and Embase are complete. Web of Science, Scopus and IEEE
+Xplore have not been run; their translations are in Supplementary Table S1. The Embase layer gives a direct
+estimate of what a second database adds — 365 included studies, an 11% increase — and of what it adds that PubMed
+structurally cannot reach, so the remaining gap is bounded rather than unknown. IEEE Xplore is the one most likely
+to matter, because it indexes the engineering literature (ISBI, TMI) that both PubMed and Embase cover unevenly,
+and the direction of that bias is knowable: the missing layer is disproportionately methods work, so the true
+share of segmentation, reconstruction and foundation-model studies is somewhat higher than Table 2 reports.
 
-**Automated screening at scale.** Screening 5,686 or more records without dual human review is the principal
+**Automated screening at scale.** Screening 6,600 records without dual human review is the principal
 methodological risk of this design. A false include is corrected at extraction; a false exclude is invisible. The
 sampling protocol in Methods is intended to bound that error, and the review should not be submitted before it is
 executed and its recall reported.
 
-**Database coverage.** The PubMed layer is complete and validated. `[ACTION: Embase, Web of Science, Scopus and IEEE
-Xplore require institutional access and have not yet been run; their translations are given in Supplementary Table
-S1. Until they are, this is a MEDLINE-plus-grey-literature review rather than a multi-database one, and should be
-described as such.]` OpenAlex preprint and conference layers were not sized at the time of writing because the free
-tier's daily budget was exhausted.
+**Database coverage.** The PubMed and Embase layers are complete and cross-validated against each other.
+`[ACTION: Web of Science, Scopus and IEEE Xplore require institutional access and have not yet been run; their
+translations are given in Supplementary Table S1.]`
 
-**No geographic or authorship analysis.** We did not extract country of origin, institution or author
-characteristics, and therefore cannot address the concentration of research in China and the United States that
-Kamran et al. identified as a central equity concern [1]. That analysis remains theirs, and it is a real gap in our
-picture.
+**Geographic analysis is partial.** Corresponding-author country was parsed for the Embase layer only, because
+that is the layer whose records carry a structured address field; it is not available corpus-wide, so we report it
+for the Embase contribution rather than as a property of all 3,494 studies. Institutional and author-level
+characteristics were not extracted at all, and we therefore cannot fully address the research-concentration
+question Kamran et al. raise [1].
 
 **Query dependence.** Every count here is a function of a query. We have made those queries explicit, audited
 PubMed's term expansion, measured recall against landmark papers (86.7% overall, 100% for the pediatric subset) and
@@ -768,7 +866,7 @@ AI: measured as the AI share of each field's own publishing, pediatric radiology
 AI-saturated than radiology overall for fifteen years, and the gap widened rather than narrowed during the
 deep-learning boom. Fetal imaging is a quarter of the included literature, is overwhelmingly ultrasound, and is
 largely invisible to syntheses built on pediatric search vocabulary. Retrospective rigor is improving substantially
-— external validation rose from 4.2% to 20.4% across the eras and multi-center data from 8.5% to 22.4% — while
+— external validation rose from 4.2% to 20.3% across the eras and multi-center data from 8.5% to 22.3% — while
 prospective evaluation moved only from 2.8% to 3.8% and code release has been flat near 5% since 2020: the field
 has answered the critiques that can be answered in a revision and not those that require a different study design.
 The funnel from publication to deployment remains extremely narrow: fewer than one study in five is externally
@@ -858,7 +956,7 @@ All are already generated by the pipeline and live in `figures/`.
 | 2 | AI penetration of radiology vs pediatric radiology publishing, 2008-2026, with the ratio on a second axis | new; from `pubmed_yearly_counts.json` |
 | 3 | Included studies by modality and year | `review_modality_year.png` |
 | 4 | Clinical problem clusters, 2008-2022 vs 2023-present | `ped_problems.png` |
-| 5 | The translational funnel: 3,286 studies → external validation → reader study → prospective → code → commercial | `review_funnel.png` |
+| 5 | The translational funnel: 3,494 studies → external validation → reader study → prospective → code → commercial | `review_funnel.png` |
 | 6 | AI share of society flagship journals (RSNA, ECR, ACR, SPR), 2016-2026 | `society_ai_share.png` |
 
 ---
@@ -878,26 +976,29 @@ rather than a fixed snapshot.
 preprint layer, audited for term expansion; recall 26/30 landmark papers, 11/11 pediatric) with a structured-review
 layer: a high-recall search of PubMed, Embase, Web of Science, Scopus, IEEE Xplore, preprint servers and a
 prespecified list of conference venues, with no citation, language, publication-type or topic filter (PubMed layer
-5,686 records, 2005-2026; 100% recall against a 26-paper validation set), screened against explicit eligibility
+6,600 records screened from PubMed/MEDLINE and Embase, 2005-2026; 96.4% recall against the previous review's
+789 included articles and 99.7% against 3,728 Embase records), screened against explicit eligibility
 criteria and extracted under a fixed 20-field schema. Both were cross-linked to the FDA AI-enabled device list (1,164 radiology-panel devices) and to 7,967
 radiology AI stories in seven trade-press archives. All code, queries and records are public and re-run monthly.
 
 **Results:** Radiology AI publications grew from 715 (2008) to 20,831 (2025) PubMed records; pediatric records
 from 58 to 2,348. AI reached 11.4% of all radiology publishing in 2025 but 7.4% of pediatric radiology publishing,
-a penetration ratio of 0.65 that has not exceeded 0.81 in eighteen years. Of 5,904 records screened, 3,286 primary
-studies were included — 4.2 times the previous scoping review's corpus. MRI (45.2%) and ultrasound (24.6%) led
-radiography (18.7%); fetal imaging was 23.9% of studies and 68% of it was ultrasound, a segment absent from prior
-pediatric syntheses. By model output, detection/diagnosis was 38.0%, measurement 22.6%, segmentation 20.2%,
-outcome prediction 18.7%. Validation was internal only in 68.8%, external/multi-center in 18.0%, a reader study in
-5.7%, prospective in 3.0%; code was available for 2.6% and the data source was unstated in 38.9%. External
-validation rose from 4.2% (2005-2014) to 20.4% (2023-2026) and multi-center data from 8.5% to 22.4%, while
-prospective evaluation moved only from 2.8% to 3.8%. Of 1,164 cleared radiology AI devices, 11 (0.9%) carry a
+a penetration ratio of 0.65 that has not exceeded 0.81 in eighteen years. Of 6,600 records screened, 3,494 primary
+studies were included — 4.4 times the previous scoping review's corpus. MRI (45.5%) and ultrasound (23.7%) led
+radiography (19.3%); fetal imaging was 22.5% of studies and 71% of it was ultrasound, a segment absent from prior
+pediatric syntheses. By model output, detection/diagnosis was 38.2%, measurement 23.9%, outcome prediction
+19.5%, segmentation 18.9%. Validation was internal only in 67.3%, external/multi-center in 18.7%, a reader study in
+6.2%, prospective in 3.3%; code was available for 2.6% and the data source was unstated in 39.1%. External
+validation rose from 4.2% (2005-2014) to 20.3% (2023-2026) and multi-center data from 8.5% to 22.3%, while
+reader studies fell from 7.0% to 5.7% and prospective evaluation reached only 4.0%. Embase contributed 365
+studies PubMed does not index, 71% of whose eligible new journal articles had a corresponding author outside
+North America and Western Europe. Of 1,164 cleared radiology AI devices, 11 (0.9%) carry a
 pediatric device name, from five companies, covering bone age, fracture detection and fetal echocardiography.
 Screening agreement between two independent automated screeners was 94.7% (kappa 0.885).
 
 **Conclusions:** Pediatric radiology AI grows as fast as adult radiology AI but has never closed the relative gap.
-Retrospective rigor is improving substantially while prospective evaluation, reader studies and code release have
-been flat for two decades — the field has answered the critiques it can answer cheaply. Fetal imaging is a quarter
+Retrospective rigor is improving substantially while reader studies, prospective evaluation and code release have
+not — the field has answered the critiques it can answer cheaply. Fetal imaging is a quarter
 of the literature and is largely invisible to reviews built on pediatric search terms. The funnel from publication
 to a tool a child benefits from is orders of magnitude narrower than publication counts imply. We release the
 screened corpus and its code so these estimates can be audited and updated rather than re-derived.
