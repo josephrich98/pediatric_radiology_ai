@@ -30,12 +30,15 @@ from __future__ import annotations
 import json
 import re
 
-from pedrad_ai import analysis, config, curated, fda_devices, utils
+from pedrad_ai import analysis, config, corpus, curated, fda_devices, utils
 
 SLIDES_DIR = config.REPO_ROOT / "slides"
 SLIDES_DIR.mkdir(exist_ok=True)
 
 MAX_TABLE_ROWS = 10
+# One fewer for the review tables: their rows carry a wrapped venue and a
+# wrapped description, so ten of them plus the footnote overflow the frame.
+REVIEW_TABLE_ROWS = 9
 NEWS_YEARS_FROM = 2023  # one slide per year from here to the present
 
 
@@ -277,6 +280,139 @@ def news_year_frames(items):
     return "\n\n".join(frames)
 
 
+# --------------------------------------------------------------------------- #
+# The systematic-review corpus
+# --------------------------------------------------------------------------- #
+# The corpus is thousands of studies. Every aggregate slide draws on all of it;
+# the slides that name individual papers rank them by field- and
+# year-normalized citation impact (pedrad_ai.corpus), which is the only measure
+# the Embase-only records — no PMID, therefore no RCR — can be ranked on.
+def review_rows():
+    """The review corpus, from the exported table, with the id guard applied."""
+    import csv
+
+    path = config.PROCESSED_DIR / "pedrad_paper_db.csv"
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    keep = corpus.included_ids()
+    return [r for r in rows if not keep or (r.get("record_id") or r.get("pmid")) in keep]
+
+
+def _n(x, default="--"):
+    try:
+        return f"{float(x):,.0f}" if float(x) == int(float(x)) else f"{float(x):,.1f}"
+    except (TypeError, ValueError):
+        return default
+
+
+def _impact_cell(row):
+    value, measure = corpus.impact(row)
+    return f"{value:.0f}x" if value is not None else "--"
+
+
+def review_paper_table(rows, max_rows=REVIEW_TABLE_ROWS, show_year=True):
+    """Impact-ranked studies from the review corpus."""
+    rows = corpus.by_impact(rows, max_rows)
+    if not rows:
+        return "\\footnotesize No studies in this window."
+    year_col = "|r" if show_year else ""
+    out = ["\\renewcommand{\\arraystretch}{0.92}",
+           "\\begin{tabular}{|r|r%s%s%s%s|}" % (year_col, _p(0.33), _p(0.14), _p(0.22)),
+           "\\hline \\textbf{Impact} & \\textbf{Cites} & "
+           + ("\\textbf{Year} & " if show_year else "")
+           + "\\textbf{Study} & \\textbf{Venue} & \\textbf{What it does} \\\\ \\hline"]
+    for r in rows:
+        name = r.get("model_name") or r.get("title") or ""
+        venue = _short(r.get("journal") or "", 26)
+        what = _short(r.get("clinical_problem") or r.get("task") or "", 62)
+        mark = " $\\dagger$" if (r.get("source") or "") == "embase" else ""
+        mark += " $\\ast$" if str(r.get("is_preprint")).lower() in ("true", "1") else ""
+        year = f"{r.get('year')} & " if show_year else ""
+        out.append(f"{_impact_cell(r)} & {_n(r.get('citations'), '0')} & {year}"
+                   f"{_tex(_short(name, 72))}{mark} & {_tex(venue)} & {_tex(what)} \\\\ \\hline")
+    out.append("\\end{tabular}")
+    return "\n".join(out)
+
+
+REVIEW_IMPACT_NOTE = (
+    "Impact = citations relative to the average paper of the same field and year (OpenAlex FWCI; iCite "
+    f"RCR where OpenAlex has none), shown once a study has {config.IMPACT_MIN_CITATIONS} citations. "
+    "$\\dagger$ Embase-only; $\\ast$ preprint.")
+
+
+def review_year_frames(rows):
+    """One slide per recent year: the highest-impact studies published that year."""
+    frames = []
+    for year in range(config.SLIDE_REVIEW_YEARS_FROM, config.END_YEAR + 1):
+        sub = [r for r in rows if str(r.get("year") or "") == str(year)]
+        if not sub:
+            continue
+        ytd = " (year to date)" if year == config.PARTIAL_YEAR else ""
+        note = REVIEW_IMPACT_NOTE if year == config.SLIDE_REVIEW_YEARS_FROM else ""
+        if year == config.PARTIAL_YEAR:
+            note = ("Few studies from this year have enough citations for a normalized value yet, so "
+                    "this table is thin by construction rather than because the year was quiet.")
+        scored = sum(1 for r in sub if corpus.impact_value(r) is not None)
+        frames.append(
+            "\\begin{frame}{Highest-impact pediatric radiology AI studies, %d%s}\n\\tiny\n%s\n"
+            "\\\\[2pt]\n{\\tiny %d studies included from %d; %d have enough citations to be ranked. %s}\n"
+            "\\end{frame}"
+            % (year, ytd, review_paper_table(sub, show_year=False), len(sub), year, scored, note))
+    return "\n\n".join(frames)
+
+
+def review_flow_line(stats):
+    """The PRISMA arithmetic as one sentence of slide text."""
+    f = (stats or {}).get("flow") or {}
+    if not f:
+        return ""
+    src = ", ".join(f"{k} {v:,}" for k, v in (stats.get("by_search_source") or {}).items())
+    return (f"{f.get('screened_all_sources', 0):,} records retrieved, "
+            f"{f.get('conference_excluded', 0):,} conference proceedings set aside, "
+            f"{f.get('screened', 0):,} screened, {f.get('excluded_screening', 0):,} off-topic and "
+            f"{f.get('non_primary', 0):,} non-primary removed, "
+            f"{f.get('included', 0):,} primary studies included ({src}).")
+
+
+def review_composition_line(stats):
+    """Modality / task / age headline shares as one line of caption text."""
+    def top(block, n=4):
+        items = list((stats.get(block) or {}).items())[:n]
+        return ", ".join(f"{_tex(k)} {v['pct']:.0f}\\%" for k, v in items if v.get("pct") is not None)
+
+    parts = []
+    for label, block in (("Modality", "modality"), ("Task", "task"), ("Age group", "age_groups")):
+        line = top(block)
+        if line:
+            parts.append(f"\\textbf{{{label}}}: {line}")
+    return ". ".join(parts) + "." if parts else ""
+
+
+def review_impact_bullets(stats):
+    """What selecting the corpus on citation impact does to it."""
+    imp = (stats or {}).get("impact") or {}
+    if not imp:
+        return ""
+    val = (stats.get("validation") or {}).get("external / multi-center", {}).get("pct")
+    src = ", ".join(f"{k} {v:,}" for k, v in (imp.get("above_floor_by_source") or {}).items())
+    items = [
+        f"\\item The median included study is cited {imp.get('median', 0):g} times the world average "
+        f"for its field and year: this is a well-cited literature, not a neglected one.",
+        f"\\item {imp.get('n_scored', 0):,} of {(stats.get('flow') or {}).get('included', 0):,} studies "
+        f"({imp.get('pct_scored', 0)}\\%) have enough citations to be ranked; the rest are too recent.",
+        f"\\item The top decile is the {imp.get('n_above_floor', 0):,} studies at "
+        f"{imp.get('floor', 0):.0f}x average and up ({src}).",
+    ]
+    if val is not None and imp.get("above_floor_external_pct") is not None:
+        items.append(
+            f"\\item Selecting on citations does not select for rigor: external or multi-center "
+            f"validation is {imp['above_floor_external_pct']}\\% in that decile against {val}\\% "
+            f"across the corpus, and two thirds of it is still internal validation only.")
+    return "\n".join(items)
+
+
 def commercial_table(fda):
     out = ["\\begin{tabular}{%s%s%s%s%s|}" % (_p(0.14), _p(0.11), _p(0.25), _p(0.23), _p(0.11)),
            "\\hline \\textbf{Vendor} & \\textbf{Product} & \\textbf{Task} & \\textbf{Pediatric status} & \\textbf{FDA list} \\\\ \\hline"]
@@ -399,6 +535,8 @@ def main() -> None:
     news_items = _load("newsletter_items.json", [])
     fda = _load("fda_ai_devices.json", {})
     journals = _load("journal_impact.json", {})
+    rstats = _load("review_stats.json", {})
+    rrows = review_rows()
     manifest_p = config.FIGURE_DIR / "examples" / "manifest.json"
     manifest = json.loads(manifest_p.read_text()) if manifest_p.exists() else []
 
@@ -450,6 +588,29 @@ def main() -> None:
         "@@rad_pre_total@@": f"{(rad_tab or {}).get('preprint_total', 0):,}",
         "@@ped_pre_total@@": f"{(ped_tab or {}).get('preprint_total', 0):,}",
         "@@dataset_table@@": dataset_table(),
+        "@@review_flow@@": _tex(review_flow_line(rstats)),
+        "@@review_n@@": f"{(rstats.get('flow') or {}).get('included', len(rrows)):,}",
+        "@@review_screened@@": f"{(rstats.get('flow') or {}).get('screened', 0):,}",
+        "@@review_embase@@": f"{(rstats.get('by_search_source') or {}).get('Embase', 0):,}",
+        "@@review_start@@": str(config.REVIEW_START_YEAR),
+        "@@review_end@@": str(config.END_YEAR),
+        "@@review_composition@@": review_composition_line(rstats),
+        "@@review_impact_bullets@@": review_impact_bullets(rstats),
+        "@@review_impact_note@@": REVIEW_IMPACT_NOTE,
+        "@@review_table_all@@": review_paper_table(rrows),
+        "@@review_year_frames@@": review_year_frames(rrows),
+        "@@review_external@@": _pct(((rstats.get("validation") or {}).get("external / multi-center", {}).get("pct") or 0) / 100, 1),
+        "@@review_reader@@": _pct(((rstats.get("validation") or {}).get("reader study", {}).get("pct") or 0) / 100, 1),
+        "@@review_prospective@@": _pct(((rstats.get("validation") or {}).get("prospective", {}).get("pct") or 0) / 100, 1),
+        "@@review_code@@": f"{((rstats.get('funnel') or {}).get('code_available') or {}).get('n', 0):,}",
+        "@@fig_review_prisma@@": _fig("review_prisma.png", 0.76),
+        "@@fig_review_year@@": _fig("review_by_year.png", 0.72),
+        "@@fig_review_modality@@": _fig("review_modality_year.png", 0.56),
+        "@@fig_review_task@@": _fig("review_task_year.png", 0.76),
+        "@@fig_review_validation@@": _fig("review_validation_era.png", 0.74),
+        "@@fig_review_funnel@@": _fig("review_funnel.png", 0.76),
+        "@@fig_review_impact_dist@@": _fig("review_impact_distribution.png", 0.46),
+        "@@fig_review_impact_subset@@": _fig("review_impact_subset.png", 0.70),
         "@@spotlights@@": spotlight_frames(manifest),
         "@@news_year_frames@@": news_year_frames(news_items),
         "@@n_ped_news@@": str(n_ped_news),
@@ -530,6 +691,11 @@ one list for @@era_a@@, then one per year from 2023, each showing raw citations 
 impact (FWCI, 1 = world average for that field and year), so recent papers are not buried under 2023 ones.
 \textbf{Venues}: Semantic Scholar venue search (NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL) and OpenAlex journal filters
 (RSNA, SPR), 2023--present; \textbf{PatentsView} for granted patents.\\[3pt]
+\textbf{Systematic review.} Separately from the counts, every pediatric radiology-AI record from
+@@review_start@@ onward was retrieved from \textbf{PubMed/MEDLINE and Embase}, screened against prespecified
+criteria, and read into a structured row under a fixed schema (@@review_n@@ included primary studies). This is
+the corpus behind the review section, the paper database, and the manuscript; slides that name individual
+studies rank them by citation impact normalized to the field and year.\\[3pt]
 \textbf{Clinical problems.} The pediatric radiology-AI query AND a term group per problem (bone age, fracture, pneumonia,
 appendicitis, brain tumor, \dots), counted per era; a paper can name several problems.\\[3pt]
 \textbf{Datasets.} Public pediatric imaging datasets, sizes verified against the primary papers or hosting pages.\\[3pt]
@@ -619,6 +785,88 @@ paper that mentions a pediatric term.
 \end{columns}
 \end{frame}
 
+\begin{frame}{Reading the whole pediatric literature, not a sample of it}
+\scriptsize
+Counting publications says how much is being published; it does not say what was built, for which
+children, or how well it was tested. So every pediatric radiology-AI record from @@review_start@@ onward was
+retrieved from \textbf{PubMed/MEDLINE and Embase}, screened against prespecified criteria, and read
+into a structured row --- model, modality, body region, age group, task, dataset size, data source,
+validation, availability --- under one fixed schema.
+\begin{itemize}\scriptsize
+  \item @@review_flow@@
+  \item \textbf{Embase earns its place}: @@review_embase@@ of the included studies are not in PubMed at all. They have
+        no PMID, so no NIH relative citation ratio; ranking them at all is why the impact column below is
+        OpenAlex's field-weighted score.
+  \item Conference proceedings are retrieved and reported but not screened: an abstract cannot support a
+        judgement about study design, and it carries no DOI linking it to the later full paper.
+  \item Screening and extraction were done by a constrained model under a fixed schema, with a blinded
+        second-model re-screen of 150 records (94.7\% agreement, $\kappa$ = 0.885). Dual-human validation is
+        outstanding.
+  \item The same corpus is the paper database (\texttt{reports/04\_paper\_database.md}) and the systematic
+        review manuscript, so the three never disagree.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Study selection}
+@@fig_review_prisma@@
+\end{frame}
+
+\begin{frame}{Included studies per publication year}
+@@fig_review_year@@
+\vspace{-4pt}
+{\tiny Blue = the @@review_n@@ included primary studies; gray = records read and then excluded as off-topic or
+non-primary. @@yr1@@+ is year to date and still being indexed.}
+\end{frame}
+
+\begin{frame}{What the pediatric literature is made of}
+@@fig_review_modality@@
+\vspace{-4pt}
+{\tiny @@review_composition@@ Categories are multilabel, so an axis can exceed 100\%. MRI leads on the strength of
+the fetal and developmental-neuroscience literature: remove the MRI studies that use cognitive-neuroscience methods
+or report cognitive and behavioral outcomes and MRI falls level with ultrasound (30\% each), which is why reviews
+built on narrower vocabulary rank radiography or ultrasound first.}
+\end{frame}
+
+\begin{frame}{What the models produce}
+@@fig_review_task@@
+\end{frame}
+
+\begin{frame}{How well is it tested?}
+@@fig_review_validation@@
+\vspace{-4pt}
+{\tiny Of @@review_n@@ included studies, external or multi-center validation was reported by @@review_external@@,
+a reader study by @@review_reader@@, prospective evaluation by @@review_prospective@@, and a working code or model
+URL by @@review_code@@ studies. External validation rose across eras; reader studies did not.}
+\end{frame}
+
+\begin{frame}{From published study to a tool a child benefits from}
+@@fig_review_funnel@@
+\end{frame}
+
+\begin{frame}{Which of these studies is the field actually reading?}
+@@fig_review_impact_dist@@
+\vspace{-6pt}
+\begin{itemize}\scriptsize
+@@review_impact_bullets@@
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Does citation impact pick out the better-validated work?}
+@@fig_review_impact_subset@@
+\vspace{-4pt}
+{\tiny The most-cited decile is somewhat more likely to report external validation and a reader study, but
+the difference is small: citations track topic and audience more than evidence.}
+\end{frame}
+
+\begin{frame}{Highest-impact pediatric radiology AI studies, @@review_start@@--@@review_end@@}
+\tiny
+@@review_table_all@@
+\\[2pt]
+{\tiny @@review_impact_note@@}
+\end{frame}
+
+@@review_year_frames@@
+
 \begin{frame}{The biggest public pediatric radiology AI datasets}
 \tiny
 @@dataset_table@@
@@ -640,6 +888,11 @@ bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude child
 \begin{frame}{Most-cited pediatric radiology AI papers, @@era_a@@}
 \tiny
 @@paper_table_ped_a@@
+\\[2pt]
+{\tiny A different corpus from the systematic-review tables earlier in the deck: this is a citation search of
+Semantic Scholar over radiology AI with a pediatric title filter, so it includes conference papers and is not
+screened for eligibility. The review tables rank the screened corpus. Both are shown because neither contains
+the other.}
 \end{frame}
 
 @@year_frames_ped@@

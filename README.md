@@ -10,6 +10,10 @@ python scripts/build_pptx.py
 manuscript: latex --> word --> google docs
 - pandoc input.tex -o output.docx
 
+slides: /home/jrich/Desktop/pediatric_radiology_ai/slides/pedrad_ai_slides.tex
+db: /home/jrich/Desktop/pediatric_radiology_ai/data/processed/pediatric_radiology_ai.csv
+manuscript: /home/jrich/Desktop/pediatric_radiology_ai/reports/05_review_manuscript.md
+
 ## AI slop:
 
 Tools to measure the **growth and landscape of radiology AI**, with a focus on

@@ -9,7 +9,7 @@ _Publication counts are **PubMed records plus preprints**: PubMed does not index
 - Radiology-AI publications grew from the 2008 baseline to **25257** records in 2025 (compound growth ≈ **23%/yr**).
 - The AI share of all radiology publishing rose from **0.8%** to **13.4%**.
 - Pediatric work is **9.7%** of radiology AI in 2025 — a small but growing slice (**2452** records).
-- 2026 year-to-date (collected 2026-09-09): **19679** radiology-AI records, of which **1956** (9.9%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
+- 2026 year-to-date (collected 2026-09-10): **19679** radiology-AI records, of which **1956** (9.9%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
 
 ## Publication trend (PubMed)
 

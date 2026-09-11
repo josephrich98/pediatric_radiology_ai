@@ -27,7 +27,12 @@ How it stays reproducible and updatable
   stable key order, so the committed JSON and CSV diff meaningfully.
 
 The store keeps screened-out papers too (``include: false``), so a rejected
-record costs one extraction, once, rather than one per refresh.
+record costs one extraction, once, rather than one per refresh. What is
+*exported* is narrower than what is stored: the CSV and the markdown view carry
+the review corpus — included primary studies, conference proceedings and
+non-primary publication forms removed — because that is the set the manuscript
+and the slides describe, and a table that disagreed with them would be read as
+a third, contradictory result. :mod:`pedrad_ai.corpus` owns that definition.
 """
 
 from __future__ import annotations
@@ -37,7 +42,7 @@ import re
 from pathlib import Path
 from typing import Any, Iterable
 
-from . import config, extract, icite, openalex, pubmed, utils
+from . import config, corpus, extract, icite, openalex, pubmed, utils
 
 # Column order for the CSV / markdown table. The first block is the answer to
 # "what is this paper about"; provenance trails at the end.
@@ -60,7 +65,10 @@ COLUMNS = [
     "citations_per_year",
     "rcr",
     "fwci",
+    "impact",
+    "impact_measure",
     "nih_percentile",
+    "citations_source",
     "doi",
     "url",
     "title",
@@ -74,6 +82,7 @@ COLUMNS = [
     "record_id",
     "source",
     "is_preprint",
+    "publication_types",
     "confidence",
     "overridden_fields",
     "extractor_model",
@@ -87,7 +96,8 @@ COLUMNS = [
 # and a hand edit there would misrepresent the source rather than correct it.
 _NOT_OVERRIDABLE = {
     "pmid", "record_id", "source", "is_preprint", "citations", "citations_per_year",
-    "rcr", "fwci", "nih_percentile", "overridden_fields", "extractor_model",
+    "rcr", "fwci", "impact", "impact_measure", "nih_percentile", "citations_source",
+    "publication_types", "overridden_fields", "extractor_model",
     "prompt_version", "extracted_on",
 }
 OVERRIDABLE = {c for c in COLUMNS if c not in _NOT_OVERRIDABLE} | {"include", "exclusion_reason"}
@@ -127,6 +137,7 @@ def save(store: dict[str, Any], path: str | Path | None = None) -> Path:
             "start_year": config.PAPER_DB_START_YEAR,
             "n_records": len(store["records"]),
             "n_included": sum(1 for r in store["records"].values() if r.get("include")),
+            "n_corpus": len(corpus.included_rows(store["records"].values())),
             "records": sorted_records(store),
         },
         path,
@@ -171,12 +182,34 @@ def presented(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None
             row["overridden_fields"] = applied
         else:
             row["overridden_fields"] = []
+        # Derived at export time, never stored: one normalized impact number so
+        # a reader (or a slide) can rank the whole corpus on one column, and the
+        # name of the measure it came from, because FWCI and RCR are not the
+        # same index even though both put the average paper at 1.0.
+        value, measure = corpus.impact(row)
+        row["impact"] = value
+        row["impact_measure"] = measure
         out.append(row)
     return out
 
 
 def included(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+    """Everything screened in, before the publication-form criteria are applied.
+
+    This is the *in-scope* set: it still contains conference proceedings and
+    non-primary forms (reviews, editorials, guidelines). Use :func:`corpus_rows`
+    for the set the review reports on.
+    """
     return [r for r in presented(store, overrides) if r.get("include")]
+
+
+def corpus_rows(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+    """The review corpus: included primary studies, newest first.
+
+    One definition, in :mod:`pedrad_ai.corpus`, shared with the manuscript
+    statistics, the review figures and the slides.
+    """
+    return corpus.partition(presented(store, overrides)).included
 
 
 def write_csv(
@@ -184,14 +217,19 @@ def write_csv(
     path: str | Path | None = None,
     overrides: dict[str, dict[str, Any]] | None = None,
 ) -> Path:
-    """Export the included rows as a flat table (lists joined with '; ').
+    """Export the review corpus as a flat table (lists joined with '; ').
+
+    The exported set is the same one the manuscript analyzes, not every record
+    in the store: see :func:`corpus_rows`. Every screened record, including the
+    excluded ones and the reason each was excluded, remains in the store JSON,
+    which is what an audit reads.
 
     An empty database still gets its header row, so the columns are readable
     before the first extraction run.
     """
     path = Path(path or config.PAPER_DB_CSV)
     rows = []
-    for rec in included(store, overrides):
+    for rec in corpus_rows(store, overrides):
         row = {}
         for col in COLUMNS:
             val = rec.get(col, "")
@@ -697,7 +735,56 @@ def _apply_release_evidence(row: dict[str, Any], article: dict[str, Any]) -> Non
 # --------------------------------------------------------------------------- #
 # Metric refresh
 # --------------------------------------------------------------------------- #
-def refresh_metrics(store: dict[str, Any], with_fwci: bool = False) -> int:
+def backfill_publication_types(store: dict[str, Any], fetch_missing: bool = True) -> int:
+    """Put each record's PubMed publication types on the record itself.
+
+    Reviews, editorials and guidelines are excluded from the review corpus by
+    publication type (:mod:`pedrad_ai.corpus`), so the classification is only as
+    complete as the types are. They used to be looked up in the screening
+    worklist at report time, which covered whatever the last worklist happened
+    to contain and left every earlier record to be judged on its extracted
+    ``study_design`` alone. Storing them makes the rule apply uniformly and
+    survive the worklist being regenerated. Returns the number of rows filled.
+    """
+    records = store["records"]
+    known: dict[str, list[str]] = {}
+    paths = [config.PROCESSED_DIR / "review_worklist.json"]
+    paths += sorted((config.PROCESSED_DIR / "review_batches").glob("*.json"))
+    for path in paths:
+        if not path.exists():
+            continue
+        try:
+            doc = utils.load_json(path)
+        except Exception:
+            continue
+        for pap in doc.get("papers") or []:
+            rid = str(pap.get("record_id") or pap.get("pmid") or "")
+            if rid and pap.get("publication_types"):
+                known[rid] = list(pap["publication_types"])
+
+    missing = [r for r in records.values() if not r.get("publication_types")]
+    todo = [r["pmid"] for r in missing
+            if r.get("pmid") and record_key(r) not in known]
+    if fetch_missing and todo:
+        try:
+            for art in pubmed.article_details(todo, with_abstract=True):
+                if art.get("publication_types"):
+                    known[str(art["pmid"])] = art["publication_types"]
+        except Exception as exc:
+            print(f"    [warn] publication-type lookup failed ({exc}); using what is on hand")
+
+    filled = 0
+    for rec in missing:
+        types = known.get(record_key(rec)) or known.get(str(rec.get("pmid") or ""))
+        if types:
+            rec["publication_types"] = types
+            filled += 1
+        else:
+            rec.setdefault("publication_types", [])
+    return filled
+
+
+def refresh_metrics(store: dict[str, Any], with_fwci: bool = True) -> int:
     """Re-fetch the bibliometrics for every stored row, in place.
 
     Citations, citations per year and RCR all move over time, and a row read a
@@ -706,20 +793,25 @@ def refresh_metrics(store: dict[str, Any], with_fwci: bool = False) -> int:
     separation that makes the expensive half of the pipeline worth caching.
     Returns the number of rows updated.
 
-    ``with_fwci`` adds OpenAlex's field-weighted citation impact by DOI. It is
-    off by default because OpenAlex throttles aggressively and RCR already
-    covers every PubMed row; preprints carry their FWCI from the search that
-    found them, so nothing is lost by leaving it off.
+    Two indexes, because neither covers the corpus on its own. iCite is keyed by
+    PMID and supplies the citation count, the rate and the RCR; it knows nothing
+    about the Embase-only and preprint records, which have no PMID. OpenAlex is
+    keyed by DOI and supplies the field-weighted citation impact for all of
+    them, and the citation count too for the rows iCite cannot see — without
+    which every impact-ranked view would silently be a PubMed-only view.
+    ``with_fwci=False`` restricts the run to iCite when the OpenAlex daily
+    budget is needed elsewhere; the DOI lookup costs one request per 50 records.
     """
     records = store["records"]
     pmids = [r["pmid"] for r in records.values() if r.get("pmid")]
     met = icite.metrics(pmids) if pmids else {}
 
     by_doi: dict[str, dict[str, Any]] = {}
-    if with_fwci:
-        dois = [(r.get("doi") or "").strip() for r in records.values() if (r.get("doi") or "").strip()]
+    wanted = [r for r in records.values() if (r.get("doi") or "").strip()
+              and (with_fwci or not met.get(str(r.get("pmid") or "")))]
+    if wanted:
         try:
-            by_doi = openalex.works_by_dois(dois)
+            by_doi = openalex.works_by_dois([r["doi"].strip() for r in wanted])
         except Exception as exc:
             print(f"    [warn] OpenAlex impact lookup failed ({exc}); keeping stored values")
 
@@ -732,10 +824,27 @@ def refresh_metrics(store: dict[str, Any], with_fwci: bool = False) -> int:
                 if rec.get(key) != m.get(key):
                     rec[key] = m.get(key)
                     changed = True
+            if rec.get("citations_source") != "icite":
+                rec["citations_source"] = "icite"
+                changed = True
         work = by_doi.get((rec.get("doi") or "").strip().lower())
-        if work and rec.get("fwci") != work.get("fwci"):
-            rec["fwci"] = work.get("fwci")
-            changed = True
+        if work:
+            if rec.get("fwci") != work.get("fwci"):
+                rec["fwci"] = work.get("fwci")
+                changed = True
+            if not m:
+                # No iCite row: OpenAlex carries the count as well, and the rate
+                # is computed here on iCite's definition so the two sources'
+                # citations_per_year mean the same thing.
+                count = work.get("citation_count")
+                rate = corpus.citations_per_year(count, rec.get("year") or work.get("year"))
+                if rec.get("citations") != count or rec.get("citations_per_year") != rate:
+                    rec["citations"], rec["citations_per_year"] = count, rate
+                    changed = True
+                if rec.get("citations_source") != "openalex":
+                    rec["citations_source"] = "openalex"
+                    changed = True
+        rec.setdefault("citations_source", "")
         rec.setdefault("record_id", record_key(rec))
         rec.setdefault("source", "pubmed")
         was = rec.get("is_preprint")
@@ -754,8 +863,13 @@ def refresh_metrics(store: dict[str, Any], with_fwci: bool = False) -> int:
 # Summary
 # --------------------------------------------------------------------------- #
 def summarize(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None = None) -> dict[str, Any]:
-    """Counts the report and slides quote: by year, modality, task, release."""
-    rows = included(store, overrides)
+    """Counts the report and slides quote: by year, modality, task, release.
+
+    Computed on the review corpus, so that every count here matches the
+    manuscript. The PRISMA boxes around it are reported alongside.
+    """
+    part = corpus.partition(presented(store, overrides))
+    rows = part.included
 
     def _tally(key: str) -> dict[str, int]:
         out: dict[str, int] = {}
@@ -780,6 +894,12 @@ def summarize(store: dict[str, Any], overrides: dict[str, dict[str, Any]] | None
         "n_candidates_screened": len(store["records"]),
         "n_included": len(rows),
         "n_excluded": len(store["records"]) - len(rows),
+        "flow": part.counts,
+        "by_search_source": corpus.counts_by_source(rows),
+        "n_high_impact": len(corpus.high_impact(rows)),
+        "impact_percentile": config.SLIDE_IMPACT_PERCENTILE,
+        "impact_threshold": corpus.impact_threshold(rows),
+        "n_with_impact": sum(1 for r in rows if corpus.impact_value(r) is not None),
         "n_named_models": len(named),
         "n_with_code_url": sum(1 for r in rows if (r.get("code_url") or "").strip()),
         "n_preprints": sum(1 for r in rows if r.get("is_preprint")),
@@ -815,23 +935,21 @@ def _md_cell(value: Any, limit: int = 0) -> str:
     return text or "—"
 
 
-def _floor_sentence(summary: dict[str, Any]) -> str:
-    """Describe the impact floors actually in force, in one sentence."""
-    clauses = []
-    if summary.get("min_citations"):
-        clauses.append(f"at least {summary['min_citations']} citations in NIH iCite")
-    if summary.get("min_citations_per_year"):
-        clauses.append(f"at least {summary['min_citations_per_year']:g} citations per year")
-    if summary.get("min_rcr"):
-        clauses.append(f"a relative citation ratio of at least {summary['min_rcr']:g}")
-    if not clauses:
-        return "Every paper the query returns is a candidate; no impact floor is applied."
+def _flow_sentence(summary: dict[str, Any]) -> str:
+    """One sentence of PRISMA arithmetic: what was read, and what survived."""
+    flow = summary.get("flow") or {}
+    if not flow:
+        return ""
+    sources = ", ".join(f"{v:,} from {k}" for k, v in (summary.get("by_search_source") or {}).items())
     return (
-        "Candidates are papers meeting " + " or ".join(clauses) + ", which keeps the database to "
-        "work the field has actually engaged with. A raw citation floor is also a recency filter — "
-        "a paper published this year has had no time to accrue citations — which is why the rate and "
-        "ratio clauses exist; even so the current year is thin by construction, and the trend "
-        "figures, not this table, are the place to read growth."
+        f"{flow.get('screened_all_sources', 0):,} records were retrieved and "
+        f"{flow.get('conference_excluded', 0):,} conference proceedings set aside by the "
+        f"publication-form criterion, leaving {flow.get('screened', 0):,} screened. "
+        f"{flow.get('excluded_screening', 0):,} were screened out as adult-only, non-radiologic or "
+        f"without an AI component and {flow.get('non_primary', 0):,} were in scope but were reviews, "
+        f"editorials or guidelines, which the eligibility criteria exclude. That leaves the "
+        f"{flow.get('included', 0):,} included primary studies in this table"
+        + (f" ({sources})." if sources else ".")
     )
 
 
@@ -844,20 +962,17 @@ def write_markdown(
     """A readable view of the database for the reports directory.
 
     The CSV is the database; this is the part a reader can skim — the counts,
-    then the most recent papers that name a model, with the full table left to
-    the CSV.
+    then the highest-impact papers that name a model, with the full table left
+    to the CSV. Both cover the review corpus, so the counts here are the
+    manuscript's counts.
     """
     path = Path(path or config.REPORT_DIR / "04_paper_database.md")
-    rows = included(store, overrides)
+    rows = corpus_rows(store, overrides)
     summary = summarize(store, overrides)
-    named = sorted(
-        (r for r in rows if (r.get("model_name") or "").strip()),
-        key=lambda r: (-(r.get("citations") or 0), -(r.get("year") or 0)),
-    )[:named_only_limit]
-    recent = sorted(
-        (r for r in rows if (r.get("year") or 0) >= config.END_YEAR - 2),
-        key=lambda r: (-(r.get("citations_per_year") or 0), -(r.get("citations") or 0)),
-    )[:40]
+    named = corpus.by_impact(
+        (r for r in rows if (r.get("model_name") or "").strip()), named_only_limit)
+    recent = corpus.by_impact(
+        (r for r in rows if (r.get("year") or 0) >= config.END_YEAR - 2), 40)
 
     def _counts_table(title: str, tally: dict[str, int], header: str) -> list[str]:
         if not tally:
@@ -871,22 +986,32 @@ def write_markdown(
         "",
         f"Generated {summary['generated_on']} from `data/processed/pedrad_paper_db.csv`.",
         "",
-        f"{summary['n_included']} papers, {summary['n_named_models']} of which name a model or product, "
-        f"screened from {summary['n_candidates_screened']} records matching the pediatric "
-        f"radiology-AI query (title/abstract fielded) for {summary['years'][0]}-{summary['years'][1]} "
-        f"({summary['n_excluded']} were screened out as adult-only, non-radiologic, or non-AI). "
-        "Candidates come from three sources: PubMed, OpenAlex preprints, and conference proceedings "
-        "(MICCAI, ISBI, SPIE Medical Imaging, NeurIPS and the rest), deduplicated against each other.",
+        f"This table is the corpus of the systematic review (`reports/05_review_manuscript.md`): "
+        f"the {summary['n_included']:,} included primary studies, of which "
+        f"{summary['n_named_models']:,} name a model or product. It is not a selection of the "
+        "literature — no citation floor is applied — so every proportion here is a proportion of "
+        "the review's corpus and can be quoted next to the manuscript without reconciliation.",
         "",
-        _floor_sentence(summary),
+        _flow_sentence(summary),
         "",
-        "Impact is reported four ways because no one measure works across the whole range. "
-        "`citations` is the raw count and can only be compared within a year. `citations/yr` is that "
-        "count divided by years since publication. `RCR` is iCite's relative citation ratio, where "
-        "1.0 is the median NIH-funded paper of the same field and year, and is the column to use "
-        "when comparing a 2016 paper with a 2024 one; it is undefined until a paper is about two "
-        "years old. `fwci` is OpenAlex's field-weighted citation impact, on the same 1.0-is-average "
-        "scale, and covers some of what RCR does not.",
+        "Every screened record, including the excluded ones and the coded reason each was excluded, "
+        "stays in `data/processed/pedrad_paper_db.json`; that store, not this table, is what an "
+        "audit of the screening decisions reads.",
+        "",
+        "Impact is reported five ways because no one measure covers the whole corpus. `citations` is "
+        "the raw count and can only be compared within a year. `citations/yr` is that count divided "
+        "by years since publication. `RCR` is iCite's relative citation ratio, where 1.0 is the "
+        "median NIH-funded paper of the same field and year; it is undefined until a paper is about "
+        "two years old and is computed for PubMed records only. `fwci` is OpenAlex's field-weighted "
+        "citation impact, on the same 1.0-is-average scale, computed for anything with a DOI — "
+        "including the Embase-only records, which have no PMID and therefore no RCR. `impact` is the "
+        f"column to sort on: FWCI where OpenAlex has it, RCR otherwise, blank until the paper has "
+        f"{config.IMPACT_MIN_CITATIONS} raw citations (below that the ratio is dividing by a fraction "
+        "of an expected citation and says nothing), with `impact_measure` naming "
+        f"which. {summary.get('n_with_impact', 0):,} of {summary['n_included']:,} studies carry one. "
+        f"The top decile of those — {summary.get('n_high_impact', 0):,} studies at or above "
+        f"{summary.get('impact_threshold') or 0:g}x the average paper of their field and year — is the "
+        "subset the slides name individually; the median included study sits near 2x.",
         "",
         "Each row is read from the paper's abstract under a fixed schema, so a field is blank when "
         "the abstract does not state it — most notably the release column, which abstracts are "
@@ -903,21 +1028,26 @@ def write_markdown(
     lines += _counts_table("Age group", summary["by_age_group"], "Age group")
     lines += _counts_table("Validation", summary["by_validation"], "Strongest validation claimed")
     lines += _counts_table("Papers per year", summary["by_year"], "Year")
+    lines += _counts_table("Database of record", summary.get("by_search_source", {}), "Search source")
 
     lines += [
-        f"## Named models ({len(named)} most cited)",
+        f"## Named models ({len(named)} of highest impact)",
         "",
-        "| Model | Year | Cites | /yr | RCR | Modality | Population | Clinical problem | Release | Journal | Link |",
+        "Ranked by `impact` — FWCI where OpenAlex has computed it, RCR otherwise — so a 2025 paper "
+        "and a 2018 one are compared on the same 1.0-is-average scale.",
+        "",
+        "| Model | Year | Cites | /yr | Impact | Modality | Population | Clinical problem | Release | Journal | Link |",
         "| --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- |",
     ]
     for rec in named:
+        value, measure = corpus.impact(rec)
         lines.append(
-            "| {model} | {year} | {cites} | {rate} | {rcr} | {mod} | {pop} | {prob} | {rel} | {jrn} | [{lbl}]({url}) |".format(
+            "| {model} | {year} | {cites} | {rate} | {imp} | {mod} | {pop} | {prob} | {rel} | {jrn} | [{lbl}]({url}) |".format(
                 model=_md_cell(rec.get("model_name")),
                 year=_md_cell(rec.get("year")),
                 cites=_md_cell(rec.get("citations")),
                 rate=_md_cell(rec.get("citations_per_year")),
-                rcr=_md_cell(rec.get("rcr") if rec.get("rcr") is not None else rec.get("fwci")),
+                imp=_md_cell(f"{value:g} ({measure.upper()})" if value is not None else ""),
                 mod=_md_cell(rec.get("modality")),
                 pop=_md_cell(rec.get("patient_population"), 70),
                 prob=_md_cell(rec.get("clinical_problem"), 50),
@@ -930,26 +1060,29 @@ def write_markdown(
     if recent:
         lines += [
             "",
-            f"## Most-cited-per-year work from {config.END_YEAR - 2} onward ({len(recent)})",
+            f"## Highest-impact work from {config.END_YEAR - 2} onward ({len(recent)})",
             "",
-            "Ranked by citations per year rather than raw count, because a paper from this year "
-            "has had no time to accumulate one. `RCR` is iCite's relative citation ratio (1.0 is "
-            "the median NIH-funded paper of the same field and year) and falls back to OpenAlex's "
-            "field-weighted citation impact where iCite has not computed it, which is most of the "
-            "last two years.",
+            "A raw citation count cannot rank the last two years — a paper from this year has had "
+            "no time to accumulate one — so these are ranked on the normalized `impact` column, "
+            "which is FWCI for most of this window because RCR is not yet computed. Studies with "
+            f"fewer than {config.IMPACT_MIN_CITATIONS} citations have no normalized value and rank "
+            "below those that do, on citations per year. The source column marks the records that "
+            "reached the corpus through Embase rather than PubMed.",
             "",
-            "| Title | Year | Cites | /yr | RCR/FWCI | Type | Clinical problem | Link |",
-            "| --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
+            "| Title | Year | Cites | /yr | Impact | Type | Source | Clinical problem | Link |",
+            "| --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- |",
         ]
         for rec in recent:
+            value, measure = corpus.impact(rec)
             lines.append(
-                "| {title} | {year} | {cites} | {rate} | {norm} | {kind} | {prob} | [{lbl}]({url}) |".format(
+                "| {title} | {year} | {cites} | {rate} | {imp} | {kind} | {src} | {prob} | [{lbl}]({url}) |".format(
                     title=_md_cell(rec.get("model_name") or rec.get("title"), 64),
                     year=_md_cell(rec.get("year")),
                     cites=_md_cell(rec.get("citations")),
                     rate=_md_cell(rec.get("citations_per_year")),
-                    norm=_md_cell(rec.get("rcr") if rec.get("rcr") is not None else rec.get("fwci")),
+                    imp=_md_cell(f"{value:g} ({measure.upper()})" if value is not None else ""),
                     kind="preprint" if rec.get("is_preprint") else "journal",
+                    src=corpus.source_label(rec),
                     prob=_md_cell(rec.get("clinical_problem"), 46),
                     lbl="doi" if rec.get("doi") else "link",
                     url=rec.get("url", ""),
@@ -958,7 +1091,8 @@ def write_markdown(
     lines += [
         "",
         "The full table, including the model description, dataset size, validation and headline "
-        "result for every paper, is `data/processed/pedrad_paper_db.csv`.",
+        "result for every study, is `data/processed/pedrad_paper_db.csv`; the screened-out records "
+        "and their reasons are in `data/processed/pedrad_paper_db.json`.",
         "",
     ]
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 from matplotlib.ticker import MultipleLocator  # noqa: E402
 
-from pedrad_ai import config  # noqa: E402
+from pedrad_ai import config, corpus  # noqa: E402
 
 FIG = config.FIGURE_DIR
 PALETTE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948", "#8c8c8c"]
@@ -90,20 +90,18 @@ def _mark_partial(ax, years):
 def load_rows():
     """Included primary studies — the same set review_stats.py reports on.
 
-    The CSV holds every in-scope record, reviews and editorials included. The
-    review's eligibility criteria admit primary research only, so the figures
-    filter to the id list review_stats.py exports. Without that filter the
-    figures and the tables would disagree by the number of reviews.
+    The exported CSV is now written from the shared corpus definition
+    (:mod:`pedrad_ai.corpus`), so it already is that set; the id list is applied
+    anyway as a cheap guard against drawing a figure from a stale export.
     """
     path = config.PROCESSED_DIR / "pedrad_paper_db.csv"
     if not path.exists():
         return []
     with path.open() as fh:
         rows = list(csv.DictReader(fh))
-    ids_path = config.PROCESSED_DIR / "review_included_ids.json"
-    if ids_path.exists():
-        keep = set(json.loads(ids_path.read_text(encoding="utf-8")))
-        rows = [r for r in rows if (r.get("pmid") or r.get("record_id")) in keep]
+    keep = corpus.included_ids()
+    if keep:
+        rows = [r for r in rows if (r.get("record_id") or r.get("pmid")) in keep]
     return rows
 
 
@@ -206,21 +204,30 @@ def prisma_figure(flow):
 # 2. Screened vs included per year
 # --------------------------------------------------------------------------- #
 def year_figure(store):
+    """Records screened per year, split into the corpus and everything else.
+
+    "Included" here is the review corpus, not merely the records screened in:
+    the same partition the tables and the manuscript use, so the bars add up to
+    the numbers in the text.
+    """
     raw = store.get("records", [])
     recs = list(raw.values()) if isinstance(raw, dict) else list(raw)
     if not recs:
         return
+    part = corpus.partition(recs)
+    keep = {corpus.key(r) for r in part.included}
+    recs = part.screened
     years = sorted({int(r["year"]) for r in recs if str(r.get("year") or "").isdigit()})
     years = [y for y in years if y >= config.REVIEW_START_YEAR]
     inc = collections.Counter(int(r["year"]) for r in recs
-                              if r.get("include") and str(r.get("year") or "").isdigit())
+                              if corpus.key(r) in keep and str(r.get("year") or "").isdigit())
     exc = collections.Counter(int(r["year"]) for r in recs
-                              if not r.get("include") and str(r.get("year") or "").isdigit())
+                              if corpus.key(r) not in keep and str(r.get("year") or "").isdigit())
     fig, ax = plt.subplots(figsize=(9, 4.2))
     inc_v = [inc.get(y, 0) for y in years]
     exc_v = [exc.get(y, 0) for y in years]
     ax.bar(years, inc_v, color=BLUE, label="Included", width=0.74)
-    ax.bar(years, exc_v, bottom=inc_v, color=GRAY, label="Excluded at screening", width=0.74)
+    ax.bar(years, exc_v, bottom=inc_v, color=GRAY, label="Excluded or non-primary", width=0.74)
     # Direct labels on the included series (contrast relief; every 2nd year to avoid collision)
     for y, v in zip(years, inc_v):
         if v and y % 2 == 0:
@@ -326,7 +333,76 @@ def validation_era_figure(rows, eras=((2005, 2014), (2015, 2019), (2020, 2022), 
 
 
 # --------------------------------------------------------------------------- #
-# 6. The translational funnel
+# 6. The corpus against its most-cited decile
+# --------------------------------------------------------------------------- #
+def impact_subset_figure(rows):
+    """Does the work the field actually cites look different from the rest?
+
+    Two bars per category — the whole corpus and its top decile by
+    field-and-year-normalized citation impact — because the slides name papers
+    from that decile and a reader is entitled to know what selecting on
+    citations does to the picture. Percentages, not counts: the two groups
+    differ by an order of magnitude in size.
+    """
+    top = corpus.high_impact(rows)
+    if not top or len(top) < 20:
+        return
+    cats = [c for c in VALIDATION_ORDER]
+    all_n, top_n = len(rows), len(top)
+    a = [100 * sum(1 for r in rows if (r.get("validation") or "none / not stated") == c) / all_n for c in cats]
+    b = [100 * sum(1 for r in top if (r.get("validation") or "none / not stated") == c) / top_n for c in cats]
+    y = list(range(len(cats)))[::-1]
+    fig, ax = plt.subplots(figsize=(8.6, 4.0))
+    ax.barh([i + 0.19 for i in y], a, height=0.34, color=GRAY,
+            label=f"All included studies (n = {all_n:,})")
+    ax.barh([i - 0.19 for i in y], b, height=0.34, color=BLUE,
+            label=f"Top decile by citation impact (n = {top_n:,})")
+    for i, (va, vb) in zip(y, zip(a, b)):
+        ax.text(va + 0.8, i + 0.19, f"{va:.1f}%", va="center", fontsize=7.5, color=INK)
+        ax.text(vb + 0.8, i - 0.19, f"{vb:.1f}%", va="center", fontsize=7.5, color=INK)
+    ax.set_yticks(y, cats, fontsize=8.5)
+    _style_x(ax)
+    ax.set_xlim(0, max(a + b) * 1.18)
+    ax.set_xlabel("Share of the group (%)")
+    ax.set_title("Strongest validation reported: the whole corpus and its most-cited decile",
+                 fontsize=11, color=INK, loc="left")
+    ax.legend(frameon=False, fontsize=8.5, loc="lower right")
+    _save(fig, "review_impact_subset.png")
+
+
+def impact_distribution_figure(rows):
+    """Where the corpus sits against the world average for its field and year."""
+    vals = sorted(v for v in (corpus.impact_value(r) for r in rows) if v is not None)
+    if len(vals) < 50:
+        return
+    # Log bins: the measure is a ratio spanning three orders of magnitude, and a
+    # linear axis would put nine tenths of the corpus in one bar. Values outside
+    # the range are clipped into the end bins rather than dropped.
+    lo, hi = 0.25, 64.0
+    edges = [lo * 2 ** (i / 2) for i in range(0, 17)]
+    clipped = [min(max(v, lo * 1.001), hi * 0.999) for v in vals]
+    fig, ax = plt.subplots(figsize=(8.6, 3.9))
+    ax.hist(clipped, bins=edges, color=BLUE, edgecolor="white", linewidth=0.6)
+    ax.set_xscale("log")
+    ax.set_xlim(lo, hi)
+    ax.set_xticks([0.25, 1, 2, 5, 10, 25, 50], ["0.25", "1", "2", "5", "10", "25", "50"])
+    med = vals[len(vals) // 2]
+    thr = corpus.impact_threshold(rows)
+    for x, lab, col in ((1.0, "world average", MUTED), (med, f"median {med:.1f}x", INK),
+                        (thr, f"top decile: {thr:.0f}x", ORANGE)):
+        ax.axvline(x, color=col, linewidth=1.0, linestyle="--" if col != ORANGE else "-")
+        ax.text(x, ax.get_ylim()[1] * 0.94, f" {lab}", fontsize=7.5, color=col, ha="left", va="top")
+    _style(ax)
+    ax.set_xlabel("Citation impact relative to the field-and-year average "
+                  "(FWCI, else RCR; log scale, end bins include the tails)")
+    ax.set_ylabel("Included studies")
+    ax.set_title(f"Citation impact of the {len(vals):,} included studies with at least "
+                 f"{config.IMPACT_MIN_CITATIONS} citations", fontsize=11, color=INK, loc="left")
+    _save(fig, "review_impact_distribution.png")
+
+
+# --------------------------------------------------------------------------- #
+# 7. The translational funnel
 # --------------------------------------------------------------------------- #
 def funnel_figure(steps, note=""):
     """Descending horizontal bars, not a tapered funnel: a funnel graphic distorts
@@ -384,6 +460,8 @@ def main() -> None:
                   "unclear": GRAY},
                  "Model availability as stated in the paper", "review_release.png", denom=n)
     validation_era_figure(rows)
+    impact_distribution_figure(rows)
+    impact_subset_figure(rows)
 
     ext = sum(1 for r in rows if r.get("validation") == "external / multi-center")
     rdr = sum(1 for r in rows if r.get("validation") == "reader study")

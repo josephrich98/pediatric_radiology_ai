@@ -35,7 +35,7 @@ Usage:
 
 Outputs:
     data/processed/pedrad_paper_db.json          the store (every screened paper, with provenance)
-    data/processed/pedrad_paper_db.csv           the table (included papers only)
+    data/processed/pedrad_paper_db.csv           the table (the review corpus: included primary studies)
     data/processed/pedrad_paper_db_summary.json  counts by year / modality / task / release
     data/processed/pedrad_paper_db_worklist.json papers waiting to be read (--worklist)
 """
@@ -114,11 +114,15 @@ def main() -> int:
     ap.add_argument("--rebuild", action="store_true",
                     help="regenerate CSV and summary from the stored rows; makes no API calls")
     ap.add_argument("--refresh-metrics", action="store_true",
-                    help="re-fetch citations, citations/year and RCR for every stored row and "
-                         "rebuild the exports; re-reads no abstracts and calls no model")
-    ap.add_argument("--with-fwci", action="store_true",
-                    help="also look up OpenAlex field-weighted citation impact by DOI during "
-                         "--refresh-metrics (slow: OpenAlex throttles hard)")
+                    help="re-fetch citations, citations/year, RCR and FWCI for every stored row "
+                         "and rebuild the exports; re-reads no abstracts and calls no model")
+    ap.add_argument("--with-fwci", dest="with_fwci", action="store_true", default=True,
+                    help="look up OpenAlex field-weighted citation impact by DOI during "
+                         "--refresh-metrics (the default: it is the only impact measure the "
+                         "Embase-only records can have)")
+    ap.add_argument("--no-fwci", dest="with_fwci", action="store_false",
+                    help="skip the OpenAlex lookup and take citations from iCite alone, when the "
+                         "OpenAlex daily budget is needed elsewhere")
     ap.add_argument("--dry-run", action="store_true", help="report what is outstanding, extract nothing")
     ap.add_argument("--pmid", action="append", default=[], help="extract specific PMID(s) only (repeatable)")
     ap.add_argument("--worklist", nargs="?", const=str(config.PAPER_DB_WORKLIST), default=None,
@@ -162,6 +166,9 @@ def main() -> int:
         print("Refreshing bibliometrics for every stored row (no model calls)...")
         n = paper_db.refresh_metrics(store, with_fwci=args.with_fwci)
         print(f"  updated {n} of {len(store['records'])} rows")
+        filled = paper_db.backfill_publication_types(store)
+        if filled:
+            print(f"  filled publication types for {filled} rows")
         return _export(store, overrides)
 
     if args.rebuild:
@@ -456,15 +463,30 @@ def _ingest(store: dict, overrides: dict, path: Path, extractor: str,
 
 
 def _export(store: dict, overrides: dict) -> int:
-    """Write the CSV, the summary, and the markdown view from the stored rows."""
+    """Write the CSV, the summary, and the markdown view from the stored rows.
+
+    The exported table is the review corpus, not the whole store: see
+    :mod:`pedrad_ai.corpus`. Publication types decide part of that partition, so
+    they are topped up from the local worklists first (no network call when
+    every row already has them).
+    """
+    paper_db.backfill_publication_types(store, fetch_missing=False)
     json_path = paper_db.save(store)
     csv_path = paper_db.write_csv(store, overrides=overrides)
     summary = paper_db.summarize(store, overrides)
     utils.save_json(summary, config.PAPER_DB_SUMMARY)
     md_path = paper_db.write_markdown(store, overrides=overrides)
 
-    print(f"\n{summary['n_included']} papers in the database "
-          f"({summary['n_excluded']} screened out of {summary['n_candidates_screened']} read)")
+    flow = summary.get("flow") or {}
+    print(f"\n{summary['n_included']:,} included primary studies in the database "
+          f"({flow.get('screened_all_sources', 0):,} retrieved, "
+          f"{flow.get('conference_excluded', 0):,} conference, "
+          f"{flow.get('excluded_screening', 0):,} screened out, "
+          f"{flow.get('non_primary', 0):,} non-primary)")
+    print("  sources: " + ", ".join(f"{k} {v:,}" for k, v in (summary.get("by_search_source") or {}).items()))
+    print(f"  with a normalized impact: {summary.get('n_with_impact', 0):,}   "
+          f"top decile ({summary.get('impact_threshold') or 0:g}x average and up): "
+          f"{summary.get('n_high_impact', 0):,}")
     print(f"  named models: {summary['n_named_models']}   with a code URL: {summary['n_with_code_url']}")
     if summary["by_release_status"]:
         print("  release: " + ", ".join(f"{k} {v}" for k, v in summary["by_release_status"].items()))

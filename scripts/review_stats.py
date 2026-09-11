@@ -5,8 +5,11 @@ Writes ``data/processed/review_stats.json`` and prints a readable summary. This
 is the single source of truth for the manuscript's structured-review results, so
 that a number in the text can always be traced to a rerun of this script.
 
-The corpus is partitioned the way the PRISMA flow is:
+The corpus is partitioned the way the PRISMA flow is (the rule itself lives in
+``pedrad_ai.corpus``, so the exported table, the figures and the slides use the
+same one):
 
+* **conference** removed before screening by the publication-form criterion
 * **screened**   every record read
 * **excluded**   screened out as not pediatric radiology AI
 * **non-primary** in scope but a review, editorial, comment or guideline: kept in
@@ -26,39 +29,43 @@ import json
 import re
 import statistics
 
-from pedrad_ai import config
+from pedrad_ai import config, corpus
 
-# PubMed publication types that make a record non-primary. `Review` alone is not
-# enough — PubMed types Nature Protocols articles and society white papers as
-# Review — so a record is non-primary only when its own extracted study_design
-# also reads as a review, or when the type is unambiguous.
-NONPRIMARY_TYPES = {"Editorial", "Comment", "Letter", "News", "Published Erratum",
-                    "Retraction of Publication", "Retracted Publication", "Practice Guideline",
-                    "Guideline", "Consensus Development Conference"}
-NONPRIMARY_DESIGN = re.compile(
-    r"\b(narrative review|systematic review|scoping review|literature review|state-of-the-art review|"
-    r"review article|editorial|commentary|consensus statement|position statement|white paper|"
-    r"multi-society|perspective|opinion)\b", re.I)
+# What counts as a conference proceeding, what counts as a non-primary
+# publication form, and therefore which stored records make up the corpus, is
+# defined once in pedrad_ai.corpus and shared with the exported table
+# (pedrad_ai.paper_db), the review figures and the slides.
+is_conference = corpus.is_conference
+is_nonprimary = corpus.is_nonprimary
 
-
-# Conference proceedings are outside the review's publication-form criterion
-# (search strategy Section 4.4): they cannot support judgements about study
-# design, most are not extractable, and unlike preprints they carry no DOI
-# linking them to the later full paper, so deduplication cannot resolve the
-# double count. The paper database keeps them for the venue analysis; the
-# review corpus does not. Detected from the venue string, because the row
-# itself does not record a publication form.
-CONFERENCE_VENUE = re.compile(
-    r"lecture notes in computer science|proceedings|symposium|conference|workshop|"
-    r"\bisbi\b|\bspie\b|\bmiccai\b|\bcvpr\b|\biccv\b|\beccv\b|\bneurips\b|\bmidl\b|"
-    r"\bipmi\b|\bembc\b|\bicip\b|\baaai\b|communications in computer and information science",
-    re.I,
-)
-
-
-def is_conference(row) -> bool:
-    """True when the row's venue is a conference proceedings volume."""
-    return bool(CONFERENCE_VENUE.search(str(row.get("journal") or "")))
+# Topics that make an MRI study part of the developmental-neuroscience and
+# child-psychiatry literature rather than of diagnostic radiology practice. Used
+# only for the sensitivity analysis; nothing is excluded from the corpus on it.
+# Two readings of "the developmental-neuroscience MRI literature", because the
+# result is sensitive to which one is used and reporting only one would be
+# choosing the answer. The narrow rule takes studies of an explicit
+# neurodevelopmental or psychiatric diagnosis. The wide rule adds the methods
+# and outcome vocabulary of cognitive neuroscience — resting-state and task
+# fMRI, connectomics, brain age, cognitive and behavioral outcomes — which is
+# the same literature approached by technique rather than by diagnosis.
+NEURO_DIAGNOSIS = (
+    r"autis|adhd|attention.deficit|psychiat|depressive|anxiet|schizophren|bipolar|"
+    r"internali[sz]ing|externali[sz]ing|substance use|addiction|gaming disorder|"
+    r"problematic gaming|neurodevelopmental disorder")
+NEURO_WIDE = (
+    NEURO_DIAGNOSIS + r"|neurodevelopment|depress|cognitiv|behaviou?ral|intelligence quotient|"
+    r"language development|brain age|brain development|connectom|functional connectivity|"
+    r"\bfmri\b|gaming|resting.state|executive function|\bintelligence\b|emotion|temperament|"
+    r"reward|abcd study|brain.behavio|neurocognit|developmental outcome|psychopatholog|puberty|"
+    r"functional magnetic resonance|graph theor|social")
+NEURO_RULES = {
+    "diagnosis": (re.compile(NEURO_DIAGNOSIS, re.I),
+                  "MRI studies naming an explicit neurodevelopmental or psychiatric diagnosis"),
+    "diagnosis_or_neuroscience": (re.compile(NEURO_WIDE, re.I),
+                                  "the same, plus MRI studies using cognitive-neuroscience methods "
+                                  "(resting-state and task fMRI, connectomics, brain age) or "
+                                  "reporting cognitive or behavioral outcomes"),
+}
 
 
 def multi(rows, field):
@@ -73,16 +80,6 @@ def pct(n, d):
     return round(100 * n / d, 1) if d else None
 
 
-def is_nonprimary(row) -> bool:
-    design = row.get("study_design") or ""
-    if NONPRIMARY_DESIGN.search(design):
-        return True
-    types = row.get("publication_types") or []
-    if isinstance(types, str):
-        types = [t.strip(" '\"[]") for t in types.split(",")]
-    return bool(NONPRIMARY_TYPES & set(types))
-
-
 def main() -> None:
     store_path = config.PROCESSED_DIR / "pedrad_paper_db.json"
     csv_path = config.PROCESSED_DIR / "pedrad_paper_db.csv"
@@ -91,44 +88,22 @@ def main() -> None:
         return
     store = json.loads(store_path.read_text(encoding="utf-8"))
     raw = store.get("records", [])
-    recs = list(raw.values()) if isinstance(raw, dict) else list(raw)
-    # PubMed publication types are not stored on the row; they come from the
-    # worklist the screener read. Absent that file, study_design alone decides.
-    pubtypes: dict[str, list] = {}
-    wl = config.PROCESSED_DIR / "review_worklist.json"
-    if wl.exists():
-        for pap in json.loads(wl.read_text(encoding="utf-8"))["papers"]:
-            pubtypes[pap["pmid"]] = pap.get("publication_types") or []
-    for r in recs:
-        r.setdefault("publication_types", pubtypes.get(r.get("pmid"), []))
+    part = corpus.partition(list(raw.values()) if isinstance(raw, dict) else list(raw))
+    recs, conference = part.screened, part.conference
+    excluded, in_scope, nonprimary = part.excluded, part.in_scope, part.non_primary
+    included_ids = {corpus.key(r) for r in part.included}
+
+    # Composition is read off the exported CSV rather than the store, because
+    # the CSV is what has the hand corrections applied. It is now written from
+    # the same partition, so this is a join, not a second filter.
     with csv_path.open() as fh:
-        rows = list(csv.DictReader(fh))
-
-    screened_all = len(recs)
-    conference = [r for r in recs if is_conference(r)]
-    conference_ids = {r.get("pmid") or r.get("record_id") for r in conference}
-    recs = [r for r in recs if (r.get("pmid") or r.get("record_id")) not in conference_ids]
-    rows = [r for r in rows if (r.get("pmid") or r.get("record_id")) not in conference_ids]
-
-    excluded = [r for r in recs if not r.get("include")]
-    in_scope = [r for r in recs if r.get("include")]
-    nonprimary = [r for r in in_scope if is_nonprimary(r)]
-    nonprimary_ids = {r.get("pmid") or r.get("record_id") for r in nonprimary}
-    included = [r for r in rows
-                if (r.get("pmid") or r.get("record_id")) not in nonprimary_ids]
+        included = [r for r in csv.DictReader(fh)
+                    if (r.get("record_id") or r.get("pmid")) in included_ids]
     n = len(included)
 
     out = {
         "generated_on": __import__("datetime").date.today().isoformat(),
-        "flow": {
-            "screened_all_sources": screened_all,
-            "screened": len(recs),
-            "excluded_screening": len(excluded),
-            "in_scope": len(in_scope),
-            "conference_excluded": len(conference),
-            "non_primary": len(nonprimary),
-            "included": n,
-        },
+        "flow": part.counts,
         "exclusion_reasons": dict(collections.Counter(
             (r.get("exclusion_reason") or "not stated").strip().lower()[:60]
             for r in excluded).most_common(15)),
@@ -218,6 +193,69 @@ def main() -> None:
         "q3": round(statistics.quantiles(sizes, n=4)[2]) if len(sizes) > 3 else None,
     }
 
+    # Sensitivity analysis (post hoc; the rules were written after the corpus
+    # existed, and the manuscript says so): what the modality mix looks like
+    # without the developmental-neuroscience MRI literature. That literature is
+    # eligible — it is machine learning applied to diagnostic MRI in children —
+    # but it is also why this review ranks MRI first where reviews built on
+    # narrower vocabulary rank radiography first, so the composition has to be
+    # reported both ways.
+    #
+    # Both rules are run because the ranking turns on which one is used: under
+    # the narrow rule MRI keeps a clear lead, under the wide one it falls level
+    # with ultrasound. Reporting a single rule would be picking the answer. Each
+    # is a keyword match over the extracted clinical problem, body region,
+    # population, description and title, applied only to studies labelled MRI.
+    out["sensitivity_neuro"] = {}
+    for key, (pattern, description) in NEURO_RULES.items():
+        neuro = [r for r in included
+                 if "MRI" in (r.get("modality") or "") and pattern.search(
+                     " ".join((r.get(k) or "") for k in
+                              ("clinical_problem", "body_region", "patient_population",
+                               "model_description", "title")))]
+        ids = {corpus.key(r) for r in neuro}
+        rest = [r for r in included if corpus.key(r) not in ids]
+        mods = multi(rest, "modality")
+        out["sensitivity_neuro"][key] = {
+            "rule": description,
+            "n_excluded": len(neuro),
+            "n_remaining": len(rest),
+            "modality": {k: {"n": v, "pct": pct(v, len(rest))} for k, v in mods.most_common(6)},
+            "external_pct": pct(
+                sum(1 for r in rest if r.get("validation") == "external / multi-center"), len(rest)),
+        }
+
+    # Which database each included study came from, and how the corpus looks
+    # when it is restricted to work the field demonstrably engaged with. The
+    # slides cannot name three and a half thousand studies, so they name the
+    # high-impact subset; reporting its composition next to the whole corpus is
+    # what shows whether that selection distorts the picture.
+    out["by_search_source"] = corpus.counts_by_source(included)
+    scored = [r for r in included if corpus.impact_value(r) is not None]
+    top = corpus.high_impact(included)
+    values = sorted(corpus.impact_value(r) for r in scored)
+    out["impact"] = {
+        "measure": "FWCI where OpenAlex has computed it, else iCite RCR; 1.0 = the average "
+                   "paper of the same field and year",
+        "n_scored": len(scored),
+        "pct_scored": pct(len(scored), n),
+        "by_measure": dict(collections.Counter(corpus.impact(r)[1] for r in scored)),
+        "median": round(statistics.median(values), 2) if values else None,
+        "q3": round(statistics.quantiles(values, n=4)[2], 2) if len(values) > 3 else None,
+        "percentile": config.SLIDE_IMPACT_PERCENTILE,
+        "floor": corpus.impact_threshold(included),
+        "n_above_floor": len(top),
+        "pct_above_floor": pct(len(top), n),
+        "above_floor_by_source": corpus.counts_by_source(top),
+        "above_floor_modality": {k: v for k, v in multi(top, "modality").most_common()},
+        "above_floor_validation": dict(collections.Counter(
+            r.get("validation") or "none / not stated" for r in top).most_common()),
+        "above_floor_external_pct": pct(
+            sum(1 for r in top if r.get("validation") == "external / multi-center"), len(top)),
+        "above_floor_by_year": dict(sorted(collections.Counter(
+            int(r["year"]) for r in top if str(r.get("year") or "").isdigit()).items())),
+    }
+
 
     # The PRISMA figure reads this file. Emitting it here — rather than keeping a
     # hand-written copy — is what stops the diagram from quoting a corpus size the
@@ -280,7 +318,7 @@ def main() -> None:
     # The figures must draw the same set these numbers describe: primary studies
     # only, with reviews and editorials removed. Export the ids rather than
     # re-deriving the rule in two places.
-    ids = [(r.get("pmid") or r.get("record_id")) for r in included]
+    ids = [corpus.key(r) for r in included]
     (config.PROCESSED_DIR / "review_included_ids.json").write_text(json.dumps(ids))
 
     f = out["flow"]
@@ -292,7 +330,16 @@ def main() -> None:
             print(f"   {k:<34} {v['n']:>5}  {v['pct']}%")
         print()
     print(f"fetal/perinatal: {out['fetal']['n']} ({out['fetal']['pct']}%)")
+    imp = out["impact"]
+    print(f"sources: " + ", ".join(f"{k} {v:,}" for k, v in out["by_search_source"].items()))
+    print(f"impact: {imp['n_scored']:,} scored ({imp['pct_scored']}%), median {imp['median']}, "
+          f"top decile {imp['n_above_floor']:,} at or above {imp['floor']:g}x average "
+          f"({imp['pct_above_floor']}%)")
     print(f"conference venues: {out['conference_venue_share']['n']} ({out['conference_venue_share']['pct']}%)")
+    for key, sens in out["sensitivity_neuro"].items():
+        print(f"without neuro MRI [{key}] (-{sens['n_excluded']}): n={sens['n_remaining']}, "
+              + ", ".join(f"{k} {v['pct']}%" for k, v in list(sens["modality"].items())[:3])
+              + f", external {sens['external_pct']}%")
     print("\n== era trajectory ==")
     for era, v in out["eras"].items():
         print(f"  {era}: n={v['n']:>4}  external {v['external_pct']}%  reader {v['reader_pct']}%  "

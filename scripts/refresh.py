@@ -160,8 +160,21 @@ def main() -> int:
             cmd += ["--limit", str(args.paper_db_limit)]
         results["paperdb"], _ = run_step("paperdb", cmd, LOGS / f"refresh-{stamp}-paperdb.log", args.dry_run)
 
+    # The review statistics come after the database and before the figures: they
+    # partition the store into the PRISMA boxes, write the corpus id list that
+    # the review figures draw from, and are the numbers the manuscript quotes.
+    results["reviewstats"], _ = run_step("reviewstats", [py, str(SCRIPTS / "review_stats.py")],
+                                         LOGS / f"refresh-{stamp}-reviewstats.log", args.dry_run)
+
+    # The single merged paper table. Reads the store, the Embase export, the
+    # venue tables and the leaderboards; makes no network calls.
+    results["unifieddb"], _ = run_step("unifieddb", [py, str(SCRIPTS / "export_unified_db.py")],
+                                       LOGS / f"refresh-{stamp}-unifieddb.log", args.dry_run)
+
     results["figures"], _ = run_step("figures", [py, str(SCRIPTS / "make_figures.py")],
                                      LOGS / f"refresh-{stamp}-figures.log", args.dry_run)
+    results["reviewfigures"], _ = run_step("reviewfigures", [py, str(SCRIPTS / "make_review_figures.py")],
+                                           LOGS / f"refresh-{stamp}-reviewfigures.log", args.dry_run)
     results["reports"], _ = run_step("reports", [py, str(SCRIPTS / "build_reports.py")],
                                      LOGS / f"refresh-{stamp}-reports.log", args.dry_run)
 

@@ -49,7 +49,15 @@ def main() -> None:
     if not args.quick:
         run("validate_queries.py")
         run("collect_examples.py")
+    # The review layer: partition the paper database into the PRISMA boxes and
+    # recompute every number the manuscript quotes, then draw its figures. Both
+    # read the stored database and make no network calls.
+    run("review_stats.py")
+    # One flat table of every paper record, merged from the four files that hold
+    # them. Reads only, so it goes anywhere after the collectors.
+    run("export_unified_db.py")
     run("make_figures.py")
+    run("make_review_figures.py")
     run("build_reports.py")
     run("build_slides.py")
     print("\nPipeline complete. See reports/, figures/, and slides/.")

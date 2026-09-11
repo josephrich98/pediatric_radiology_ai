@@ -133,6 +133,19 @@ The questions it answers:
     object, not text to scrape); `paper_db.py` owns the store, the candidate
     search, the release-status cross-checks, and the CSV / markdown exports.
     See "Paper database" below.
+  - `corpus.py` — **which stored records the review describes, and how they
+    rank.** The store holds every screened record; the manuscript, the exported
+    table and the slides must all describe the same subset of it, so the PRISMA
+    partition (conference proceedings out by publication form, screened-out
+    records out, reviews/editorials/guidelines out, included primary studies in)
+    lives here and nowhere else. `paper_db` exports it, `review_stats.py` counts
+    it, `make_review_figures.py` draws it, `build_slides.py` presents it. The
+    second half is the impact ranking: `impact()` returns OpenAlex FWCI, else
+    iCite RCR (both 1.0 = the average paper of that field and year), and returns
+    nothing below `config.IMPACT_MIN_CITATIONS` raw citations, because a ratio
+    against a fraction of an expected citation makes a one-citation 2026 paper
+    outrank everything. FWCI is preferred because it is the only measure the
+    Embase-only records — no PMID, so no RCR — can have.
   - `journals.py` — **which journals publish pediatric radiology AI, and how
     high-impact are they.** Counts papers per journal per year from PubMed
     (`config.PAPER_DB_QUERY`, the strict title/abstract query, because
@@ -151,6 +164,28 @@ The questions it answers:
     tail that no figure shows. `--impact-only` redoes just the lookup over the
     stored counts (no PubMed calls) after the budget resets at midnight UTC or
     after the overrides file is edited.
+  - `unified_db.py` — **every paper record in one table.** `data/processed`
+    grew a paper file per collection step, so answering "do we have this paper,
+    and in what capacity" meant opening four of them. This merges the screening
+    store, the Embase export (`embase_unique_rows.json`), the per-venue tables
+    (`conference_works.json`) and the fourteen most-cited leaderboards
+    (`top_papers_*.json`) into `data/processed/pediatric_radiology_ai.csv`: one
+    row per paper, deduplicated on PMID then DOI then normalized title, with
+    `record_type` saying what the paper is to this project (corpus /
+    non_primary / screened_out / conference_proceeding / embase_not_retrieved /
+    venue_work / most_cited), `publication_form` (journal article / conference
+    paper / preprint) and `source_files` naming the files it came from. Scope is
+    papers; repositories, FDA devices, newsletter stories and journal impact are
+    different entities and keep their own files. It is **generated, never a
+    source of truth**: `corpus.py` still owns the partition and `paper_db.py`
+    still owns the corpus export, so deleting the CSV costs nothing. Store rows
+    are never merged against each other — the store is already deduplicated on
+    its own key and its row count is the PRISMA denominator, so the
+    `record_type: corpus` rows are exactly `pedrad_paper_db.csv` and exactly
+    `review_included_ids.json`. Note `conference_works.json` caps each venue's
+    stored `works` at the number its slide lists, so the venue rows here are a
+    few hundred against a few thousand counted works; the counts, not this
+    table, are what the venue figures use.
   - `curated.py` — hand-written context that follows the data: the clinical
     question each most-cited paper answers (keyed by DOI), what each
     well-known repository is, and the "worth knowing" list.
@@ -195,7 +230,10 @@ python scripts/collect_fda.py           # FDA AI-enabled device list (Radiology 
 python scripts/validate_queries.py      # recall / precision / term audit of the PubMed queries
 python scripts/collect_examples.py      # example images for the slides
 python scripts/build_paper_db.py        # paper database (reads abstracts; costs money — see below)
+python scripts/review_stats.py         # PRISMA partition + every number the manuscript quotes
+python scripts/export_unified_db.py    # merge every paper file into data/processed/pediatric_radiology_ai.csv
 python scripts/make_figures.py
+python scripts/make_review_figures.py  # PRISMA, composition, rigor, funnel, citation impact
 python scripts/build_reports.py
 python scripts/build_slides.py      # writes slides/pedrad_ai_slides.tex
 cd slides && latexmk -pdf pedrad_ai_slides.tex   # compile the Beamer deck
@@ -234,7 +272,29 @@ under the rate limit.
 
 `data/processed/pedrad_paper_db.csv` (readable view: `reports/04_paper_database.md`)
 is the one deliverable produced by reading papers rather than counting them. It
-is built by code and must stay that way:
+is built by code and must stay that way.
+
+**The exported table is the review corpus.** The store JSON keeps every screened
+record with its coded exclusion reason; the CSV and the markdown view carry only
+the included primary studies, which is exactly the set
+`reports/05_review_manuscript.md` reports on and the set the slides aggregate.
+`pedrad_ai/corpus.py` owns that partition, `paper_db.corpus_rows()` applies it,
+and `scripts/review_stats.py` writes the PRISMA boxes and the corpus id list from
+the same call. If the CSV and the manuscript ever disagree on n, something
+bypassed `corpus.partition`.
+
+**Impact columns.** `refresh_metrics` fills citations, citations/year, RCR and
+NIH percentile from iCite for PubMed rows, and citations plus FWCI from OpenAlex
+by DOI for everything else (one request per 50 DOIs), recording which index a
+count came from in `citations_source`. `--no-fwci` skips the OpenAlex half when
+its daily budget is needed elsewhere. The derived `impact` / `impact_measure`
+columns are computed at export time by `corpus.impact` and are what the slides
+and the markdown view rank on.
+
+The rest of this section describes the **reading-list mode** of
+`build_paper_db.py` (no `--review`), which is how the database was built before
+it became the review corpus and is still how a small, high-citation reading list
+is assembled:
 
 - **Candidates** are whatever `config.PAPER_DB_QUERY` returns from
   `PAPER_DB_START_YEAR` to `END_YEAR`, filtered to papers with at least
@@ -421,6 +481,15 @@ Rules now in force in `config.py`:
   That year is partial: `analysis.summarize` uses the last complete year for
   headline numbers and growth rates and reports the current year as `*_ytd`;
   reports and figures label it "YTD".
+- The deck carries a **systematic-review section** built from the same corpus as
+  the manuscript: how it was assembled (including what Embase adds), the PRISMA
+  figure, studies per year, composition, rigor by era, the translational funnel,
+  the citation-impact distribution, and the corpus against its most-cited decile.
+  Only the slides that *name* papers filter: `corpus.by_impact` ranks on the
+  normalized impact column (`config.SLIDE_IMPACT_PERCENTILE` defines "top
+  decile", `SLIDE_IMPACT_TOP_N` the rows per table, `SLIDE_REVIEW_YEARS_FROM` the
+  first per-year table). Embase-only rows are marked with a dagger so it is
+  visible that the corpus is not PubMed-only.
 - Slides are regenerated by `scripts/build_slides.py`; the most-cited tables
   show the top 10 (2008-2022, then per year) with citations, FWCI and venue,
   and fall back to a title heuristic for papers not in
@@ -457,8 +526,8 @@ Rules now in force in `config.py`:
   DBLP entries, re-runs every collector incl. FDA, validation and example
   images, adds the papers that are new since the last run to the paper database
   (`--skip paperdb`, `--paper-db-limit N`, `--paper-db-all`), runs `enrich_fwci.py` (skipped
-  gracefully when the OpenAlex budget is spent), then figures, reports, slides,
-  latexmk, and the `.pptx` export; `--quick`, `--keep-cache`, `--no-slides`, `--skip <collector>`,
+  gracefully when the OpenAlex budget is spent), then review statistics, figures (including the
+  review figures), reports, slides, latexmk, and the `.pptx` export; `--quick`, `--keep-cache`, `--no-slides`, `--skip <collector>`,
   `--dry-run`). The same script runs monthly in
   `.github/workflows/refresh.yml`, which opens a pull request with the
   regenerated deliverables rather than pushing to main; it can also be

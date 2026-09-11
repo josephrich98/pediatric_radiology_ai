@@ -142,6 +142,9 @@ def clean_text(s: str) -> str:
     s = re.sub(r"\$([^$]*)\$", _math, s)
     s = re.sub(r"\\(ldots|dots|cdots)(\{\})?", "\u2026", s)
     s = re.sub(r"\\(hspace|vspace)\*?\{[^}]*\}", " ", s)
+    # Layout declarations carry no content; without this the argument of
+    # \renewcommand{\arraystretch}{0.92} lands on the slide as a stray "0.92".
+    s = re.sub(r"\\renewcommand\{[^}]*\}\{[^}]*\}", "", s)
     s = re.sub(r"\\(hfill|centering|noindent|small|tiny|scriptsize|footnotesize|normalsize|large)\b", "", s)
     s = s.replace("\\\\", " ")
     s = s.replace("---", "\u2014").replace("--", "\u2013")
@@ -318,6 +321,10 @@ def parse_env(env: str, args: list[str], opt: str, inner: str, size: str, align:
 
 def parse_table(colspec: str, inner: str, size: str) -> Table:
     spec: list[float | None] = []
+    # Drop the >{...} / <{...} / @{...} decorations first: they are not columns,
+    # and the letters inside them ("raggedright", "arraybackslash") would each
+    # match the bare-column alternative and invent a column per letter.
+    colspec = re.sub(r"[><@]\{[^{}]*\}", "", colspec)
     for m in re.finditer(r"p\{([^}]*)\}|([lcr])", colspec):
         spec.append(_frac(m.group(1), 0.2) if m.group(1) else None)
     body = re.sub(r"\\(hline|toprule|midrule|bottomrule)", "", inner)

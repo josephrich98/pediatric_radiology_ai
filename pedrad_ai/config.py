@@ -836,6 +836,13 @@ EXAMPLE_IMAGES: list[dict[str, str]] = [
 PAPER_DB_JSON = PROCESSED_DIR / "pedrad_paper_db.json"
 PAPER_DB_CSV = PROCESSED_DIR / "pedrad_paper_db.csv"
 PAPER_DB_SUMMARY = PROCESSED_DIR / "pedrad_paper_db_summary.json"
+# Every paper record the project holds, in one flat table: the screening store,
+# the Embase export, the per-venue tables and the most-cited leaderboards, one
+# row per paper with a `record_type` saying what it is and a `source_files`
+# saying which files hold it. Generated from the four, never a source of truth
+# for any of them; see `pedrad_ai/unified_db.py`.
+UNIFIED_DB_CSV = PROCESSED_DIR / "pediatric_radiology_ai.csv"
+UNIFIED_DB_SUMMARY = PROCESSED_DIR / "pediatric_radiology_ai_summary.json"
 # Papers waiting to be read, written by --worklist and read back by --ingest.
 # This is the no-API-key path: the abstracts are dumped for a person (or a
 # Claude Code session) to read, and the rows come back through the same schema
@@ -1002,6 +1009,30 @@ REVIEW_CONFERENCE_VENUES = [
     "ISBI", "SPIE Medical Imaging", "NeurIPS", "CVPR", "ICCV", "ECCV",
     "ICLR", "ICML", "ML4H", "MLHC", "CHIL",
 ]
+
+# --------------------------------------------------------------------------- #
+# Presenting the review corpus (slides)
+# --------------------------------------------------------------------------- #
+# The review corpus is thousands of studies: right for a proportion, impossible
+# for a slide that names papers. The deck therefore shows the whole corpus in
+# aggregate and then names individual studies by field- and year-normalized
+# citation impact (``pedrad_ai.corpus.impact``: FWCI, else RCR — 1.0 is the
+# average paper of the same field and year). A normalized measure rather than a
+# raw count is what lets the Embase-only records, which have no PMID and
+# therefore no RCR, and the current year, which has had no time to be cited,
+# compete on the same slide as a settled 2019 paper.
+# The subset is a percentile of the corpus, not a fixed multiple of the world
+# average: the median included study already sits near FWCI 2, so "twice
+# average" would select half the corpus and say nothing.
+# A field-weighted ratio is only as stable as its numerator: a paper from this
+# month with a single citation can score 90x the world average because the
+# expected count for its field and year is still a fraction of one. Five raw
+# citations is the point at which the ratio starts to mean something; below it a
+# record is ranked on citations per year instead.
+IMPACT_MIN_CITATIONS = 5
+SLIDE_IMPACT_PERCENTILE = 90  # "high impact" = the top decile of scored studies
+SLIDE_IMPACT_TOP_N = 10       # rows in a named-paper table
+SLIDE_REVIEW_YEARS_FROM = 2023  # one impact-ranked table per year from here
 
 # Citation floor. The query returns ~10,000 records from 2015 on, most of which
 # nobody has read: a threshold on NIH iCite's citedByPmidCount (PubMed-indexed

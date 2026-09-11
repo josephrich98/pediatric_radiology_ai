@@ -13,6 +13,9 @@ request with the results.
 | [01_landscape_players.md](01_landscape_players.md) | The biggest players: most-cited radiology-AI and pediatric-radiology-AI papers, and the most-starred open-source tools. |
 | [02_state_of_the_field.md](02_state_of_the_field.md) | Curated synthesis for clinical leadership: what radiology AI does well, the bleeding edge, what remains unresolved, and implications for a children's hospital. |
 | [03_newsletter_watch.md](03_newsletter_watch.md) | What newsletters and trade press (The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify, Radiology Business) are saying about pediatric radiology AI: counts by year and source, topics, and the stories themselves. |
+| [04_paper_database.md](04_paper_database.md) | The systematic review's corpus, read one paper at a time: model, modality, population, task, dataset, validation, availability, and citation impact. Same studies as the manuscript. |
+| [05_review_manuscript.md](05_review_manuscript.md) | The review manuscript (European Radiology format), with [05_review_supplement.md](05_review_supplement.md) carrying the full search strategies and eligibility criteria. |
+| [06_search_strategy.md](06_search_strategy.md) | How the review's search was built and validated. |
 | [references.bib](references.bib) | BibTeX for every cited paper, resolved through doi2bib. |
 
 A **Beamer slide deck** summarizing all of this (objectives, methods, results,
@@ -36,6 +39,15 @@ data tables are in [`../data/processed/`](../data/processed).
 - Conference fractions use title-keyword labelling on a per-venue-year sample
   and are conservative lower bounds; DBLP throttling may leave that section
   incomplete in a given run.
-- Citation and GitHub-star counts are point-in-time snapshots.
+- Citation and GitHub-star counts are point-in-time snapshots. The review's
+  normalized impact column mixes two indexes on one scale (OpenAlex FWCI first,
+  NIH iCite RCR where OpenAlex has none) and is blank until a study has five
+  citations, so it ranks the settled literature far better than the current
+  year.
+- The paper database, the manuscript, and the slide deck all describe one
+  corpus — the included primary studies — because all three read the same
+  partition (`pedrad_ai/corpus.py`). Records excluded at screening or on
+  publication form stay in `data/processed/pedrad_paper_db.json` with their
+  reason, and are not in the exported CSV.
 - Patent counts require a free PatentsView API key (`PATENTSVIEW_API_KEY`); without
   one that section reports zero.
