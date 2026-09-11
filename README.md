@@ -7,6 +7,9 @@ python scripts/build_slides.py
 python scripts/build_pptx.py
 *download pptx*
 
+manuscript: latex --> word --> google docs
+- pandoc input.tex -o output.docx
+
 ## AI slop:
 
 Tools to measure the **growth and landscape of radiology AI**, with a focus on

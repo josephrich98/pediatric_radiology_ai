@@ -2,9 +2,9 @@
 
 **Running title:** Pediatric radiology AI: from evidence to deployment
 
-**Authors:** Joseph Rich, Amit Sura [+ co-authors TBD]
+**Authors:** Joseph Rich, Amit Sura
 
-**Target venue:** *Pediatric Radiology* (review)
+**Target venue:** *European Radiology OR Pediatric Radiology*
 
 **Status:** draft, 2026-09-10. Placeholders needing author action are marked `[ACTION]`.
 
