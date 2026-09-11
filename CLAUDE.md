@@ -2,9 +2,29 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Desired Venues: Society of pediatric radiology (SPR) abstract, Pediatric Radiology journal review paper
+Desired Venues: Society of pediatric radiology (SPR) abstract, European Radiology journal review paper (backup Pediatric radiology)
 
 SPR: SCIENTIFIC ABSTRACTS (BOTH ORAL & POSTER FORMAT) - You will need to complete ALL of the sections listed, i.e. Title, Purpose, Methods, Results and Conclusions. 
+
+European Radiology:
+
+250 word abstract (unstructured), 1-5 MeSH keywords, 5,000 word max main text, max 5 tables and 12 figures
+4. **Introduction**
+
+The introduction should:
+
+- Introduce the topic including its context or background.
+- Explain the relevance of the topic and highlight its clinical value.
+- State the objectives of the review, including the main aspects to be addressed.
+- Inclusion criteria for the articles summarized in the review should be clearly reported.
+
+5. **Headings and subheadings**
+
+The review should be structured with headings and subheadings, addressing and explaining the main aspects of the review topic.
+
+6. **Conclusion**
+
+The conclusion should provide a summary of the key insights of the reviewed literature, and a “take-home” message. It should consider the review’s possible implication on policy or practice.  It should also address current limitations of the reviewed studies and identify research gaps, proposing further direction for future investigations.
 
 ## Project Purpose
 

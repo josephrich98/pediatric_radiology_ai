@@ -41,6 +41,26 @@ NONPRIMARY_DESIGN = re.compile(
     r"multi-society|perspective|opinion)\b", re.I)
 
 
+# Conference proceedings are outside the review's publication-form criterion
+# (search strategy Section 4.4): they cannot support judgements about study
+# design, most are not extractable, and unlike preprints they carry no DOI
+# linking them to the later full paper, so deduplication cannot resolve the
+# double count. The paper database keeps them for the venue analysis; the
+# review corpus does not. Detected from the venue string, because the row
+# itself does not record a publication form.
+CONFERENCE_VENUE = re.compile(
+    r"lecture notes in computer science|proceedings|symposium|conference|workshop|"
+    r"\bisbi\b|\bspie\b|\bmiccai\b|\bcvpr\b|\biccv\b|\beccv\b|\bneurips\b|\bmidl\b|"
+    r"\bipmi\b|\bembc\b|\bicip\b|\baaai\b|communications in computer and information science",
+    re.I,
+)
+
+
+def is_conference(row) -> bool:
+    """True when the row's venue is a conference proceedings volume."""
+    return bool(CONFERENCE_VENUE.search(str(row.get("journal") or "")))
+
+
 def multi(rows, field):
     c = collections.Counter()
     for r in rows:
@@ -84,7 +104,12 @@ def main() -> None:
     with csv_path.open() as fh:
         rows = list(csv.DictReader(fh))
 
-    screened = len(recs)
+    screened_all = len(recs)
+    conference = [r for r in recs if is_conference(r)]
+    conference_ids = {r.get("pmid") or r.get("record_id") for r in conference}
+    recs = [r for r in recs if (r.get("pmid") or r.get("record_id")) not in conference_ids]
+    rows = [r for r in rows if (r.get("pmid") or r.get("record_id")) not in conference_ids]
+
     excluded = [r for r in recs if not r.get("include")]
     in_scope = [r for r in recs if r.get("include")]
     nonprimary = [r for r in in_scope if is_nonprimary(r)]
@@ -96,9 +121,11 @@ def main() -> None:
     out = {
         "generated_on": __import__("datetime").date.today().isoformat(),
         "flow": {
-            "screened": screened,
+            "screened_all_sources": screened_all,
+            "screened": len(recs),
             "excluded_screening": len(excluded),
             "in_scope": len(in_scope),
+            "conference_excluded": len(conference),
             "non_primary": len(nonprimary),
             "included": n,
         },
@@ -190,6 +217,63 @@ def main() -> None:
         "q1": round(statistics.quantiles(sizes, n=4)[0]) if len(sizes) > 3 else None,
         "q3": round(statistics.quantiles(sizes, n=4)[2]) if len(sizes) > 3 else None,
     }
+
+
+    # The PRISMA figure reads this file. Emitting it here — rather than keeping a
+    # hand-written copy — is what stops the diagram from quoting a corpus size the
+    # rest of the manuscript no longer uses.
+    embase = {}
+    emb_path = config.PROCESSED_DIR / "embase_layer.json"
+    if emb_path.exists():
+        embase = json.loads(emb_path.read_text(encoding="utf-8"))
+    pmids = config.PROCESSED_DIR / "review_query_pmids.json"
+    n_pubmed = len(json.loads(pmids.read_text(encoding="utf-8"))) if pmids.exists() else 0
+    st = embase.get("status_totals", {})
+    n_emb_dupe = st.get("already in our corpus", 0)
+    n_conf_embase = sum((embase.get("set_aside") or {}).values())
+
+    # PRISMA requires identification -> removal -> screening to balance. Build the
+    # removal box as (everything identified) - (everything screened), enumerate the
+    # components we can name, and carry any remainder explicitly rather than
+    # letting the diagram quietly fail to add up.
+    identified = {}
+    if n_pubmed:
+        identified["PubMed/MEDLINE"] = n_pubmed
+    n_emb_total = (embase.get("embase_unique_all_types") or 0) + (
+        embase.get("embase_medline_overlap_records") or 0)
+    if n_emb_total:
+        identified["Embase"] = n_emb_total
+    n_legacy = sum(1 for r in recs if r.get("source") == "openalex") + \
+               sum(1 for r in conference if r.get("source") == "openalex")
+    if n_legacy:
+        identified["OpenAlex (earlier build)"] = n_legacy
+
+    total_removed = sum(identified.values()) - len(recs)
+    removed = {}
+    if embase.get("embase_medline_overlap_records"):
+        removed["duplicate of the PubMed layer"] = (
+            embase["embase_medline_overlap_records"] + n_emb_dupe)
+    if n_conf_embase or conference:
+        removed["conference abstracts and proceedings"] = n_conf_embase + len(conference)
+    remainder = total_removed - sum(removed.values())
+    if remainder:
+        removed["other duplicates and unresolved records"] = remainder
+
+    flow_doc = {
+        "identified": identified,
+        "removed_before_screening": removed,
+        "screened": len(recs),
+        "excluded_screening": {
+            "adult-only, non-radiologic, or no AI/ML component": len(excluded)},
+        "eligible": len(in_scope),
+        "excluded_eligibility": {
+            "review, editorial, guideline or position statement": len(nonprimary)},
+        "included": n,
+        "note": ("PubMed and Embase layers complete (2005-2026). Conference material is "
+                 "retrieved and reported but excluded by the publication-form criterion."),
+    }
+    (config.PROCESSED_DIR / "review_flow.json").write_text(
+        json.dumps(flow_doc, indent=1), encoding="utf-8")
 
     path = config.PROCESSED_DIR / "review_stats.json"
     path.write_text(json.dumps(out, indent=2))

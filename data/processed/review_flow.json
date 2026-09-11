@@ -1,20 +1,22 @@
 {
  "identified": {
-  "PubMed/MEDLINE": 5686
+  "PubMed/MEDLINE": 6000,
+  "Embase": 7288,
+  "OpenAlex (earlier build)": 220
  },
- "identified_not_screened": {
-  "OpenAlex preprints": 1580,
-  "OpenAlex conference papers": 2134
+ "removed_before_screening": {
+  "duplicate of the PubMed layer": 4726,
+  "conference abstracts and proceedings": 2168,
+  "other duplicates and unresolved records": 14
  },
- "duplicates": 0,
- "screened": 5904,
+ "screened": 6600,
  "excluded_screening": {
-  "adult-only, non-radiologic, or no AI/ML component": 2246
+  "adult-only, non-radiologic, or no AI/ML component": 2650
  },
- "eligible": 3658,
+ "eligible": 3950,
  "excluded_eligibility": {
-  "review, editorial, guideline or position statement": 372
+  "review, editorial, guideline or position statement": 456
  },
- "included": 3286,
- "note": "PubMed layer complete (2005-2026). Preprint and conference layers identified but not screened."
+ "included": 3494,
+ "note": "PubMed and Embase layers complete (2005-2026). Conference material is retrieved and reported but excluded by the publication-form criterion."
 }

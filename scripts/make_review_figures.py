@@ -153,9 +153,15 @@ def prisma_figure(flow):
                        [f"  {k}: {v:,}" for k, v in pending.items()]
     stage(8.65, "Identification")
     box(1.1, 7.75, 4.6, 1.8, ident_lines)
-    if flow.get("duplicates"):
-        box(6.2, 8.15, 3.3, 1.0, [f"Duplicates removed", f"n = {flow['duplicates']:,}"],
-            face="#f7f7f7", edge="#b0b0b0")
+    # Pre-screening removals. Duplicates and publication-form exclusions are both
+    # removed before screening under PRISMA 2020, so they share one box.
+    removed = flow.get("removed_before_screening")
+    if not removed and flow.get("duplicates"):
+        removed = {"duplicate records": flow["duplicates"]}
+    if removed:
+        lines = [f"Removed before screening: n = {sum(removed.values()):,}"] + \
+                [f"  {k}: {v:,}" for k, v in sorted(removed.items(), key=lambda kv: -kv[1])]
+        box(6.2, 7.85, 3.3, 1.6, lines, face="#f7f7f7", edge="#b0b0b0")
         arrow(5.7, 8.65, 6.2, 8.65)
 
     stage(6.45, "Screening")

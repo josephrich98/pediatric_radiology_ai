@@ -430,13 +430,19 @@ def _ingest(store: dict, overrides: dict, path: Path, extractor: str,
         # pass keys proceedings papers the same way. Let the record's own signals
         # decide, so a MICCAI paper is not filed as "unreleased".
         from_openalex = not rid.isdigit()
-        is_preprint = paper_db.looks_like_preprint(article)
+        # A supplied record may declare its own provenance (the Embase layer
+        # does, keyed "emb:<PUI>"). Trust it over the key-shape heuristic, which
+        # would otherwise file every non-PMID row as OpenAlex.
+        source = article.get("source") or ("openalex" if from_openalex else "pubmed")
+        is_preprint = article.get("is_preprint")
+        if is_preprint is None:
+            is_preprint = paper_db.looks_like_preprint(article)
         row = paper_db.build_row(
             article, extraction,
             metrics={
                 **metrics.get(rid, {}),
                 **{k: v for k, v in (fields.get("_metrics") or {}).items()},
-                "source": "openalex" if from_openalex else "pubmed",
+                "source": source,
                 "is_preprint": is_preprint or None,
             },
         )
