@@ -230,6 +230,7 @@ python scripts/collect_fda.py           # FDA AI-enabled device list (Radiology 
 python scripts/validate_queries.py      # recall / precision / term audit of the PubMed queries
 python scripts/collect_examples.py      # example images for the slides
 python scripts/build_paper_db.py        # paper database (reads abstracts; costs money — see below)
+python scripts/update_database.py      # monthly top-up: re-run the review searches, screen what is new
 python scripts/review_stats.py         # PRISMA partition + every number the manuscript quotes
 python scripts/export_unified_db.py    # merge every paper file into data/processed/pediatric_radiology_ai.csv
 python scripts/make_figures.py
@@ -532,3 +533,24 @@ Rules now in force in `config.py`:
   `.github/workflows/refresh.yml`, which opens a pull request with the
   regenerated deliverables rather than pushing to main; it can also be
   triggered by hand from the Actions tab.
+- To keep only the **review database** current, run
+  `python scripts/update_database.py`. It is the narrow monthly counterpart to
+  `refresh.py`: it drops the cached searches and metric lookups (keeping the
+  fetched records), re-runs `REVIEW_QUERY` over PubMed plus the OpenAlex
+  preprint and conference-paper streams for the last `--years-back` years
+  (`--since 2005` redoes the whole window, which is what a change to
+  `REVIEW_QUERY` needs), reads the new abstracts once each under the usual cap
+  (`--limit`, `--all`, `--worklist` for the no-API-key path), refreshes
+  citations/RCR/FWCI (`--no-metrics`, `--no-fwci`), then re-runs
+  `review_stats.py`, `export_unified_db.py` and the review figures
+  (`--no-figures`), and writes a markdown summary of what changed
+  (`--summary`). **Embase is never re-run** — it has no API and its export is a
+  manual, licensed download; the committed Embase records are reused as they
+  stand, and refreshing that layer means redoing the export by hand and running
+  `embase_layer.py`. The same script runs monthly in
+  `.github/workflows/update_database.yml`, which is **disabled**: scheduled
+  runs exit immediately until the repository variable
+  `UPDATE_DATABASE_ENABLED` is set to `true` (Settings -> Secrets and variables
+  -> Actions -> Variables), while "Run workflow" from the Actions tab works
+  either way. It needs the `ANTHROPIC_API_KEY` secret to screen anything;
+  without it the run still re-searches and refreshes metrics but adds no paper.

@@ -13,6 +13,7 @@ manuscript: latex --> word --> google docs
 slides: /home/jrich/Desktop/pediatric_radiology_ai/slides/pedrad_ai_slides.tex
 db: /home/jrich/Desktop/pediatric_radiology_ai/data/processed/pediatric_radiology_ai.csv
 manuscript: /home/jrich/Desktop/pediatric_radiology_ai/reports/05_review_manuscript.md
+spr abstract: /home/jrich/Desktop/pediatric_radiology_ai/reports/07_spr_abstract.md
 
 ## AI slop:
 

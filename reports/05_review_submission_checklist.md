@@ -13,7 +13,7 @@ The September 11, 2026 rewrite is a scoping review with bibliometric analysis an
 - [x] Retained overlap with the presentation through three existing figures and shared clinical examples.
 - [x] Generated three new figures, including vector PDF versions, and reproducible supplementary tables.
 - [x] Audited exact cohort membership and repeated normalized titles; preserved the shared cohort and reported a title-collapse sensitivity.
-- [x] Supplied five tables and six main figures; draft word counts are 211 abstract and 3,376 main-text words.
+- [x] Supplied five tables and six main figures; draft word counts are 225 abstract and 3,485 main-text words.
 - [x] Preserved the authors and existing funding/conflict declarations.
 
 ## Required scientific checks before submission

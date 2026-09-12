@@ -1,0 +1,175 @@
+# Monthly top-up of the systematic-review database.
+#
+# ---------------------------------------------------------------------------
+# CURRENTLY DISABLED. The schedule below fires, but the job exits immediately
+# until the repository variable UPDATE_DATABASE_ENABLED is set to "true":
+#
+#   Settings -> Secrets and variables -> Actions -> Variables -> New variable
+#       Name:  UPDATE_DATABASE_ENABLED
+#       Value: true
+#
+# That is the whole switch — no file to edit, and setting it back to anything
+# else (or deleting it) disables the schedule again. "Run workflow" from the
+# Actions tab always runs, variable or not, so the workflow can be tried by
+# hand while the schedule stays off.
+#
+# Two other things to know before enabling:
+#   * A repository with no pushes for 60 days has its scheduled workflows
+#     disabled by GitHub; the Actions tab offers a button to re-enable them.
+#   * .github/workflows/refresh.yml also runs monthly (1st of the month) and
+#     rebuilds everything. This workflow is the narrow one: it only re-runs the
+#     review searches and screens what is new. Running both is fine — they are
+#     a week apart and open separate pull requests.
+# ---------------------------------------------------------------------------
+#
+# What it does (scripts/update_database.py):
+#   PubMed REVIEW_QUERY + OpenAlex preprints + OpenAlex conference papers over
+#   a recent year window -> read each new abstract once with Claude -> refresh
+#   citations / RCR / FWCI -> PRISMA partition (review_stats.py) -> merged
+#   paper table -> pull request. The review figures are left alone by default
+#   (the `figures` input turns them on): a CI matplotlib renders them a little
+#   differently from a local one, so redrawing them every month would rewrite
+#   the committed PNGs whether or not the data moved. Run
+#   `python scripts/make_review_figures.py` locally after merging instead.
+#
+# Embase is NOT re-run: it has no API and its export is a licensed, manual
+# download from embase.com. The committed Embase records are reused as they
+# stand. To refresh that layer, redo the export by hand and run
+# scripts/embase_layer.py (see reports/06_search_strategy.md section 4.3).
+#
+# Secrets (Settings -> Secrets and variables -> Actions -> Secrets):
+#   ANTHROPIC_API_KEY  reads the new abstracts. Without it the run still
+#                      re-searches and refreshes metrics, but screens nothing,
+#                      so no new paper enters the corpus. One structured call
+#                      per abstract, ~$0.01 each, capped at the `limit` input
+#                      (250 by default -> a few dollars a month).
+#   NCBI_API_KEY       PubMed 3 -> 10 req/s (optional, just faster).
+#   SEMANTIC_SCHOLAR_API_KEY  optional.
+# The built-in GITHUB_TOKEN opens the pull request. Repository setting
+# required for that step: Settings -> Actions -> General -> "Allow GitHub
+# Actions to create and approve pull requests".
+
+name: Update review database
+
+on:
+  schedule:
+    # 07:23 UTC on the 8th of every month, a week after refresh.yml.
+    - cron: "23 7 8 * *"
+  workflow_dispatch:
+    inputs:
+      years_back:
+        description: "Search the current year and this many before it"
+        type: string
+        default: "2"
+      since:
+        description: "First publication year to search (overrides years_back; 2005 = the whole review window)"
+        type: string
+        default: ""
+      limit:
+        description: "Max new abstracts to read this run (blank = config.PAPER_DB_RUN_LIMIT)"
+        type: string
+        default: ""
+      read_all:
+        description: "Read every outstanding paper (ignores limit; slower, costs more)"
+        type: boolean
+        default: false
+      figures:
+        description: "Also redraw the review figures (off by default: CI renders them slightly differently, so every run would show a figure diff)"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Report what is new and what it would cost; store nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-database
+  cancel-in-progress: false
+
+jobs:
+  update:
+    # The switch. Scheduled runs are skipped until the repository variable is
+    # set to "true"; manual runs always go ahead.
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.UPDATE_DATABASE_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e ".[db]"
+
+      # Carrying the cache between runs keeps this to an incremental pull: the
+      # updater drops the cached searches and metric lookups (the entries that
+      # would hide a newly indexed paper) and keeps the fetched records of
+      # papers already read.
+      - name: Restore HTTP cache
+        uses: actions/cache@v4
+        with:
+          path: data/raw/cache
+          key: db-cache-${{ github.run_id }}
+          restore-keys: |
+            db-cache-
+            http-cache-
+
+      - name: Update the database
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+          SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+          PEDRAD_AI_EMAIL: josephrich98@gmail.com
+        run: |
+          args="--summary $RUNNER_TEMP/summary.md"
+          if [ -n "${{ inputs.since }}" ]; then
+            args="$args --since ${{ inputs.since }}"
+          elif [ -n "${{ inputs.years_back }}" ]; then
+            args="$args --years-back ${{ inputs.years_back }}"
+          fi
+          if [ "${{ inputs.read_all }}" = "true" ]; then
+            args="$args --all"
+          elif [ -n "${{ inputs.limit }}" ]; then
+            args="$args --limit ${{ inputs.limit }}"
+          fi
+          if [ "${{ inputs.figures }}" != "true" ]; then args="$args --no-figures"; fi
+          if [ "${{ inputs.dry_run }}" = "true" ]; then args="$args --dry-run"; fi
+          python scripts/update_database.py $args
+
+      - name: Upload run logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-database-logs
+          path: data/logs/update-*
+          if-no-files-found: ignore
+
+      - name: Open pull request with the updated database
+        if: ${{ inputs.dry_run != true }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: db-update/${{ github.run_id }}
+          delete-branch: true
+          add-paths: |
+            data/processed/pedrad_paper_db.json
+            data/processed/pedrad_paper_db.csv
+            data/processed/pedrad_paper_db_summary.json
+            data/processed/pediatric_radiology_ai.csv
+            data/processed/review_stats.json
+            data/processed/review_flow.json
+            data/processed/review_included_ids.json
+            reports/04_paper_database.md
+            figures/**
+          commit-message: "Update the review database with this month's searches"
+          title: "Database update ${{ github.run_id }}"
+          body-path: ${{ runner.temp }}/summary.md
