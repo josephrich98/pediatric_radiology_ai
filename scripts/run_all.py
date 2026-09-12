@@ -58,6 +58,7 @@ def main() -> None:
     run("export_unified_db.py")
     run("make_figures.py")
     run("make_review_figures.py")
+    run("build_landscape_review.py")
     run("build_reports.py")
     run("build_slides.py")
     print("\nPipeline complete. See reports/, figures/, and slides/.")

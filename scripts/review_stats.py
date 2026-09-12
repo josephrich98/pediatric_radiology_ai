@@ -55,9 +55,11 @@ NEURO_DIAGNOSIS = (
 NEURO_WIDE = (
     NEURO_DIAGNOSIS + r"|neurodevelopment|depress|cognitiv|behaviou?ral|intelligence quotient|"
     r"language development|brain age|brain development|connectom|functional connectivity|"
-    r"\bfmri\b|gaming|resting.state|executive function|\bintelligence\b|emotion|temperament|"
+    r"\bfmri\b|gaming|resting.state|executive function|intelligence score|emotion|temperament|"
     r"reward|abcd study|brain.behavio|neurocognit|developmental outcome|psychopatholog|puberty|"
     r"functional magnetic resonance|graph theor|social")
+# Do not match bare "intelligence": "artificial intelligence" is present in
+# many non-neuroscience titles and would inflate this sensitivity subset.
 NEURO_RULES = {
     "diagnosis": (re.compile(NEURO_DIAGNOSIS, re.I),
                   "MRI studies naming an explicit neurodevelopmental or psychiatric diagnosis"),

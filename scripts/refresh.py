@@ -175,6 +175,8 @@ def main() -> int:
                                      LOGS / f"refresh-{stamp}-figures.log", args.dry_run)
     results["reviewfigures"], _ = run_step("reviewfigures", [py, str(SCRIPTS / "make_review_figures.py")],
                                            LOGS / f"refresh-{stamp}-reviewfigures.log", args.dry_run)
+    results["landscape"], _ = run_step("landscape", [py, str(SCRIPTS / "build_landscape_review.py")],
+                                      LOGS / f"refresh-{stamp}-landscape.log", args.dry_run)
     results["reports"], _ = run_step("reports", [py, str(SCRIPTS / "build_reports.py")],
                                      LOGS / f"refresh-{stamp}-reports.log", args.dry_run)
 

@@ -1,8 +1,8 @@
-# From evidence to deployment: a systematic, continuously updated review of artificial intelligence in pediatric radiology
+# Artificial intelligence in pediatric radiology: a landscape review of growth, clinical applications, and emerging directions through 2026
 
-**Article type:** Review
+**Article type:** Scoping review with bibliometric analysis and narrative synthesis
 
-**Running title:** Pediatric radiology AI: from evidence to deployment
+**Running title:** The pediatric radiology AI landscape
 
 **Authors:** Joseph Rich, Amit Sura
 
@@ -10,263 +10,316 @@
 
 **Corresponding author:** [AUTHOR ACTION: add name, postal address, email address, and telephone number]
 
-**Main-text word count:** 3,143 (Introduction through Conclusion, excluding headings; calculated 2026-09-11)
+**Evidence snapshot:** Search through September 9, 2026; analysis and selected source verification September 11, 2026. Counts describe 3,496 included primary-study records in the current database, with publication-version adjudication still required.
 
-**Abstract word count:** 215
+**Tables:** 5
 
-**Tables:** 4
+**Figures:** 6 main figures; study selection and methodological detail in the supplement.
 
-**Figures:** 6
+**Word counts:** Abstract 211; main text 3,376 (Introduction through Conclusion, excluding headings; whitespace-delimited count, September 11, 2026).
 
 ## Abstract
 
-Artificial intelligence (AI) research in radiology is expanding rapidly, but its pediatric share and progression toward clinical use remain uncertain. We quantified the size, composition, methodological rigor, and translational status of pediatric radiology AI. A bibliometric analysis counted PubMed records from 2008 through 2026. A systematic search of PubMed/MEDLINE and Embase identified primary studies from 2005 onward; records were screened against prespecified criteria and 20 fields were extracted using constrained automated models. The search identified 13,510 records, of which 6,602 were screened and 3,496 primary studies included. Radiology AI records increased from 715 in 2008 to 20,831 in 2025, while pediatric records increased from 58 to 2,348. In 2025, AI represented 11.4% of radiology publishing and 7.4% of pediatric radiology publishing. MRI (45.5%) and ultrasound (23.7%) predominated. External or multicenter validation was reported in 18.7%, reader studies in 6.2%, prospective evaluation in 3.3%, and a working code or model URL in 2.6%. External validation increased from 4.2% in 2005–2014 to 20.3% in 2023–2026, whereas reader-study frequency did not improve. Eleven of 1,164 FDA-listed radiology AI devices had a pediatric or fetal term in their name. Pediatric radiology AI is growing but remains less AI-saturated than radiology overall. Local age-stratified validation, prospective evaluation, and multi-institutional pediatric datasets are priorities for translating publication growth into clinical benefit.
+Artificial intelligence (AI) in pediatric radiology has expanded into a large but uneven research field. This scoping review combines bibliometric analysis with a clinical narrative to describe where research is concentrated, which resources support it, and what changed in 2025–2026. The current PubMed/MEDLINE, Embase, and supplementary-source cohort contains 3,496 included primary-study records, including 685 assigned to 2025 and 686 to 2026 through September 9. MRI accounts for 45.5%, ultrasound 23.7%, radiography 19.3%, and CT 9.3%; nuclear imaging and fluoroscopy remain sparsely represented. MRI predominance partly reflects developmental neuroscience: excluding a broad, exploratory neuroscience subset brings MRI and ultrasound to approximately equal shares. Fetal imaging is a major concentration, whereas acute abdominal disease and several non-neurologic neonatal applications have smaller literatures. Named dataset mentions are concentrated in neurodevelopmental resources and established radiographic benchmarks. Recent developments include pediatric image–text models, reusable fetal ultrasound representations, faster reconstruction, and evaluations of AI-assisted clinical decisions. These coexist with continued dominance of detection, measurement, prediction, and segmentation. The synthesis identifies opportunities in age-specific transfer learning, shared datasets beyond existing benchmarks, longitudinal assessment, and prospective clinical evaluation. Automated extraction, incomplete publication-version deduplication, and indexing lag limit precise estimates. The field is best understood as several application-specific trajectories whose clinical value depends on the population, imaging task, and setting.
 
-**Keywords:** Artificial Intelligence; Radiology; Pediatrics; Systematic Reviews as Topic
+**Keywords:** Artificial Intelligence; Radiology; Pediatrics; Bibliometrics; Review
 
 ## Introduction
 
-Artificial intelligence (AI) is now a sustained feature of radiology research and practice. In 2025, one in nine radiology records indexed in PubMed concerned AI, and the US Food and Drug Administration (FDA) had listed more than 1,100 AI-enabled devices under its Radiology panel. Children may benefit from these developments, but pediatric imaging presents distinct constraints: smaller datasets, age-dependent anatomy and normal ranges, rare diseases, deliberate limitation of ionizing radiation, and heightened consent and privacy requirements. Performance in adults therefore cannot be assumed to generalize to children.
+A pediatric radiologist following AI now encounters several overlapping literatures: automated bone age and fracture detection, fetal ultrasound, brain development and tumor imaging, reconstruction methods, and increasingly models that learn jointly from images and text. The practical difficulty is understanding how these strands fit together. A large publication count offers little guidance about which applications are established, which resources are reusable, or which clinically important problems receive little attention.
 
-Kamran et al. mapped 789 original pediatric radiology AI articles published from 2005 to August 2024 [1]. Their scoping review described countries, modalities, subspecialties, and application categories, but did not examine model-level dataset size, validation, performance, or availability. These variables determine whether a published model could progress toward clinical use. The literature also changes quickly enough that a static review becomes outdated soon after its search closes, making a living, reproducible approach attractive [15].
+Kamran and colleagues mapped 789 original articles through 2024 and found a concentration in musculoskeletal, neurologic, and chest imaging [1]. Our broader, updated search includes fetal imaging, developmental neuroscience, and preprints. These choices change the apparent landscape and must be considered when comparing reviews. The purpose here is to help clinicians orient themselves and help researchers identify useful next questions.
 
-This review examined primary research in which an AI or machine-learning method was developed, applied, validated, or clinically evaluated using diagnostic radiologic imaging in people younger than 18 years or in fetal/prenatal imaging. Eligible modalities included radiography, fluoroscopy, CT, MRI, ultrasound and echocardiography, nuclear medicine, and angiography. Mixed-age studies required a separately analyzed pediatric subgroup or a pediatric-specific model. Reviews, editorials, case reports, conference abstracts and proceedings, non-radiologic imaging, and studies without a substantive AI component were excluded. No language restriction was applied.
+We therefore ask how pediatric radiology AI has developed over time; where work is concentrated by modality, clinical problem, task, and age; which datasets and open tools support it; and which developments in 2025–2026 indicate plausible future directions. Individual studies illustrate those directions. The review does not attempt to summarize or assess the bias of every model, and it does not pool diagnostic accuracy across unrelated applications.
 
-Our objectives were to: (1) quantify pediatric radiology AI growth relative to radiology AI overall; (2) characterize the pediatric literature by modality, task, and age group; (3) measure validation, study design, data provenance, and model availability over time; (4) relate the literature to the regulatory record; and (5) provide an auditable database that can be updated as new evidence appears.
+## Review approach and interpretation
 
-## Materials and methods
+### Evidence base
 
-### Study design and reporting
+The systematic search underlying the database covered January 1, 2005, through September 9, 2026, using PubMed/MEDLINE and Embase, with supplementary OpenAlex records. Eligible primary research applied AI to diagnostic radiologic imaging in children or fetal populations; mixed-age studies required pediatric relevance under the recorded eligibility criteria. Journal articles and preprints were eligible. Reviews and non-primary publications were excluded from aggregate counts. Conference abstracts and proceedings were excluded by the existing protocol. Echocardiography was included, so the scope extends beyond services delivered exclusively by radiologists.
 
-We combined a bibliometric layer, which counted indexed records, with a structured systematic-review layer, which characterized individual eligible studies, and a translational layer based on the FDA device list. The review was designed with reference to PRISMA 2020. The protocol was versioned with the analysis code but was not prospectively registered. Full eligibility criteria and database strategies are provided in Supplementary Tables S1 and S2.
+The stored selection flow contains 13,510 identified records, 6,602 screened records, and 3,496 included primary-study records. Selection and abstract-based extraction were automated under a structured schema. The existing 150-record rescreening exercise measured agreement between two automated models; independent human validation remains incomplete. Full strategies, eligibility rules, and the selection flow are in the supplement.
 
-### Bibliometric analysis
+An additional audit identified 79 groups with identical normalized titles, involving 161 records, including duplicate database entries and preprint/journal versions. The primary analysis preserves the shared database cohort. A sensitivity analysis retaining one record per normalized title contains 3,414 records and leaves modality rankings unchanged. Accordingly, the unit reported throughout is an included record, not a verified independent investigation. Neither record counts nor repeated publications establish the number of unique patients represented.
 
-For each year from 2008 through 2026, PubMed E-utilities was queried using publication-date fields for four concepts: radiology, radiology and AI, pediatric radiology, and pediatric radiology and AI. Modality and task terms were restricted to titles and abstracts because PubMed automatic term mapping broadened unfielded terms such as “ultrasound” and “tomography.” Task categories were defined by model output: detection/diagnosis, segmentation, measurement/quantification, outcome prediction, reconstruction/imputation, report generation, foundation or vision-language modeling, autonomous agents, and workflow/non-interpretive applications. Because PubMed does not comprehensively index arXiv, analogous arXiv counts were retained as a separate supplementary layer and were not merged silently with PubMed counts.
+### Aggregate mapping and narrative selection
 
-Query adequacy was evaluated against landmark papers and two external corpora. The structured-review search retrieved all 26 prespecified pediatric landmark papers, 639 of 663 (96.4%) PubMed-resolved articles from the previous scoping review [1], and 3,715 of 3,728 (99.7%) MEDLINE-indexed records returned when the strategy was translated to Embase. Missed records were reviewed to identify tokenization problems and noneligible material. Search vocabulary and validation procedures are reported in Supplementary Table S1 and the accompanying search protocol.
+Modality, task, and age labels were summarized as overlapping categories. Clinical-topic maps used explicit keyword rules applied to titles and extracted clinical questions. Dataset-name searches additionally used extracted population, model description, and dataset-size fields. These exploratory counts measure mentions, not adjudicated disease categories or confirmed dataset reuse. They support comparisons among the selected topics, but cannot establish an exhaustive ranking of every pediatric disease. Of the cohort, 973 records did not match a selected topic rule and remained in the overall denominator.
 
-### Information sources and study selection
+Historical comparisons use 2005–2014, 2015–2019, 2020–2022, and 2023–2024, followed by separate 2025 and 2026 summaries. Percentages use each period's record count. The 2026 interval is incomplete and is not annualized. Annual assignment follows source metadata; online publication, preprint, and journal issue dates are not fully harmonized.
 
-PubMed/MEDLINE and Embase were searched from January 1, 2005, to September 9, 2026. The search combined title/abstract terms for imaging modality, AI, and pediatric or fetal population without topic exclusions, publication-type filters, or language restrictions. Preprints identified through Embase and OpenAlex were eligible and deduplicated against journal versions. Reference lists of included reviews and the article list from the previous scoping review were checked for additional records. Web of Science, Scopus, and IEEE Xplore were not searched; their absence is addressed as a limitation.
+The narrative selects examples for clinical relevance, reusable resources, or a change in research approach, including informative negative findings. Citation thresholds do not determine inclusion or recent-study selection. Dataset descriptions and software availability were checked against selected primary publications and official hosting pages. These targeted checks supplement interpretation without expanding the counted cohort.
 
-Records were deduplicated by DOI, PMID, and then normalized title with first author and year. Conference abstracts and proceedings were removed before screening because they generally lacked enough information to appraise study design and could not be reliably linked to later full reports. Remaining titles and abstracts were screened against the prespecified eligibility criteria using a large language model constrained to return an include/exclude decision and coded reason. Records without sufficient abstract information were designated for full-text assessment.
+This is a scoping and bibliometric synthesis, rather than a statistical meta-analysis. Disease prevalence, reference standards, study populations, outputs, and performance measures are too heterogeneous for a meaningful pooled field-wide effect estimate. Aggregate validation labels provide reporting context, not a formal study-level risk-of-bias assessment.
 
-A blinded random sample of 150 records was independently rescreened by a second automated model. Agreement was 94.7% (Cohen's κ=0.885); recall and precision of the first pass against the second were both 0.958. This comparison measures inter-model agreement, not accuracy against human reviewers. A prespecified dual-human validation sample had not been completed at this snapshot.
+## How the field developed
 
-### Data extraction and classification
+The included cohort grew from 71 records across 2005–2014 to 295 in 2015–2019 and 794 in 2020–2022. It then added 965 in 2023–2024, 685 in 2025, and 686 in 2026 year to date (Fig. 1). The last two periods together account for 39.2% of the current cohort. Their weight makes recent work central to the narrative, although incomplete indexing and publication-version overlap preclude a precise estimate of acceleration.
 
-Each included abstract was processed under a fixed, versioned schema using constrained structured output. Extracted fields included model name and family, modality, body region, clinical problem, patient population and age groups, task, model description, release status and evidence, code URL, dataset size, data source, validation strategy, principal result, study design, and extraction confidence. Bibliographic fields came directly from source records. Controlled vocabularies were compiled into the schema so that categories were consistent across studies.
+A separate PubMed bibliometric layer places this growth in context. Its broad pediatric radiology AI query increased from 58 records in 2008 to 2,348 in 2025; the corresponding all-radiology AI query increased from 715 to 20,831. AI represented 7.4% of pediatric radiology publishing and 11.4% of radiology publishing in 2025. These are query counts, including material that may fail subsequent screening, and are not interchangeable with the 685 included records assigned to 2025.
 
-Release status was cross-checked against code-hosting URLs, the FDA list, and a curated list of products with public pediatric indications. “Unclear” means that availability was not stated in the abstract, not that the model was unavailable. Each row retained the exact source-text hash, prompt and schema version, and any manual override. Duplicate human extraction of the prespecified validation sample had not been completed at this snapshot.
+The historical trajectory is usefully understood through changing research capabilities. Earlier work established that imaging measurements and patterns could be automated. Shared benchmarks then made model comparison accessible, exemplified by the 2017 RSNA bone-age challenge and subsequent clinical studies [2,3]. During the next phase, segmentation, prediction, and reconstruction broadened the range of outputs. In the current phase, researchers increasingly ask whether learned representations can support several tasks and whether an algorithm changes actual care.
 
-The extracted rows are published as a single table containing exactly the included primary studies, so that the database, this manuscript, and the accompanying presentation describe one corpus. Records excluded at screening or on publication form remain in the versioned store with their coded reason and are the basis of any audit of those decisions.
+These phases overlap. Detection/diagnosis still accounts for 1,337 records (38.2%), measurement for 838 (24.0%), outcome prediction for 683 (19.5%), and segmentation for 662 (18.9%). Reconstruction/imputation contributes 277 (7.9%) and workflow applications 167 (4.8%) (Fig. 5). The combined report-generation/LLM and foundation/vision-language labels remain uncommon. These task labels describe outputs and broad uses; they should not be read as a clean chronology of model architectures.
 
-### Citation measures
+## Where research is concentrated
 
-Each study also carried its citation record: counts, citations per year, and the relative citation ratio from NIH iCite for records with a PubMed identifier, and citation counts and field-weighted citation impact from OpenAlex, matched by DOI. OpenAlex coverage was necessary because Embase-only records have no PubMed identifier and therefore no relative citation ratio. Both normalized measures place the average article of the same field and year at 1.0. A normalized value was used only after a study had accumulated at least five citations, because the ratio otherwise divides by a fraction of an expected citation and becomes unstable for very recent work. Citation measures described the corpus and identified individual studies for presentation; they were not used to select the corpus, because a citation threshold would import language, geography, and positive-result bias into a systematic review.
+### MRI: a large literature with two distinct clinical meanings
 
-### Translational analysis
+MRI leads the cohort with 1,590 records (45.5%), but its share falls from 58.3% in 2015–2019 to 43.9% in 2025 and 40.1% in 2026 year to date (Table 1; Fig. 2). This is diversification within a growing literature, rather than evidence that MRI research is contracting.
 
-The FDA AI-Enabled Medical Device List was downloaded on September 3, 2026, and filtered to the Radiology panel. Devices with pediatric or fetal terms in the device name were flagged and grouped by company and task. This name-based method provides a lower bound because the public list does not contain complete age-specific indication text. Commercial products with publicly stated pediatric indications were cross-checked separately.
+Much MRI work uses imaging to study development, cognition, or neuropsychiatric conditions. The exploratory topic map identifies 355 records mentioning brain development/cognition and 313 mentioning autism, ADHD, or psychiatric disease; these groups overlap. Other strands address tumors, epilepsy, fetal anatomy, tissue segmentation, or image acquisition (Fig. 3). Predicting a behavioral score from a research MRI cohort has a different clinical purpose from identifying a lesion in a referred child.
 
-### Statistical analysis and reproducibility
+The distinction narrows the gap between modalities. The corrected broad neuroscience sensitivity rule removes 748 MRI records and leaves MRI at 30.6% and ultrasound at 30.1% of the remaining cohort. A narrower diagnostic rule leaves MRI clearly first at 39.9%. Both analyses are exploratory and retain those records in the main cohort. Together, they show why a broad imaging review can rank MRI first while a review emphasizing direct clinical radiology ranks radiography first [1].
 
-Counts, proportions, medians, interquartile ranges, and compound annual growth rates were calculated descriptively. Categories for modality, task, and age were multilabel and therefore could total more than 100%. Era comparisons used 2005–2014, 2015–2019, 2020–2022, and 2023–2026. Inferential tests were not applied because the reported denominators were enumerations of indexed records rather than samples drawn for population inference.
+Brain tumor imaging forms a more directly clinical concentration: 162 records match the selected CNS tumor terms. Resources such as the Children's Brain Tumor Network (CBTN) connect repeated clinical MRI examinations with disease context [4]. This creates opportunities for segmentation and longitudinal assessment, but examination counts must not be mistaken for independent patients.
 
-Queries, cached source records, screening decisions, extraction schema, and analysis code were versioned. The pipeline regenerated counts, tables, and figures monthly. Results in this manuscript are a snapshot collected on September 9, 2026; 2026 is year-to-date, and the most recent years remain susceptible to indexing lag.
+### Ultrasound: fetal imaging drives a substantial part of the field
 
-## Results
+Ultrasound accounts for 828 records (23.7%). Of 786 records carrying a fetal age label, 560 also carry an ultrasound label and 229 MRI. Thus fetal imaging is a major component of the landscape. Ultrasound studies in children after birth cannot be inferred from the overall ultrasound total.
 
-### Publication growth and study selection
+Fetal research spans standard-plane recognition, biometry, anatomy segmentation, and anomaly assessment. FETAL_PLANES_DB provides a reusable plane-classification resource [5], while congenital heart disease studies illustrate progression from model development to evaluation in community settings [6,7]. These applications tackle different points in the examination: obtaining a usable view, making a measurement, and recognizing disease. Success at one does not establish performance at the others.
 
-Radiology AI publications increased from 715 PubMed records in 2008 to 20,831 in 2025 (compound annual growth rate, 21.9%). Pediatric radiology AI increased from 58 to 2,348 records (24.3%). Absolute pediatric growth was therefore slightly faster, but the field did not close its relative gap. In 2025, AI represented 11.4% of radiology publishing and 7.4% of pediatric radiology publishing, giving a penetration ratio of 0.65 (Table 1). The ratio did not exceed 0.81 during the 18-year observation period.
+Postnatal ultrasound offers a less concentrated set of applications, including cardiac function, hip dysplasia, abdominal pain, and hepatobiliary or urinary disease. The topic map finds 60 hip-dysplasia records and 44 acute-abdomen records across modalities. The Regensburg appendicitis resource illustrates the value of linking ultrasound to clinical and laboratory information [8]. For radiologists, this suggests that acquisition support and integrated diagnostic assessment deserve attention alongside image classification.
 
-The systematic search identified 13,510 records: 6,000 from PubMed/MEDLINE, 7,288 from Embase, and 222 from an earlier OpenAlex pass. Deduplication and removal of ineligible publication forms left 6,602 records for screening. Of these, 2,650 did not meet topic criteria and 456 were relevant but non-primary publications; 3,496 primary studies were included (Fig. 1). Embase contributed 365 included studies not indexed in PubMed. Study counts rose from 29 in 2015 to 167 in 2020, 555 in 2024, and 685 in 2025 (Fig. 2).
+### Radiography: recognizable clinical tasks and recurring benchmarks
 
-### Composition of the evidence base
+Radiography contributes 676 records (19.3%). Bone age, pulmonary infection, scoliosis, and fracture/trauma are recurring topics, with 176, 161, 142, and 138 mentions respectively across the full cohort. These counts are overlapping clinical-topic matches rather than modality-specific totals.
 
-MRI was reported in 1,590 studies (45.5%), ultrasound in 828 (23.7%), radiography in 676 (19.3%), and CT in 325 (9.3%) (Table 2; Fig. 3). Detection/diagnosis was the most common model output (38.2%), followed by measurement/quantification (24.0%), outcome prediction (19.5%), segmentation (18.9%), and reconstruction/imputation (7.9%). Children were represented in 37.2% of studies, adolescents in 25.4%, fetal populations in 22.5%, infants in 14.7%, and neonates in 9.9%.
+Bone age has a comparatively clear output, an established benchmark, and a history of reader comparison [2,3]. The research question has progressed toward performance in children whose skeletal development differs from the training distribution. Fracture detection similarly spans benchmark development and clinical workflow evaluation. GRAZPEDWRI-DX facilitates research on wrist trauma [9], but its anatomy and case distribution do not represent the full range of pediatric emergency radiography.
 
-Fetal or perinatal imaging accounted for 787 studies (22.5%). This segment was structurally distinct: 561 of 787 studies (71.3%) used ultrasound, compared with 23.7% in the overall corpus. Its task distribution was led by segmentation, detection, and measurement. Two post hoc sensitivity analyses removed the developmental-neuroscience MRI literature, which is eligible under our criteria but is not diagnostic radiology in the usual sense. Removing the 322 MRI studies that named an explicit neurodevelopmental or psychiatric diagnosis left MRI clearly first among the remaining 3,174 studies (39.9%, versus ultrasound 26.1% and radiography 21.3%). Removing the wider set of 768 studies that also used cognitive-neuroscience methods or reported cognitive or behavioral outcomes left MRI and ultrasound level among 2,728 studies (30.1% and 30.2%), with radiography at 24.6%. MRI's lead in this corpus is therefore substantially attributable to that literature, and whether MRI or ultrasound ranks first depends on where the boundary is drawn. External or multicenter validation was insensitive to both exclusions (18.7% and 18.5%, versus 18.7% overall).
+Chest research also requires attention to benchmark scope. A pneumonia classification dataset and a neonatal chest/abdominal radiograph dataset pose different tasks. PediCXR/VinDr-PCXR extends resource availability to multiple thoracic findings [10], while recent neonatal image–text modeling begins to address devices and several findings together [11]. The clinical importance of this shift lies in broadening what the model is asked to recognize.
 
-### Methodological rigor and the translational funnel
+### CT, nuclear imaging, and fluoroscopy: smaller literatures, distinct opportunities
 
-Internal validation only was reported in 2,352 studies (67.3%), external or multicenter validation in 654 (18.7%), reader studies in 217 (6.2%), and prospective evaluation in 115 (3.3%) (Table 3; Figs. 4 and 5). No validation strategy was stated in 158 studies (4.5%). Data came from a single center in 31.1%, multiple centers in 20.1%, and a public dataset in 9.7%; source was unstated in 39.1%. Where dataset size was extractable (2,006 studies), the median was 547 subjects or images (interquartile range, 204–2,022). A working code or model URL was documented in 92 studies (2.6%).
+CT accounts for 325 records (9.3%), nuclear medicine/PET for 53 (1.5%), and fluoroscopy for 13 (0.4%). Their smaller representation is an observation about this literature, not a measure of clinical importance or unmet need relative to examination volume.
 
-Several retrospective indicators improved over time. External or multicenter validation increased from 4.2% in 2005–2014 to 20.3% in 2023–2026, and multicenter data use increased from 8.5% to 22.3%. Reader studies did not increase (7.0% to 5.7%). Prospective evaluation increased from 2.8% to 4.0% across the same eras after falling to 1.6% in 2020–2022. Code-release classification remained near 5% from 2020 onward. Thus, improvement was concentrated in retrospective practices rather than study designs requiring prospective clinical participation.
+CT combines segmentation and quantitative assessment with reconstruction work. Pediatric-CT-SEG contains 359 patients with expert organ contours, a useful resource whose scale is far smaller than its slice count might suggest [12]. Evaluation of adult-trained TotalSegmentator on this pediatric cohort found lower mean Dice performance than on an external adult cohort; pediatric training and fine-tuning improved performance [13]. The practical research problem is identifying when adult resources transfer, and how much pediatric adaptation is required.
 
-### Citation impact of the corpus
+Nuclear imaging provides an example of a small literature pursuing a potentially consequential outcome: reducing acquisition burden while preserving useful information. Fluoroscopy is even less represented in this search. Its dynamic examinations suggest opportunities in sequence interpretation, procedure support, and measurement, although the present data cannot rank these opportunities by clinical benefit.
 
-A normalized citation measure was available for 1,669 of 3,496 studies (47.7%); the remainder were too recent to have accumulated five citations. The median of those studies was cited 3.4 times the average article of its field and year, so this is a well-cited rather than a neglected literature. The most-cited decile comprised 167 studies at or above 14 times the field-and-year average, of which 158 came from PubMed, 6 from Embase, and 3 from the OpenAlex layer. Selecting on citations did not select strongly for methodological rigor: external or multicenter validation was reported by 22.8% of that decile versus 18.7% of the corpus, a reader study by 9.6% versus 6.2%, and 61.1% still reported internal validation only (Fig. 6).
+## Age is a research dimension, not merely an eligibility criterion
 
-### Regulatory translation
+Child and adolescent labels occur in 1,301 (37.2%) and 889 (25.4%) records. Fetal imaging accounts for 786 (22.5%), infants for 515 (14.7%), and neonates for 346 (9.9%). Another 498 records (14.2%) specify pediatrics without a narrower age label. These categories overlap and do not indicate how often performance was reported separately by age.
 
-The FDA list contained 1,524 AI-enabled devices, including 1,164 (76.4%) assigned to the Radiology panel. Eleven radiology devices (0.9%) had a pediatric or fetal term in the device name (Table 4). They came from five companies and addressed three application areas: fracture or chest-finding detection on radiographs, bone-age assessment, and fetal echocardiography. Because identification was name-based, this is a floor for explicitly pediatric devices and not an estimate of all devices whose indications permit pediatric use.
+The age–modality map reveals concentrations that aggregate totals conceal (Fig. 4). Neonatal records include 202 MRI studies, 76 ultrasound studies, and 48 radiography studies. Therefore, “neonatal AI is underexplored” is too broad: substantial neonatal MRI activity coexists with a smaller radiographic literature. Similarly, extensive fetal ultrasound work does not establish coverage of infant abdominal ultrasound.
 
-## Discussion
+Developmental resources help explain these patterns. ABCD supports longitudinal study from late childhood, ABIDE includes both children and adults, and the developing Human Connectome Project (dHCP) supplies neonatal and fetal MRI [14–16]. These cohorts support valuable research, but differ from children presenting for an acute clinical examination. An age-aware research agenda should test developmental stage, body size, acquisition conditions, and relevant pathology separately, rather than rely on a single pooled “pediatric” performance estimate.
 
-### Principal findings
+## Datasets and open tools shape what researchers can study
 
-This review found rapid growth but limited progression toward clinical translation. Pediatric radiology AI expanded approximately 40-fold from 2008 to 2025, yet AI remained about one-third less prevalent within pediatric radiology publishing than within radiology publishing overall. Among 3,496 primary studies, fewer than one in five reported external or multicenter validation, approximately one in 16 included a reader study, one in 30 was prospective, and one in 38 supplied a working code or model URL. Only 11 FDA-listed radiology devices were explicitly pediatric or fetal by name.
+### Resource visibility and the limits of popularity counts
 
-The trajectory was mixed. External validation and multicenter data use improved substantially, consistent with attention to reporting and evaluation standards such as CLAIM [14]. Reader studies did not become more common, and prospective studies remained below 5%. Retrospective development can often be extended with additional datasets, whereas prospective evaluation requires a different protocol, clinical workflow, resources, and contact with patients. Publication growth and reporting improvement therefore should not be interpreted as equivalent growth in evidence of clinical benefit.
+Among the selected resource names searched in the extracted text, ABCD is most frequently mentioned (83 records), followed by ABIDE and RSNA bone age (42 each), dHCP (39), and ADHD-200 (33). CBTN appears in 17 records, GRAZPEDWRI-DX in 15, and BraTS-PEDs in 12. These are auditable indicators of resource visibility, not a complete dataset-usage leaderboard. Abstracts often omit dataset names; mentions can refer to development, evaluation, or context.
 
-### Relationship to previous work
+The pattern is consistent with research concentrating around reusable neurodevelopmental cohorts and radiographic benchmarks. It does not establish that resource availability caused publication growth. Table 2 gives a practical resource map, including access route, unit of scale, and the question each resource can support.
 
-The previous scoping review found radiography first, followed by MRI and ultrasound, and categorized 91.1% of studies as image interpretation or diagnosis [1]. We found MRI first and ultrasound second. Two design choices explain much of this difference. First, our search explicitly included fetal, prenatal, neuroimaging, fMRI, connectome, and classical machine-learning vocabulary. Fetal imaging alone represented 22.5% of our corpus and was predominantly ultrasound, and the sensitivity analyses above show that MRI's lead depends on retaining the developmental-neuroscience literature that a narrower vocabulary does not reach. Our modality ranking should therefore be read as a property of the search vocabulary as much as of the field. Second, we classified studies by what the model produced. Segmentation masks, quantitative measurements, outcome predictions, and reconstructed images were therefore separated from diagnostic labels rather than grouped under interpretation.
+Three distinctions matter. First, images, studies, and patients are different denominators. CBTN's described release includes 23,101 MRI examinations from 1,526 patients; dHCP similarly contains repeat datasets [4,16]. Second, publicly described resources may require registration, credentialing, or an approved data-use agreement. Third, a released model does not imply access to its training data. Researchers should also track overlap between related resources and separate patients, repeated examinations, and institutions appropriately when designing evaluation.
 
-The broader vocabulary revealed a substantial fetal literature that may not use child, infant, or pediatric terminology. Fetal echocardiography has also produced expert-level and community-validated AI studies [9,10] and the most clearly pediatric recent FDA activity. Bone age is another comparatively mature area, supported by a public challenge and external evaluations across common and rare growth disorders [5–8]. These examples show how pediatric benchmarks and unambiguous target populations can concentrate research and facilitate evaluation.
+### Reusable software and pediatric model releases
 
-### Implications for practice and research
+The open ecosystem has several layers (Table 3). nnU-Net provides a configurable segmentation training framework; MONAI provides broader medical-imaging development infrastructure. MedSAM offers promptable segmentation, while TotalSegmentator supplies pretrained anatomical segmentation [17–20]. These tools can support pediatric research, but their popularity does not demonstrate pediatric suitability.
 
-Departments should not assume that adult performance transfers to pediatric anatomy. An adult-derived CT segmentation model showed lower mean Dice performance in children and particularly poor performance for small structures before pediatric fine-tuning [2]. Site-dependent failure has also been demonstrated for adult chest radiograph models [11], despite the availability of robust general segmentation systems [12]. In a pediatric emergency department, a fracture detector improved resident accuracy modestly but performed unevenly by fracture type and sometimes caused readers to reverse a correct diagnosis [3]. These findings support local, age-stratified validation before deployment, subgroup monitoring afterward, and predefined procedures for discordance between clinicians and software.
+Pediatric releases provide a more direct connection between a clinical task and reusable weights. Deeplasia addresses bone age; pTBLightNet addresses tuberculosis-compatible pediatric chest radiographs; and FetalCLIP provides fetal ultrasound representations [21–23]. Their availability permits independent experiments, though each release has its own training domain and use conditions.
 
-Research investment should prioritize shared pediatric infrastructure and prospective evaluation. Public adult chest radiograph datasets contain hundreds of thousands of images [13], while pediatric datasets are fewer and smaller. The absence of children from public medical imaging data has been associated with measurable age bias [4]. Multi-institutional datasets should therefore record age, developmental stage, acquisition parameters, disease prevalence, and site, with governance that permits external evaluation. Challenge designs can build on the RSNA pediatric bone-age model [5] but should extend to neonatal chest imaging, pediatric abdominal ultrasound, congenital anomalies, oncology, and other clinically important areas with limited data.
+The stored GitHub snapshot places nnU-Net, MONAI, and MedSAM near the top of the project's selected repository list. That list mixes frameworks, models, and infrastructure and is not an exhaustive adoption survey. Similarly, the cohort's 168 open-source labels (4.8%) and 92 populated code-URL fields (2.6%) indicate documented availability, not an audited census of functioning, permissively licensed models. The more useful question is whether a resource supplies the code, weights, preprocessing, and evaluation information needed to reproduce and extend the relevant result.
 
-AI benefits are not limited to diagnosis. Deep-learning reconstruction can reduce pediatric CT radiation exposure while maintaining image quality [16] and accelerate pediatric brain MRI while reducing noise and artifacts [17]. These applications may offer near-term benefit without requiring an autonomous diagnostic decision, although local validation and safety monitoring remain necessary. Funding priorities should balance diagnostic model development with reconstruction, workflow, human-factors studies, and outcomes measured in clinical practice.
+## What changed in 2025–2026
 
-### Living and reproducible review design
+### Pediatric representations begin to support several tasks
 
-A living database addresses the short useful life of a static bibliometric review [15]. Here, each search, screening decision, schema version, and correction is retained, allowing estimates to be regenerated and disagreements to be audited. Updating does not remove indexing lag or the need for methodological validation, but it makes changes in the evidence base visible and permits corrected classifications to propagate consistently through tables and figures. The repository should be archived at each published version so that the manuscript remains linked to a fixed, citable snapshot.
+The most distinctive recent development is the appearance of models trained around pediatric imaging domains rather than a single downstream label. NeoCLIP's 2025 journal report describes learning from 20,154 neonatal radiographs and 15,795 reports from 4,629 infants, targeting 15 radiological features and five devices [11]. This is a concrete neonatal application of image–text learning, although the retrospective institutional cohort does not establish prospective performance elsewhere.
 
-### Limitations
+FetalCLIP's June 2026 publication describes pretraining on 210,035 fetal ultrasound images paired with text, followed by evaluation across classification, gestational-age estimation, congenital heart disease detection, and segmentation [23]. Its public code and weight download make it a research resource as well as a paper. The development suggests a move toward reusable representations within a defined clinical domain; it does not establish general competence across pediatric radiology.
 
-The principal limitation is automated screening and extraction without completed dual-human validation. Agreement between two models does not exclude shared error, particularly for mixed-age cohorts, general-purpose methods tested on pediatric images, and studies using AI as a measurement instrument. The prespecified human screening and extraction studies must be completed before submission, and their results may change corpus counts.
+This is still a small part of the counted literature. Foundation/vision-language labels occur in eight records in 2025 and eight in 2026 year to date (1.2% in each period). The report-generation/LLM label increases from five (0.7%) to 12 (1.7%). Small counts, combined category definitions, and incomplete retrieval of engineering work make precise growth claims premature (Fig. 6). Established tasks remain numerically dominant.
 
-Second, PubMed/MEDLINE and Embase were searched, but Web of Science, Scopus, and IEEE Xplore were not. Engineering methods and conference-derived work may therefore be underrepresented. Conversely, 2,168 conference records were excluded because their limited reports could not support the review's central appraisal; this may omit work that never reached full publication. Third, most extraction used abstracts. Missing information, including the data source in 39.1% of studies, may represent incomplete reporting rather than absent methods. Formal study-level risk-of-bias assessment was not feasible across the heterogeneous designs, so the reported measures assess selected aspects of rigor rather than overall validity.
+### Reconstruction brings AI into acquisition decisions
 
-Fourth, the review is query-dependent. Although recall was high against three validation sets, vocabulary choices influence modality and population estimates. Fifth, FDA identification relied on pediatric terms in device names because complete age-specific indication text was unavailable in the list; the device count is a lower bound. Finally, recent-year estimates are affected by indexing lag, and 2026 data are incomplete. These limitations make the direction and scale of the observed translational gap more secure than any single exact percentage.
+Recent reconstruction studies address the experience of undergoing an examination. Yoo and colleagues studied accelerated pediatric brain MRI in 46 patients and reported shorter 3D T1 acquisitions with improved image-quality measures [24]. A 2026 study of motion-robust single-shot T2 imaging further examines reconstruction in awake and sedated children [25]. Sequence-level image improvement should be distinguished from a demonstrated reduction in sedation or total examination time.
+
+In pediatric PET, Han and colleagues evaluated patch-based denoising using 88 examinations from 64 test patients. Truncating list-mode data from 90 to 20 seconds per bed simulated reduced counts; enhanced images were rated equivalent or superior in overall quality and noise in more than 85% of cases [26]. This supports further investigation of shorter or lower-activity acquisitions. It was not a prospective trial administering the proposed reduced activity.
+
+Together these examples suggest that AI may influence pediatric imaging through acquisition and reconstruction as well as interpretation. Their value should be assessed with task-specific diagnostic endpoints and examination-level outcomes.
+
+### Mature applications face more demanding clinical questions
+
+In 2025, Ziegner and colleagues evaluated fracture detection in a pediatric emergency setting and found a modest improvement in resident accuracy, alongside instances in which readers abandoned a correct diagnosis after viewing AI output [27]. A subsequent 2026 prospective study enrolled 667 children and adolescents with AI support available on alternating days. Diagnostic revisions requiring recall occurred in 8.6% without AI and 5.7% with AI; the risk ratio was 0.66, with a 95% confidence interval of 0.37–1.19 [28]. This leaves the clinical effect uncertain despite high standalone accuracy.
+
+Bone age illustrates another form of progress: testing difficult populations. The 2026 Deeplasia study evaluated rare endocrine, syndromic, and storage disorders against multiple experts, extending the evidence beyond routine skeletal development [21]. Adult-to-child transfer is also being tested directly, as in the TotalSegmentator study published in a 2025 journal issue after online release in 2024 [13].
+
+These developments sharpen the question from whether a model produces a plausible output to whether it helps with the specific children and decisions encountered in practice. Table 4 places these examples in the broader landscape without treating them as a representative sample or a ranking of the “best” papers.
+
+## What remains and where the field may be headed
+
+The evidence suggests several priorities rather than one universal next model (Table 5). Areas with established benchmarks need evaluation that changes the patient mix, institution, acquisition conditions, or clinical endpoint. Areas with fewer resources may benefit more from a carefully designed shared dataset than another architecture comparison.
+
+Abdominal ultrasound, urinary disease, chronic lung/airway assessment, fluoroscopy, and non-neurologic neonatal imaging are reasonable candidates for further mapping and resource development. In the selected topic rules, acute abdomen has 44 matches, renal/urinary disease 70, chronic lung/airway disease 39, and inflammatory bowel disease five. These are comparatively small research signals. They do not establish that no additional work exists, nor do they quantify research effort relative to disease burden.
+
+For AI researchers, a particularly useful direction is to pair reusable representations with explicitly pediatric evaluation. Adult pretraining, self-supervision, and multimodal learning can reduce the amount of task-specific annotation required, but their value should be demonstrated against strong conventional baselines. Longitudinal imaging creates opportunities to assess growth and treatment response, provided repeated observations from the same child do not cross evaluation boundaries.
+
+For pediatric radiologists, the immediate landscape is application-specific. Bone-age assessment, fracture assistance, reconstruction, and selected ultrasound functions have identifiable clinical evaluation pathways. Image–text and foundation models merit attention as emerging research tools. Adoption decisions require evidence for the intended age range, anatomy, workflow, and endpoint; publication volume and a public repository cannot answer those questions alone.
+
+Prospective evaluation is one part of this agenda. The stored schema assigns 654 records (18.7%) to external/multicenter validation, 217 (6.2%) to reader studies, and 115 (3.3%) to prospective evaluation. Because validation is stored as one category per record, these are reporting labels rather than independent, exhaustive measures of each design feature. They nevertheless explain why more publications should not automatically be interpreted as more evidence of clinical benefit.
+
+Our inference is that near-term progress will combine pediatric adaptation, more reusable domain models, and closer integration with acquisition and longitudinal care. Broader autonomous interpretation remains an uncertain direction. A useful landscape review should track whether research expands into new clinical settings and populations, as well as whether familiar benchmark scores improve.
+
+## Limitations
+
+The principal limitations arise from the breadth and construction of the evidence map. Automated abstract-based screening and extraction have not undergone completed independent human validation. The cohort includes unresolved publication versions and duplicate entries. Collapsing identical normalized titles changes MRI from 45.5% to 45.0%, ultrasound from 23.7% to 23.8%, and radiography from 19.3% to 19.5%, supporting the broad modality pattern without resolving all duplication.
+
+Clinical-topic and dataset counts depend on explicit vocabulary and incomplete extracted descriptions. They are exploratory and cannot establish disease burden, dataset independence, or true resource adoption. Developmental neuroscience, fetal imaging, and echocardiography broaden the scope relative to routine radiology practice. Conversely, excluding conference proceedings and omitting dedicated searches of IEEE Xplore, Scopus, and Web of Science may underrepresent technical innovations. The source-year convention, preprint overlap, and 2026 indexing lag complicate historical comparisons.
+
+No formal study-level risk-of-bias assessment or pooled performance analysis was performed. Selected examples are illustrative and cannot support comparative effectiveness rankings. Software releases, access conditions, and model versions change; resource descriptions are a dated snapshot. These limitations favor interpretation of broad concentrations and research directions over fine differences in percentages.
 
 ## Conclusion
 
-Pediatric radiology AI is growing rapidly but has not closed its relative publication gap with radiology overall, and evidence narrows sharply between model development and clinical use. Retrospective rigor improved: external validation and multicenter data use increased across eras. Reader studies and prospective evaluation, however, remained uncommon, and explicit code release and pediatric-named FDA devices were rare. Fetal imaging constituted more than one-fifth of the literature and illustrates the importance of inclusive pediatric search vocabulary.
+Pediatric radiology AI has become a substantial, unevenly distributed field. MRI leads a broad imaging cohort, fetal ultrasound is a major concentration, and radiographic benchmarks support recurring work on skeletal development, chest findings, and trauma. Age–modality combinations reveal gaps that total pediatric counts obscure.
 
-The take-home message is that publication volume should not be used as a proxy for pediatric clinical readiness. Practice should require local age-stratified validation and post-deployment monitoring. Research policy should prioritize prospective reader and outcome studies, transparent reporting, and governed multi-institutional pediatric datasets, including underrepresented neonatal, abdominal, congenital, and oncologic applications. Completing human validation of this review and broadening database coverage are immediate methodological priorities. A versioned living database can then show whether these changes narrow the translational gap rather than merely enlarge the literature.
+The 2025–2026 literature adds reusable pediatric image–text representations, reconstruction applications, and more clinically demanding evaluations of established tools. For clinicians, the useful takeaway is a map of application-specific progress. For researchers, the opportunity is to extend resources and evaluation into populations, workflows, and outcomes that existing benchmarks do not cover.
+
+## Tables
+
+**Table 1. Modality composition and recent publication periods**
+
+| Modality | All records (n=3,496) | 2023–2024 (n=965) | 2025 (n=685) | 2026 YTD (n=686) |
+|:--|--:|--:|--:|--:|
+| MRI | 1,590 (45.5%) | 428 (44.4%) | 301 (43.9%) | 275 (40.1%) |
+| Ultrasound | 828 (23.7%) | 229 (23.7%) | 178 (26.0%) | 170 (24.8%) |
+| Radiography | 676 (19.3%) | 186 (19.3%) | 132 (19.3%) | 152 (22.2%) |
+| CT | 325 (9.3%) | 94 (9.7%) | 52 (7.6%) | 74 (10.8%) |
+| Nuclear medicine/PET | 53 (1.5%) | 23 (2.4%) | 7 (1.0%) | 8 (1.2%) |
+| Fluoroscopy | 13 (0.4%) | 4 (0.4%) | 3 (0.4%) | 2 (0.3%) |
+
+Categories overlap; other/multiple labels are omitted here and retained in supplementary Table L1. Counts follow the current cohort and source publication year. YTD ends September 9, 2026.
+
+**Table 2. Selected shared datasets and the research questions they support**
+
+| Resource | Modality / population | Scale of the specified resource | Access / research role |
+|:--|:--|:--|:--|
+| RSNA bone-age challenge (2017) [2] | Hand radiographs; pediatric skeletal maturation | 14,236 radiographs across challenge partitions | RSNA challenge terms; measurement benchmark |
+| GRAZPEDWRI-DX (2022) [9] | Wrist trauma radiographs; includes ages extending to 19 years | 20,327 images from 6,091 patients | Open download; localization and fracture classification |
+| PediCXR / VinDr-PCXR [10] | Chest radiographs; children under 10 years | 9,125 studies; multiple finding and diagnosis labels | Credentialed PhysioNet access; broader thoracic interpretation |
+| FETAL_PLANES_DB (2020) [5] | Maternal-fetal ultrasound | Standard planes and other views from two hospitals | Open Zenodo release; plane recognition, not a comprehensive anomaly cohort |
+| Regensburg appendicitis [8] | Ultrasound with clinical/laboratory information; children and adolescents | Published imaging analysis: 579 patients, 1,709 images | Public dataset; later tabular releases have different denominators |
+| ABCD [14] | Longitudinal brain MRI; recruited at 9–10 years | 11,878 baseline participants; available imaging varies by visit | Controlled access through the study's current data-sharing route; development and cognition |
+| ABIDE I and II [15] | Structural and resting-state brain MRI; children and adults | Multisite collections; age eligibility must be applied to individual participants | Registered research access; autism and cross-site methods |
+| dHCP, fourth release (2024) [16] | Neonatal and fetal brain MRI | 783 neonatal participants / 886 datasets; 273 fetal participants / 297 datasets | Project access process; early development, segmentation, and longitudinal work |
+| CBTN, described 2023 release [4] | Clinical brain/spine tumor MRI | 23,101 examinations from 1,526 patients | Governed access; tumor imaging and repeated clinical examinations |
+| Pediatric-CT-SEG, version 2 [12] | Pediatric chest/abdomen/pelvis CT; 5 days–16 years | 359 patients; expert contours for up to 29 structures | Open TCIA release; segmentation and dosimetry |
+
+Selected resources overlap the presentation's dataset map; this is not an exhaustive or size-ranked list. Dataset sizes use their original units and specified versions. BraTS-PEDs and FeTA are additional named challenge resources in the cohort's mention table; their release-specific inventories are not conflated with these resources.
+
+**Table 3. Open software and model resources relevant to pediatric imaging research**
+
+| Resource | What is available / purpose | Pediatric interpretation |
+|:--|:--|:--|
+| [nnU-Net](https://github.com/MIC-DKFZ/nnUNet) [17] | Segmentation training and inference framework | A strong development baseline; requires relevant data and evaluation |
+| [MONAI](https://github.com/Project-MONAI/MONAI) [18] | Medical-imaging training and application infrastructure | Enables development; is not itself a pediatric diagnostic model |
+| [MedSAM](https://github.com/bowang-lab/MedSAM) [19] | Promptable medical segmentation code and checkpoints | Useful for annotation/adaptation; test developmental anatomy and pathology |
+| [TotalSegmentator](https://github.com/wasserth/TotalSegmentator) [20] | Pretrained anatomical segmentation and inference software | Pediatric transfer limitations have been directly studied [13] |
+| [Deeplasia](https://github.com/aimi-bonn/Deeplasia) [21] | Pediatric bone-age software and model access | External rare-disorder evaluation extends its evidence base |
+| [pTBLightNet](https://github.com/dani-capellan/pTBLightNet) [22] | Multi-view pediatric chest model; repository links weights | TB-compatible findings; applicability depends on age, setting, and reference standard |
+| [FetalCLIP](https://github.com/biomedia-mbzuai/fetalclip) [23] | Fetal ultrasound representation model; code and weight download | Supports several downstream research tasks; model release does not imply training-data release |
+
+Availability checked against project sources on September 11, 2026. “Open” here identifies accessible research software/model resources, not a uniform license or authorization for clinical use. NeoCLIP is discussed as a published model; its appearance in the narrative does not imply a verified public weight release.
+
+**Table 4. Selected 2025–2026 developments and their significance**
+
+| Development | Example | What it adds to the landscape | What remains unresolved |
+|:--|:--|:--|:--|
+| Neonatal image–text learning | NeoCLIP, 2025 [11] | Several findings and devices in one domain model | Prospective and external clinical utility |
+| Reusable fetal representations | FetalCLIP, 2026 [23] | Transfer across ultrasound tasks with released weights | Performance across acquisition settings and rare anomalies |
+| Faster reconstruction | Pediatric MRI, 2025–2026 [24,25]; PET, 2026 [26] | AI targets acquisition burden as well as interpretation | Examination-level benefit and diagnostic preservation |
+| Clinical decision evaluation | Pediatric fracture studies, 2025–2026 [27,28] | Reader behavior and recall outcomes enter evaluation | Magnitude and consistency of benefit |
+| Testing developmental differences | Adult-to-pediatric CT segmentation, 2025 issue [13] | Direct evidence about transfer and adaptation | Age-, organ-, and setting-specific generalization |
+| Testing rare populations | Deeplasia, 2026 [21] | Established measurement task evaluated in difficult disorders | Broader population and workflow applicability |
+
+Examples were selected for their contribution to the narrative, not citation rank. Publication date is distinct from data-acquisition date and may follow an earlier online or preprint version.
+
+**Table 5. A research agenda grounded in the landscape**
+
+| Area | What the map shows | Useful next research question |
+|:--|:--|:--|
+| Established radiographic benchmarks | Recurring bone-age, chest, wrist, and spine applications | Does performance transfer to different anatomy, age, institution, and decisions? |
+| Abdominal and urinary imaging | Smaller selected-topic literatures | Can shared imaging-plus-clinical cohorts support useful diagnostic pathways? |
+| Neonatal imaging | MRI concentration alongside smaller non-MRI groups | Can models handle devices, serial examinations, and acute findings across NICUs? |
+| Fetal ultrasound | Substantial activity and emerging reusable representations | Does assistance improve complete examinations across operators and settings? |
+| CT, nuclear imaging, fluoroscopy | Smaller modalities with distinct acquisition constraints | Can AI reduce examination burden while preserving the information needed for care? |
+| Pediatric foundation models | Small but concrete recent literature | When does domain pretraining improve on task-specific baselines with limited labels? |
+| Clinical implementation | Relatively few prospective and reader-study labels | Which patients and workflows gain measurable benefit, and at what cost? |
+
+Priorities are the authors' interpretation of the evidence map. Research volume was not normalized to disease burden, examination volume, or funding.
+
+## Figure legends
+
+**Fig. 1. Included records by publication year.** Annual screened records, 2005 through September 9, 2026. Blue bars indicate included records; gray bars indicate excluded or non-primary records. The final year is incomplete. Source-year assignment and unresolved publication versions limit interpretation of year-to-year growth. Shared with the presentation: `figures/review_by_year.png`.
+
+![Figure 1. Included records by publication year](../figures/review_by_year.png)
+
+**Fig. 2. Modality composition over time.** Annual counts by extracted modality; categories overlap. MRI's broad scope includes developmental neuroscience. This figure shows absolute counts; Table 1 and supplementary Table L1 provide within-period shares. Shared with the presentation: `figures/review_modality_year.png`.
+
+![Figure 2. Modality composition over time](../figures/review_modality_year.png)
+
+**Fig. 3. Clinical topic by modality.** Counts of included records matching selected title/clinical-question rules, crossed with extracted modality. These are exploratory, overlapping topic mentions; 973 records match none of the selected rules. Color uses log(1 + count) so small cells remain visible, while printed values are raw counts. Source: `figures/review_topic_modality.png`.
+
+![Figure 3. Clinical topic by modality](../figures/review_topic_modality.png)
+
+**Fig. 4. Age group by modality.** Counts of records carrying each age and modality label. Labels overlap and indicate populations, not age-stratified performance or unique patients. Color uses log(1 + count); printed values are raw counts. Source: `figures/review_age_modality.png`.
+
+![Figure 4. Age group by modality](../figures/review_age_modality.png)
+
+**Fig. 5. What the models produce.** Annual counts by task. The shared presentation figure folds report-generation/LLM, foundation/vision-language, and agent/autonomous labels into “other”; Fig. 6 shows those recent categories separately. Task labels overlap and are not architecture categories. Shared with the presentation: `figures/review_task_year.png`.
+
+![Figure 5. What the models produce](../figures/review_task_year.png)
+
+**Fig. 6. Recent task composition.** Within-period percentages for 2023–2024, 2025, and 2026 year to date, including the small language, foundation-model, and agent categories. The denominators are 965, 685, and 686 included records. Percentages describe the retrieved snapshot; they do not correct for indexing delay or publication-version overlap. Source: `figures/review_recent_tasks.png`.
+
+![Figure 6. Recent task composition](../figures/review_recent_tasks.png)
 
 ## Declarations
 
-**Data availability.** All queries, collection code, extracted records, figures, and reports will be available at [AUTHOR ACTION: repository URL] and archived at [AUTHOR ACTION: Zenodo DOI]. The included primary studies are published as one table with all extracted fields; every screened record, including those excluded and the coded reason for each exclusion, is in the accompanying versioned store. The analysis is reproducible from the archived snapshot without model calls.
+**Data availability.** Queries, code, extracted records, figures, and reports will be available at [AUTHOR ACTION: repository URL] and archived at [AUTHOR ACTION: version-specific DOI]. The included-record table and screening store preserve the evidence snapshot. The landscape analysis exports its source fingerprint, explicit rules, record-level matches, and sensitivity analyses.
 
 **Funding.** Not applicable.
 
 **Conflicts of interest.** No conflicts of interests to disclose.
 
-**Ethics approval.** Not applicable; this review analyzed published literature and public regulatory records and collected no patient data.
+**Ethics approval.** Not applicable; this review analyzed published literature and did not collect patient data.
 
 **Informed consent.** Not applicable.
 
-**Author contributions.** [AUTHOR ACTION: provide a CRediT contribution statement for each author.]
+**Author contributions.** [AUTHOR ACTION: provide a CRediT contribution statement.]
 
 **Acknowledgments.** None.
 
 ## References
 
-1. Kamran R, Widjaja E, Sy A, et al. The current state of artificial intelligence research in pediatric radiology and recommendations for the future: a scoping review. Pediatr Radiol. 2026;56(9):2007–2020. doi:10.1007/s00247-025-06462-5
-2. Chatterjee D, Kanhere A, Doo FX, et al. Children Are Not Small Adults: Addressing Limited Generalizability of an Adult Deep Learning CT Organ Segmentation Model to the Pediatric Population. J Imaging Inform Med. 2025;38(3):1628–1641. doi:10.1007/s10278-024-01273-w
-3. Ziegner M, Pape J, Lacher M, et al. Real-life benefit of artificial intelligence-based fracture detection in a pediatric emergency department. Eur Radiol. 2025;35(10):5881–5890. doi:10.1007/s00330-025-11554-9
-4. Hua SBZ, et al. Lack of children in public medical imaging data points to growing age bias in biomedical AI. medRxiv. 2025. doi:10.1101/2025.06.06.25328913
-5. Halabi SS, Prevedello LM, Kalpathy-Cramer J, et al. The RSNA Pediatric Bone Age Machine Learning Challenge. Radiology. 2019;290(2):498–503. doi:10.1148/radiol.2018180736
-6. Larson DB, Chen MC, Lungren MP, et al. Performance of a Deep-Learning Neural Network Model in Assessing Skeletal Maturity on Pediatric Hand Radiographs. Radiology. 2018;287(1):313–322. doi:10.1148/radiol.2017170236
-7. Rassmann S, Keller A, Skaf K, et al. Deeplasia: deep learning for bone age assessment validated on skeletal dysplasias. Pediatr Radiol. 2024;54(1):82–95. doi:10.1007/s00247-023-05789-1
-8. Skaf K, Fardipour M, Schmidt P, et al. Automated bone age assessment in rare pediatric growth disorders: a comparative study using Deeplasia. Front Endocrinol. 2026;17. doi:10.3389/fendo.2026.1741927
-9. Arnaout R, Curran L, Zhao Y, Levine JC, Chinn E, Moon-Grady AJ. An ensemble of neural networks provides expert-level prenatal detection of complex congenital heart disease. Nat Med. 2021;27(5):882–891. doi:10.1038/s41591-021-01342-5
-10. Athalye C, van Nisselrooij A, Rizvi S, Haak MC, Moon-Grady AJ, Arnaout R. Deep-learning model for prenatal congenital heart disease screening generalizes to community setting and outperforms clinical detection. Ultrasound Obstet Gynecol. 2024;63(1):44–52. doi:10.1002/uog.27503
-11. Zech JR, Badgeley MA, Liu M, Costa AB, Titano JJ, Oermann EK. Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs: a cross-sectional study. PLoS Med. 2018;15(11):e1002683. doi:10.1371/journal.pmed.1002683
-12. Wasserthal J, Breit HC, Meyer MT, et al. TotalSegmentator: robust segmentation of 104 anatomic structures in CT images. Radiol Artif Intell. 2023;5(5):e230024. doi:10.1148/ryai.230024
-13. Irvin J, Rajpurkar P, Ko M, et al. CheXpert: a large chest radiograph dataset with uncertainty labels and expert comparison. Proc AAAI Conf Artif Intell. 2019;33(01):590–597. doi:10.1609/aaai.v33i01.3301590
-14. Mongan J, Moy L, Kahn CE. Checklist for Artificial Intelligence in Medical Imaging (CLAIM): a guide for authors and reviewers. Radiol Artif Intell. 2020;2(2):e200029. doi:10.1148/ryai.2020200029
-15. Elliott JH, Synnot A, Turner T, et al. Living systematic review: 1. Introduction—the why, what, when, and how. J Clin Epidemiol. 2017;91:23–30. doi:10.1016/j.jclinepi.2017.08.010
-16. Brady SL, Trout AT, Somasundaram E, Anton CG, Li Y, Dillman JR. Improving image quality and reducing radiation dose for pediatric CT by using deep learning reconstruction. Radiology. 2021;298(1):180–188. doi:10.1148/radiol.2020202317
-17. Yoo H, Moon HE, Kim S, et al. Evaluation of image quality and scan time efficiency in accelerated 3D T1-weighted pediatric brain MRI using deep learning-based reconstruction. Korean J Radiol. 2025;26(2):180. doi:10.3348/kjr.2024.0701
-
-## Tables
-
-**Table 1. AI penetration of radiology and pediatric radiology publishing in PubMed**
-
-| Year | Radiology records | AI share of radiology | Pediatric radiology records | AI share of pediatric radiology | Penetration ratio |
-|---:|---:|---:|---:|---:|---:|
-| 2008 | 86,812 | 0.82% | 16,087 | 0.36% | 0.44 |
-| 2012 | 115,476 | 0.49% | 21,150 | 0.30% | 0.60 |
-| 2015 | 134,828 | 0.65% | 25,509 | 0.53% | 0.81 |
-| 2018 | 140,927 | 1.87% | 26,955 | 1.26% | 0.68 |
-| 2021 | 177,988 | 5.72% | 30,257 | 3.13% | 0.55 |
-| 2022 | 169,514 | 7.36% | 26,678 | 3.89% | 0.53 |
-| 2023 | 160,988 | 8.63% | 25,322 | 4.85% | 0.56 |
-| 2024 | 167,690 | 9.67% | 28,488 | 5.95% | 0.62 |
-| 2025 | 182,492 | 11.41% | 31,735 | 7.40% | 0.65 |
-| 2026 YTD | 138,306 | 11.92% | 23,662 | 8.02% | 0.67 |
-
-Penetration ratio = (AI share of pediatric radiology)/(AI share of all radiology). A value of 1.0 would indicate equal AI representation. AI, artificial intelligence; YTD, year to date.
-
-**Table 2. Composition of included primary studies (n=3,496)**
-
-| Axis | Category | n | % |
-|:--|:--|---:|---:|
-| Modality | MRI | 1,590 | 45.5 |
-| | Ultrasound | 827 | 23.7 |
-| | Radiography | 676 | 19.3 |
-| | CT | 325 | 9.3 |
-| | Nuclear medicine/PET | 53 | 1.5 |
-| | Other/multiple/fluoroscopy | 101 | 2.9 |
-| Task | Detection/diagnosis | 1,337 | 38.2 |
-| | Measurement/quantification | 838 | 24.0 |
-| | Outcome prediction | 683 | 19.5 |
-| | Segmentation | 662 | 18.9 |
-| | Reconstruction/imputation | 277 | 7.9 |
-| | Workflow/non-interpretive | 167 | 4.8 |
-| | Other | 123 | 3.5 |
-| | Report generation/large language model | 28 | 0.8 |
-| | Foundation/vision-language model | 26 | 0.7 |
-| Age group | Child | 1,301 | 37.2 |
-| | Adolescent | 889 | 25.4 |
-| | Fetal | 786 | 22.5 |
-| | Infant | 515 | 14.7 |
-| | Pediatric, unspecified | 498 | 14.2 |
-| | Neonate | 346 | 9.9 |
-| | Mixed pediatric and adult | 316 | 9.0 |
-
-Modality, task, and age group were multilabel; percentages within an axis can exceed 100%. CT, computed tomography; MRI, magnetic resonance imaging; PET, positron emission tomography.
-
-**Table 3. Methodological characteristics by publication era**
-
-| Characteristic | 2005–2014 (n=71) | 2015–2019 (n=295) | 2020–2022 (n=794) | 2023–2026 (n=2,336) | All (n=3,496) |
-|:--|---:|---:|---:|---:|---:|
-| Internal validation only | 81.7% | 74.9% | 71.2% | 64.6% | 67.3% |
-| External/multicenter validation | 4.2% | 14.2% | 16.9% | 20.3% | 18.7% |
-| Reader study | 7.0% | 6.1% | 7.7% | 5.7% | 6.2% |
-| Prospective | 2.8% | 2.4% | 1.6% | 4.0% | 3.3% |
-| No validation stated | 4.2% | 2.4% | 2.6% | 5.4% | 4.5% |
-| Single-center data | 22.5% | 33.6% | 37.9% | 28.7% | 31.1% |
-| Multicenter data | 8.5% | 12.9% | 17.5% | 22.3% | 20.1% |
-| Open-source classification | 0.0% | 2.4% | 5.2% | 5.1% | 4.8% |
-| Commercial product involved | 4.2% | 1.4% | 3.4% | 5.4% | 4.5% |
-| Release status unclear | 95.8% | 94.9% | 88.4% | 81.6% | 84.6% |
-
-The 2026 interval is incomplete. The 2005–2014 stratum is small and its percentages should be interpreted cautiously.
-
-**Table 4. FDA-listed radiology AI devices with a pediatric or fetal term in the device name**
-
-| Company | Device | Task | Clearances (year) |
-|:--|:--|:--|:--|
-| Gleamer | BoneView | Fracture detection on radiographs | 2 (2022, 2023) |
-| AZmed | Rayvolve, Rayvolve LN, Rayvolve PTX-PE | Fracture and chest findings on radiographs | 4 (2022, 2024, 2025 ×2) |
-| BrightHeart | Fetal EchoScan (v1.0, 1.1, 1.2) | Fetal echocardiography view and anomaly assistance | 3 (2024, 2025 ×2) |
-| Ever Fortune.AI | EFAI Bonesuite XR Bone Age Pro | Automated bone age | 1 (2024) |
-| 16 Bit | Rho | Automated bone age | 1 (2024, De Novo) |
-
-Device identification was name-based and is a lower bound for explicitly pediatric products. AI, artificial intelligence; FDA, US Food and Drug Administration.
-
-## Figure legends
-
-**Fig. 1 PRISMA flow diagram.** Identification, deduplication, screening, and inclusion of records from PubMed/MEDLINE, Embase, and OpenAlex. Of 13,510 identified records, 6,602 were screened and 3,496 primary studies were included.
-
-**Fig. 2 Included studies by publication year.** Annual number of primary pediatric radiology AI studies included from 2005 through September 9, 2026. The 2026 value is year-to-date and is affected by indexing lag.
-
-**Fig. 3 Modality composition over time.** Annual number of included primary studies by imaging modality. Studies could receive more than one modality label.
-
-**Fig. 4 Validation strategy by publication era.** Proportions of studies reporting internal validation only, external or multicenter validation, a reader study, prospective evaluation, or no stated validation strategy. Categories are mutually exclusive in the extraction schema.
-
-**Fig. 5 Translational funnel.** Number and proportion of included studies reporting external or multicenter validation, a reader study, prospective evaluation, a working code or model URL, or involvement of a commercial product. These indicators are displayed against the full corpus to show the narrowing path toward clinical use; they are not necessarily nested subsets. Explicitly pediatric or fetal FDA-listed devices are reported separately in Table 4.
-
-**Fig. 6 Citation impact and validation.** Strongest validation strategy reported by all included studies and by the most-cited decile, the decile being defined on citation impact normalized to the average article of the same field and year. Percentages are within each group.
+1. Kamran R, Widjaja E, Sy A, et al. The current state of artificial intelligence research in pediatric radiology and recommendations for the future: a scoping review. Pediatric Radiology. 2026. [doi:10.1007/s00247-025-06462-5](https://link.springer.com/article/10.1007/s00247-025-06462-5).
+2. Halabi SS, Prevedello LM, Kalpathy-Cramer J, et al. The RSNA Pediatric Bone Age Machine Learning Challenge. Radiology. 2019. [doi:10.1148/radiol.2018180736](https://pubs.rsna.org/doi/10.1148/radiol.2018180736).
+3. Larson DB, Chen MC, Lungren MP, et al. Performance of a Deep-Learning Neural Network Model in Assessing Skeletal Maturity on Pediatric Hand Radiographs. Radiology. 2018. [doi:10.1148/radiol.2017170236](https://doi.org/10.1148/radiol.2017170236).
+4. Familiar AM, Fathi Kazerooni A, Anderson H, et al. A multi-institutional pediatric dataset of clinical radiology MRIs by the Children's Brain Tumor Network. 2023 preprint describing the resource. [arXiv:2310.01413](https://arxiv.org/abs/2310.01413).
+5. Burgos-Artizzu XP, Coronado-Gutierrez D, Valenzuela-Alcaraz B, et al. FETAL_PLANES_DB: Common maternal-fetal ultrasound images. 2020. [Zenodo dataset](https://zenodo.org/records/3904280).
+6. Arnaout R, Curran L, Zhao Y, et al. An ensemble of neural networks provides expert-level prenatal detection of complex congenital heart disease. Nature Medicine. 2021. [doi:10.1038/s41591-021-01342-5](https://doi.org/10.1038/s41591-021-01342-5).
+7. Athalye C, van Nisselrooij A, Rizvi S, et al. Deep-learning model for prenatal congenital heart disease screening generalizes to community setting and outperforms clinical detection. Ultrasound in Obstetrics & Gynecology. 2024. [doi:10.1002/uog.27503](https://doi.org/10.1002/uog.27503).
+8. Marcinkevičs R, et al. Interpretable and intervenable ultrasonography-based machine learning models for pediatric appendicitis. Medical Image Analysis. 2024;91:103042. [Author manuscript](https://rmarcinkevics.github.io/files/2024-01-01-ml-app-us.pdf); [dataset](https://zenodo.org/records/7669442).
+9. Nagy E, Janisch M, Hržić F, Sorantin E, Tschauner S. A pediatric wrist trauma X-ray dataset (GRAZPEDWRI-DX) for machine learning. Scientific Data. 2022;9:222. [doi:10.1038/s41597-022-01328-z](https://www.nature.com/articles/s41597-022-01328-z).
+10. Pham HH, Tran TT, Nguyen HQ. VinDr-PCXR: An open, large-scale pediatric chest X-ray dataset for interpretation of common thoracic diseases. PhysioNet, version 1.0.0. 2022. [Dataset and access terms](https://physionet.org/content/vindr-pcxr/1.0.0/).
+11. Huang Y, Sharma P, Palepu A, et al. NeoCLIP: a self-supervised foundation model for the interpretation of neonatal radiographs. npj Digital Medicine. 2025;8:570. [doi:10.1038/s41746-025-01922-6](https://pubmed.ncbi.nlm.nih.gov/40993183/).
+12. Jordan P, Adamson PM, Bhattbhatt V, et al. Pediatric Chest/Abdomen/Pelvic CT Exams with Expert Organ Contours (Pediatric-CT-SEG). Version 2, updated 2022. [TCIA collection](https://www.cancerimagingarchive.net/collection/pediatric-ct-seg/).
+13. Chatterjee D, Kanhere A, Doo FX, et al. Children Are Not Small Adults: Addressing Limited Generalizability of an Adult Deep Learning CT Organ Segmentation Model to the Pediatric Population. Journal of Imaging Informatics in Medicine. 2025;38:1628–1641. Online September 2024. [doi:10.1007/s10278-024-01273-w](https://pubmed.ncbi.nlm.nih.gov/39299957/).
+14. ABCD Study. Data sharing and release information. [Official data-sharing page](https://abcdstudy.org/scientists/data-sharing/). Accessed September 11, 2026.
+15. Autism Brain Imaging Data Exchange. ABIDE I and ABIDE II. [Official collections and access information](https://fcon_1000.projects.nitrc.org/indi/abide/). Accessed September 11, 2026.
+16. Developing Human Connectome Project. Fourth data release, May 2024. [Release notes](https://biomedia.github.io/dHCP-release-notes/). Accessed September 11, 2026.
+17. Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature Methods. 2021;18:203–211. [Official implementation and citation](https://github.com/MIC-DKFZ/nnUNet).
+18. Project MONAI. MONAI: AI Toolkit for Healthcare Imaging. [Official repository](https://github.com/Project-MONAI/MONAI). Accessed September 11, 2026.
+19. Ma J, He Y, Li F, et al. Segment anything in medical images. Nature Communications. 2024. [doi:10.1038/s41467-024-44824-z](https://doi.org/10.1038/s41467-024-44824-z); [official repository](https://github.com/bowang-lab/MedSAM).
+20. Wasserthal J, Breit HC, Meyer MT, et al. TotalSegmentator: robust segmentation of 104 anatomic structures in CT images. Radiology: Artificial Intelligence. 2023. [doi:10.1148/ryai.230024](https://doi.org/10.1148/ryai.230024).
+21. Skaf K, Fardipour M, Schmidt P, et al. Automated bone age assessment in rare pediatric growth disorders: a comparative study using Deeplasia. Frontiers in Endocrinology. 2026;17:1741927. [doi:10.3389/fendo.2026.1741927](https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1741927/full); [model repository](https://github.com/aimi-bonn/Deeplasia).
+22. Capellán-Martín D, et al. Multi-view deep learning framework for the detection of chest X-rays compatible with pediatric pulmonary tuberculosis. Nature Communications. 2025. [doi:10.1038/s41467-025-64391-1](https://www.nature.com/articles/s41467-025-64391-1); [code and weights](https://github.com/dani-capellan/pTBLightNet).
+23. Maani F, Saeed N, Saleem TJ, et al. FetalCLIP: a visual-language foundation model for fetal ultrasound image analysis. npj Digital Medicine. 2026. [doi:10.1038/s41746-026-02907-9](https://pubmed.ncbi.nlm.nih.gov/42321373/); [code and weights](https://github.com/biomedia-mbzuai/fetalclip).
+24. Yoo H, Moon HE, Kim S, et al. Evaluation of Image Quality and Scan Time Efficiency in Accelerated 3D T1-Weighted Pediatric Brain MRI Using Deep Learning-Based Reconstruction. Korean Journal of Radiology. 2025;26:180–192. [doi:10.3348/kjr.2024.0701](https://pmc.ncbi.nlm.nih.gov/articles/PMC11794287/).
+25. Baz AM, et al. Deep learning improves image quality in motion-robust and sedation-free pediatric brain MRI. European Radiology. 2026. [doi:10.1007/s00330-026-12482-y](https://link.springer.com/article/10.1007/s00330-026-12482-y).
+26. Han C, Trout AT, Li A, et al. Acquisition time/dose reduction in pediatric PET imaging using patch-based deep learning. EJNMMI Physics. 2026;13:75. [doi:10.1186/s40658-026-00876-2](https://link.springer.com/article/10.1186/s40658-026-00876-2).
+27. Ziegner M, Pape J, Lacher M, et al. Real-life benefit of artificial intelligence-based fracture detection in a pediatric emergency department. European Radiology. 2025. [doi:10.1007/s00330-025-11554-9](https://link.springer.com/article/10.1007/s00330-025-11554-9).
+28. Deffaa OJ, Pape J, Schlösser D, et al. Artificial intelligence for pediatric fracture detection: impact on diagnostic revisions and patient recall rates in a tertiary emergency setting. BMC Emergency Medicine. 2026;26:204. [doi:10.1186/s12873-026-01697-3](https://pubmed.ncbi.nlm.nih.gov/42527905/).

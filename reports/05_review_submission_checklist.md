@@ -1,52 +1,67 @@
-# European Radiology submission checklist
+# Landscape review: editorial and submission checklist
 
-## Format compliance
+The September 11, 2026 rewrite is a scoping review with bibliometric analysis and narrative synthesis. It maps the field rather than pooling model performance. Journal-specific requirements must be checked against the target journal's current guidance before submission.
 
-- [x] Review structured with Introduction, topical headings/subheadings, and Conclusion.
-- [x] Introduction states background, clinical relevance, objectives, and article inclusion criteria.
-- [x] Abstract is unstructured and within 250 words (215 words).
-- [x] Four MeSH keywords are supplied (allowed range: 1–5).
-- [x] Main text is within 5,000 words (3,143 words from Introduction through Conclusion, excluding headings).
-- [x] Four main tables are supplied (maximum: 5).
-- [x] Six figures are supplied (maximum: 12).
-- [x] Conclusion summarizes key findings, gives a take-home message, addresses policy/practice, identifies limitations and research gaps, and proposes future directions.
-- [x] Full search strategies and eligibility criteria are separated into supplementary material.
-- [x] Funding and conflict-of-interest statements preserve the authors' existing entries.
+## Completed draft work
 
-## Author information still required
+- [x] Reconstructed the narrative from the current 3,496 included-record cohort.
+- [x] Separated broad PubMed query counts from screened-cohort counts.
+- [x] Described historical trends, clinical topics, modality and age combinations, datasets, and open tools.
+- [x] Treated 2025 and 2026 separately, with 2026 explicitly year to date.
+- [x] Added concrete recent examples, including NeoCLIP, FetalCLIP, reconstruction, and clinical fracture evaluation.
+- [x] Distinguished resource mentions, model availability, and clinical benefit.
+- [x] Retained overlap with the presentation through three existing figures and shared clinical examples.
+- [x] Generated three new figures, including vector PDF versions, and reproducible supplementary tables.
+- [x] Audited exact cohort membership and repeated normalized titles; preserved the shared cohort and reported a title-collapse sensitivity.
+- [x] Supplied five tables and six main figures; draft word counts are 211 abstract and 3,376 main-text words.
+- [x] Preserved the authors and existing funding/conflict declarations.
 
-- [ ] Add institutional affiliations for Joseph Rich and Amit Sura.
-- [ ] Identify the corresponding author and add postal address, email address, and telephone number.
-- [ ] Add a CRediT author-contribution statement.
-- [ ] Add the public repository URL and an archived, version-specific DOI (for example, Zenodo).
-- [ ] Confirm whether “Acknowledgments: None” is correct.
+## Required scientific checks before submission
 
-## Methodological work required before submission
+- [ ] Adjudicate the 79 repeated-title groups (161 records) listed in Table L5, and check DOI matches and versions with changed titles. The 3,496 denominator is currently records, not verified independent investigations.
+- [ ] Complete independent human validation of screening and extraction; automated-model agreement is not a substitute.
+- [ ] Review the exploratory clinical-topic and dataset-name matches. In particular, low counts and unmatched text cannot establish absence of research or confirmed dataset use.
+- [ ] Reconcile online-first, preprint, and journal issue dates if interpreting precise year-to-year change.
+- [ ] Decide whether engineering/conference coverage should be extended for publication; the current map explicitly retains the existing exclusions.
+- [ ] Complete the applicable scoping-review reporting checklist and reconcile selection-flow wording with the final deduplicated cohort.
+- [ ] Recalculate figures, tables, and word counts after cohort corrections. The narrative is not automatically rewritten by the pipeline.
+- [ ] Finalize reference formatting and check version-specific resource citations and software access conditions.
 
-- [ ] Complete the prespecified dual-human screening validation sample; resolve eligibility boundary rules and report sensitivity, specificity, and inter-reviewer agreement.
-- [ ] Complete duplicate human extraction of the prespecified sample and report agreement for modality, task, validation, and release status.
-- [ ] Decide whether to archive the protocol retrospectively. Do not describe a retrospective archive as prospective registration.
-- [ ] Decide whether Web of Science, Scopus, IEEE Xplore, and/or Cochrane must be searched. The manuscript currently states transparently that they were not searched.
-- [ ] Recalculate every headline number and both word counts after the human-validation corrections and immediately before submission.
-- [ ] Complete a PRISMA 2020 checklist and ensure the flow diagram terminology matches the final screening workflow.
-- [ ] Expand and verify the scientific reference base. The formatted draft retains the 17 references present in the source draft; this is likely too limited for a comprehensive review.
+These are disclosed limitations and pre-submission tasks; the landscape draft itself is complete. Formal risk-of-bias scoring of every paper or an omnibus pooled accuracy estimate is not required to fulfill this review's stated purpose.
 
-## Submission files
+## Author information
 
-- [x] Main manuscript: `reports/05_review_manuscript.md`
-- [x] Word manuscript: `reports/05_review_manuscript_european_radiology.docx`
-- [x] Supplement: `reports/05_review_supplement.md`
-- [x] Word supplement: `reports/05_review_supplement_european_radiology.docx`
-- [x] Figure 1: `figures/review_prisma.png`
-- [x] Figure 2: `figures/review_by_year.png`
-- [x] Figure 3: `figures/review_modality_year.png`
-- [x] Figure 4: `figures/review_validation_era.png`
-- [x] Figure 5: `figures/review_funnel.png`
-- [x] Figure 6: `figures/review_impact_subset.png`
+- [ ] Add affiliations and corresponding-author contact details.
+- [ ] Add a CRediT contribution statement.
+- [ ] Add repository URL and a version-specific archive DOI.
+- [ ] Confirm funding, conflicts, acknowledgments, and any journal-required AI assistance disclosure.
 
-The Word files should be regenerated after any Markdown edit:
+## Deliverable map
 
-```bash
-pandoc reports/05_review_manuscript.md -o reports/05_review_manuscript_european_radiology.docx
-pandoc reports/05_review_supplement.md -o reports/05_review_supplement_european_radiology.docx
-```
+| Deliverable | File |
+|:--|:--|
+| Manuscript source | [05_review_manuscript.md](05_review_manuscript.md) |
+| Manuscript Word export | [05_review_manuscript_european_radiology.docx](05_review_manuscript_european_radiology.docx) |
+| Methods supplement | [05_review_supplement.md](05_review_supplement.md) |
+| Supplement Word export | [05_review_supplement_european_radiology.docx](05_review_supplement_european_radiology.docx) |
+| Reproducible tables and duplicate audit | [05_landscape_analysis.md](05_landscape_analysis.md) |
+| Tables and audit Word export | [05_landscape_analysis.docx](05_landscape_analysis.docx) |
+| Analysis and figure generator | [build_landscape_review.py](../scripts/build_landscape_review.py) |
+
+The Word filenames retain the earlier target-journal naming for continuity; this does not certify journal-format compliance.
+
+## Figure and presentation overlap
+
+| Main figure | File in figures/ | Relationship to presentation |
+|:--|:--|:--|
+| 1. Publication years | review_by_year.png | Existing shared figure |
+| 2. Modality over time | review_modality_year.png | Existing shared figure |
+| 3. Clinical topic × modality | review_topic_modality.png / .pdf | New landscape analysis |
+| 4. Age × modality | review_age_modality.png / .pdf | New landscape analysis |
+| 5. Tasks over time | review_task_year.png | Existing shared figure |
+| 6. Recent task shares | review_recent_tasks.png / .pdf | New landscape analysis |
+| S1. Recorded selection flow | review_prisma.png | Existing shared figure, with updated interpretation in the supplement |
+
+The available presentation source is `slides/pedrad_ai_slides.tex`; no file named `slidex.tex` was found. Its disease-query figure (`ped_problems.png`) uses the broad PubMed layer and must not be presented as a count of screened included records. The manuscript's new disease map uses the included-record cohort instead.
+
+Reproduction commands are provided at the end of the methods supplement. All three Word exports must be regenerated after changing their Markdown sources.

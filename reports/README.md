@@ -14,7 +14,8 @@ request with the results.
 | [02_state_of_the_field.md](02_state_of_the_field.md) | Curated synthesis for clinical leadership: what radiology AI does well, the bleeding edge, what remains unresolved, and implications for a children's hospital. |
 | [03_newsletter_watch.md](03_newsletter_watch.md) | What newsletters and trade press (The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify, Radiology Business) are saying about pediatric radiology AI: counts by year and source, topics, and the stories themselves. |
 | [04_paper_database.md](04_paper_database.md) | The systematic review's corpus, read one paper at a time: model, modality, population, task, dataset, validation, availability, and citation impact. Same studies as the manuscript. |
-| [05_review_manuscript.md](05_review_manuscript.md) | The review manuscript (European Radiology format), with [05_review_supplement.md](05_review_supplement.md) carrying the full search strategies and eligibility criteria. |
+| [05_review_manuscript.md](05_review_manuscript.md) | Landscape/scoping review: historical trends, modalities, clinical topics, ages, shared datasets, open models, 2025–2026 developments, and research opportunities. [Supplement](05_review_supplement.md) contains search and eligibility methods. |
+| [05_landscape_analysis.md](05_landscape_analysis.md) | Reproducible era/topic/dataset tables, publication-version audit, and title-collapse sensitivity. Generated with `PYTHONPATH=. python scripts/build_landscape_review.py`; the manuscript prose requires editorial updates after a refresh. |
 | [06_search_strategy.md](06_search_strategy.md) | How the review's search was built and validated. |
 | [references.bib](references.bib) | BibTeX for every cited paper, resolved through doi2bib. |
 

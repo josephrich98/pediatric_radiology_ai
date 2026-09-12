@@ -1,0 +1,2012 @@
+{
+  "generated_on": "2026-09-11",
+  "search_cutoff": "2026-09-09",
+  "source_csv": "data/processed/pedrad_paper_db.csv",
+  "source_sha256": "9e7dbc1d5f5c963ea4cf0a21672fabd851f48141cd04598e481005e594989fff",
+  "definitions": {
+    "topic_fields": [
+      "title",
+      "clinical_problem"
+    ],
+    "dataset_fields": [
+      "title",
+      "clinical_problem",
+      "patient_population",
+      "model_description",
+      "dataset_size"
+    ],
+    "topic_rules": {
+      "Brain development / cognition": "neurodevelop|brain develop|brain matur|brain age|cognitiv|connectom|functional connectivity|intelligence quotient|intelligence score|brain.behavio",
+      "Autism / ADHD / psychiatric": "autis|\\badhd\\b|attention.deficit|psychiatr|depress|anxiet|schizophren|bipolar",
+      "Fetal assessment / prenatal": "fetal|foetal|fetus|foetus|prenatal|antenatal|gestational age|placent",
+      "Bone age / skeletal maturation": "bone age|skeletal age|skeletal matur",
+      "Pulmonary infection": "pneumonia|tuberculos|bronchiolitis|\\brsv\\b|respiratory syncytial|covid|sars.cov",
+      "Fracture / trauma / abuse": "fracture|traumat|\\btrauma\\b|child abuse|non.accidental|abusive head",
+      "Brain / CNS tumors": "(?:brain|cerebral|intracranial|cns|central nervous system).{0,30}(?:tumou?r|neoplasm|cancer)|glioma|glioblastoma|medulloblastoma|ependymoma|craniopharyngioma",
+      "Cardiac / congenital heart": "cardiac|myocardi|heart|ventricular function|echocardi",
+      "Epilepsy": "epilep|seizure|cortical dysplasia",
+      "Neonatal brain injury": "hypoxic.isch|hypoxic isch|\\bhie\\b|intraventricular hemorrhage|intraventricular haemorrhage|periventricular leukomalacia|(?:neonat|preterm).{0,30}brain injur",
+      "Renal / urinary": "kidney|renal|hydronephro|vesicoureter|urinary|ureter|bladder",
+      "Scoliosis / spine deformity": "scoliosis|spinal deform|spine deform|cobb angle",
+      "Acute abdomen": "appendici|intussuscep|necrotizing enterocolitis|necrotising enterocolitis|\\bnec\\b",
+      "Hydrocephalus": "hydrocephal|ventriculomegal|ventricular dilat|cerebrospinal fluid shunt",
+      "Liver / biliary": "liver|hepati|biliary|cholestas",
+      "Chronic lung / airway": "cystic fibrosis|asthma|bronchopulmonary dysplasia|chronic lung|airway|foreign body aspir",
+      "Hip dysplasia": "hip dysplasia|dysplasia of the hip|developmental dysplasia|\\bddh\\b",
+      "Inflammatory bowel disease": "crohn|inflammatory bowel|ulcerative colitis"
+    },
+    "dataset_rules": {
+      "ABIDE": "\\babide(?:[- _]?[12i]+)?\\b|autism brain imaging data exchange",
+      "ABCD": "\\babcd\\b|adolescent brain cognitive development",
+      "RSNA bone age": "\\brsna\\b.{0,60}(?:bone|skeletal)|(?:bone|skeletal).{0,60}\\brsna\\b",
+      "Guangzhou / Kermany": "kermany|guangzhou|guang[ -]?zhou",
+      "GRAZPEDWRI-DX": "grazpedwri|graz.ped.wri",
+      "dHCP": "\\bdhcp\\b|developing human connectome",
+      "FeTA": "\\bfeta\\b|fetal tissue annotation",
+      "FETAL_PLANES_DB": "fetal[_ -]planes(?:[_ -]db)?",
+      "BraTS-PEDs": "brats[-_ ]?peds|pediatric brats|brats.{0,25}pediatric|pediatric.{0,25}brats",
+      "Pediatric-CT-SEG": "pediatric[-_ ]ct[-_ ]seg",
+      "CBTN": "\\bcbtn\\b|children.s brain tumou?r network",
+      "PediCXR / VinDr-PCXR": "pedicxr|vindr[-_ ]?pcxr",
+      "Regensburg appendicitis": "regensburg",
+      "ADHD-200": "adhd[-_ ]?200",
+      "MIMIC-CXR (general resource)": "mimic[-_ ]?cxr",
+      "CheXpert (general resource)": "chexpert"
+    },
+    "interpretation": "Exploratory, overlapping text mentions, not adjudicated diseases or confirmed dataset reuse; no match is not proof of absence."
+  },
+  "all": {
+    "n": 3496,
+    "modality": {
+      "MRI": 1590,
+      "ultrasound": 828,
+      "x-ray / radiography": 676,
+      "CT": 325,
+      "nuclear / PET": 53,
+      "other": 45,
+      "multiple": 43,
+      "fluoroscopy": 13
+    },
+    "task": {
+      "detection / diagnosis": 1337,
+      "measurement / quantification": 838,
+      "outcome prediction": 683,
+      "segmentation": 662,
+      "reconstruction / imputation": 277,
+      "workflow / non-interpretive": 167,
+      "other": 123,
+      "report generation / LLM": 28,
+      "foundation model / vision-language": 26,
+      "agent / autonomous": 2
+    },
+    "age_groups": {
+      "child": 1301,
+      "adolescent": 889,
+      "fetal": 786,
+      "infant": 515,
+      "pediatric (unspecified)": 498,
+      "neonate": 346,
+      "mixed pediatric and adult": 316
+    },
+    "topics": {
+      "Fetal assessment / prenatal": 756,
+      "Brain development / cognition": 355,
+      "Autism / ADHD / psychiatric": 313,
+      "Cardiac / congenital heart": 239,
+      "Bone age / skeletal maturation": 176,
+      "Brain / CNS tumors": 162,
+      "Pulmonary infection": 161,
+      "Scoliosis / spine deformity": 142,
+      "Fracture / trauma / abuse": 138,
+      "Epilepsy": 81,
+      "Liver / biliary": 71,
+      "Renal / urinary": 70,
+      "Hip dysplasia": 60,
+      "Acute abdomen": 44,
+      "Chronic lung / airway": 39,
+      "Hydrocephalus": 37,
+      "Neonatal brain injury": 32,
+      "Inflammatory bowel disease": 5
+    },
+    "dataset_mentions": {
+      "ABCD": 83,
+      "ABIDE": 42,
+      "RSNA bone age": 42,
+      "dHCP": 39,
+      "ADHD-200": 33,
+      "CBTN": 17,
+      "GRAZPEDWRI-DX": 15,
+      "Guangzhou / Kermany": 13,
+      "BraTS-PEDs": 12,
+      "PediCXR / VinDr-PCXR": 5,
+      "FETAL_PLANES_DB": 5,
+      "CheXpert (general resource)": 5,
+      "FeTA": 4,
+      "Regensburg appendicitis": 3,
+      "Pediatric-CT-SEG": 2
+    },
+    "preprints": 231,
+    "release_status": {
+      "unclear": 2957,
+      "commercial": 159,
+      "open-source": 168,
+      "unreleased": 212
+    },
+    "validation": {
+      "internal only": 2352,
+      "prospective": 115,
+      "none / not stated": 158,
+      "reader study": 217,
+      "external / multi-center": 654
+    }
+  },
+  "eras": {
+    "2005\u20132014": {
+      "n": 71,
+      "modality": {
+        "MRI": 43,
+        "ultrasound": 12,
+        "x-ray / radiography": 9,
+        "multiple": 3,
+        "CT": 3
+      },
+      "task": {
+        "detection / diagnosis": 41,
+        "measurement / quantification": 15,
+        "outcome prediction": 7,
+        "segmentation": 6,
+        "other": 4,
+        "workflow / non-interpretive": 3
+      },
+      "age_groups": {
+        "child": 33,
+        "adolescent": 20,
+        "fetal": 12,
+        "infant": 10,
+        "mixed pediatric and adult": 8,
+        "neonate": 8,
+        "pediatric (unspecified)": 4
+      },
+      "topics": {
+        "Autism / ADHD / psychiatric": 17,
+        "Fetal assessment / prenatal": 14,
+        "Brain / CNS tumors": 6,
+        "Bone age / skeletal maturation": 5,
+        "Brain development / cognition": 4,
+        "Epilepsy": 3,
+        "Pulmonary infection": 3,
+        "Neonatal brain injury": 2,
+        "Scoliosis / spine deformity": 1,
+        "Liver / biliary": 1,
+        "Cardiac / congenital heart": 1
+      },
+      "dataset_mentions": {
+        "ADHD-200": 5
+      },
+      "preprints": 0,
+      "release_status": {
+        "unclear": 68,
+        "commercial": 3
+      },
+      "validation": {
+        "internal only": 58,
+        "none / not stated": 3,
+        "external / multi-center": 3,
+        "reader study": 5,
+        "prospective": 2
+      }
+    },
+    "2015\u20132019": {
+      "n": 295,
+      "modality": {
+        "MRI": 172,
+        "ultrasound": 60,
+        "x-ray / radiography": 45,
+        "CT": 19,
+        "other": 6,
+        "nuclear / PET": 1
+      },
+      "task": {
+        "detection / diagnosis": 126,
+        "measurement / quantification": 63,
+        "segmentation": 55,
+        "outcome prediction": 50,
+        "workflow / non-interpretive": 18,
+        "reconstruction / imputation": 13,
+        "other": 12,
+        "report generation / LLM": 3,
+        "agent / autonomous": 1,
+        "foundation model / vision-language": 1
+      },
+      "age_groups": {
+        "child": 101,
+        "adolescent": 76,
+        "fetal": 70,
+        "infant": 40,
+        "pediatric (unspecified)": 40,
+        "neonate": 33,
+        "mixed pediatric and adult": 27
+      },
+      "topics": {
+        "Fetal assessment / prenatal": 67,
+        "Autism / ADHD / psychiatric": 40,
+        "Brain development / cognition": 35,
+        "Bone age / skeletal maturation": 23,
+        "Epilepsy": 12,
+        "Brain / CNS tumors": 11,
+        "Cardiac / congenital heart": 10,
+        "Fracture / trauma / abuse": 8,
+        "Pulmonary infection": 8,
+        "Scoliosis / spine deformity": 6,
+        "Renal / urinary": 4,
+        "Hydrocephalus": 4,
+        "Liver / biliary": 3,
+        "Acute abdomen": 2,
+        "Hip dysplasia": 2,
+        "Neonatal brain injury": 2,
+        "Inflammatory bowel disease": 1
+      },
+      "dataset_mentions": {
+        "ABIDE": 8,
+        "ADHD-200": 6,
+        "RSNA bone age": 4,
+        "Guangzhou / Kermany": 1
+      },
+      "preprints": 3,
+      "release_status": {
+        "unclear": 280,
+        "open-source": 7,
+        "commercial": 4,
+        "unreleased": 4
+      },
+      "validation": {
+        "internal only": 221,
+        "reader study": 18,
+        "external / multi-center": 42,
+        "prospective": 7,
+        "none / not stated": 7
+      }
+    },
+    "2020\u20132022": {
+      "n": 794,
+      "modality": {
+        "MRI": 371,
+        "ultrasound": 179,
+        "x-ray / radiography": 152,
+        "CT": 83,
+        "nuclear / PET": 14,
+        "multiple": 6,
+        "other": 5,
+        "fluoroscopy": 4
+      },
+      "task": {
+        "detection / diagnosis": 287,
+        "measurement / quantification": 190,
+        "segmentation": 171,
+        "outcome prediction": 148,
+        "reconstruction / imputation": 77,
+        "workflow / non-interpretive": 38,
+        "other": 21,
+        "foundation model / vision-language": 3,
+        "report generation / LLM": 3
+      },
+      "age_groups": {
+        "child": 311,
+        "adolescent": 181,
+        "fetal": 171,
+        "pediatric (unspecified)": 115,
+        "infant": 102,
+        "neonate": 75,
+        "mixed pediatric and adult": 68
+      },
+      "topics": {
+        "Fetal assessment / prenatal": 163,
+        "Brain development / cognition": 88,
+        "Autism / ADHD / psychiatric": 60,
+        "Cardiac / congenital heart": 48,
+        "Bone age / skeletal maturation": 46,
+        "Pulmonary infection": 38,
+        "Fracture / trauma / abuse": 35,
+        "Brain / CNS tumors": 31,
+        "Epilepsy": 26,
+        "Scoliosis / spine deformity": 25,
+        "Hip dysplasia": 17,
+        "Renal / urinary": 17,
+        "Liver / biliary": 13,
+        "Chronic lung / airway": 9,
+        "Hydrocephalus": 9,
+        "Acute abdomen": 4,
+        "Neonatal brain injury": 3
+      },
+      "dataset_mentions": {
+        "ABCD": 18,
+        "dHCP": 12,
+        "RSNA bone age": 10,
+        "ABIDE": 9,
+        "ADHD-200": 7,
+        "Guangzhou / Kermany": 3,
+        "CheXpert (general resource)": 2,
+        "GRAZPEDWRI-DX": 1,
+        "PediCXR / VinDr-PCXR": 1,
+        "FETAL_PLANES_DB": 1
+      },
+      "preprints": 29,
+      "release_status": {
+        "unclear": 702,
+        "open-source": 41,
+        "commercial": 27,
+        "unreleased": 24
+      },
+      "validation": {
+        "internal only": 565,
+        "external / multi-center": 134,
+        "prospective": 13,
+        "reader study": 61,
+        "none / not stated": 21
+      }
+    },
+    "2023\u20132024": {
+      "n": 965,
+      "modality": {
+        "MRI": 428,
+        "ultrasound": 229,
+        "x-ray / radiography": 186,
+        "CT": 94,
+        "nuclear / PET": 23,
+        "other": 13,
+        "multiple": 9,
+        "fluoroscopy": 4
+      },
+      "task": {
+        "detection / diagnosis": 378,
+        "measurement / quantification": 234,
+        "segmentation": 184,
+        "outcome prediction": 181,
+        "reconstruction / imputation": 63,
+        "workflow / non-interpretive": 39,
+        "other": 26,
+        "foundation model / vision-language": 6,
+        "report generation / LLM": 5
+      },
+      "age_groups": {
+        "child": 368,
+        "adolescent": 246,
+        "fetal": 225,
+        "infant": 138,
+        "pediatric (unspecified)": 131,
+        "neonate": 109,
+        "mixed pediatric and adult": 93
+      },
+      "topics": {
+        "Fetal assessment / prenatal": 220,
+        "Brain development / cognition": 96,
+        "Cardiac / congenital heart": 75,
+        "Autism / ADHD / psychiatric": 73,
+        "Brain / CNS tumors": 52,
+        "Bone age / skeletal maturation": 51,
+        "Pulmonary infection": 43,
+        "Scoliosis / spine deformity": 37,
+        "Fracture / trauma / abuse": 37,
+        "Liver / biliary": 27,
+        "Renal / urinary": 26,
+        "Hip dysplasia": 17,
+        "Acute abdomen": 14,
+        "Epilepsy": 13,
+        "Chronic lung / airway": 12,
+        "Neonatal brain injury": 12,
+        "Hydrocephalus": 6,
+        "Inflammatory bowel disease": 1
+      },
+      "dataset_mentions": {
+        "ABCD": 29,
+        "RSNA bone age": 16,
+        "dHCP": 15,
+        "CBTN": 10,
+        "ABIDE": 8,
+        "ADHD-200": 5,
+        "FeTA": 4,
+        "Guangzhou / Kermany": 4,
+        "GRAZPEDWRI-DX": 3,
+        "BraTS-PEDs": 2,
+        "CheXpert (general resource)": 2,
+        "FETAL_PLANES_DB": 1,
+        "PediCXR / VinDr-PCXR": 1
+      },
+      "preprints": 81,
+      "release_status": {
+        "unclear": 799,
+        "commercial": 49,
+        "open-source": 43,
+        "unreleased": 74
+      },
+      "validation": {
+        "internal only": 639,
+        "reader study": 63,
+        "external / multi-center": 193,
+        "prospective": 40,
+        "none / not stated": 30
+      }
+    },
+    "2025": {
+      "n": 685,
+      "modality": {
+        "MRI": 301,
+        "ultrasound": 178,
+        "x-ray / radiography": 132,
+        "CT": 52,
+        "multiple": 12,
+        "other": 10,
+        "nuclear / PET": 7,
+        "fluoroscopy": 3
+      },
+      "task": {
+        "detection / diagnosis": 248,
+        "measurement / quantification": 156,
+        "outcome prediction": 150,
+        "segmentation": 117,
+        "reconstruction / imputation": 66,
+        "workflow / non-interpretive": 41,
+        "other": 36,
+        "foundation model / vision-language": 8,
+        "report generation / LLM": 5
+      },
+      "age_groups": {
+        "child": 257,
+        "adolescent": 182,
+        "fetal": 156,
+        "infant": 114,
+        "pediatric (unspecified)": 91,
+        "neonate": 67,
+        "mixed pediatric and adult": 62
+      },
+      "topics": {
+        "Fetal assessment / prenatal": 151,
+        "Brain development / cognition": 71,
+        "Autism / ADHD / psychiatric": 65,
+        "Cardiac / congenital heart": 47,
+        "Scoliosis / spine deformity": 39,
+        "Brain / CNS tumors": 32,
+        "Pulmonary infection": 31,
+        "Bone age / skeletal maturation": 26,
+        "Fracture / trauma / abuse": 19,
+        "Liver / biliary": 19,
+        "Epilepsy": 14,
+        "Hip dysplasia": 12,
+        "Acute abdomen": 11,
+        "Renal / urinary": 11,
+        "Neonatal brain injury": 9,
+        "Chronic lung / airway": 7,
+        "Hydrocephalus": 6,
+        "Inflammatory bowel disease": 1
+      },
+      "dataset_mentions": {
+        "ABCD": 22,
+        "dHCP": 9,
+        "ABIDE": 9,
+        "ADHD-200": 8,
+        "BraTS-PEDs": 7,
+        "RSNA bone age": 7,
+        "CBTN": 5,
+        "GRAZPEDWRI-DX": 5,
+        "Guangzhou / Kermany": 3,
+        "PediCXR / VinDr-PCXR": 2,
+        "FETAL_PLANES_DB": 2,
+        "Regensburg appendicitis": 1,
+        "CheXpert (general resource)": 1
+      },
+      "preprints": 62,
+      "release_status": {
+        "open-source": 36,
+        "unclear": 559,
+        "commercial": 30,
+        "unreleased": 60
+      },
+      "validation": {
+        "internal only": 454,
+        "external / multi-center": 117,
+        "prospective": 26,
+        "reader study": 36,
+        "none / not stated": 52
+      }
+    },
+    "2026 YTD": {
+      "n": 686,
+      "modality": {
+        "MRI": 275,
+        "ultrasound": 170,
+        "x-ray / radiography": 152,
+        "CT": 74,
+        "multiple": 13,
+        "other": 11,
+        "nuclear / PET": 8,
+        "fluoroscopy": 2
+      },
+      "task": {
+        "detection / diagnosis": 257,
+        "measurement / quantification": 180,
+        "outcome prediction": 147,
+        "segmentation": 129,
+        "reconstruction / imputation": 58,
+        "workflow / non-interpretive": 28,
+        "other": 24,
+        "report generation / LLM": 12,
+        "foundation model / vision-language": 8,
+        "agent / autonomous": 1
+      },
+      "age_groups": {
+        "child": 231,
+        "adolescent": 184,
+        "fetal": 152,
+        "pediatric (unspecified)": 117,
+        "infant": 111,
+        "mixed pediatric and adult": 58,
+        "neonate": 54
+      },
+      "topics": {
+        "Fetal assessment / prenatal": 141,
+        "Brain development / cognition": 61,
+        "Cardiac / congenital heart": 58,
+        "Autism / ADHD / psychiatric": 58,
+        "Fracture / trauma / abuse": 39,
+        "Pulmonary infection": 38,
+        "Scoliosis / spine deformity": 34,
+        "Brain / CNS tumors": 30,
+        "Bone age / skeletal maturation": 25,
+        "Epilepsy": 13,
+        "Acute abdomen": 13,
+        "Hip dysplasia": 12,
+        "Hydrocephalus": 12,
+        "Renal / urinary": 12,
+        "Chronic lung / airway": 11,
+        "Liver / biliary": 8,
+        "Neonatal brain injury": 4,
+        "Inflammatory bowel disease": 2
+      },
+      "dataset_mentions": {
+        "ABCD": 14,
+        "ABIDE": 8,
+        "GRAZPEDWRI-DX": 6,
+        "RSNA bone age": 5,
+        "BraTS-PEDs": 3,
+        "dHCP": 3,
+        "CBTN": 2,
+        "Pediatric-CT-SEG": 2,
+        "ADHD-200": 2,
+        "Regensburg appendicitis": 2,
+        "Guangzhou / Kermany": 2,
+        "PediCXR / VinDr-PCXR": 1,
+        "FETAL_PLANES_DB": 1
+      },
+      "preprints": 56,
+      "release_status": {
+        "unclear": 549,
+        "commercial": 46,
+        "open-source": 41,
+        "unreleased": 50
+      },
+      "validation": {
+        "internal only": 415,
+        "prospective": 27,
+        "none / not stated": 45,
+        "reader study": 34,
+        "external / multi-center": 165
+      }
+    }
+  },
+  "duplicate_title_candidates": [
+    [
+      {
+        "record_id": "40920305",
+        "year": "2026",
+        "title": "FetalMLOps: operationalizing machine learning models for standard fetal ultrasound plane classification.",
+        "doi": "10.1007/s11517-025-03436-5"
+      },
+      {
+        "record_id": "emb:L2036028779",
+        "year": "2026",
+        "title": "FetalMLOps: operationalizing machine learning models for standard fetal ultrasound plane classification",
+        "doi": "10.1007/s11517-025-03436-5"
+      }
+    ],
+    [
+      {
+        "record_id": "41066289",
+        "year": "2026",
+        "title": "Detailed Delineation of the Fetal Brain in Diffusion MRI via Multi-Task Learning.",
+        "doi": "10.1109/TMI.2025.3619809"
+      },
+      {
+        "record_id": "39257731",
+        "year": "2024",
+        "title": "Detailed delineation of the fetal brain in diffusion MRI via multi-task learning.",
+        "doi": "10.1101/2024.08.29.609697"
+      },
+      {
+        "record_id": "39314513",
+        "year": "2024",
+        "title": "Detailed delineation of the fetal brain in diffusion MRI via multi-task learning.",
+        "doi": ""
+      }
+    ],
+    [
+      {
+        "record_id": "41068314",
+        "year": "2026",
+        "title": "Prediction of motor developmental outcomes based on MRI radiomics in premature infants.",
+        "doi": "10.1038/s41390-025-04377-3"
+      },
+      {
+        "record_id": "emb:L2036664225",
+        "year": "2024",
+        "title": "Prediction of Motor Developmental Outcomes Based on MRI Radiomics in Premature Infants",
+        "doi": "10.2139/ssrn.5068600"
+      }
+    ],
+    [
+      {
+        "record_id": "41238791",
+        "year": "2026",
+        "title": "Towards automated fetal brain biometry reporting for 3-dimensional T2-weighted 0.55-3T magnetic resonance imaging at 20-40\u00a0weeks gestational age range.",
+        "doi": "10.1007/s00247-025-06403-2"
+      },
+      {
+        "record_id": "emb:L2037732607",
+        "year": "2025",
+        "title": "Towards automated fetal brain biometry reporting for 3-dimensional T2-weighted 0.55-3T magnetic resonance imaging at 20-40 weeks gestational age range",
+        "doi": "10.1101/2025.02.06.25321808"
+      }
+    ],
+    [
+      {
+        "record_id": "41494544",
+        "year": "2026",
+        "title": "Adolescents with non-suicidal self-injury exhibit increased pain empathic neural reactivity and personal distress to physical but not affective pain.",
+        "doi": "10.1016/j.jad.2025.121145"
+      },
+      {
+        "record_id": "emb:L2042570799",
+        "year": "2025",
+        "title": "Adolescents with non-suicidal self-injury exhibit increased pain empathic neural reactivity and personal distress to physical but not affective pain",
+        "doi": "10.1101/2025.09.10.25335218"
+      }
+    ],
+    [
+      {
+        "record_id": "41530498",
+        "year": "2026",
+        "title": "AI-powered segmentation and prognosis with missing MRI in pediatric brain tumors.",
+        "doi": "10.1038/s41698-025-01269-x"
+      },
+      {
+        "record_id": "emb:L2039912979",
+        "year": "2025",
+        "title": "AI-Powered Segmentation and Prognosis with Missing MRI in Pediatric Brain Tumors",
+        "doi": "10.1101/2025.07.14.25331187"
+      }
+    ],
+    [
+      {
+        "record_id": "41571797",
+        "year": "2026",
+        "title": "Aperiodic parameters of the fMRI power spectrum associate with preterm birth and neonatal age.",
+        "doi": "10.1038/s42003-025-09488-5"
+      },
+      {
+        "record_id": "emb:L2036917606",
+        "year": "2024",
+        "title": "Aperiodic parameters of the fMRI power spectrum associate with preterm birth and neonatal age",
+        "doi": "10.1101/2024.12.16.24318785"
+      }
+    ],
+    [
+      {
+        "record_id": "41646737",
+        "year": "2026",
+        "title": "Automated Echocardiographic Detection of Congenital Heart Disease Using Artificial Intelligence.",
+        "doi": "10.64898/2026.01.24.26344771"
+      },
+      {
+        "record_id": "41902792",
+        "year": "2026",
+        "title": "Automated Echocardiographic Detection of Congenital Heart Disease Using Artificial Intelligence.",
+        "doi": "10.1161/CIRCULATIONAHA.126.079781"
+      }
+    ],
+    [
+      {
+        "record_id": "41727084",
+        "year": "2026",
+        "title": "When attention falters: brain, breathing, and behavioral signals of lapses in interoceptive attention.",
+        "doi": "10.64898/2026.02.07.704566"
+      },
+      {
+        "record_id": "42332286",
+        "year": "2026",
+        "title": "When attention falters: Brain, breathing, and behavioral signals of lapses in interoceptive attention.",
+        "doi": "10.3758/s13415-026-01467-5"
+      }
+    ],
+    [
+      {
+        "record_id": "41876706",
+        "year": "2026",
+        "title": "Neuroanatomy reflects individual variability in impulsivity in youth.",
+        "doi": "10.1038/s41380-026-03526-2"
+      },
+      {
+        "record_id": "40909792",
+        "year": "2025",
+        "title": "Neuroanatomy Reflects Individual Variability in Impulsivity in Youth.",
+        "doi": "10.21203/rs.3.rs-6520460/v1"
+      }
+    ],
+    [
+      {
+        "record_id": "42013743",
+        "year": "2026",
+        "title": "BIBSNet: A deep learning baby image brain segmentation network for MRI scans.",
+        "doi": "10.1016/j.dcn.2026.101706"
+      },
+      {
+        "record_id": "36993540",
+        "year": "2025",
+        "title": "BIBSNet: A Deep Learning Baby Image Brain Segmentation Network for MRI Scans.",
+        "doi": "10.1101/2023.03.22.533696"
+      }
+    ],
+    [
+      {
+        "record_id": "42190896",
+        "year": "2026",
+        "title": "Classification of familial and non-familial ADHD using auto-encoding network and binary hypothesis testing.",
+        "doi": "10.1016/j.brainresbull.2026.111966"
+      },
+      {
+        "record_id": "40894124",
+        "year": "2025",
+        "title": "Classification of familial and non-familial ADHD using auto-encoding network and binary hypothesis testing.",
+        "doi": "10.1101/2025.08.15.25333792"
+      }
+    ],
+    [
+      {
+        "record_id": "42386757",
+        "year": "2026",
+        "title": "An MRI Atlas of the Human Fetal Brain: Reference and Segmentation Tools for Fetal Brain MRI Analysis.",
+        "doi": "10.1038/s41597-026-07608-2"
+      },
+      {
+        "record_id": "40900685",
+        "year": "2025",
+        "title": "An MRI Atlas of the Human Fetal Brain: Reference and Segmentation Tools for Fetal Brain MRI Analysis.",
+        "doi": ""
+      }
+    ],
+    [
+      {
+        "record_id": "42501730",
+        "year": "2026",
+        "title": "Multivariate environmental exposures are reflected in whole-brain functional connectivity and cognition in youth.",
+        "doi": "10.1016/j.dcn.2026.101788"
+      },
+      {
+        "record_id": "41292958",
+        "year": "2025",
+        "title": "Multivariate environmental exposures are reflected in whole-brain functional connectivity and cognition in youth.",
+        "doi": "10.1101/2025.11.13.688261"
+      }
+    ],
+    [
+      {
+        "record_id": "42517220",
+        "year": "2026",
+        "title": "A Multitask Deep Learning Model for Pediatric Echocardiography Analysis.",
+        "doi": "10.1161/CIRCULATIONAHA.126.080619"
+      },
+      {
+        "record_id": "41282661",
+        "year": "2025",
+        "title": "A Multi-Task Deep Learning Model for Pediatric Echocardiography Analysis.",
+        "doi": "10.1101/2025.10.27.25338912"
+      }
+    ],
+    [
+      {
+        "record_id": "emb:L2040009264",
+        "year": "2026",
+        "title": "PedVision: A manual-annotation-free and age scalable segmentation pipeline for bone analysis in hand X-ray images",
+        "doi": "10.1016/j.bspc.2025.108569"
+      },
+      {
+        "record_id": "emb:L2036531047",
+        "year": "2024",
+        "title": "Pedvision: A Manual-Annotation-Free and Age Scalable Segmentation Pipeline for Bone Analysis in Hand X-Ray Images",
+        "doi": "10.2139/ssrn.5050535"
+      }
+    ],
+    [
+      {
+        "record_id": "emb:L2042500034",
+        "year": "2026",
+        "title": "Automated right ventricular assessment in pediatric echocardiography via deep learning improves measurement reliability and reduces variability",
+        "doi": "10.1016/j.ibmed.2026.100344"
+      },
+      {
+        "record_id": "emb:L2039914104",
+        "year": "2025",
+        "title": "Automated Right Ventricular Assessment in Pediatric Echocardiography via Deep Learning Improves Measurement Reliability and Reduces Variability",
+        "doi": "10.2139/ssrn.5365887"
+      },
+      {
+        "record_id": "emb:L2040562547",
+        "year": "2025",
+        "title": "Automated right ventricular assessment in pediatric echocardiography via deep learning improves measurement reliability and reduces variability",
+        "doi": "10.2139/ssrn.5418051"
+      }
+    ],
+    [
+      {
+        "record_id": "emb:L2043746724",
+        "year": "2026",
+        "title": "Intersecting effects of social circumstances and transcendent thinking on mid-adolescents\u2019 longitudinal functional connectome development",
+        "doi": "10.2139/ssrn.6233118"
+      },
+      {
+        "record_id": "emb:L2039217866",
+        "year": "2025",
+        "title": "Intersecting effects of social circumstances and transcendent thinking on mid-adolescents\u2019 longitudinal functional connectome development",
+        "doi": "10.1101/2025.05.20.654735"
+      }
+    ],
+    [
+      {
+        "record_id": "emb:L2043761891",
+        "year": "2026",
+        "title": "Distal Radial Epiphyseal Fusion Timing in Northwest Europeans and Middle Eastern Asylum Seekers: An Automated Ultrasound and Machine Learning Approach",
+        "doi": "10.2139/ssrn.6258351"
+      },
+      {
+        "record_id": "emb:L2045356674",
+        "year": "2026",
+        "title": "Distal radial epiphyseal fusion timing in Northwest Europeans and Middle Eastern asylum seekers: An automated ultrasound and machine learning approach",
+        "doi": "10.1016/j.fsir.2026.100479"
+      }
+    ],
+    [
+      {
+        "record_id": "38313196",
+        "year": "2025",
+        "title": "IVIM-Morph: Motion-compensated quantitative Intra-voxel Incoherent Motion (IVIM) analysis for functional fetal lung maturity assessment from diffusion-weighted MRI data.",
+        "doi": ""
+      },
+      {
+        "record_id": "39756266",
+        "year": "2025",
+        "title": "IVIM-Morph: Motion-compensated quantitative Intra-voxel Incoherent Motion (IVIM) analysis for functional fetal lung maturity assessment from diffusion-weighted MRI data.",
+        "doi": "10.1016/j.media.2024.103445"
+      }
+    ],
+    [
+      {
+        "record_id": "38570368",
+        "year": "2025",
+        "title": "Deep Learning for Automated Measurement of Total Cardiac Volume for Heart Transplantation Size Matching.",
+        "doi": "10.1007/s00246-024-03470-4"
+      },
+      {
+        "record_id": "38234758",
+        "year": "2023",
+        "title": "Deep Learning for Automated Measurement of Total Cardiac Volume for Heart Transplantation Size Matching.",
+        "doi": "10.21203/rs.3.rs-3788726/v1"
+      }
+    ],
+    [
+      {
+        "record_id": "39152359",
+        "year": "2025",
+        "title": "Validity of machine learning algorithms for automatically extract growing rod length on radiographs in children with early-onset scoliosis.",
+        "doi": "10.1007/s11517-024-03181-1"
+      },
+      {
+        "record_id": "emb:L2031007817",
+        "year": "2025",
+        "title": "Validity of machine learning algorithms for automatically extract growing rod length on radiographs in children with early-onset scoliosis",
+        "doi": "10.1007/s11517-024-03181-1"
+      }
+    ],
+    [
+      {
+        "record_id": "39253637",
+        "year": "2025",
+        "title": "Integrated Brain Connectivity Analysis with fMRI, DTI, and sMRI Powered by Interpretable Graph Neural Networks.",
+        "doi": ""
+      },
+      {
+        "record_id": "40250104",
+        "year": "2025",
+        "title": "Integrated brain connectivity analysis with fMRI, DTI, and sMRI powered by interpretable graph neural networks.",
+        "doi": "10.1016/j.media.2025.103570"
+      }
+    ],
+    [
+      {
+        "record_id": "39655476",
+        "year": "2025",
+        "title": "Automated Neuroprognostication Via Machine Learning in Neonates with Hypoxic-Ischemic Encephalopathy.",
+        "doi": "10.1002/ana.27154"
+      },
+      {
+        "record_id": "emb:L2032645587",
+        "year": "2024",
+        "title": "Automated Neuroprognostication via Machine Learning in Neonates with Hypoxic-Ischemic Encephalopathy",
+        "doi": "10.1101/2024.05.07.24306996"
+      }
+    ],
+    [
+      {
+        "record_id": "39674995",
+        "year": "2025",
+        "title": "A fully automated measurement of migration percentage on ultrasound images in children with cerebral palsy.",
+        "doi": "10.1007/s11517-024-03259-w"
+      },
+      {
+        "record_id": "emb:L2032606294",
+        "year": "2025",
+        "title": "A fully automated measurement of migration percentage on ultrasound images in children with cerebral palsy",
+        "doi": "10.1007/s11517-024-03259-w"
+      }
+    ],
+    [
+      {
+        "record_id": "39777258",
+        "year": "2025",
+        "title": "Pediatric brain tumor classification using deep learning on MR images with age fusion.",
+        "doi": "10.1093/noajnl/vdae205"
+      },
+      {
+        "record_id": "emb:L2034988463",
+        "year": "2024",
+        "title": "Pediatric brain tumor classification using deep learning on MR-images with age fusion",
+        "doi": "10.1101/2024.09.05.24313109"
+      }
+    ],
+    [
+      {
+        "record_id": "39838221",
+        "year": "2025",
+        "title": "Automatic skeletal maturity grading from pelvis radiographs by deep learning for adolescent idiopathic scoliosis.",
+        "doi": "10.1007/s11517-025-03283-4"
+      },
+      {
+        "record_id": "emb:L2033079723",
+        "year": "2025",
+        "title": "Automatic skeletal maturity grading from pelvis radiographs by deep learning for adolescent idiopathic scoliosis",
+        "doi": "10.1007/s11517-025-03283-4"
+      }
+    ],
+    [
+      {
+        "record_id": "40061352",
+        "year": "2025",
+        "title": "Quantitative T1 mapping indicates elevated white matter myelin in children with RASopathies.",
+        "doi": "10.1101/2025.02.25.25322881"
+      },
+      {
+        "record_id": "40316128",
+        "year": "2025",
+        "title": "Quantitative T1 Mapping Indicates Elevated White Matter Myelin in Children With RASopathies.",
+        "doi": "10.1016/j.biopsych.2025.04.014"
+      }
+    ],
+    [
+      {
+        "record_id": "40172789",
+        "year": "2025",
+        "title": "An efficient network with state space model under evidential training for fetal echocardiography standard view recognition.",
+        "doi": "10.1007/s11517-025-03347-5"
+      },
+      {
+        "record_id": "emb:L2034103015",
+        "year": "2025",
+        "title": "An efficient network with state space model under evidential training for fetal echocardiography standard view recognition",
+        "doi": "10.1007/s11517-025-03347-5"
+      }
+    ],
+    [
+      {
+        "record_id": "40304583",
+        "year": "2025",
+        "title": "Deep Learning Model for Real-Time Nuchal Translucency Assessment at Prenatal US.",
+        "doi": "10.1148/ryai.240498"
+      },
+      {
+        "record_id": "emb:L2036995633",
+        "year": "2025",
+        "title": "Deep Learning Model for Real-Time Nuchal Translucency Assessment at Prenatal US",
+        "doi": "10.1148/ryai.240498"
+      }
+    ],
+    [
+      {
+        "record_id": "40321262",
+        "year": "2025",
+        "title": "Automated cervix biometry, volumetry and normative models for 3D motion-corrected T2-weighted 0.55-3T fetal MRI during 2nd and 3rd trimesters.",
+        "doi": "10.1101/2025.04.16.25325947"
+      },
+      {
+        "record_id": "41326549",
+        "year": "2025",
+        "title": "Automated cervix biometry, volumetry and normative models for 3D motion-corrected T2-weighted 0.55-3T fetal MRI during 2nd and 3rd trimesters.",
+        "doi": "10.1038/s41598-025-29744-2"
+      }
+    ],
+    [
+      {
+        "record_id": "40372847",
+        "year": "2025",
+        "title": "CLIF-Net: Intersection-Guided Cross-View Fusion Network for Infection Detection From Cranial Ultrasound.",
+        "doi": "10.1109/TMI.2025.3570316"
+      },
+      {
+        "record_id": "40778164",
+        "year": "2025",
+        "title": "CLIF-Net: Intersection-guided Cross-view Fusion Network for Infection Detection from Cranial Ultrasound.",
+        "doi": "10.1101/2025.07.21.25331887"
+      }
+    ],
+    [
+      {
+        "record_id": "40535328",
+        "year": "2025",
+        "title": "Longitudinal Risk Prediction for Pediatric Glioma with Temporal Deep Learning.",
+        "doi": "10.1056/aioa2400703"
+      },
+      {
+        "record_id": "38978642",
+        "year": "2024",
+        "title": "Longitudinal risk prediction for pediatric glioma with temporal deep learning.",
+        "doi": "10.1101/2024.06.04.24308434"
+      }
+    ],
+    [
+      {
+        "record_id": "40612716",
+        "year": "2025",
+        "title": "A graph neural network approach to investigate brain critical states over neurodevelopment.",
+        "doi": "10.1162/netn_a_00451"
+      },
+      {
+        "record_id": "emb:L2035793475",
+        "year": "2024",
+        "title": "A Graph Neural Network Approach to Investigate Brain Critical States Over Neurodevelopment",
+        "doi": "10.1101/2024.10.09.617395"
+      }
+    ],
+    [
+      {
+        "record_id": "40654936",
+        "year": "2025",
+        "title": "Using deep learning to predict internalizing problems from brain structure in youth.",
+        "doi": "10.1101/2024.11.28.625869"
+      },
+      {
+        "record_id": "40883286",
+        "year": "2025",
+        "title": "Using deep learning to predict internalizing problems from brain structure in youth.",
+        "doi": "10.1038/s41398-025-03565-3"
+      }
+    ],
+    [
+      {
+        "record_id": "40684513",
+        "year": "2025",
+        "title": "Integrating multilevel, multidomain and multimodal neuroimaging factors to predict early alcohol exposure trajectories using explainable AI.",
+        "doi": "10.1016/j.dcn.2025.101597"
+      },
+      {
+        "record_id": "emb:L2038239913",
+        "year": "2025",
+        "title": "Integrating Multilevel, Multidomain and Multimodal Neuroimaging Factors to Predict Early Alcohol Exposure Trajectories Using Explainable AI",
+        "doi": "10.1101/2025.03.12.25323356"
+      },
+      {
+        "record_id": "emb:L2038321162",
+        "year": "2025",
+        "title": "Integrating Multilevel, Multidomain and Multimodal Neuroimaging Factors to Predict Early Alcohol Exposure Trajectories Using Explainable Ai",
+        "doi": "10.2139/ssrn.5195030"
+      }
+    ],
+    [
+      {
+        "record_id": "40800807",
+        "year": "2025",
+        "title": "Streamline tractography of the fetal brain in utero with machine learning.",
+        "doi": "10.1162/imag_a_00537"
+      },
+      {
+        "record_id": "39253631",
+        "year": "2024",
+        "title": "Streamline tractography of the fetal brain in utero with machine learning.",
+        "doi": ""
+      }
+    ],
+    [
+      {
+        "record_id": "40945816",
+        "year": "2025",
+        "title": "Neurodevelopmental deviations in schizophrenia: Evidences from multimodal connectome-based brain ages.",
+        "doi": "10.1016/j.pnpbp.2025.111498"
+      },
+      {
+        "record_id": "emb:L2037149829",
+        "year": "2024",
+        "title": "Neurodevelopmental deviations in schizophrenia: Evidences from multimodal connectome-based brain ages",
+        "doi": "10.1101/2024.12.22.629311"
+      }
+    ],
+    [
+      {
+        "record_id": "40949947",
+        "year": "2025",
+        "title": "Limited generalizability of dynamic fMRI correlates of adolescent rumination.",
+        "doi": "10.1101/2025.08.29.673124"
+      },
+      {
+        "record_id": "41541224",
+        "year": "2025",
+        "title": "Limited generalizability of dynamic fMRI correlates of adolescent rumination.",
+        "doi": "10.1038/s44220-025-00525-0"
+      }
+    ],
+    [
+      {
+        "record_id": "40960398",
+        "year": "2025",
+        "title": "A Deep Learning Framework for Synthesizing Longitudinal Infant Brain MRI during Early Development.",
+        "doi": "10.1148/ryai.240708"
+      },
+      {
+        "record_id": "emb:L2037448182",
+        "year": "2025",
+        "title": "A Deep Learning Framework for Synthesizing Longitudinal Infant Brain MRI during Early Development",
+        "doi": "10.1148/ryai.240708"
+      }
+    ],
+    [
+      {
+        "record_id": "40991626",
+        "year": "2025",
+        "title": "Detection of pneumonia in children through chest radiographs using artificial intelligence in a low-resource setting: A pilot study.",
+        "doi": "10.1371/journal.pdig.0000713"
+      },
+      {
+        "record_id": "emb:L2036917276",
+        "year": "2024",
+        "title": "Detection of Pneumonia in Children through Chest Radiographs using Artificial Intelligence in a Low-Resource Setting: A Pilot Study",
+        "doi": "10.1101/2024.12.01.24318269"
+      }
+    ],
+    [
+      {
+        "record_id": "40993183",
+        "year": "2025",
+        "title": "NeoCLIP: a self-supervised foundation model for the interpretation of neonatal radiographs.",
+        "doi": "10.1038/s41746-025-01922-6"
+      },
+      {
+        "record_id": "emb:L2036917369",
+        "year": "2024",
+        "title": "NeoCLIP: A Self-Supervised Foundation Model for the Interpretation of Neonatal Radiographs",
+        "doi": "10.1101/2024.12.03.24318410"
+      }
+    ],
+    [
+      {
+        "record_id": "41206361",
+        "year": "2025",
+        "title": "Auto-segmentation of thoraco-abdominal organs in pediatric dynamic MRI.",
+        "doi": "10.1002/mp.70104"
+      },
+      {
+        "record_id": "38766023",
+        "year": "2024",
+        "title": "Auto-segmentation of thoraco-abdominal organs in pediatric dynamic MRI.",
+        "doi": "10.1101/2024.05.04.24306582"
+      }
+    ],
+    [
+      {
+        "record_id": "41310360",
+        "year": "2025",
+        "title": "Segmentation-free pretherapeutic assessment of BRAF-status in pediatric low-grade gliomas.",
+        "doi": "10.1038/s43856-025-01204-y"
+      },
+      {
+        "record_id": "emb:L2037732324",
+        "year": "2025",
+        "title": "Segmentation-Free Pretherapeutic Assessment of BRAF-Status in Pediatric Low-Grade Gliomas",
+        "doi": "10.1101/2025.01.30.25321339"
+      }
+    ],
+    [
+      {
+        "record_id": "emb:L2032795091",
+        "year": "2025",
+        "title": "Ultra-Low-Field Paediatric MRI in Low- and Middle-Income Countries: Super-Resolution Using a Multi-Orientation U-Net",
+        "doi": "10.1002/hbm.70112"
+      },
+      {
+        "record_id": "emb:L2030896484",
+        "year": "2024",
+        "title": "Ultra-low-field paediatric MRI in low- and middle-income countries: super-resolution using a multi-orientation U-Net",
+        "doi": "10.1101/2024.02.16.580639"
+      }
+    ],
+    [
+      {
+        "record_id": "emb:L2037671087",
+        "year": "2025",
+        "title": "Automatic diagnosis of early pregnancy fetal nasal bone development based on complex mid-sagittal section ultrasound imaging",
+        "doi": "10.1016/j.neucom.2025.129773"
+      },
+      {
+        "record_id": "emb:L2036242142",
+        "year": "2024",
+        "title": "Automatic Diagnosis of Early Pregnancy Fetal Nasal Bone Development Based on Complex Mid-Sagittal Section Ultrasound Imaging",
+        "doi": "10.2139/ssrn.5033502"
+      }
+    ],
+    [
+      {
+        "record_id": "37961086",
+        "year": "2024",
+        "title": "Early prognostication of overall survival for pediatric diffuse midline gliomas using MRI radiomics and machine learning: a two-center study.",
+        "doi": "10.1101/2023.11.01.23297935"
+      },
+      {
+        "record_id": "39027132",
+        "year": "2024",
+        "title": "Early prognostication of overall survival for pediatric diffuse midline gliomas using MRI radiomics and machine learning: A two-center study.",
+        "doi": "10.1093/noajnl/vdae108"
+      }
+    ],
+    [
+      {
+        "record_id": "38232121",
+        "year": "2024",
+        "title": "Uncovering the effects of model initialization on deep model generalization: A study with adult and pediatric chest X-ray images.",
+        "doi": "10.1371/journal.pdig.0000286"
+      },
+      {
+        "record_id": "emb:L2025488478",
+        "year": "2023",
+        "title": "Uncovering the effects of model initialization on deep model generalization: A study with adult and pediatric chest X-ray images",
+        "doi": "10.1101/2023.05.31.23290789"
+      }
+    ],
+    [
+      {
+        "record_id": "38339954",
+        "year": "2024",
+        "title": "Estimating cortical thickness trajectories in children across different scanners using transfer learning from normative models.",
+        "doi": "10.1002/hbm.26565"
+      },
+      {
+        "record_id": "emb:L2024392459",
+        "year": "2023",
+        "title": "Estimating cortical thickness trajectories in children across different scanners using transfer learning from normative models",
+        "doi": "10.1101/2023.03.02.530742"
+      }
+    ],
+    [
+      {
+        "record_id": "38446044",
+        "year": "2024",
+        "title": "Noninvasive Molecular Subtyping of Pediatric Low-Grade Glioma with Self-Supervised Transfer Learning.",
+        "doi": "10.1148/ryai.230333"
+      },
+      {
+        "record_id": "37609311",
+        "year": "2023",
+        "title": "Noninvasive molecular subtyping of pediatric low-grade glioma with self-supervised transfer learning.",
+        "doi": "10.1101/2023.08.04.23293673"
+      }
+    ],
+    [
+      {
+        "record_id": "38532493",
+        "year": "2024",
+        "title": "Menarche, pubertal timing and the brain: female-specific patterns of brain maturation beyond age-related development.",
+        "doi": "10.1186/s13293-024-00604-4"
+      },
+      {
+        "record_id": "emb:L2026946495",
+        "year": "2023",
+        "title": "Menarche, pubertal timing and the brain: female-specific patterns of brain maturation beyond age-related development",
+        "doi": "10.1101/2023.08.31.23294880"
+      }
+    ],
+    [
+      {
+        "record_id": "38547665",
+        "year": "2024",
+        "title": "Sensorless volumetric reconstruction of fetal brain freehand ultrasound scans with deep implicit representation.",
+        "doi": "10.1016/j.media.2024.103147"
+      },
+      {
+        "record_id": "emb:L2031290881",
+        "year": "2024",
+        "title": "Sensorless volumetric reconstruction of fetal brain freehand ultrasound scans with deep implicit representation",
+        "doi": "10.1016/j.media.2024.103147"
+      }
+    ],
+    [
+      {
+        "record_id": "38603863",
+        "year": "2024",
+        "title": "Predicting depression risk in early adolescence via multimodal brain imaging.",
+        "doi": "10.1016/j.nicl.2024.103604"
+      },
+      {
+        "record_id": "37162823",
+        "year": "2023",
+        "title": "PREDICTING DEPRESSION RISK IN EARLY ADOLESCENCE VIA MULTIMODAL BRAIN IMAGING.",
+        "doi": "10.1101/2023.04.10.536286"
+      }
+    ],
+    [
+      {
+        "record_id": "38701657",
+        "year": "2024",
+        "title": "Deep learning microstructure estimation of developing brains from diffusion MRI: A newborn and fetal study.",
+        "doi": "10.1016/j.media.2024.103186"
+      },
+      {
+        "record_id": "37425859",
+        "year": "2023",
+        "title": "Deep learning microstructure estimation of developing brains from diffusion MRI: a newborn and fetal study.",
+        "doi": "10.1101/2023.07.01.547351"
+      }
+    ],
+    [
+      {
+        "record_id": "38712238",
+        "year": "2024",
+        "title": "Brain age prediction and deviations from normative trajectories in the neonatal connectome.",
+        "doi": "10.1101/2024.04.23.590811"
+      },
+      {
+        "record_id": "39592647",
+        "year": "2024",
+        "title": "Brain age prediction and deviations from normative trajectories in the neonatal connectome.",
+        "doi": "10.1038/s41467-024-54657-5"
+      }
+    ],
+    [
+      {
+        "record_id": "38875769",
+        "year": "2024",
+        "title": "Longitudinal associations between language network characteristics in the infant brain and school-age reading abilities are mediated by early-developing phonological skills.",
+        "doi": "10.1016/j.dcn.2024.101405"
+      },
+      {
+        "record_id": "38895379",
+        "year": "2024",
+        "title": "Longitudinal associations between language network characteristics in the infant brain and school-age reading abilities are mediated by early-developing phonological skills.",
+        "doi": "10.1101/2023.06.22.546194"
+      }
+    ],
+    [
+      {
+        "record_id": "38961684",
+        "year": "2024",
+        "title": "XRAInet: AI-based decision support for pneumothorax and pleural effusion management.",
+        "doi": "10.1002/ppul.27133"
+      },
+      {
+        "record_id": "emb:L2030471497",
+        "year": "2024",
+        "title": "XRAInet: AI-based decision support for pneumothorax and pleural effusion management",
+        "doi": "10.1002/ppul.27133"
+      }
+    ],
+    [
+      {
+        "record_id": "39182418",
+        "year": "2024",
+        "title": "Identifying developmental changes in functional brain connectivity associated with cognitive functioning in children and adolescents with ADHD.",
+        "doi": "10.1016/j.dcn.2024.101439"
+      },
+      {
+        "record_id": "emb:L2029578380",
+        "year": "2023",
+        "title": "Identifying Developmental Changes in Functional Brain Connectivity Associated with Cognitive Functioning in Children and Adolescents with ADHD",
+        "doi": "10.1101/2023.12.20.572617"
+      }
+    ],
+    [
+      {
+        "record_id": "39655845",
+        "year": "2024",
+        "title": "Ultrasound imaging based recognition of prenatal anomalies: a systematic clinical engineering review.",
+        "doi": "10.1088/2516-1091/ad3a4b"
+      },
+      {
+        "record_id": "emb:L2032183259",
+        "year": "2024",
+        "title": "Ultrasound imaging based recognition of prenatal anomalies: a systematic clinical engineering review",
+        "doi": "10.1088/2516-1091/ad3a4b"
+      }
+    ],
+    [
+      {
+        "record_id": "39717438",
+        "year": "2024",
+        "title": "Automated pediatric brain tumor imaging assessment tool from CBTN: Enhancing suprasellar region inclusion and managing limited data with deep learning.",
+        "doi": "10.1093/noajnl/vdae190"
+      },
+      {
+        "record_id": "emb:L2033953749",
+        "year": "2024",
+        "title": "Automated Pediatric Brain Tumor Imaging Assessment Tool from CBTN: Enhancing Suprasellar Region Inclusion and Managing Limited Data with Deep Learning",
+        "doi": "10.1101/2024.07.29.24311006"
+      }
+    ],
+    [
+      {
+        "record_id": "40800341",
+        "year": "2024",
+        "title": "Diffusion deep learning for brain age prediction and longitudinal tracking in children through adulthood.",
+        "doi": "10.1162/imag_a_00114"
+      },
+      {
+        "record_id": "emb:L2028194741",
+        "year": "2023",
+        "title": "Diffusion Deep Learning for Brain Age Prediction and Longitudinal Tracking in Children Through Adulthood",
+        "doi": "10.1101/2023.10.17.23297166"
+      }
+    ],
+    [
+      {
+        "record_id": "36093915",
+        "year": "2023",
+        "title": "Accelerated two-dimensional phase-contrast for cardiovascular MRI using deep learning-based reconstruction with complex difference estimation.",
+        "doi": "10.1002/mrm.29441"
+      },
+      {
+        "record_id": "emb:L2019064810",
+        "year": "2023",
+        "title": "Accelerated two-dimensional phase-contrast for cardiovascular MRI using deep learning-based reconstruction with complex difference estimation",
+        "doi": "10.1002/mrm.29441"
+      }
+    ],
+    [
+      {
+        "record_id": "36515219",
+        "year": "2023",
+        "title": "3D-MASNet: 3D mixed-scale asymmetric convolutional segmentation network for 6-month-old infant brain MR images.",
+        "doi": "10.1002/hbm.26174"
+      },
+      {
+        "record_id": "emb:L2012991291",
+        "year": "2021",
+        "title": "3D-MASNet: 3D Mixed-scale Asymmetric Convolutional Segmentation Network for 6-month-old Infant Brain MR Images",
+        "doi": "10.1101/2021.05.23.445294"
+      }
+    ],
+    [
+      {
+        "record_id": "36711966",
+        "year": "2023",
+        "title": "Automated Tumor Segmentation and Brain Tissue Extraction from Multiparametric MRI of Pediatric Brain Tumors: A Multi-Institutional Study.",
+        "doi": "10.1101/2023.01.02.22284037"
+      },
+      {
+        "record_id": "37051331",
+        "year": "2023",
+        "title": "Automated tumor segmentation and brain tissue extraction from multiparametric MRI of pediatric brain tumors: A multi-institutional study.",
+        "doi": "10.1093/noajnl/vdad027"
+      }
+    ],
+    [
+      {
+        "record_id": "37205412",
+        "year": "2023",
+        "title": "Neuro-Environmental Interactions: a time sensitive matter.",
+        "doi": "10.1101/2023.05.04.539456"
+      },
+      {
+        "record_id": "38260714",
+        "year": "2023",
+        "title": "Neuro-environmental interactions: a time sensitive matter.",
+        "doi": "10.3389/fncom.2023.1302010"
+      }
+    ],
+    [
+      {
+        "record_id": "37417801",
+        "year": "2023",
+        "title": "The future of neonatal lung ultrasound: Validation of an artificial intelligence model for interpreting lung scans. A multicentre prospective diagnostic study.",
+        "doi": "10.1002/ppul.26563"
+      },
+      {
+        "record_id": "emb:L2024275090",
+        "year": "2023",
+        "title": "The future of neonatal lung ultrasound: Validation of an artificial intelligence model for interpreting lung scans. A multicentre prospective diagnostic study",
+        "doi": "10.1002/ppul.26563"
+      }
+    ],
+    [
+      {
+        "record_id": "37707410",
+        "year": "2023",
+        "title": "Prediction of MYCN Gene Amplification in Pediatric Neuroblastomas: Development of a Deep Learning-Based Tool for Automatic Tumor Segmentation and Comparative Analysis of Computed Tomography-Based Radiomics Features Harmonization.",
+        "doi": "10.1097/RCT.0000000000001480"
+      },
+      {
+        "record_id": "emb:L2027304409",
+        "year": "2023",
+        "title": "Prediction of MYCN Gene Amplification in Pediatric Neuroblastomas: Development of a Deep Learning-Based Tool for Automatic Tumor Segmentation and Comparative Analysis of Computed Tomography-Based Radiomics Features Harmonization",
+        "doi": "10.1097/RCT.0000000000001480"
+      }
+    ],
+    [
+      {
+        "record_id": "34795038",
+        "year": "2022",
+        "title": "Using chest computed tomography and unsupervised machine learning for predicting and evaluating response to lumacaftor-ivacaftor in people with cystic fibrosis.",
+        "doi": "10.1183/13993003.01344-2021"
+      },
+      {
+        "record_id": "emb:L636766776",
+        "year": "2022",
+        "title": "Using chest computed tomography and unsupervised machine learning for predicting and evaluating response to lumacaftor-ivacaftor in people with cystic fibrosis",
+        "doi": "10.1183/13993003.01344-2021"
+      }
+    ],
+    [
+      {
+        "record_id": "35585848",
+        "year": "2022",
+        "title": "Through-Plane Super-Resolution With Autoencoders in Diffusion Magnetic Resonance Imaging of the Developing Human Brain.",
+        "doi": "10.3389/fneur.2022.827816"
+      },
+      {
+        "record_id": "emb:L2016436618",
+        "year": "2021",
+        "title": "Through-plane super-resolution with autoencoders in diffusion magnetic resonance imaging of the developing human brain",
+        "doi": "10.1101/2021.12.06.471406"
+      }
+    ],
+    [
+      {
+        "record_id": "35616520",
+        "year": "2022",
+        "title": "Structural differences in adolescent brains can predict alcohol misuse.",
+        "doi": "10.7554/eLife.77545"
+      },
+      {
+        "record_id": "emb:L2017166020",
+        "year": "2022",
+        "title": "Structural differences in adolescent brains can predict alcohol misuse",
+        "doi": "10.1101/2022.01.31.22269833"
+      }
+    ],
+    [
+      {
+        "record_id": "35649314",
+        "year": "2022",
+        "title": "Automated 3D reconstruction of the fetal thorax in the standard atlas space from motion-corrupted MRI stacks for 21-36 weeks GA range.",
+        "doi": "10.1016/j.media.2022.102484"
+      },
+      {
+        "record_id": "emb:L2015042740",
+        "year": "2021",
+        "title": "Automated 3D reconstruction of the fetal thorax in the standard atlas space from motion-corrupted MRI stacks for 21-36 weeks GA range",
+        "doi": "10.1101/2021.09.22.461335"
+      }
+    ],
+    [
+      {
+        "record_id": "35797364",
+        "year": "2022",
+        "title": "Identifying neuroanatomical and behavioral features for autism spectrum disorder diagnosis in children using machine learning.",
+        "doi": "10.1371/journal.pone.0269773"
+      },
+      {
+        "record_id": "emb:L2010333989",
+        "year": "2020",
+        "title": "Identifying Neuroanatomical and Behavioral Features for Autism Spectrum Disorder Diagnosis in Children using Machine Learning",
+        "doi": "10.1101/2020.11.09.20227843"
+      }
+    ],
+    [
+      {
+        "record_id": "35852028",
+        "year": "2022",
+        "title": "Systematic evaluation of machine learning algorithms for neuroanatomically-based age prediction in youth.",
+        "doi": "10.1002/hbm.26010"
+      },
+      {
+        "record_id": "emb:L2015898396",
+        "year": "2021",
+        "title": "Systematic Evaluation of Machine Learning Algorithms for Neuroanatomically-Based Age Prediction in Youth",
+        "doi": "10.1101/2021.11.24.469888"
+      }
+    ],
+    [
+      {
+        "record_id": "35958478",
+        "year": "2022",
+        "title": "Temporal bone CT-based deep learning models for differential diagnosis of primary ciliary dyskinesia related otitis media and simple otitis media with effusion.",
+        "doi": ""
+      },
+      {
+        "record_id": "emb:L2019706419",
+        "year": "2022",
+        "title": "Temporal bone CT-based deep learning models for differential diagnosis of primary ciliary dyskinesia related otitis media and simple otitis media with effusion",
+        "doi": ""
+      }
+    ],
+    [
+      {
+        "record_id": "34026587",
+        "year": "2021",
+        "title": "Bone Age Assessment of Iranian Children in an Automatic Manner.",
+        "doi": "10.4103/jmss.JMSS_9_20"
+      },
+      {
+        "record_id": "emb:L634106700",
+        "year": "2021",
+        "title": "Bone age assessment of iranian children in an automatic manner",
+        "doi": "10.4103/jmss.JMSS-9-20"
+      }
+    ],
+    [
+      {
+        "record_id": "34405049",
+        "year": "2021",
+        "title": "A comparison of machine learning classifiers for pediatric epilepsy using resting-state functional MRI latency data.",
+        "doi": "10.3892/br.2021.1453"
+      },
+      {
+        "record_id": "emb:L2013097559",
+        "year": "2021",
+        "title": "A comparison of machine learning classifiers for pediatric epilepsy using resting-state functional MRI latency data",
+        "doi": ""
+      }
+    ],
+    [
+      {
+        "record_id": "32975706",
+        "year": "2020",
+        "title": "Automated measurement network for accurate segmentation and parameter modification in fetal head ultrasound images.",
+        "doi": "10.1007/s11517-020-02242-5"
+      },
+      {
+        "record_id": "emb:L2006794605",
+        "year": "2020",
+        "title": "Automated measurement network for accurate segmentation and parameter modification in fetal head ultrasound images",
+        "doi": "10.1007/s11517-020-02242-5"
+      }
+    ],
+    [
+      {
+        "record_id": "25540897",
+        "year": "2015",
+        "title": "Comparison on three classification techniques for sex estimation from the bone length of Asian children below 19 years old: an analysis using different group of ages.",
+        "doi": "10.1016/j.forsciint.2014.11.007"
+      },
+      {
+        "record_id": "emb:L601043471",
+        "year": "2014",
+        "title": "Comparison on three classification techniques for sex estimation from the bone length of Asian children below 19 years old: An analysis using different group of ages",
+        "doi": "10.1016/j.forsciint.2014.11.007"
+      }
+    ],
+    [
+      {
+        "record_id": "25910262",
+        "year": "2015",
+        "title": "Standard Plane Localization in Fetal Ultrasound via Domain Transferred Deep Neural Networks.",
+        "doi": "10.1109/JBHI.2015.2425041"
+      },
+      {
+        "record_id": "emb:L605898293",
+        "year": "2015",
+        "title": "Standard Plane Localization in Fetal Ultrasound via Domain Transferred Deep Neural Networks",
+        "doi": "10.1109/JBHI.2015.2425041"
+      }
+    ]
+  ],
+  "title_collapsed_sensitivity": {
+    "n": 3414,
+    "modality": {
+      "MRI": 1537,
+      "ultrasound": 812,
+      "x-ray / radiography": 667,
+      "CT": 321,
+      "nuclear / PET": 53,
+      "other": 45,
+      "multiple": 43,
+      "fluoroscopy": 13
+    },
+    "task": {
+      "detection / diagnosis": 1314,
+      "measurement / quantification": 816,
+      "outcome prediction": 662,
+      "segmentation": 642,
+      "reconstruction / imputation": 268,
+      "workflow / non-interpretive": 166,
+      "other": 120,
+      "report generation / LLM": 28,
+      "foundation model / vision-language": 25,
+      "agent / autonomous": 2
+    },
+    "age_groups": {
+      "child": 1278,
+      "adolescent": 866,
+      "fetal": 768,
+      "infant": 506,
+      "pediatric (unspecified)": 482,
+      "neonate": 336,
+      "mixed pediatric and adult": 306
+    },
+    "topics": {
+      "Fetal assessment / prenatal": 739,
+      "Brain development / cognition": 337,
+      "Autism / ADHD / psychiatric": 306,
+      "Cardiac / congenital heart": 231,
+      "Bone age / skeletal maturation": 174,
+      "Pulmonary infection": 160,
+      "Brain / CNS tumors": 154,
+      "Scoliosis / spine deformity": 139,
+      "Fracture / trauma / abuse": 138,
+      "Epilepsy": 80,
+      "Liver / biliary": 71,
+      "Renal / urinary": 70,
+      "Hip dysplasia": 60,
+      "Acute abdomen": 44,
+      "Chronic lung / airway": 38,
+      "Hydrocephalus": 37,
+      "Neonatal brain injury": 31,
+      "Inflammatory bowel disease": 5
+    },
+    "dataset_mentions": {
+      "ABCD": 76,
+      "ABIDE": 42,
+      "RSNA bone age": 42,
+      "dHCP": 36,
+      "ADHD-200": 33,
+      "GRAZPEDWRI-DX": 15,
+      "CBTN": 13,
+      "Guangzhou / Kermany": 13,
+      "BraTS-PEDs": 11,
+      "PediCXR / VinDr-PCXR": 5,
+      "FETAL_PLANES_DB": 5,
+      "CheXpert (general resource)": 5,
+      "FeTA": 4,
+      "Regensburg appendicitis": 3,
+      "Pediatric-CT-SEG": 2
+    },
+    "preprints": 169,
+    "release_status": {
+      "unclear": 2939,
+      "commercial": 159,
+      "open-source": 162,
+      "unreleased": 154
+    },
+    "validation": {
+      "internal only": 2304,
+      "prospective": 111,
+      "none / not stated": 153,
+      "reader study": 215,
+      "external / multi-center": 631
+    }
+  },
+  "topic_unmatched": 973,
+  "topic_by_modality": {
+    "Brain development / cognition": {
+      "MRI": 335,
+      "ultrasound": 16,
+      "x-ray / radiography": 1,
+      "CT": 1,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Autism / ADHD / psychiatric": {
+      "MRI": 309,
+      "ultrasound": 1,
+      "x-ray / radiography": 0,
+      "CT": 2,
+      "nuclear / PET": 2,
+      "fluoroscopy": 0
+    },
+    "Fetal assessment / prenatal": {
+      "MRI": 229,
+      "ultrasound": 525,
+      "x-ray / radiography": 2,
+      "CT": 6,
+      "nuclear / PET": 1,
+      "fluoroscopy": 0
+    },
+    "Bone age / skeletal maturation": {
+      "MRI": 7,
+      "ultrasound": 2,
+      "x-ray / radiography": 167,
+      "CT": 1,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Pulmonary infection": {
+      "MRI": 4,
+      "ultrasound": 13,
+      "x-ray / radiography": 111,
+      "CT": 34,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Fracture / trauma / abuse": {
+      "MRI": 20,
+      "ultrasound": 7,
+      "x-ray / radiography": 91,
+      "CT": 18,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Brain / CNS tumors": {
+      "MRI": 154,
+      "ultrasound": 1,
+      "x-ray / radiography": 0,
+      "CT": 6,
+      "nuclear / PET": 2,
+      "fluoroscopy": 0
+    },
+    "Cardiac / congenital heart": {
+      "MRI": 45,
+      "ultrasound": 164,
+      "x-ray / radiography": 8,
+      "CT": 19,
+      "nuclear / PET": 0,
+      "fluoroscopy": 2
+    },
+    "Epilepsy": {
+      "MRI": 78,
+      "ultrasound": 0,
+      "x-ray / radiography": 0,
+      "CT": 1,
+      "nuclear / PET": 2,
+      "fluoroscopy": 0
+    },
+    "Neonatal brain injury": {
+      "MRI": 26,
+      "ultrasound": 5,
+      "x-ray / radiography": 0,
+      "CT": 1,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Renal / urinary": {
+      "MRI": 8,
+      "ultrasound": 39,
+      "x-ray / radiography": 0,
+      "CT": 11,
+      "nuclear / PET": 8,
+      "fluoroscopy": 4
+    },
+    "Scoliosis / spine deformity": {
+      "MRI": 4,
+      "ultrasound": 5,
+      "x-ray / radiography": 109,
+      "CT": 3,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Acute abdomen": {
+      "MRI": 1,
+      "ultrasound": 21,
+      "x-ray / radiography": 19,
+      "CT": 1,
+      "nuclear / PET": 0,
+      "fluoroscopy": 1
+    },
+    "Hydrocephalus": {
+      "MRI": 24,
+      "ultrasound": 6,
+      "x-ray / radiography": 0,
+      "CT": 6,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Liver / biliary": {
+      "MRI": 22,
+      "ultrasound": 40,
+      "x-ray / radiography": 0,
+      "CT": 8,
+      "nuclear / PET": 1,
+      "fluoroscopy": 0
+    },
+    "Chronic lung / airway": {
+      "MRI": 7,
+      "ultrasound": 1,
+      "x-ray / radiography": 12,
+      "CT": 20,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Hip dysplasia": {
+      "MRI": 1,
+      "ultrasound": 41,
+      "x-ray / radiography": 19,
+      "CT": 0,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "Inflammatory bowel disease": {
+      "MRI": 3,
+      "ultrasound": 1,
+      "x-ray / radiography": 0,
+      "CT": 0,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    }
+  },
+  "age_by_modality": {
+    "fetal": {
+      "MRI": 229,
+      "ultrasound": 560,
+      "x-ray / radiography": 2,
+      "CT": 6,
+      "nuclear / PET": 0,
+      "fluoroscopy": 0
+    },
+    "neonate": {
+      "MRI": 202,
+      "ultrasound": 76,
+      "x-ray / radiography": 48,
+      "CT": 16,
+      "nuclear / PET": 1,
+      "fluoroscopy": 1
+    },
+    "infant": {
+      "MRI": 212,
+      "ultrasound": 101,
+      "x-ray / radiography": 111,
+      "CT": 82,
+      "nuclear / PET": 9,
+      "fluoroscopy": 5
+    },
+    "child": {
+      "MRI": 703,
+      "ultrasound": 94,
+      "x-ray / radiography": 314,
+      "CT": 175,
+      "nuclear / PET": 28,
+      "fluoroscopy": 8
+    },
+    "adolescent": {
+      "MRI": 479,
+      "ultrasound": 38,
+      "x-ray / radiography": 269,
+      "CT": 82,
+      "nuclear / PET": 10,
+      "fluoroscopy": 2
+    },
+    "pediatric (unspecified)": {
+      "MRI": 149,
+      "ultrasound": 54,
+      "x-ray / radiography": 180,
+      "CT": 79,
+      "nuclear / PET": 20,
+      "fluoroscopy": 4
+    },
+    "mixed pediatric and adult": {
+      "MRI": 190,
+      "ultrasound": 21,
+      "x-ray / radiography": 61,
+      "CT": 41,
+      "nuclear / PET": 6,
+      "fluoroscopy": 0
+    }
+  }
+}

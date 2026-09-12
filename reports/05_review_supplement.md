@@ -1,8 +1,10 @@
 # Supplementary material
 
-## From evidence to deployment: a systematic, continuously updated review of artificial intelligence in pediatric radiology
+## Artificial intelligence in pediatric radiology: a landscape review of growth, clinical applications, and emerging directions through 2026
 
 **Authors:** Joseph Rich, Amit Sura
+
+**Scope of this supplement:** The existing search and eligibility protocol supports the landscape synthesis. The September 11, 2026 analysis preserves the current 3,496 included-record cohort. Unresolved duplicate entries and publication versions prevent interpreting this as a verified count of independent studies. The complete new era, topic, dataset-mention, and duplicate-audit tables are in [Landscape analysis, Tables L1–L6](05_landscape_analysis.md).
 
 ## Supplementary Table S1. Information sources and complete search strategies
 
@@ -130,7 +132,7 @@ OpenAlex records typed as preprints and the arXiv API were used to supplement th
 | Intervention/index test | AI or machine-learning methods developed, trained, fine-tuned, applied, validated, or clinically evaluated, including deep learning, classical machine learning, radiomics with a machine-learning classifier, foundation models, and large language models | Incidental mention of AI; conventional statistical modeling without a machine-learning component; rule-based software |
 | Imaging | Diagnostic radiology: radiography, fluoroscopy, CT, MRI, ultrasound, echocardiography, nuclear medicine/PET/SPECT, angiography, and radiology reports or worklists derived from these modalities | Ophthalmic, dental, endoscopic, dermoscopic, histopathologic, whole-slide, or microscopic imaging; EEG, ECG, and other non-imaging signals |
 | Study type | Primary model development or validation; reader, prospective, clinical, or implementation studies; dataset descriptors; challenge reports; primary regulatory-database analyses | Narrative or systematic reviews; editorials; letters; comments; case reports; errata; retractions; protocol-only papers |
-| Publication form | Journal articles and preprints, with preprints removed when a journal version was identified | Conference abstracts and proceedings |
+| Publication form | Journal articles and preprints; the protocol intends to retain the journal version when identified, but the current cohort still contains unresolved version pairs (Table L5) | Conference abstracts and proceedings |
 | Outcome | Any model performance, clinical, workflow, implementation, dataset, education, policy, or stakeholder outcome | No relevant outcome |
 | Language | No restriction; non-English records were eligible | None based on language |
 | Date | January 1, 2005, to September 9, 2026 | Outside the date range |
@@ -143,11 +145,45 @@ OpenAlex records typed as preprints and the arXiv API were used to supplement th
 | External/multicenter validation | Evaluation used an independent institution, geography, acquisition environment, or multicenter cohort |
 | Reader study | Human readers interpreted cases with and/or without the model and reader performance or behavior was measured |
 | Prospective evaluation | Data collection, model use, or outcome assessment occurred prospectively after protocol initiation |
-| Working code or model URL | The source record supplied a resolvable code-hosting or downloadable-model location |
+| Populated code or model URL | The exported code_url field is nonempty; the aggregate counter does not test URL resolution, weights, licensing, or runnable code |
 | Open-source classification | The abstract or cross-check identified publicly available code or model weights; this broader classification can exceed the count of URLs documented directly in abstracts |
 | Commercial product | A named commercial tool was evaluated or cross-linked to regulatory or vendor evidence |
 | Release status unclear | The abstract did not establish public or commercial availability; this does not mean that the model was unavailable |
 | Citations and citations per year | NIH iCite citation count for records with a PubMed identifier, and OpenAlex citation count matched by DOI for records without one; citations per year is the count divided by years since publication, counting the current year as a whole year |
-| Normalized citation impact | OpenAlex field-weighted citation impact where available, otherwise the NIH iCite relative citation ratio; both place the average article of the same field and year at 1.0. Reported only for studies with at least five citations, because the ratio otherwise divides by a fraction of an expected citation. Used descriptively and for selecting studies to present individually, never for eligibility |
-| Most-cited decile | The highest tenth, by normalized citation impact, of the included studies that have a normalized value |
-| Developmental-neuroscience MRI sensitivity analyses (post hoc) | Two keyword rules over the extracted clinical problem, body region, population, description, and title, applied only to studies labelled MRI. **Narrow (diagnosis):** autism, ADHD/attention deficit, psychiatric, depressive, anxiety, schizophrenia, bipolar, internalizing, externalizing, substance use, addiction, gaming disorder, neurodevelopmental disorder. **Wide (diagnosis or neuroscience):** the narrow terms plus neurodevelopment, depression, cognitive, behavioral, intelligence, language development, brain age, brain development, connectome, functional connectivity, fMRI/functional magnetic resonance, resting-state, executive function, emotion, temperament, reward, ABCD study, brain-behavior, neurocognitive, developmental outcome, psychopathology, puberty, graph theory, social. Both rules were written after the corpus was assembled. These studies remain in the corpus; the analyses report composition with them removed |
+| Citation-based selection | Citation measures remain available in the database and presentation but do not determine eligibility or example selection in this landscape manuscript |
+| Developmental-neuroscience MRI sensitivity analyses (post hoc) | Two keyword rules over the extracted clinical problem, body region, population, description, and title, applied only to studies labelled MRI. **Narrow (diagnosis):** autism, ADHD/attention deficit, psychiatric, depressive, anxiety, schizophrenia, bipolar, internalizing, externalizing, substance use, addiction, gaming disorder, neurodevelopmental disorder. **Wide (diagnosis or neuroscience):** the narrow terms plus neurodevelopment, depression, cognitive, behavioral, intelligence quotient/score, language development, brain age, brain development, connectome, functional connectivity, fMRI/functional magnetic resonance, resting-state, executive function, emotion, temperament, reward, ABCD study, brain-behavior, neurocognitive, developmental outcome, psychopathology, puberty, graph theory, social. Both rules were written after the corpus was assembled. These studies remain in the corpus; the analyses report composition with them removed |
+
+The validation field assigns one category per record. A prospective investigation can also involve readers and an external dataset, so these labels are not exhaustive independent indicators. No formal study-level risk-of-bias assessment was undertaken for this landscape synthesis.
+
+The September 11 analysis corrected a keyword false positive: bare “intelligence” matched “artificial intelligence” in non-neuroscience titles. The broad MRI sensitivity rule now uses “intelligence quotient” and “intelligence score”; it removes 748 records, leaving MRI at 30.6% and ultrasound at 30.1%. The new topic map uses the same safeguard. The broad sensitivity rule searches more fields and includes more concepts than the topic map, so their neuroscience counts are not interchangeable.
+
+## Supplementary methods: screening and analysis provenance
+
+The stored screening flow identifies 13,510 records (6,000 PubMed/MEDLINE, 7,288 Embase, and 222 from an earlier OpenAlex build). It records 6,602 screened, 2,650 excluded at screening, 456 non-primary publications excluded, and 3,496 included primary-study records. The removal boxes are derived from source-layer counts and include a remainder of 14 other duplicates/unresolved records. These arithmetic flow boxes do not prove complete deduplication: the additional audit identified 79 repeated-title groups involving 161 included records.
+
+The existing screening reliability file reports a second automated review of 150 records, with 94.7% agreement and Cohen's κ=0.885. This measures inter-model agreement, not accuracy against independent human screening. Human validation of eligibility and extraction is outstanding. Aggregate claims are consequently provisional.
+
+The landscape analysis reads the corrected corpus CSV and verifies its exact record-ID membership against the shared cohort definition in `pedrad_ai/corpus.py`. No additional topic or citation filter is applied to membership. Topic rules search titles and extracted clinical questions. Dataset rules additionally search the extracted patient population, model description, and dataset-size fields. Each record contributes at most once to each label. The explicit regular expressions and source-file SHA-256 are retained in `data/processed/review_landscape_stats.json`; row-level matches are in `data/processed/review_landscape_audit.csv`. A dataset-name match is not confirmation of training or test use.
+
+For publication-version sensitivity, titles are lowercased and stripped of non-alphanumeric characters. Groups with identical normalized titles are listed for adjudication. The sensitivity analysis retains one record per title, preferring a non-preprint record, then PubMed provenance, then the latest assigned publication year. This reduces the set to 3,414 records, with modality proportions of 45.0% MRI, 23.8% ultrasound, 19.5% radiography, 9.4% CT, 1.6% nuclear/PET, and 0.4% fluoroscopy. This heuristic does not resolve versions with changed titles, nor adjudicate conflicting extractions.
+
+## Supplementary figure S1. Recorded study selection
+
+![Recorded study selection; included count refers to records with unresolved duplicates](../figures/review_prisma.png)
+
+The shared selection figure displays the existing pipeline flow. The final box should be interpreted as included records pending publication-version reconciliation, as described above.
+
+## Reproducing the landscape outputs
+
+From the repository root, using the committed data and installed project dependencies:
+
+```bash
+PYTHONPATH=. python scripts/review_stats.py
+PYTHONPATH=. python scripts/make_review_figures.py
+PYTHONPATH=. python scripts/build_landscape_review.py
+pandoc --resource-path=reports reports/05_review_manuscript.md -o reports/05_review_manuscript_european_radiology.docx
+pandoc --resource-path=reports reports/05_review_supplement.md -o reports/05_review_supplement_european_radiology.docx
+pandoc reports/05_landscape_analysis.md -o reports/05_landscape_analysis.docx
+```
+
+These commands perform no new literature search or model extraction. The new script creates topic–modality, age–modality, and recent-task figures as PNG and vector PDF, as well as Tables L1–L6. The narrative is an authored snapshot and needs editorial review after a data refresh; regenerating statistics does not rewrite it automatically.

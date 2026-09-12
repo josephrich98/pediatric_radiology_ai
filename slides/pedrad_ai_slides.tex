@@ -30,38 +30,34 @@
 \end{frame}
 
 \begin{frame}{Methods}
-\tiny
-\textbf{Academic output.} \textbf{PubMed} (E-utilities) yearly counts per query and per modality/task term group,
-plus \textbf{preprints} (OpenAlex \texttt{type:preprint}: arXiv, medRxiv, bioRxiv, \dots) counted with the same
-queries, because PubMed does not index arXiv (4,426 radiology-AI preprints in 2025).
-\textbf{Most-cited papers} from OpenAlex (union of modality/task searches, deduped, articles and preprints):
-one list for 2008-2022, then one per year from 2023, each showing raw citations and the field-weighted citation
-impact (FWCI, 1 = world average for that field and year), so recent papers are not buried under 2023 ones.
-\textbf{Venues}: Semantic Scholar venue search (NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL) and OpenAlex journal filters
-(RSNA, SPR), 2023--present; \textbf{PatentsView} for granted patents.\\[3pt]
-\textbf{Systematic review.} Separately from the counts, every pediatric radiology-AI record from
-2005 onward was retrieved from \textbf{PubMed/MEDLINE and Embase}, screened against prespecified
-criteria, and read into a structured row under a fixed schema (3,496 included primary studies). This is
-the corpus behind the review section, the paper database, and the manuscript; slides that name individual
-studies rank them by citation impact normalized to the field and year.\\[3pt]
-\textbf{Clinical problems.} The pediatric radiology-AI query AND a term group per problem (bone age, fracture, pneumonia,
-appendicitis, brain tumor, \dots), counted per era; a paper can name several problems.\\[3pt]
-\textbf{Datasets.} Public pediatric imaging datasets, sizes verified against the primary papers or hosting pages.\\[3pt]
-\textbf{Commercial players.} The \textbf{FDA AI-enabled device list} (public spreadsheet: decision date, device,
-company, lead panel), filtered to the Radiology panel; cross-checked against a curated list of products with pediatric indications.\\[3pt]
-\textbf{Trade press.} Newsletter archives (The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify Research, Radiology Business)
-split into stories; a story is radiology-AI when AI terms co-occur with imaging terms, pediatric when pediatric terms
-also co-occur; a story's outbound publisher link is resolved to a DOI and cited (OpenAlex).\\[3pt]
-\textbf{Pediatric filter.} PubMed: the radiology-AI query AND
-(pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR ``children's hospital'').
-Most-cited lists: the title must also carry a pediatric term (bone age, fetal, newborn, \dots), otherwise
-highly cited adult papers float in. Newsletters: pediatric term inside the same story.\\[3pt]
-\textbf{Representative PubMed query (radiology $\cap$ AI):}
-\begin{block}{}
-\tiny
-(radiology OR radiograph* OR ``medical imaging'' OR MRI OR ``computed tomography'' OR CT[tiab] OR ultrasound[tiab] \dots
-NOT (``optical coherence'' OR fundus OR dental OR histopatholog* \dots))
-\textbf{AND} (``artificial intelligence'' OR ``deep learning'' OR ``convolutional neural network'' OR radiomics \dots)
+\small
+\begin{itemize}
+  \item \textbf{Academic papers}
+  \begin{itemize}
+    \footnotesize
+    \item PubMed/MEDLINE and Embase; preprints from arXiv, bioRxiv, and medRxiv via OpenAlex.
+    \item Conference/venue searches: NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL, RSNA, and SPR.
+    \item Publication trends and citation impact; separate systematic review of pediatric studies since 2005.
+  \end{itemize}
+  \medskip
+  \item \textbf{Companies and commercial products}
+  \begin{itemize}
+    \footnotesize
+    \item FDA AI-enabled device list, filtered to Radiology; cross-checked for pediatric indications.
+  \end{itemize}
+  \medskip
+  \item \textbf{Selected newsletters and trade press}
+  \begin{itemize}
+    \footnotesize
+    \item The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify Research, and Radiology Business.
+    \item Stories mentioning both imaging and AI; pediatric terms identify the pediatric subset.
+  \end{itemize}
+\end{itemize}
+\begin{block}{Search concept (illustrative terms)}
+\footnotesize
+\textbf{Imaging:} radiology, radiograph*, MRI, CT, ultrasound\\
+\textbf{AND AI:} ``artificial intelligence,'' ``deep learning,'' neural network*, radiomics\\
+\textbf{For pediatric searches, AND:} pediatric*, paediatric*, child*, infant*, neonat*, adolescen*
 \end{block}
 \end{frame}
 
@@ -136,13 +132,7 @@ MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 13\%. Mammography is omi
 \begin{frame}{Which journals publish pediatric radiology AI}
 \begin{center}\includegraphics[height=0.66\textheight,width=\textwidth,keepaspectratio]{journal_impact.png}\end{center}
 \vspace{-8pt}
-{\tiny x = OpenAlex 2-year mean citedness (a free JIF analogue; runs below the published JIF). y = cumulative pediatric radiology-AI papers 2015-2026 (PubMed, strict title/abstract query). The 33 journals with at least 25 of them are shown, carrying 1,807 of 5,099; the rest is a long tail. Largest: Pediatric Radiology (196); median impact 3.7, 1 at 10 or above -- this work lands mostly in mid-impact specialty and technical journals. A further 3 conference proceedings and preprint servers clear the threshold (94 papers) but have no impact number of any kind and are not plotted. The same chart animated year by year: \texttt{figures/journal\_impact.gif}.}
-\end{frame}
-
-\begin{frame}{Which journals publish pediatric radiology AI, 2023--present}
-\begin{center}\includegraphics[height=0.70\textheight,width=\textwidth,keepaspectratio]{journal_impact_2023_2026.png}\end{center}
-\vspace{-8pt}
-{\tiny x = OpenAlex 2-year mean citedness (a free JIF analogue; runs below the published JIF). y = cumulative pediatric radiology-AI papers 2023-2026 (PubMed, strict title/abstract query). The 28 journals with at least 20 of them are shown, carrying 1,099 of 3,340; the rest is a long tail. Largest: Pediatric Radiology (136); median impact 3.2, 1 at 10 or above -- this work lands mostly in mid-impact specialty and technical journals. medRxiv clears the threshold (31 papers) but has no impact number of any kind, so it is not plotted.}
+% {\tiny x = OpenAlex 2-year mean citedness (a free JIF analogue; runs below the published JIF). y = cumulative pediatric radiology-AI papers 2015-2026 (PubMed, strict title/abstract query). The 33 journals with at least 25 of them are shown, carrying 1,807 of 5,099; the rest is a long tail. Largest: Pediatric Radiology (196); median impact 3.7, 1 at 10 or above -- this work lands mostly in mid-impact specialty and technical journals. A further 3 conference proceedings and preprint servers clear the threshold (94 papers) but have no impact number of any kind and are not plotted. The same chart animated year by year: \texttt{figures/journal\_impact.gif}.}
 \end{frame}
 
 \begin{frame}{Cross-check: an independent 2025 scoping review of pediatric radiology AI}
@@ -175,82 +165,6 @@ paper that mentions a pediatric term.
 \end{itemize}
 \end{column}
 \end{columns}
-\end{frame}
-
-\begin{frame}{Reading the whole pediatric literature, not a sample of it}
-\scriptsize
-Counting publications says how much is being published; it does not say what was built, for which
-children, or how well it was tested. So every pediatric radiology-AI record from 2005 onward was
-retrieved from \textbf{PubMed/MEDLINE and Embase}, screened against prespecified criteria, and read
-into a structured row --- model, modality, body region, age group, task, dataset size, data source,
-validation, availability --- under one fixed schema.
-\begin{itemize}\scriptsize
-  \item 6,995 records retrieved, 393 conference proceedings set aside, 6,602 screened, 2,650 off-topic and 456 non-primary removed, 3,496 primary studies included (PubMed 3,122, Embase 365, OpenAlex 9).
-  \item \textbf{Embase earns its place}: 365 of the included studies are not in PubMed at all. They have
-        no PMID, so no NIH relative citation ratio; ranking them at all is why the impact column below is
-        OpenAlex's field-weighted score.
-  \item Conference proceedings are retrieved and reported but not screened: an abstract cannot support a
-        judgement about study design, and it carries no DOI linking it to the later full paper.
-  \item Screening and extraction were done by a constrained model under a fixed schema, with a blinded
-        second-model re-screen of 150 records (94.7\% agreement, $\kappa$ = 0.885). Dual-human validation is
-        outstanding.
-  \item The same corpus is the paper database (\texttt{reports/04\_paper\_database.md}) and the systematic
-        review manuscript, so the three never disagree.
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Study selection}
-\begin{center}\includegraphics[height=0.76\textheight,width=\textwidth,keepaspectratio]{review_prisma.png}\end{center}
-\end{frame}
-
-\begin{frame}{Included studies per publication year}
-\begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{review_by_year.png}\end{center}
-\vspace{-4pt}
-{\tiny Blue = the 3,496 included primary studies; gray = records read and then excluded as off-topic or
-non-primary. 2025+ is year to date and still being indexed.}
-\end{frame}
-
-\begin{frame}{What the pediatric literature is made of}
-\begin{center}\includegraphics[height=0.56\textheight,width=\textwidth,keepaspectratio]{review_modality_year.png}\end{center}
-\vspace{-4pt}
-{\tiny \textbf{Modality}: MRI 46\%, ultrasound 24\%, x-ray / radiography 19\%, CT 9\%. \textbf{Task}: detection / diagnosis 38\%, measurement / quantification 24\%, outcome prediction 20\%, segmentation 19\%. \textbf{Age group}: child 37\%, adolescent 25\%, fetal 22\%, infant 15\%. Categories are multilabel, so an axis can exceed 100\%. MRI leads on the strength of
-the fetal and developmental-neuroscience literature: remove the MRI studies that use cognitive-neuroscience methods
-or report cognitive and behavioral outcomes and MRI falls level with ultrasound (30\% each), which is why reviews
-built on narrower vocabulary rank radiography or ultrasound first.}
-\end{frame}
-
-\begin{frame}{What the models produce}
-\begin{center}\includegraphics[height=0.76\textheight,width=\textwidth,keepaspectratio]{review_task_year.png}\end{center}
-\end{frame}
-
-\begin{frame}{How well is it tested?}
-\begin{center}\includegraphics[height=0.74\textheight,width=\textwidth,keepaspectratio]{review_validation_era.png}\end{center}
-\vspace{-4pt}
-{\tiny Of 3,496 included studies, external or multi-center validation was reported by 18.7\%,
-a reader study by 6.2\%, prospective evaluation by 3.3\%, and a working code or model
-URL by 92 studies. External validation rose across eras; reader studies did not.}
-\end{frame}
-
-\begin{frame}{From published study to a tool a child benefits from}
-\begin{center}\includegraphics[height=0.76\textheight,width=\textwidth,keepaspectratio]{review_funnel.png}\end{center}
-\end{frame}
-
-\begin{frame}{Which of these studies is the field actually reading?}
-\begin{center}\includegraphics[height=0.46\textheight,width=\textwidth,keepaspectratio]{review_impact_distribution.png}\end{center}
-\vspace{-6pt}
-\begin{itemize}\scriptsize
-\item The median included study is cited 3.38 times the world average for its field and year: this is a well-cited literature, not a neglected one.
-\item 1,669 of 3,496 studies (47.7\%) have enough citations to be ranked; the rest are too recent.
-\item The top decile is the 167 studies at 14x average and up (PubMed 158, Embase 6, OpenAlex 3).
-\item Selecting on citations does not select for rigor: external or multi-center validation is 22.8\% in that decile against 18.7\% across the corpus, and two thirds of it is still internal validation only.
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Does citation impact pick out the better-validated work?}
-\begin{center}\includegraphics[height=0.70\textheight,width=\textwidth,keepaspectratio]{review_impact_subset.png}\end{center}
-\vspace{-4pt}
-{\tiny The most-cited decile is somewhat more likely to report external validation and a reader study, but
-the difference is small: citations track topic and audience more than evidence.}
 \end{frame}
 
 \begin{frame}{Highest-impact pediatric radiology AI studies, 2005--2026}
