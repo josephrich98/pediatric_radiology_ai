@@ -1,5 +1,14 @@
 # pediatric_radiology_ai
 
+For Joel:
+- read Kamran review, identify gaps and future directions (they state some)
+    - look at their future directions section
+    - focus on 2025-2026 (maybe even restrict our study to this)
+    - emphasize periodically updated database
+    - meta-analysis will likely have different takeaways
+- read our review paper draft and slides
+- work on rewriting our review paper in our own words
+
 ## TLDR:
 
 python scripts/refresh.py
@@ -14,6 +23,7 @@ slides: /home/jrich/Desktop/pediatric_radiology_ai/slides/pedrad_ai_slides.tex
 db: /home/jrich/Desktop/pediatric_radiology_ai/data/processed/pediatric_radiology_ai.csv
 manuscript: /home/jrich/Desktop/pediatric_radiology_ai/reports/05_review_manuscript.md
 spr abstract: /home/jrich/Desktop/pediatric_radiology_ai/reports/07_spr_abstract.md
+Kamran review paper: /home/jrich/Desktop/pediatric_radiology_ai/reference.pdf, /home/jrich/Desktop/pediatric_radiology_ai/reference_supplement.pdf
 
 ## AI slop:
 

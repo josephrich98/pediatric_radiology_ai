@@ -4,7 +4,7 @@
 
 **Running title:** The pediatric radiology AI landscape
 
-**Authors:** Joseph Rich, Amit Sura
+**Authors:** Joseph Rich*, Joel Philip*, Amit Sura
 
 **Affiliations:** [AUTHOR ACTION: add each author's institutional affiliation]
 
