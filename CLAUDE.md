@@ -247,7 +247,7 @@ python scripts/make_figures.py
 python scripts/make_review_figures.py  # PRISMA, composition, rigor, funnel, citation impact
 python scripts/build_reports.py
 python scripts/build_slides.py      # writes slides/pedrad_ai_slides.tex
-cd slides && latexmk -pdf pedrad_ai_slides.tex   # compile the Beamer deck
+cd slides && latexmk -xelatex pedrad_ai_slides.tex   # compile the Beamer deck (XeLaTeX: Helvetica Neue)
 python scripts/build_pptx.py        # editable PowerPoint version of the same deck (needs python-pptx)
 ```
 

@@ -51,7 +51,7 @@ STRUCTURE = RGBColor(0x33, 0x33, 0xB3)  # beamer "structure" blue (whale)
 TEXT = RGBColor(0x1A, 0x1A, 0x1A)
 MUTED = RGBColor(0x6B, 0x6B, 0x6B)
 BLOCK_FILL = RGBColor(0xE8, 0xEA, 0xF6)
-FONT = "Calibri"
+FONT = "Helvetica Neue"
 
 SIZE_PT = {"normal": 16, "large": 20, "small": 14, "footnotesize": 12, "scriptsize": 11, "tiny": 9}
 SIZE_WORDS = "tiny|scriptsize|footnotesize|small|normalsize|large"
@@ -145,6 +145,7 @@ def clean_text(s: str) -> str:
     # Layout declarations carry no content; without this the argument of
     # \renewcommand{\arraystretch}{0.92} lands on the slide as a stray "0.92".
     s = re.sub(r"\\renewcommand\{[^}]*\}\{[^}]*\}", "", s)
+    s = re.sub(r"\\(setlength|fontsize)\{[^}]*\}\{[^}]*\}(\\selectfont)?", "", s)
     s = re.sub(r"\\(hfill|centering|noindent|small|tiny|scriptsize|footnotesize|normalsize|large)\b", "", s)
     s = s.replace("\\\\", " ")
     s = s.replace("---", "\u2014").replace("--", "\u2013")
@@ -237,11 +238,11 @@ def parse_blocks(src: str, size: str = "normal", align: str = "left", fig_dir: P
                     j = src.index("]", body_start)
                     opt = src[body_start + 1:j]
                     body_start = j + 1
-                elif src.startswith("{", body_start) and env in ("tabular", "column", "block", "minipage"):
+                elif src.startswith("{", body_start) and env in ("tabular", "column", "block", "minipage", "adjustbox"):
                     j = find_matching(src, body_start)
                     args.append(src[body_start + 1:j])
                     body_start = j + 1
-                    if env == "tabular" or env == "column" or env == "block" or len(args) >= 2:
+                    if env in ("tabular", "column", "block", "adjustbox") or len(args) >= 2:
                         break
                 else:
                     break
@@ -347,6 +348,7 @@ class Frame:
     title: str
     blocks: list
     title_slide: bool = False
+    category: str = ""                   # Beamer [category=...], shown top-right
 
 
 def parse_deck(tex: str, fig_dir: Path) -> tuple[str, str, str, str, list[Frame]]:
@@ -371,13 +373,15 @@ def parse_deck(tex: str, fig_dir: Path) -> tuple[str, str, str, str, list[Frame]
             pos = m.end()
             continue
         j = m.end()
+        cat = re.search(r"category=([^,\]]*)", m.group(0))
         ftitle = ""
         if body.startswith("{", j):
             k = find_matching(body, j)
             ftitle = clean_text(body[j + 1:k])
             j = k + 1
         es, ee = find_env_end(body, "frame", j)
-        frames.append(Frame(ftitle, parse_blocks(body[j:es], fig_dir=fig_dir)))
+        frames.append(Frame(ftitle, parse_blocks(body[j:es], fig_dir=fig_dir),
+                            category=cat.group(1).strip() if cat else ""))
         pos = ee
     return title, subtitle, author, date, frames
 
@@ -417,24 +421,58 @@ def image_box(block: Image, width_in: float, scale: float) -> tuple[float, float
     return w, h
 
 
-def table_widths(block: Table, width_in: float) -> list[float]:
-    auto = 0.75
-    fixed = sum(auto for s in block.colspec if s is None)
+# Table cells are estimated more conservatively than running text: PowerPoint
+# grows a row to fit its text, so an underestimate pushes the table off the slide.
+CELL_CHAR_EM = 0.56                     # average glyph width, em (bold header ~10% wider)
+CELL_PAD = 0.10                         # left + right cell margin plus slack, inches
+
+
+def _wrapped_lines(text: str, width_in: float, pt: float, em: float = CELL_CHAR_EM) -> int:
+    """Lines ``text`` takes when word-wrapped (long words broken) in ``width_in``."""
+    per_line = max(1, int(width_in / (em * pt / 72)))
+    lines, cur = 1, 0
+    for word in text.split():
+        n = len(word)
+        if cur and cur + 1 + n > per_line:
+            lines += 1 + (n - 1) // per_line
+            cur = n % per_line or per_line
+        elif not cur and n > per_line:
+            lines += (n - 1) // per_line
+            cur = n % per_line or per_line
+        else:
+            cur += n + (1 if cur else 0)
+    return lines
+
+
+def _cell_text(cell: Paragraph) -> str:
+    return "".join(t for t, _, _ in cell)
+
+
+def table_widths(block: Table, width_in: float, scale: float) -> list[float]:
+    """Auto (l/c/r) columns as wide as their longest cell; p columns share the rest."""
+    pt = _pt(block.size, scale)
+    auto = []
+    for j, spec in enumerate(block.colspec):
+        if spec is not None:
+            auto.append(0.0)
+            continue
+        longest = max((len(_cell_text(r[j])) * (1.1 if i == 0 else 1.0)
+                       for i, r in enumerate(block.rows)), default=4)
+        auto.append(min(max(longest * CELL_CHAR_EM * pt / 72 + CELL_PAD + 0.04, 0.4), 1.8))
     fracs = [s for s in block.colspec if s is not None]
-    rem = max(width_in - fixed, 1.0)
+    rem = max(width_in - sum(auto), 1.0)
     total = sum(fracs) or 1.0
-    return [auto if s is None else rem * s / total for s in block.colspec]
+    return [a if s is None else rem * s / total for a, s in zip(auto, block.colspec)]
 
 
 def table_height(block: Table, widths: list[float], scale: float) -> tuple[list[float], float]:
     pt = _pt(block.size, scale)
     heights = []
-    for row in block.rows:
-        lines = 1
-        for cell, w in zip(row, widths):
-            n = sum(len(t) for t, _, _ in cell)
-            lines = max(lines, _lines(n, pt, w - 0.15))
-        heights.append(lines * pt * 1.2 / 72 + 0.09)
+    for i, row in enumerate(block.rows):
+        em = CELL_CHAR_EM * (1.1 if i == 0 else 1.0)
+        lines = max((_wrapped_lines(_cell_text(cell), w - CELL_PAD, pt, em)
+                     for cell, w in zip(row, widths)), default=1)
+        heights.append(lines * pt * 1.2 / 72 + 0.06)
     return heights, sum(heights)
 
 
@@ -453,7 +491,7 @@ def layout(blocks: list, left: float, top: float, width: float, scale: float) ->
             items.append(("image", x, y, w, h, b))
             y += h + GAP
         elif isinstance(b, Table):
-            widths = table_widths(b, width)
+            widths = table_widths(b, width, scale)
             rh, h = table_height(b, widths, scale)
             items.append(("table", left, y, sum(widths), h, (b, widths, rh)))
             y += h + GAP
@@ -474,12 +512,16 @@ def layout(blocks: list, left: float, top: float, width: float, scale: float) ->
     return items, y - top - GAP
 
 
-def fit_layout(blocks: list) -> list:
-    for scale in (1.0, 0.94, 0.88, 0.82, 0.76, 0.7, 0.64, 0.58):
+FIT_SCALES = [round(1.0 - 0.04 * i, 2) for i in range(16)]   # 1.0 down to 0.40
+
+
+def fit_layout(blocks: list) -> tuple[list, float]:
+    """Largest scale at which every block, full text included, fits the slide body."""
+    for scale in FIT_SCALES:
         items, h = layout(blocks, MARGIN_X, BODY_TOP, BODY_W, scale)
         if h <= BODY_H:
-            return items
-    return items
+            return items, scale
+    return items, scale
 
 
 # ---------------------------------------------------------------- rendering ---
@@ -571,13 +613,28 @@ def add_title_band(slide, title: str) -> None:
     band.name = "title band"
     tf = band.text_frame
     tf.margin_left = Inches(MARGIN_X)
-    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.margin_bottom = Inches(0.08)
+    tf.vertical_anchor = MSO_ANCHOR.BOTTOM   # leaves the top strip for the category
     tf.word_wrap = True
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.LEFT
     r = p.add_run()
     r.text = title
     r.font.size = Pt(22)
+    r.font.name = FONT
+    r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+
+
+def add_category(slide, category: str) -> None:
+    """Deck section (Beamer ``[category=...]``), bold caps, top-right of the title band."""
+    tb = slide.shapes.add_textbox(Inches(SLIDE_W - 4.3), Inches(0.02), Inches(4.0), Inches(0.3))
+    tb.name = "category"
+    p = tb.text_frame.paragraphs[0]
+    p.alignment = PP_ALIGN.RIGHT
+    r = p.add_run()
+    r.text = category.upper()
+    r.font.size = Pt(11)
+    r.font.bold = True
     r.font.name = FONT
     r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
@@ -649,14 +706,9 @@ def build(tex_path: Path, out_path: Path) -> Path:
             render_title_slide(slide, title, subtitle, author, date)
         else:
             add_title_band(slide, fr.title)
-            scale_used = 1.0
-            items = fit_layout(fr.blocks)
-            # recover the scale fit_layout settled on (text size must match its height estimate)
-            for scale in (1.0, 0.94, 0.88, 0.82, 0.76, 0.7, 0.64, 0.58):
-                _, h = layout(fr.blocks, MARGIN_X, BODY_TOP, BODY_W, scale)
-                if h <= BODY_H:
-                    scale_used = scale
-                    break
+            if fr.category:
+                add_category(slide, fr.category)
+            items, scale_used = fit_layout(fr.blocks)
             for kind, x, y, w, h, payload in items:
                 if kind == "text":
                     add_textbox(slide, x, y, w, h, payload, scale_used)

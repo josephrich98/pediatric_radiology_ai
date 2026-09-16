@@ -21,7 +21,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.transforms  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib.ticker import MultipleLocator  # noqa: E402
+from matplotlib.ticker import MultipleLocator, NullLocator  # noqa: E402
 
 from pedrad_ai import analysis, config, utils  # noqa: E402
 
@@ -277,6 +277,70 @@ def venue_line_figure(rows, value_key, group_key, title, ylabel, fname):
     _save(fig, fname)
 
 
+def _all_vs_pediatric_lines(series, title, ylabel, fname, *, note=None):
+    """One color per source: solid line = radiology AI (all ages), dashed line =
+    the pediatric subset. ``series`` maps source -> (all_by_year, ped_by_year),
+    both {year: count}; each source is drawn only over the years it has data,
+    so an unindexed or not-yet-held year is a gap, not a drop to zero."""
+    series = {k: v for k, v in series.items() if v[0]}
+    if not series:
+        return
+    fig, ax = plt.subplots(figsize=(10, 5))
+    years_all: set[int] = set()
+    markers = "os^Dv<>P*"
+    for i, (name, (rad, ped)) in enumerate(series.items()):
+        color, marker = PALETTE[i % len(PALETTE)], markers[i % len(markers)]
+        xs = sorted(rad)
+        years_all.update(xs)
+        ax.plot(xs, [rad[y] for y in xs], color=color, marker=marker, markersize=4.5,
+                linewidth=2, label=name)
+        if any(ped.get(y, 0) for y in xs):
+            ax.plot(xs, [ped.get(y, 0) for y in xs], color=color, marker=marker, markersize=4,
+                    markerfacecolor="white", linewidth=1.6, linestyle=(0, (4, 2.5)))
+    ax.set_yscale("symlog", linthresh=10, linscale=0.6)
+    ax.set_ylim(bottom=0)
+    top = ax.get_ylim()[1]
+    ticks = (0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000) if top < 500 else (0, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000)
+    ax.set_yticks([t for t in ticks if t <= top])
+    ax.yaxis.set_minor_locator(NullLocator())
+    ax.yaxis.set_major_formatter(lambda v, _: f"{int(v):,}")
+    ax.set_xlabel("Year")
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    _style(ax)
+    years = sorted(years_all)
+    ax.set_xticks(years if len(years) <= 8 else range(years[0] + years[0] % 2, years[-1] + 1, 2))
+    ax.xaxis.set_minor_locator(MultipleLocator(1))
+    ax.set_xlim(years[0] - 0.4, years[-1] + 0.4)
+    _mark_partial(ax, years)
+    from matplotlib.lines import Line2D
+    handles, labels = ax.get_legend_handles_labels()
+    handles += [Line2D([], [], color="0.25", linewidth=2),
+                Line2D([], [], color="0.25", linewidth=1.6, linestyle=(0, (4, 2.5)))]
+    labels += ["Radiology AI (all ages)", "Pediatric radiology AI"]
+    ax.legend(handles, labels, fontsize=8, frameon=False, loc="upper left", bbox_to_anchor=(1.01, 1.0))
+    if note:
+        ax.text(1.03, 0.0, textwrap.fill(note, 34), transform=ax.transAxes, fontsize=7,
+                color="0.35", ha="left", va="bottom")
+    _save(fig, fname)
+
+
+def venue_works_figure(works):
+    """Radiology-AI works per year at each big venue, all ages vs pediatric."""
+    if not works:
+        return
+    series = {}
+    for name, v in works.items():
+        rad = {int(y): n for y, n in (v.get("by_year") or {}).items() if y.isdigit()}
+        ped = {int(y): n for y, n in (v.get("pediatric_by_year") or {}).items() if y.isdigit()}
+        series[name] = (rad, ped)
+    _all_vs_pediatric_lines(
+        series, "Radiology AI works per year, by conference / society",
+        "Radiology AI works per year (log scale above 10)", "venue_works_by_year.png",
+        note="RSNA and SPR: the society journals stand in for meeting abstracts. A venue's line ends at its "
+             "last indexed meeting. Pediatric = pediatric term in the title.")
+
+
 # --------------------------------------------------------------------------- #
 # Biggest players
 # --------------------------------------------------------------------------- #
@@ -369,6 +433,17 @@ def newsletter_figures(summary):
                        "Pediatric radiology AI in newsletters and trade press", "newsletter_watch.png")
     _stacked_by_source(summary, "radiology_ai", "Radiology-AI stories (all ages)",
                        "Radiology AI in newsletters and trade press", "newsletter_radiology_ai.png")
+    by_year = summary.get("by_year") or {}
+    series = {}
+    for name in summary.get("sources") or {}:
+        yrs = {int(y): c for y, c in (by_year.get(name) or {}).items()
+               if y.isdigit() and int(y) >= 2016 and c.get("stories")}
+        series[name] = ({y: c.get("radiology_ai", 0) for y, c in yrs.items()},
+                        {y: c.get("pediatric_radiology_ai", 0) for y, c in yrs.items()})
+    _all_vs_pediatric_lines(
+        series, "Radiology AI stories per year, by newsletter / trade-press source",
+        "Stories per year (log scale above 10)", "newsletter_by_source.png",
+        note="Each line covers the years that source's archive reaches. Pediatric = pediatric and AI terms in the same story.")
     players = summary.get("players") or {}
     rows = [(k, v["radiology_ai"], v["pediatric_radiology_ai"]) for k, v in players.items() if v["radiology_ai"]]
     rows = sorted(rows, key=lambda r: r[1], reverse=True)[:20][::-1]
@@ -725,6 +800,7 @@ def main() -> None:
                           f"Most-cited pediatric radiology AI papers, {label}", f"top_papers_pediatric_{label}.png", GREEN)
     problems_figure(analysis.merge_problems(_load("pubmed_pediatric_problems.json") or {}, preprints.get("problems")) or {})
     github_figure(_load("github_repos.json") or {})
+    venue_works_figure(_load("conference_works.json") or {})
     newsletter_figures(_load("newsletter_summary.json") or {})
     fda_figures(_load("fda_ai_devices.json") or {})
     journal_impact_figures(_load("journal_impact.json") or {})

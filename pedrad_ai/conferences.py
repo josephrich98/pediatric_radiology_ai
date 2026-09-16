@@ -192,8 +192,12 @@ def collect_venue_works(start: int | None = None, end: int | None = None, top_n:
         works = _venue_works_s2(spec, start, end)
         works.sort(key=lambda w: w.get("citation_count", 0), reverse=True)
         by_year: dict[str, int] = {}
+        pediatric_by_year: dict[str, int] = {}
         for w in works:
-            by_year[str(w.get("year"))] = by_year.get(str(w.get("year")), 0) + 1
+            y = str(w.get("year"))
+            by_year[y] = by_year.get(y, 0) + 1
+            if is_pediatric_title(w.get("title") or ""):
+                pediatric_by_year[y] = pediatric_by_year.get(y, 0) + 1
         rows: list[dict[str, Any]] = []
         for w in works[:top_n]:
             row = {
@@ -217,6 +221,7 @@ def collect_venue_works(start: int | None = None, end: int | None = None, top_n:
             "n_works": len(works),
             "n_pediatric": sum(1 for w in works if is_pediatric_title(w.get("title") or "")),
             "by_year": dict(sorted(by_year.items())),
+            "pediatric_by_year": dict(sorted(pediatric_by_year.items())),
             "works": rows,
         }
         print(f"    -> {len(works)} radiology-AI works, {out[name]['n_pediatric']} pediatric; top: {rows[0]['title'][:60] if rows else '-'}")

@@ -186,7 +186,7 @@ def main() -> int:
         if shutil.which("latexmk"):
             results["pdf"], _ = run_step(
                 "pdf",
-                ["latexmk", "-pdf", "-interaction=nonstopmode", "-cd", str(SLIDES / "pedrad_ai_slides.tex")],
+                ["latexmk", "-xelatex", "-interaction=nonstopmode", "-cd", str(SLIDES / "pedrad_ai_slides.tex")],
                 LOGS / f"refresh-{stamp}-pdf.log", args.dry_run,
             )
         else:

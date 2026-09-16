@@ -4,7 +4,7 @@
 Headline numbers are pulled from data/processed/ so the slides stay consistent
 with the reports. Figures are included from ../figures/. Compile with:
 
-    cd slides && latexmk -pdf pedrad_ai_slides.tex
+    cd slides && latexmk -xelatex pedrad_ai_slides.tex
 
 Run `python scripts/make_figures.py` first so the figures exist. The template
 uses ``@@KEY@@`` placeholders (not str.format) because the LaTeX body is full of
@@ -83,11 +83,6 @@ def _tex(s) -> str:
     return s
 
 
-def _short(s: str, n: int) -> str:
-    s = s or ""
-    return s if len(s) <= n else s[: n - 1].rstrip() + "…"
-
-
 def _share(tab, label):
     """Share of a crosstab corpus whose title/abstract carries a task term."""
     if not tab or not tab.get("col_totals"):
@@ -101,6 +96,79 @@ def _share(tab, label):
 def _p(w):
     """Left-aligned (not justified) paragraph column of width ``w`` textwidth."""
     return "|>{\\raggedright\\arraybackslash}p{%.2f\\textwidth}" % w
+
+
+# Beamer 16:9 frame geometry (Madrid theme), in pt, for the table-fit estimate.
+_TEXTWIDTH, _TEXTHEIGHT, _TABCOLSEP = 433.3, 243.4, 6.0
+# (baselineskip, average glyph width) per font size used in tables.
+_FONT_METRICS = {"tiny": (7.0, 3.1), "scriptsize": (9.5, 4.2)}
+
+
+def _cell_plain(cell):
+    """Visible text of a LaTeX table cell, for length estimates only."""
+    cell = re.sub(r"\$[^$]*\$", "x", cell)
+    cell = re.sub(r"\\[A-Za-z]+\*?", "", cell)
+    return re.sub(r"\s+", " ", cell.replace("{", "").replace("}", "")).strip()
+
+
+def _wrapped_lines(text, width_chars):
+    """Line count of ``text`` word-wrapped at ``width_chars``."""
+    lines, cur = 1, 0
+    for word in text.split():
+        n = len(word)
+        if cur and cur + 1 + n > width_chars:
+            lines += 1 + (n - 1) // width_chars
+            cur = n % width_chars or width_chars
+        elif not cur and n > width_chars:
+            lines += (n - 1) // width_chars
+            cur = n % width_chars or width_chars
+        else:
+            cur += n + (1 if cur else 0)
+    return lines
+
+
+def _fit(lines, height, size="tiny"):
+    """Wrap a tabular (list of lines) so every cell's full text fits the frame.
+
+    Cells are never truncated. The paragraph (``p``) columns are rescaled
+    together so the table's shape matches a box of ``\textwidth`` by ``height``
+    of ``\textheight`` -- wider when the text would otherwise wrap into a tall,
+    narrow table -- and adjustbox then shrinks (never grows) the result to fit
+    that box exactly, so a long table gets smaller type rather than cut cells.
+    Rows keep enough padding that no glyph touches a rule.
+    """
+    head, rows, tail = lines[0], lines[1:-1], lines[-1]
+    m = re.match(r"\\begin\{tabular\}\{(.*)\}$", head)
+    spec = m.group(1)
+    cols = re.findall(r"p\{([0-9.]+)\\textwidth\}|(?<![a-z{])([lcr])(?![a-z])", spec)
+    widths = [float(w) if w else None for w, _ in cols]
+    cells = [[_cell_plain(c) for c in re.split(r"(?<!\\)&", re.sub(r"\\\\\s*\\hline\s*$", "", r.replace("\\hline", "", 1) if r.startswith("\\hline") else r))]
+             for r in rows]
+    base, char_w = _FONT_METRICS.get(size, _FONT_METRICS["tiny"])
+    auto_w = [max((len(r[j]) for r in cells if j < len(r)), default=1) * char_w if w is None else 0.0
+              for j, w in enumerate(widths)]
+    avail_h = height * _TEXTHEIGHT
+
+    def shrink(k):
+        nat_w = sum(auto_w) + sum(w * k * _TEXTWIDTH for w in widths if w) + 2 * _TABCOLSEP * len(widths)
+        nat_h = 0.0
+        for r in cells:
+            n = max((_wrapped_lines(c, max(1, int(widths[j] * k * _TEXTWIDTH / char_w)))
+                     for j, c in enumerate(r) if j < len(widths) and widths[j]), default=1)
+            nat_h += n * base + 0.3 * base
+        return min(1.0, _TEXTWIDTH / nat_w, avail_h / nat_h)
+
+    best_k, best = 1.0, shrink(1.0)
+    for step in range(12, 61):
+        k = step / 20
+        sc = shrink(k)
+        if sc > best + 1e-3:
+            best_k, best = k, sc
+    it = iter(w * best_k for w in widths if w)
+    spec = re.sub(r"p\{[0-9.]+\\textwidth\}", lambda _: "p{%.3f\\textwidth}" % next(it), spec)
+    return "\n".join(["\\begin{adjustbox}{max totalsize={\\textwidth}{%.2f\\textheight}}" % height,
+                      "\\renewcommand{\\arraystretch}{1.2}", "\\begin{tabular}{%s}" % spec,
+                      *rows, tail, "\\end{adjustbox}"])
 
 
 def _venue(p):
@@ -124,7 +192,7 @@ def _fwci(p):
     return f"{f:.1f}" if isinstance(f, (int, float)) else "--"
 
 
-def paper_table(papers, max_rows=MAX_TABLE_ROWS, show_year=True):
+def paper_table(papers, max_rows=MAX_TABLE_ROWS, show_year=True, height=0.64):
     """Most-cited papers of a period, ordered by FWCI: citations, FWCI, title
     (year), venue, what it answers.
 
@@ -136,19 +204,18 @@ def paper_table(papers, max_rows=MAX_TABLE_ROWS, show_year=True):
     rows = by_impact(papers[:15], max_rows)
     if not rows:
         return "\\footnotesize No papers collected for this period."
-    out = ["\\renewcommand{\\arraystretch}{0.92}",
-           "\\begin{tabular}{|r|r%s%s%s|}" % (_p(0.34), _p(0.15), _p(0.25)),
+    out = ["\\begin{tabular}{|r|r%s%s%s|}" % (_p(0.34), _p(0.15), _p(0.25)),
            "\\hline \\textbf{Cites} & \\textbf{FWCI} & \\textbf{Paper} & \\textbf{Venue} & \\textbf{What it answers} \\\\ \\hline"]
     for p in rows:
         topic, q = curated.question_for(p)
-        title = _short(p.get("title") or "", 78)
-        venue = _short(_venue(p), 28)
+        title = p.get("title") or ""
+        venue = _venue(p)
         meta = f" ({p.get('year')})" if show_year else ""
-        q = "" if q == (p.get("title") or "") else _short(q, 78)
+        q = "" if q == (p.get("title") or "") else q
         cell = f"\\textit{{{_tex(topic)}}}" + (f": {_tex(q)}" if q else "")
         out.append(f"{p.get('citation_count', 0):,} & {_fwci(p)} & {_tex(title)}{meta} & {_tex(venue)} & {cell} \\\\ \\hline")
     out.append("\\end{tabular}")
-    return "\n".join(out)
+    return _fit(out, height)
 
 
 FWCI_NOTE = ("Rows are the most-cited papers of the period, ordered by FWCI = field-weighted citation impact (OpenAlex): "
@@ -167,7 +234,7 @@ def year_frames(name, label):
         if year == config.PARTIAL_YEAR:
             note = "Citations for the current year are still accumulating; the FWCI column is the more stable signal here."
         frames.append(
-            "\\begin{frame}{Most-cited %s papers, %d%s}\n\\tiny\n%s\n\\\\[1pt]\n{\\tiny %s%s}\n\\end{frame}"
+            "\\begin{frame}[category=Journals/Preprints]{Most-cited %s papers, %d%s}\n\\tiny\n%s\n\\\\[1pt]\n{\\tiny %s%s}\n\\end{frame}"
             % (label, year, ytd, paper_table(papers, show_year=False), _tex(note),
                f" {n_pre} of the {min(len(papers), MAX_TABLE_ROWS)} rows are preprints." if n_pre else ""))
     return "\n\n".join(frames)
@@ -189,29 +256,85 @@ def venue_frames(works):
         if not rows:
             body = "\\footnotesize No works found for this venue."
         else:
-            out = ["\\renewcommand{\\arraystretch}{1.0}",
-                   "\\begin{tabular}{|l|r|r%s|}" % _p(0.68),
+            out = ["\\begin{tabular}{|l|r|r%s|}" % _p(0.68),
                    "\\hline \\textbf{Year} & \\textbf{Cites} & \\textbf{FWCI} & \\textbf{Paper} \\\\ \\hline"]
             for w in rows:
                 star = " $\\star$" if w.get("pediatric") else ""
-                out.append(f"{w.get('year')} & {w.get('citation_count', 0):,} & {_fwci(w)} & {_tex(_short(w.get('title') or '', 120))}{star} \\\\ \\hline")
+                out.append(f"{w.get('year')} & {w.get('citation_count', 0):,} & {_fwci(w)} & {_tex(w.get('title') or '')}{star} \\\\ \\hline")
             out.append("\\end{tabular}")
-            body = "\n".join(out)
+            body = _fit(out, 0.60)
         src = "Semantic Scholar venue search, citations and FWCI from OpenAlex" if v.get("kind") == "s2" else "OpenAlex, restricted to the society's journals"
-        frames.append("\\begin{frame}{%s: radiology AI works, %d--%d}\n{\\scriptsize %s\\par}\\vspace{2pt}\n\\tiny\n%s\n\\\\[2pt]\n{\\tiny Source: %s; title-level relevance filter; the %d most-cited of %d works, newest year first.}\n\\end{frame}"
+        frames.append("\\begin{frame}[category=Conferences]{%s: radiology AI works, %d--%d}\n{\\scriptsize %s\\par}\\vspace{2pt}\n\\tiny\n%s\n\\\\[2pt]\n{\\tiny Source: %s; title-level relevance filter; the %d most-cited of %d works, newest year first.}\n\\end{frame}"
                       % (_tex(name), yrs[0], yrs[1], head, body, src, len(rows), v.get("n_works", 0)))
     return "\n\n".join(frames)
 
 
 def dataset_table():
-    out = ["\\renewcommand{\\arraystretch}{0.92}",
-           "\\begin{tabular}{%s|l%s%s%s%s|}" % (_p(0.21), _p(0.14), _p(0.21), _p(0.07), _p(0.10)),
+    out = ["\\begin{tabular}{%s|l%s%s%s%s|}" % (_p(0.21), _p(0.14), _p(0.21), _p(0.07), _p(0.10)),
            "\\hline \\textbf{Dataset} & \\textbf{Year} & \\textbf{Modality} & \\textbf{Size} & \\textbf{Ages} & \\textbf{Access} \\\\ \\hline"]
     for d in config.PEDIATRIC_DATASETS:
         out.append(f"{d['name']} & {d['year']} & {_tex(d['modality'])} & {_tex(d['size'])} & {_tex(d['ages'])} & {_tex(d['access'])} \\\\ \\hline")
     out.append("\\end{tabular}")
+    return _fit(out, 0.70)
+
+
+
+def _methods_query_line(label: str, terms: str) -> str:
+    return f"\\textbf{{{label}}}: {_tex(terms)}"
+
+
+def methods_query_block() -> str:
+    """The pediatric query written out in full, one line per concept block, so
+    the slide shows exactly what was searched (straight from config)."""
+    review = [("radiology", config._REVIEW_MODALITY_TIAB), ("AI", config._REVIEW_AI_TIAB),
+              ("pediatric", config._REVIEW_PEDIATRIC_TIAB)]
+    counts = [("radiology", config._RADIOLOGY_TERMS), ("AI", config._AI_TERMS), ("pediatric", config._PEDIATRIC_TERMS)]
+    out = ["{\\tiny\\fontsize{4}{4.8}\\selectfont\\raggedright",
+           "\\textbf{PubMed query = radiology AND AI AND pediatric} "
+           f"(systematic review corpus, {config.REVIEW_START_YEAR}--present; translated term for term for Embase; [tiab] = title/abstract)\\\\"]
+    out += [_methods_query_line(k, v) + "\\\\" for k, v in review]
+    out.append("\\textbf{Publication-count charts} (radiology AI = radiology AND AI; pediatric = AND pediatric):\\\\")
+    out.append("\\\\\n".join(_methods_query_line(k, v) for k, v in counts))
+    out.append("\\par}")
     return "\n".join(out)
 
+
+def methods_table(review_n: str) -> str:
+    """One row per data source: how the records were collected, and how the
+    general radiology-AI set was narrowed to pediatrics."""
+    news = ", ".join(config.NEWSLETTER_SOURCES)
+    ped_title = ", ".join(dict.fromkeys(config.PAPER_PEDIATRIC_SIGNAL))
+    rows = [
+        ("Journals, preprints",
+         "PubMed yearly counts, plus arXiv and medRxiv (Europe PMC) with the same query. Most-cited papers: Semantic "
+         f"Scholar, ranked by citations. Systematic review: PubMed + Embase, {config.REVIEW_START_YEAR}--present, every "
+         f"record screened and read ({review_n} primary studies).",
+         "Counts: radiology AND AI, then AND pediatric (query below). Review: pediatric query, then screened for a "
+         "pediatric population. Most-cited lists: the title must also contain a pediatric term (as for conferences)."),
+        ("Conferences",
+         f"Semantic Scholar venue search, {config.VENUE_WORKS_START}--present: NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL "
+         "(radiology terms, then a title filter); RSNA and SPR through their journals (AI terms), since meeting "
+         "abstracts are not indexed.",
+         f"Title contains a pediatric term ({ped_title}); marked with a star."),
+        ("Datasets",
+         "Hand-curated list of public imaging datasets; sizes checked against the primary paper or hosting page.",
+         "Pediatric by selection: only datasets of children or fetuses are listed."),
+        ("Newsletters",
+         f"Full archives of {news}, split into individual stories. Radiology AI = an AI term and an imaging term "
+         "in the same story.",
+         "A pediatric term (pediatric, child, infant, neonat, newborn, adolescen, fetal, bone age, preterm, NICU, "
+         "prenatal, ...) also in the same story."),
+        ("Commercial",
+         "FDA list of AI-enabled devices, Radiology panel (all ages).",
+         "Curated products with a stated pediatric indication or pediatric-by-design use, cross-checked against the FDA list."),
+    ]
+    out = ["{\\tiny\\renewcommand{\\arraystretch}{1.05}\\setlength{\\tabcolsep}{3pt}",
+           "\\begin{tabular}{%s%s%s|}" % (_p(0.10), _p(0.47), _p(0.39)),
+           "\\hline \\textbf{Source} & \\textbf{How the data were collected} & \\textbf{How pediatric was subset} \\\\ \\hline"]
+    for name, how, ped in rows:
+        out.append(f"\\textbf{{{name}}} & {_tex(how)} & {_tex(ped)} \\\\ \\hline")
+    out.append("\\end{tabular}\\par}")
+    return "\n".join(out)
 
 def task_gloss_columns():
     items = list(config.TASK_GLOSS.items())
@@ -237,7 +360,7 @@ def spotlight_frames(manifest):
         else:
             left = "{\\footnotesize (figure not fetched; run scripts/collect\\_examples.py)}"
         frames.append(
-            "\\begin{frame}{%s}\n"
+            "\\begin{frame}[category=Journals/Preprints]{%s}\n"
             "{\\scriptsize %s\\par}\\vspace{2pt}\n"
             "\\begin{columns}[T]\n"
             "\\begin{column}{0.42\\textwidth}\\centering\n%s\n\\end{column}\n"
@@ -266,16 +389,15 @@ def news_year_frames(items):
         if not rows:
             body = "\\footnotesize No pediatric radiology-AI stories found for this year."
         else:
-            size = "\\tiny" if len(rows) > 14 else "\\scriptsize"
-            stretch = "\\renewcommand{\\arraystretch}{0.85}" if len(rows) > 18 else "\\renewcommand{\\arraystretch}{0.90}"
-            out = [size, stretch, "\\begin{tabular}{|l|l%s%s|}" % (_p(0.43), _p(0.20)),
+            size = "tiny" if len(rows) > 14 else "scriptsize"
+            out = ["\\begin{tabular}{|l|l%s%s|}" % (_p(0.43), _p(0.20)),
                    "\\hline \\textbf{Date} & \\textbf{Newsletter} & \\textbf{Story} & \\textbf{Paper} \\\\ \\hline"]
             for i in rows:
                 paper = (i.get("paper") or {}).get("citation") or ""
-                out.append(f"{i['date']} & {_tex(i['source'])} & {_tex(_short(_clean_story(i.get('story')), 72))} & {_tex(_short(paper, 44))} \\\\ \\hline")
+                out.append(f"{i['date']} & {_tex(i['source'])} & {_tex(_clean_story(i.get('story')))} & {_tex(paper)} \\\\ \\hline")
             out.append("\\end{tabular}")
-            body = "\n".join(out)
-        frames.append("\\begin{frame}{Pediatric radiology AI in the trade press, %d%s (%d stories)}\n%s\n\\end{frame}"
+            body = "\\" + size + "\n" + _fit(out, 0.84, size)
+        frames.append("\\begin{frame}[category=Newsletters]{Pediatric radiology AI in the trade press, %d%s (%d stories)}\n%s\n\\end{frame}"
                       % (year, ytd, len(rows), body))
     return "\n\n".join(frames)
 
@@ -312,28 +434,28 @@ def _impact_cell(row):
     return f"{value:.0f}x" if value is not None else "--"
 
 
-def review_paper_table(rows, max_rows=REVIEW_TABLE_ROWS, show_year=True):
+def review_paper_table(rows, max_rows=REVIEW_TABLE_ROWS, show_year=True, height=0.70):
     """Impact-ranked studies from the review corpus."""
     rows = corpus.by_impact(rows, max_rows)
     if not rows:
         return "\\footnotesize No studies in this window."
     year_col = "|r" if show_year else ""
-    out = ["\\renewcommand{\\arraystretch}{0.92}",
-           "\\begin{tabular}{|r|r%s%s%s%s|}" % (year_col, _p(0.33), _p(0.14), _p(0.22)),
+    out = ["\\begin{tabular}{|r|r%s%s%s%s|}" % (year_col, _p(0.33), _p(0.14), _p(0.22)),
            "\\hline \\textbf{Impact} & \\textbf{Cites} & "
            + ("\\textbf{Year} & " if show_year else "")
            + "\\textbf{Study} & \\textbf{Venue} & \\textbf{What it does} \\\\ \\hline"]
     for r in rows:
         name = r.get("model_name") or r.get("title") or ""
-        venue = _short(r.get("journal") or "", 26)
-        what = _short(r.get("clinical_problem") or r.get("task") or "", 62)
+        # PubMed appends a subtitle ("... : the official journal of ..."): not part of the name
+        venue = re.split(r"\s+:\s+", r.get("journal") or "", maxsplit=1)[0]
+        what = r.get("clinical_problem") or r.get("task") or ""
         mark = " $\\dagger$" if (r.get("source") or "") == "embase" else ""
         mark += " $\\ast$" if str(r.get("is_preprint")).lower() in ("true", "1") else ""
         year = f"{r.get('year')} & " if show_year else ""
         out.append(f"{_impact_cell(r)} & {_n(r.get('citations'), '0')} & {year}"
-                   f"{_tex(_short(name, 72))}{mark} & {_tex(venue)} & {_tex(what)} \\\\ \\hline")
+                   f"{_tex(name)}{mark} & {_tex(venue)} & {_tex(what)} \\\\ \\hline")
     out.append("\\end{tabular}")
-    return "\n".join(out)
+    return _fit(out, height)
 
 
 REVIEW_IMPACT_NOTE = (
@@ -356,7 +478,7 @@ def review_year_frames(rows):
                     "this table is thin by construction rather than because the year was quiet.")
         scored = sum(1 for r in sub if corpus.impact_value(r) is not None)
         frames.append(
-            "\\begin{frame}{Highest-impact pediatric radiology AI studies, %d%s}\n\\tiny\n%s\n"
+            "\\begin{frame}[category=Journals/Preprints]{Highest-impact pediatric radiology AI studies, %d%s}\n\\tiny\n%s\n"
             "\\\\[2pt]\n{\\tiny %d studies included from %d; %d have enough citations to be ranked. %s}\n"
             "\\end{frame}"
             % (year, ytd, review_paper_table(sub, show_year=False), len(sub), year, scored, note))
@@ -425,7 +547,7 @@ def commercial_table(fda):
             fda_s = "not listed"
         out.append(f"{_tex(c['vendor'])} & {_tex(c['product'])} & {_tex(c['task'])} & {_tex(c['pediatric'])} & {fda_s} \\\\ \\hline")
     out.append("\\end{tabular}")
-    return "\n".join(out)
+    return _fit(out, 0.66)
 
 
 def worth_knowing_items():
@@ -573,8 +695,8 @@ def main() -> None:
                                          min_papers=config.JOURNAL_MIN_PAPERS),
         "@@journal_note_recent@@": journal_note(journals, since=2023,
                                                 min_papers=config.JOURNAL_MIN_PAPERS_RECENT),
-        "@@fig_news_ped@@": _fig("newsletter_watch.png", 0.82),
-        "@@fig_news_all@@": _fig("newsletter_radiology_ai.png", 0.82),
+        "@@fig_news_lines@@": _fig("newsletter_by_source.png", 0.82),
+        "@@fig_venue_lines@@": _fig("venue_works_by_year.png", 0.82),
         "@@task_gloss@@": task_gloss_columns(),
         "@@paper_table_rad_a@@": paper_table(_load(f"top_papers_radiology_ai_{era_a}.json", [])),
         "@@paper_table_ped_a@@": paper_table(_load(f"top_papers_pediatric_radiology_ai_{era_a}.json", [])),
@@ -588,6 +710,8 @@ def main() -> None:
         "@@rad_pre_total@@": f"{(rad_tab or {}).get('preprint_total', 0):,}",
         "@@ped_pre_total@@": f"{(ped_tab or {}).get('preprint_total', 0):,}",
         "@@dataset_table@@": dataset_table(),
+        "@@methods_table@@": methods_table(f"{(rstats.get('flow') or {}).get('included', len(rrows)):,}"),
+        "@@methods_query@@": methods_query_block(),
         "@@review_flow@@": _tex(review_flow_line(rstats)),
         "@@review_n@@": f"{(rstats.get('flow') or {}).get('included', len(rrows)):,}",
         "@@review_screened@@": f"{(rstats.get('flow') or {}).get('screened', 0):,}",
@@ -654,9 +778,21 @@ TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
 \usetheme{Madrid}
 \usecolortheme{whale}
 \usepackage{graphicx}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+\usepackage{iftex}
+% Helvetica Neue under XeLaTeX/LuaLaTeX when installed; TeX Gyre Heros (a
+% Helvetica clone shipped with TeX Live) otherwise, and helvet under pdfLaTeX.
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage[scaled]{helvet}
+\else
+  \usepackage{fontspec}
+  \IfFontExistsTF{Helvetica Neue}{\setsansfont{Helvetica Neue}}{%
+    \setsansfont{texgyreheros}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+      ItalicFont=*-italic, BoldItalicFont=*-bolditalic]}
+\fi
 \usepackage{array}
+\usepackage{adjustbox}
 \graphicspath{{../figures/}}
 \setbeamertemplate{navigation symbols}{}
 % No bottom bar: just "n / N" in the bottom-right corner.
@@ -664,6 +800,23 @@ TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
   \hfill{\usebeamercolor[fg]{page number in head/foot}\usebeamerfont{page number in head/foot}%
   \insertframenumber\,/\,\inserttotalframenumber}\hspace*{2ex}\vskip4pt}
 \setbeamerfont{frametitle}{size=\large}
+% Deck section, bold caps, top-right of the title bar: \begin{frame}[category=Conferences]{...}.
+% Reset before every frame so a category never carries over to the next slide.
+\makeatletter
+\def\slidecategory{}
+\define@key{beamerframe}{category}{\def\slidecategory{#1}}
+\AddToHook{env/frame/before}{\def\slidecategory{}}
+\setbeamerfont{slide category}{size=\scriptsize,series=\bfseries}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=.3cm,rightskip=.3cm]{frametitle}%
+    \vskip1pt
+    \hbox to \dimexpr\paperwidth-.6cm\relax{\hfill\usebeamerfont{slide category}\strut\MakeUppercase{\slidecategory}}%
+    \vskip-5pt
+    \usebeamerfont{frametitle}\strut\insertframetitle\par
+    \vskip1pt
+  \end{beamercolorbox}}
+\makeatother
 \renewcommand{\arraystretch}{1.08}
 
 \title[Radiology AI]{Artificial Intelligence in Pediatric Radiology}
@@ -682,46 +835,17 @@ TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
 \end{frame}
 
 \begin{frame}{Methods}
-\tiny
-\textbf{Academic output.} \textbf{PubMed} (E-utilities) yearly counts per query and per modality/task term group,
-plus \textbf{preprints} (\textbf{arXiv API} and \textbf{medRxiv via Europe PMC}) counted with the same
-queries, because PubMed does not index arXiv and covers medRxiv only partially (@@pre_rad_latest@@ radiology-AI preprints in @@yr1@@).
-\textbf{Most-cited papers} from OpenAlex (union of modality/task searches, deduped, articles and preprints):
-one list for @@era_a@@, then one per year from 2023, each showing raw citations and the field-weighted citation
-impact (FWCI, 1 = world average for that field and year), so recent papers are not buried under 2023 ones.
-\textbf{Venues}: Semantic Scholar venue search (NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL) and OpenAlex journal filters
-(RSNA, SPR), 2023--present; \textbf{PatentsView} for granted patents.\\[3pt]
-\textbf{Systematic review.} Separately from the counts, every pediatric radiology-AI record from
-@@review_start@@ onward was retrieved from \textbf{PubMed/MEDLINE and Embase}, screened against prespecified
-criteria, and read into a structured row under a fixed schema (@@review_n@@ included primary studies). This is
-the corpus behind the review section, the paper database, and the manuscript; slides that name individual
-studies rank them by citation impact normalized to the field and year.\\[3pt]
-\textbf{Clinical problems.} The pediatric radiology-AI query AND a term group per problem (bone age, fracture, pneumonia,
-appendicitis, brain tumor, \dots), counted per era; a paper can name several problems.\\[3pt]
-\textbf{Datasets.} Public pediatric imaging datasets, sizes verified against the primary papers or hosting pages.\\[3pt]
-\textbf{Commercial players.} The \textbf{FDA AI-enabled device list} (public spreadsheet: decision date, device,
-company, lead panel), filtered to the Radiology panel; cross-checked against a curated list of products with pediatric indications.\\[3pt]
-\textbf{Trade press.} Newsletter archives (The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify Research, Radiology Business)
-split into stories; a story is radiology-AI when AI terms co-occur with imaging terms, pediatric when pediatric terms
-also co-occur; a story's outbound publisher link is resolved to a DOI and cited (OpenAlex).\\[3pt]
-\textbf{Pediatric filter.} PubMed: the radiology-AI query AND
-(pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR ``children's hospital'').
-Most-cited lists: the title must also carry a pediatric term (bone age, fetal, newborn, \dots), otherwise
-highly cited adult papers float in. Newsletters: pediatric term inside the same story.\\[3pt]
-\textbf{Representative PubMed query (radiology $\cap$ AI):}
-\begin{block}{}
-\tiny
-(radiology OR radiograph* OR ``medical imaging'' OR MRI OR ``computed tomography'' OR CT[tiab] OR ultrasound[tiab] \dots
-NOT (``optical coherence'' OR fundus OR dental OR histopatholog* \dots))
-\textbf{AND} (``artificial intelligence'' OR ``deep learning'' OR ``convolutional neural network'' OR radiomics \dots)
-\end{block}
+\vspace{-4pt}
+@@methods_table@@
+\vspace{2pt}
+@@methods_query@@
 \end{frame}
 
-\begin{frame}{Radiology AI publication counts}
+\begin{frame}[category=Journals/Preprints]{Radiology AI publication counts}
 @@fig_trend@@
 \end{frame}
 
-\begin{frame}{Pediatric radiology AI publications, stratified by modality and task}
+\begin{frame}[category=Journals/Preprints]{Pediatric radiology AI publications, stratified by modality and task}
 @@fig_ped_mod_task@@
 \vspace{-6pt}
 {\tiny Same construction, restricted to the pediatric subset (@@ped_total@@ papers incl. @@ped_pre_total@@ preprints). Top pediatric modalities:
@@ -731,19 +855,19 @@ NOT (``optical coherence'' OR fundus OR dental OR histopatholog* \dots))
 @@task_gloss@@
 \end{frame}
 
-\begin{frame}{Which journals publish pediatric radiology AI}
+\begin{frame}[category=Journals/Preprints]{Which journals publish pediatric radiology AI}
 @@fig_journal_impact@@
 \vspace{-8pt}
 {\tiny @@journal_note@@}
 \end{frame}
 
-\begin{frame}{Which journals publish pediatric radiology AI, 2023--present}
+\begin{frame}[category=Journals/Preprints]{Which journals publish pediatric radiology AI, 2023--present}
 @@fig_journal_impact_recent@@
 \vspace{-8pt}
 {\tiny @@journal_note_recent@@}
 \end{frame}
 
-\begin{frame}{Cross-check: an independent 2025 scoping review of pediatric radiology AI}
+\begin{frame}[category=Journals/Preprints]{Cross-check: an independent 2025 scoping review of pediatric radiology AI}
 \scriptsize
 Kamran et al., \textit{Pediatric Radiology} 2025 (doi 10.1007/s00247-025-06462-5): 789 original pediatric-focused
 articles hand-screened from four databases, 2005 to August 2024. Our PubMed counts are larger because they include any
@@ -775,7 +899,7 @@ paper that mentions a pediatric term.
 \end{columns}
 \end{frame}
 
-\begin{frame}{Reading the whole pediatric literature, not a sample of it}
+\begin{frame}[category=Journals/Preprints]{Reading the whole pediatric literature, not a sample of it}
 \scriptsize
 Counting publications says how much is being published; it does not say what was built, for which
 children, or how well it was tested. So every pediatric radiology-AI record from @@review_start@@ onward was
@@ -797,18 +921,18 @@ validation, availability --- under one fixed schema.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Study selection}
+\begin{frame}[category=Journals/Preprints]{Study selection}
 @@fig_review_prisma@@
 \end{frame}
 
-\begin{frame}{Included studies per publication year}
+\begin{frame}[category=Journals/Preprints]{Included studies per publication year}
 @@fig_review_year@@
 \vspace{-4pt}
 {\tiny Blue = the @@review_n@@ included primary studies; gray = records read and then excluded as off-topic or
 non-primary. @@yr1@@+ is year to date and still being indexed.}
 \end{frame}
 
-\begin{frame}{What the pediatric literature is made of}
+\begin{frame}[category=Journals/Preprints]{What the pediatric literature is made of}
 @@fig_review_modality@@
 \vspace{-4pt}
 {\tiny @@review_composition@@ Categories are multilabel, so an axis can exceed 100\%. MRI leads on the strength of
@@ -817,11 +941,11 @@ or report cognitive and behavioral outcomes and MRI falls level with ultrasound 
 built on narrower vocabulary rank radiography or ultrasound first.}
 \end{frame}
 
-\begin{frame}{What the models produce}
+\begin{frame}[category=Journals/Preprints]{What the models produce}
 @@fig_review_task@@
 \end{frame}
 
-\begin{frame}{How well is it tested?}
+\begin{frame}[category=Journals/Preprints]{How well is it tested?}
 @@fig_review_validation@@
 \vspace{-4pt}
 {\tiny Of @@review_n@@ included studies, external or multi-center validation was reported by @@review_external@@,
@@ -829,11 +953,11 @@ a reader study by @@review_reader@@, prospective evaluation by @@review_prospect
 URL by @@review_code@@ studies. External validation rose across eras; reader studies did not.}
 \end{frame}
 
-\begin{frame}{From published study to a tool a child benefits from}
+\begin{frame}[category=Journals/Preprints]{From published study to a tool a child benefits from}
 @@fig_review_funnel@@
 \end{frame}
 
-\begin{frame}{Which of these studies is the field actually reading?}
+\begin{frame}[category=Journals/Preprints]{Which of these studies is the field actually reading?}
 @@fig_review_impact_dist@@
 \vspace{-6pt}
 \begin{itemize}\scriptsize
@@ -841,14 +965,14 @@ URL by @@review_code@@ studies. External validation rose across eras; reader stu
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Does citation impact pick out the better-validated work?}
+\begin{frame}[category=Journals/Preprints]{Does citation impact pick out the better-validated work?}
 @@fig_review_impact_subset@@
 \vspace{-4pt}
 {\tiny The most-cited decile is somewhat more likely to report external validation and a reader study, but
 the difference is small: citations track topic and audience more than evidence.}
 \end{frame}
 
-\begin{frame}{Highest-impact pediatric radiology AI studies, @@review_start@@--@@review_end@@}
+\begin{frame}[category=Journals/Preprints]{Highest-impact pediatric radiology AI studies, @@review_start@@--@@review_end@@}
 \tiny
 @@review_table_all@@
 \\[2pt]
@@ -857,7 +981,7 @@ the difference is small: citations track topic and audience more than evidence.}
 
 @@review_year_frames@@
 
-\begin{frame}{The biggest public pediatric radiology AI datasets}
+\begin{frame}[category=Datasets]{The biggest public pediatric radiology AI datasets}
 \tiny
 @@dataset_table@@
 \\[3pt]
@@ -866,7 +990,7 @@ the difference is small: citations track topic and audience more than evidence.}
 bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude children.}
 \end{frame}
 
-\begin{frame}{Most-cited radiology AI papers, @@era_a@@}
+\begin{frame}[category=Journals/Preprints]{Most-cited radiology AI papers, @@era_a@@}
 \tiny
 @@paper_table_rad_a@@
 \\[1pt]
@@ -875,7 +999,7 @@ bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude child
 
 @@year_frames_rad@@
 
-\begin{frame}{Most-cited pediatric radiology AI papers, @@era_a@@}
+\begin{frame}[category=Journals/Preprints]{Most-cited pediatric radiology AI papers, @@era_a@@}
 \tiny
 @@paper_table_ped_a@@
 \\[2pt]
@@ -887,25 +1011,25 @@ the other.}
 
 @@year_frames_ped@@
 
+\begin{frame}[category=Conferences]{Radiology AI works per year, by conference}
+@@fig_venue_lines@@
+\end{frame}
+
 @@venue_frames@@
 
-\begin{frame}{Which medical problems pediatric radiology AI addresses}
+\begin{frame}[category=Journals/Preprints]{Which medical problems pediatric radiology AI addresses}
 @@fig_problems@@
 \end{frame}
 
 @@spotlights@@
 
-\begin{frame}{Newsletters --- radiology AI stories, all ages}
-@@fig_news_all@@
-\end{frame}
-
-\begin{frame}{Newsletters --- pediatric radiology AI stories}
-@@fig_news_ped@@
+\begin{frame}[category=Newsletters]{Newsletters --- radiology AI stories per year, by source}
+@@fig_news_lines@@
 \end{frame}
 
 @@news_year_frames@@
 
-\begin{frame}{Commercial software with a pediatric angle}
+\begin{frame}[category=Commercial Software]{Commercial software with a pediatric angle}
 \tiny
 @@commercial_table@@
 \\[4pt]
