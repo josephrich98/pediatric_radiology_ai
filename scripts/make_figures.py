@@ -80,8 +80,8 @@ def _mark_partial(ax, years):
 # Publication trends
 # --------------------------------------------------------------------------- #
 def trend_figures(counts, preprints=None):
-    """``counts`` is the merged (PubMed + arXiv preprint) series; ``preprints``
-    only decides the axis label (one solid bar per series)."""
+    """``counts`` is the merged (PubMed + arXiv/medRxiv preprint) series;
+    ``preprints`` only decides the axis label (one solid bar per series)."""
     rows = analysis.fractions_over_time(counts)
     if not rows:
         return
@@ -93,10 +93,10 @@ def trend_figures(counts, preprints=None):
     rad = [r["radiology_ai"] for r in rows]
     ped = [r["pediatric_radiology_ai"] for r in rows]
     fig, ax1 = plt.subplots(figsize=(9, 5))
-    ax1.bar(years, rad, width=0.8, color=BLUE, label="Radiology AI" + (" (PubMed + arXiv)" if has_pre else ""))
+    ax1.bar(years, rad, width=0.8, color=BLUE, label="Radiology AI" + (" (PubMed + arXiv + medRxiv)" if has_pre else ""))
     ax1.bar(years, ped, width=0.8, color=GREEN, label="Pediatric radiology AI (subset)")
     ax1.set_xlabel("Year")
-    ax1.set_ylabel("Publications per year (PubMed + arXiv preprints)" if has_pre else "Publications per year (PubMed)")
+    ax1.set_ylabel("Publications per year (PubMed + arXiv + medRxiv preprints)" if has_pre else "Publications per year (PubMed)")
     ax1.yaxis.set_major_formatter(lambda v, _: f"{int(v):,}")
     _style(ax1)
     ax1.annotate(f"{rad[-1]:,}", (years[-1], rad[-1]), xytext=(0, 3),

@@ -30,76 +30,59 @@
 \end{frame}
 
 \begin{frame}{Methods}
-\small
-\begin{itemize}
-  \item \textbf{Academic papers}
-  \begin{itemize}
-    \footnotesize
-    \item PubMed/MEDLINE and Embase; preprints from arXiv, bioRxiv, and medRxiv via OpenAlex.
-    \item Conference/venue searches: NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL, RSNA, and SPR.
-    \item Publication trends and citation impact; separate systematic review of pediatric studies since 2005.
-  \end{itemize}
-  \medskip
-  \item \textbf{Companies and commercial products}
-  \begin{itemize}
-    \footnotesize
-    \item FDA AI-enabled device list, filtered to Radiology; cross-checked for pediatric indications.
-  \end{itemize}
-  \medskip
-  \item \textbf{Selected newsletters and trade press}
-  \begin{itemize}
-    \footnotesize
-    \item The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify Research, and Radiology Business.
-    \item Stories mentioning both imaging and AI; pediatric terms identify the pediatric subset.
-  \end{itemize}
-\end{itemize}
-\begin{block}{Search concept (illustrative terms)}
-\footnotesize
-\textbf{Imaging:} radiology, radiograph*, MRI, CT, ultrasound\\
-\textbf{AND AI:} ``artificial intelligence,'' ``deep learning,'' neural network*, radiomics\\
-\textbf{For pediatric searches, AND:} pediatric*, paediatric*, child*, infant*, neonat*, adolescen*
+\tiny
+\textbf{Academic output.} \textbf{PubMed} (E-utilities) yearly counts per query and per modality/task term group,
+plus \textbf{preprints} (\textbf{arXiv API} and \textbf{medRxiv via Europe PMC}) counted with the same
+queries, because PubMed does not index arXiv and covers medRxiv only partially (4,777 radiology-AI preprints in 2025).
+\textbf{Most-cited papers} from OpenAlex (union of modality/task searches, deduped, articles and preprints):
+one list for 2008-2022, then one per year from 2023, each showing raw citations and the field-weighted citation
+impact (FWCI, 1 = world average for that field and year), so recent papers are not buried under 2023 ones.
+\textbf{Venues}: Semantic Scholar venue search (NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL) and OpenAlex journal filters
+(RSNA, SPR), 2023--present; \textbf{PatentsView} for granted patents.\\[3pt]
+\textbf{Systematic review.} Separately from the counts, every pediatric radiology-AI record from
+2005 onward was retrieved from \textbf{PubMed/MEDLINE and Embase}, screened against prespecified
+criteria, and read into a structured row under a fixed schema (3,496 included primary studies). This is
+the corpus behind the review section, the paper database, and the manuscript; slides that name individual
+studies rank them by citation impact normalized to the field and year.\\[3pt]
+\textbf{Clinical problems.} The pediatric radiology-AI query AND a term group per problem (bone age, fracture, pneumonia,
+appendicitis, brain tumor, \dots), counted per era; a paper can name several problems.\\[3pt]
+\textbf{Datasets.} Public pediatric imaging datasets, sizes verified against the primary papers or hosting pages.\\[3pt]
+\textbf{Commercial players.} The \textbf{FDA AI-enabled device list} (public spreadsheet: decision date, device,
+company, lead panel), filtered to the Radiology panel; cross-checked against a curated list of products with pediatric indications.\\[3pt]
+\textbf{Trade press.} Newsletter archives (The Imaging Wire, RSNA News, ESR/ECR, TLDR, Signify Research, Radiology Business)
+split into stories; a story is radiology-AI when AI terms co-occur with imaging terms, pediatric when pediatric terms
+also co-occur; a story's outbound publisher link is resolved to a DOI and cited (OpenAlex).\\[3pt]
+\textbf{Pediatric filter.} PubMed: the radiology-AI query AND
+(pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR ``children's hospital'').
+Most-cited lists: the title must also carry a pediatric term (bone age, fetal, newborn, \dots), otherwise
+highly cited adult papers float in. Newsletters: pediatric term inside the same story.\\[3pt]
+\textbf{Representative PubMed query (radiology $\cap$ AI):}
+\begin{block}{}
+\tiny
+(radiology OR radiograph* OR ``medical imaging'' OR MRI OR ``computed tomography'' OR CT[tiab] OR ultrasound[tiab] \dots
+NOT (``optical coherence'' OR fundus OR dental OR histopatholog* \dots))
+\textbf{AND} (``artificial intelligence'' OR ``deep learning'' OR ``convolutional neural network'' OR radiomics \dots)
 \end{block}
+\end{frame}
+
+\begin{frame}{Study selection}
+\begin{center}\includegraphics[height=0.76\textheight,width=\textwidth,keepaspectratio]{review_prisma.png}\end{center}
 \end{frame}
 
 \begin{frame}{Radiology AI publication counts}
 \begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{radiology_ai_trend.png}\end{center}
 \end{frame}
 
-\begin{frame}{Radiology AI publications, stratified by modality and task}
-\begin{center}\includegraphics[height=0.47\textheight,width=\textwidth,keepaspectratio]{modality_by_task.png}\end{center}
-\vspace{-6pt}
-{\tiny Bar = percentage of radiology-AI papers (123,413 = 98,842 PubMed + 24,571 preprints, 2008--present) whose title/abstract names the modality;
-segments = which task terms those papers use (overlapping). What each task means, by what the model produces:}
-\vspace{-2pt}
-\tiny
-\begin{columns}[T]
-\begin{column}{0.33\textwidth}
-\begin{itemize}
-\item \textbf{detection / diagnosis}: is a finding present now, and which one (label or box): fracture, pneumonia, tumor; includes triage and screening
-\item \textbf{segmentation}: outline a structure or lesion (a mask)
-\item \textbf{measurement / quantification}: a number from the image: bone age, Cobb angle, organ volume, fetal biometry
-\end{itemize}
-\end{column}
-\begin{column}{0.33\textwidth}
-\begin{itemize}
-\item \textbf{outcome prediction}: a future risk, response, or survival estimate from the image (prognosis, radiomics signatures)
-\item \textbf{reconstruction / imputation}: a better or missing image: lower dose, faster scans, denoising, synthetic CT/MR
-\item \textbf{report generation / LLM}: text: draft, summarize, or extract from radiology reports
-\end{itemize}
-\end{column}
-\begin{column}{0.33\textwidth}
-\begin{itemize}
-\item \textbf{foundation model / vision-language}: a large pretrained model reused across tasks (segment-anything, self-supervised)
-\item \textbf{agent / autonomous}: multi-step actions taken without a human in the loop
-\item \textbf{workflow / non-interpretive}: protocoling, scheduling, ordering, decision support, education
-\end{itemize}
-\end{column}
-\end{columns}
+\begin{frame}{Which journals publish pediatric radiology AI}
+\begin{center}\includegraphics[height=0.66\textheight,width=\textwidth,keepaspectratio]{journal_impact.png}\end{center}
+\vspace{-8pt}
 \end{frame}
 
 \begin{frame}{Pediatric radiology AI publications, stratified by modality and task}
 \begin{center}\includegraphics[height=0.47\textheight,width=\textwidth,keepaspectratio]{ped_modality_by_task.png}\end{center}
 \vspace{-6pt}
+{\tiny Same construction, restricted to the pediatric subset (10,737 papers incl. 596 preprints). Top pediatric modalities:
+MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 12\%. Mammography is omitted: its 79 pediatric-query hits (of 10,737) are adult breast-imaging papers whose abstracts mention children.}
 \vspace{-2pt}
 \tiny
 \begin{columns}[T]
@@ -127,162 +110,8 @@ segments = which task terms those papers use (overlapping). What each task means
 \end{columns}
 \end{frame}
 
-\begin{frame}{Which journals publish pediatric radiology AI}
-\begin{center}\includegraphics[height=0.66\textheight,width=\textwidth,keepaspectratio]{journal_impact.png}\end{center}
-\vspace{-8pt}
-% {\tiny x = OpenAlex 2-year mean citedness (a free JIF analogue; runs below the published JIF). y = cumulative pediatric radiology-AI papers 2015-2026 (PubMed, strict title/abstract query). The 33 journals with at least 25 of them are shown, carrying 1,807 of 5,099; the rest is a long tail. Largest: Pediatric Radiology (196); median impact 3.7, 1 at 10 or above -- this work lands mostly in mid-impact specialty and technical journals. A further 3 conference proceedings and preprint servers clear the threshold (94 papers) but have no impact number of any kind and are not plotted. The same chart animated year by year: \texttt{figures/journal\_impact.gif}.}
-\end{frame}
-
-\begin{frame}{Cross-check: an independent 2025 scoping review of pediatric radiology AI}
-\scriptsize
-Kamran et al., \textit{Pediatric Radiology} 2025 (doi 10.1007/s00247-025-06462-5): 789 original pediatric-focused
-articles hand-screened from four databases, 2005 to August 2024. Our PubMed counts are larger because they include any
-paper that mentions a pediatric term.
-\begin{columns}[T]
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-  \item \textbf{Modality}: radiography 38\%, MRI 33\%, ultrasound 14\%, CT 11\%, nuclear 2\%. Our pediatric query
-        ranks MRI first (MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 13\%) because MRI-heavy neurodevelopment papers mention children.
-  \item \textbf{Subspecialty}: musculoskeletal 33\%, neuro 29\%, chest 17\%, body 14\%, cardiac 6\%.
-  \item \textbf{Top applications}: bone age (88 articles), pneumonia (65), brain tumors (54), scoliosis (45),
-        hip dysplasia (28), congenital heart disease (25), autism (18), epilepsy (14), ADHD (9), hydrocephalus (9).
-  \item \textbf{Use of AI}: 91\% image interpretation / diagnosis; 5.6\% image quality; under 2\% for
-        acquisition, communication, protocoling, education, and policy combined.
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-  \item \textbf{Data}: 65\% used a single local hospital dataset; 7\% did not report the dataset;
-        China 28\%, USA 25\%, Canada 7\% of articles.
-  \item \textbf{Growth}: 23 articles in 2018, 158 in 2022, 171 in 2023, consistent with our PubMed curve.
-  \item \textbf{Recommendations}: multi-institutional, age-diverse pediatric datasets; CLAIM-style reporting with
-        subgroup results and calibration; funding for the neglected non-interpretive areas (policy, education,
-        implementation); children and families as stakeholders across the AI lifecycle.
-  \item \textbf{What it adds to this deck}: the same three leading tasks (bone age, pneumonia, brain tumor) and the
-        same gap (small local datasets, adult tools applied to children) reached by a manual review.
-\end{itemize}
-\end{column}
-\end{columns}
-\end{frame}
-
-\begin{frame}{Highest-impact pediatric radiology AI studies, 2005--2026}
-\tiny
-\renewcommand{\arraystretch}{0.92}
-\begin{tabular}{|r|r|r|>{\raggedright\arraybackslash}p{0.33\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}|}
-\hline \textbf{Impact} & \textbf{Cites} & \textbf{Year} & \textbf{Study} & \textbf{Venue} & \textbf{What it does} \\ \hline
-329x & 273 & 2018 & Performance of a Deep-Learning Neural Network Model in Assessing Skelet... & Radiology & skeletal maturity (bone age) assessment in the workup of endo... \\ \hline
-325x & 219 & 2017 & Fully Automated Deep Learning System for Bone Age Assessment. & Journal of digital imaging & skeletal maturity (bone age) assessment in endocrine and meta... \\ \hline
-293x & 1,757 & 2018 & Identifying Medical Diagnoses and Treatable Diseases by Image-Based Dee... & Cell & pediatric pneumonia on chest radiographs, and bacterial vs vi... \\ \hline
-221x & 167 & 2017 & Deep learning for automated skeletal bone age assessment in X-ray image... & Medical image analysis & skeletal maturity (bone age) assessment in endocrine, genetic... \\ \hline
-200x & 321 & 2016 & Automatic Segmentation of MR Brain Images With a Convolutional Neural N... & IEEE transactions on medi... & automatic brain tissue segmentation for quantitative MRI anal... \\ \hline
-93x & 269 & 2021 & CA-Net & IEEE transactions on medi... & segmenting the placenta and fetal brain on fetal MRI \\ \hline
-83x & 701 & 2019 & Attention Gate (Attention U-Net) & Medical image analysis & identifying the correct standard views during fetal ultrasoun... \\ \hline
-73x & 112 & 2017 & Computerized Bone Age Estimation Using Deep Learning Based Program: Eva... & AJR. American journal of... & bone age estimation, and whether software assistance makes ra... \\ \hline
-71x & 78 & 2019 & Artificial intelligence-assisted interpretation of bone age radiographs... & Skeletal radiology & whether AI assistance makes pediatric radiologists better at... \\ \hline
-\end{tabular}
-\\[2pt]
-{\tiny Impact = citations relative to the average paper of the same field and year (OpenAlex FWCI; iCite RCR where OpenAlex has none), shown once a study has 5 citations. $\dagger$ Embase-only; $\ast$ preprint.}
-\end{frame}
-
-\begin{frame}{Highest-impact pediatric radiology AI studies, 2023}
-\tiny
-\renewcommand{\arraystretch}{0.92}
-\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.33\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}|}
-\hline \textbf{Impact} & \textbf{Cites} & \textbf{Study} & \textbf{Venue} & \textbf{What it does} \\ \hline
-69x & 106 & iBEAT V2.0 & Nature protocols & measuring cortical development in infants, whose brain MRI de... \\ \hline
-37x & 20 & Bone Age Assessment Using Artificial Intelligence in Korean Pediatric P... & Korean journal of radiolo... & whether bone age in a given population should be predicted ag... \\ \hline
-34x & 9 & Bone age assessment based on deep neural networks with annotation-free... & Frontiers in artificial i... & automated bone age assessment from hand radiographs without m... \\ \hline
-30x & 39 & FeTA & Medical image analysis & segmenting the developing fetal brain into tissues, the step... \\ \hline
-28x & 20 & Deep focus approach for accurate bone age estimation from lateral cepha... & Journal of dental sciences & estimating skeletal maturity from the lateral cephalogram a g... \\ \hline
-27x & 11 & Bone Age Estimation and Prediction of Final Adult Height Using Deep Lea... & Yonsei medical journal & automatically estimating bone age and predicting final adult... \\ \hline
-26x & 21 & Detection of ASD Children through Deep-Learning Application of fMRI. & Children (Basel, Switzerl... & early detection of autism spectrum disorder in children, wher... \\ \hline
-26x & 14 & High performance for bone age estimation with an artificial intelligenc... & Diagnostic and interventi... & How does an AI solution for bone age assessment compare in ac... \\ \hline
-25x & 49 & Automated classification of common maternal fetal ultrasound planes usi... $\dagger$ & Biomedical Signal Process... & automated identification of standard fetal ultrasound planes... \\ \hline
-\end{tabular}
-\\[2pt]
-{\tiny 410 studies included from 2023; 289 have enough citations to be ranked. Impact = citations relative to the average paper of the same field and year (OpenAlex FWCI; iCite RCR where OpenAlex has none), shown once a study has 5 citations. $\dagger$ Embase-only; $\ast$ preprint.}
-\end{frame}
-
-\begin{frame}{Highest-impact pediatric radiology AI studies, 2024}
-\tiny
-\renewcommand{\arraystretch}{0.92}
-\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.33\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}|}
-\hline \textbf{Impact} & \textbf{Cites} & \textbf{Study} & \textbf{Venue} & \textbf{What it does} \\ \hline
-29x & 16 & Automated bone age assessment in a German pediatric cohort: agreement b... & European radiology & whether a bone age product can be swapped in for an expert re... \\ \hline
-29x & 16 & A Dempster-Shafer Approach to Trustworthy AI With Application to Fetal... & IEEE transactions on patt... & detecting and correcting failures in automated fetal brain MR... \\ \hline
-26x & 12 & HFSCCD: A Hybrid Neural Network for Fetal Standard Cardiac Cycle Detect... & IEEE journal of biomedica... & Automatically detecting standard cardiac cycle frames in feta... \\ \hline
-24x & 5 & Assessment of Bone Age Based on Hand Radiographs Using Regression-Based... & Life (Basel, Switzerland) & estimating bone age from hand radiographs \\ \hline
-24x & 17 & FetalBrainAwareNet & Computerized medical imag... & Synthesizing anatomically accurate fetal head standard-plane... \\ \hline
-24x & 16 & On the use of contrastive learning for standard-plane classification in... & Computers in biology and... & automated identification of standard imaging planes in fetal... \\ \hline
-22x & 12 & Transformer based multi-modal MRI fusion for prediction of post-menstru... & Medical image analysis & Estimating post-menstrual age and assessing brain maturity fr... \\ \hline
-21x & 9 & TW3 AI bone age assessment system & Quantitative imaging in m... & validating an AI system for Tanner-Whitehouse 3 bone age asse... \\ \hline
-20x & 11 & Artificial intelligence assisted common maternal fetal planes predictio... & Frontiers in medicine & automatically classifying standard maternal-fetal ultrasound... \\ \hline
-\end{tabular}
-\\[2pt]
-{\tiny 555 studies included from 2024; 264 have enough citations to be ranked. }
-\end{frame}
-
-\begin{frame}{Highest-impact pediatric radiology AI studies, 2025}
-\tiny
-\renewcommand{\arraystretch}{0.92}
-\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.33\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}|}
-\hline \textbf{Impact} & \textbf{Cites} & \textbf{Study} & \textbf{Venue} & \textbf{What it does} \\ \hline
-54x & 10 & ChatGPT-o4-mini-high, ChatGPT-4.5, Gemini 2.5 Pro & Academic radiology & whether a general-purpose chatbot can substitute for dedicate... \\ \hline
-52x & 34 & Prediction of mental health risk in adolescents. & Nature medicine & predicting future risk of general psychiatric illness in adol... \\ \hline
-32x & 13 & BoneXpert, PANDA, BoneView & European radiology & which of the bone age products approved for the European mark... \\ \hline
-29x & 10 & Whole examination AI estimation of fetal biometrics from 20-week ultras... & NPJ digital medicine & fetal biometry currently rests on a handful of frames a sonog... \\ \hline
-29x & 8 & Uncovering ethical biases in publicly available fetal ultrasound datase... & NPJ digital medicine & whether publicly available fetal ultrasound image datasets us... \\ \hline
-28x & 13 & Scanner-based real-time three-dimensional brain + body slice-to-volume... & Pediatric radiology & motion-corrected 3D fetal MRI has stayed a research technique... \\ \hline
-26x & 21 & Predicting pediatric patient rehabilitation outcomes after spinal defor... & Communications medicine & telling an adolescent before scoliosis surgery how they are l... \\ \hline
-24x & 10 & Three-dimensional markerless surface topography approach with convoluti... & Scientific reports & screening adolescents for scoliosis without the unnecessary r... \\ \hline
-23x & 5 & Advancing prenatal healthcare by explainable AI enhanced fetal ultrasou... & Scientific reports & automated, explainable segmentation of fetal ultrasound image... \\ \hline
-\end{tabular}
-\\[2pt]
-{\tiny 685 studies included from 2025; 118 have enough citations to be ranked. }
-\end{frame}
-
-\begin{frame}{Highest-impact pediatric radiology AI studies, 2026 (year to date)}
-\tiny
-\renewcommand{\arraystretch}{0.92}
-\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.33\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}|}
-\hline \textbf{Impact} & \textbf{Cites} & \textbf{Study} & \textbf{Venue} & \textbf{What it does} \\ \hline
-46x & 7 & Infants have rich visual categories in ventrotemporal cortex at 2 month... & Nature neuroscience & characterizing the development of visual category representat... \\ \hline
-14x & 6 & Perceived Racism, Brain Development, and Internalizing and Externalizin... & Journal of the American A... & assessing effects of perceived racial discrimination on longi... \\ \hline
-6x & 5 & Use of Artificial Intelligence-Based Software to Aid in the Identificat... & Obstetrics and gynecology & evaluating whether AI-based software improves ob-gyn and mate... \\ \hline
-5x & 5 & Artificial Intelligence for the Detection of Fetal Ultrasound Findings... & Obstetrics and gynecology & identifying second-trimester fetal ultrasound findings suspic... \\ \hline
-4x & 14 & G-YOLOv11 $\dagger$ & Biomedical Signal Process... & fracture detection on pediatric wrist radiographs \\ \hline
-4x & 8 & Machine Learning Algorithms for Predicting Cobb Angle Beyond 25° in Fem... & Spine & predicting which female adolescents with idiopathic scoliosis... \\ \hline
-3x & 5 & Motion-Echo & European heart journal & automating myocardial strain analysis from pediatric echocard... \\ \hline
-3x & 8 & Safe for kids? AI medical devices in radiology overlook paediatric suit... & European radiology & whether the AI devices a European radiology department can bu... \\ \hline
-3x & 9 & GPT-4.1 & European archives of oto-... & detecting and lateralizing pediatric airway foreign body aspi... \\ \hline
-\end{tabular}
-\\[2pt]
-{\tiny 686 studies included from 2026; 12 have enough citations to be ranked. Few studies from this year have enough citations for a normalized value yet, so this table is thin by construction rather than because the year was quiet.}
-\end{frame}
-
-\begin{frame}{The biggest public pediatric radiology AI datasets}
-\tiny
-\renewcommand{\arraystretch}{0.92}
-\begin{tabular}{|>{\raggedright\arraybackslash}p{0.21\textwidth}|l|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.21\textwidth}|>{\raggedright\arraybackslash}p{0.07\textwidth}|>{\raggedright\arraybackslash}p{0.10\textwidth}|}
-\hline \textbf{Dataset} & \textbf{Year} & \textbf{Modality} & \textbf{Size} & \textbf{Ages} & \textbf{Access} \\ \hline
-CBTN clinical MRI (Children's Brain Tumor Network) & 2023 & brain / spine tumor MRI & 23,101 exams (1,526 patients); tumor masks for 370 & pediatric & application (NCI CCDI) \\ \hline
-GRAZPEDWRI-DX & 2022 & wrist radiographs (trauma) & 20,327 images (6,091 patients) & 0.2--19 y & open \\ \hline
-RSNA Pediatric Bone Age Challenge & 2017 & hand radiographs & 14,236 images (bone age + sex) & mean 10.6 y & open (RSNA terms) \\ \hline
-FETAL\_PLANES\_DB & 2020 & fetal ultrasound (standard planes) & 12,400 images (1,792 pregnancies) & fetal & open \\ \hline
-ABCD Study & 2018-- & brain MRI, longitudinal & 11,878 participants, up to 7 follow-ups & 9--10 y at baseline & application (NBDC) \\ \hline
-PediCXR / VinDr-PCXR & 2023 & chest radiographs & 9,125 studies; 36 findings, 15 diagnoses & \textless{} 10 y & credentialed (PhysioNet) \\ \hline
-Guangzhou pediatric chest X-ray (Kermany) & 2018 & chest radiographs & 5,856 images (normal / bacterial / viral pneumonia) & 1--5 y & open \\ \hline
-ABIDE I + II (autism) & 2012 / 2016 & brain MRI (structural, resting fMRI) & 2,156 subjects & 5--64 y (mostly children) & open \\ \hline
-Regensburg Pediatric Appendicitis & 2023 & abdominal ultrasound + labs & 1,709 images (579 patients) & 0--18 y & open \\ \hline
-dHCP (Developing Human Connectome Project) & 2022--24 & neonatal + fetal brain MRI & 886 neonatal + 297 fetal datasets, with segmentations & 20--45 weeks & open (NDA) \\ \hline
-Pediatric-CT-SEG (TCIA) & 2022 & chest / abdomen / pelvis CT & 718 series (359 patients); 29 organ contours & 5 days -- 16 y & open \\ \hline
-BraTS-PEDs (pediatric brain tumor challenge) & 2023--25 & brain tumor MRI & 464 patients (2024 challenge); 1,649 series on TCIA & pediatric & registration / TCIA \\ \hline
-FeTA (fetal brain tissue annotation) & 2021--24 & fetal brain MRI & 280 volumes (120 train + 160 test); 7 tissue labels & 18--35 weeks & registration \\ \hline
-\end{tabular}
-\\[3pt]
-{\tiny Sizes verified against the primary paper or hosting page (2026-09). Only two pediatric radiograph sets exceed
-10,000 images; the largest public pediatric-only CT set has 359 patients; no RSNA pediatric challenge has run since
-bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude children.}
+\begin{frame}{Pediatric radiology AI publications, stratified by medical problem}
+\begin{center}\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{ped_problems.png}\end{center}
 \end{frame}
 
 \begin{frame}{Most-cited radiology AI papers, 2008-2022}
@@ -626,56 +455,6 @@ the other.}
 {\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 62 works, newest year first.}
 \end{frame}
 
-\begin{frame}{RSNA: radiology AI works, 2023--2026}
-{\scriptsize \textbf{Radiological Society of North America: Radiology, Radiology: AI, RadioGraphics}. Radiology-AI works found, 2023--2026: 616 (2023: 151, 2024: 174, 2025: 185, 2026: 106); 13 pediatric (marked $\star$). RSNA annual-meeting abstracts are not indexed; the society's journals stand in.\par}\vspace{2pt}
-\tiny
-\renewcommand{\arraystretch}{1.0}
-\begin{tabular}{|l|r|r|>{\raggedright\arraybackslash}p{0.68\textwidth}|}
-\hline \textbf{Year} & \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} \\ \hline
-2024 & 452 & 113.7 & Checklist for Artificial Intelligence in Medical Imaging (CLAIM): 2024 Update. \\ \hline
-2024 & 324 & 26.4 & Chatbots and Large Language Models in Radiology: A Practical Primer for Clinical and Research Applications. \\ \hline
-2024 & 215 & 58.7 & The Image Biomarker Standardization Initiative: Standardized Convolutional Filters for Reproducible Radiomics and Enhan... \\ \hline
-2023 & 919 & 29.4 & ChatGPT and Other Large Language Models Are Double-edged Swords. \\ \hline
-2023 & 419 & 13.5 & Performance of ChatGPT on a Radiology Board-style Examination: Insights into Current Strengths and Limitations. \\ \hline
-2023 & 392 & 33.2 & Deep Learning Image Reconstruction for CT: Technical Principles and Clinical Prospects. \\ \hline
-2023 & 282 & 9.1 & Automation Bias in Mammography: The Impact of Artificial Intelligence BI-RADS Suggestions on Reader Performance. \\ \hline
-2023 & 273 & 44.4 & Potential of ChatGPT and GPT-4 for Data Mining of Free-Text CT Reports on Lung Cancer. \\ \hline
-2023 & 265 & 37.0 & MRI-based Quantification of Intratumoral Heterogeneity for Predicting Treatment Response to Neoadjuvant Chemotherapy in... \\ \hline
-2023 & 259 & 47.2 & How AI Responds to Common Lung Cancer Questions: ChatGPT vs Google Bard. \\ \hline
-2023 & 258 & 35.5 & A Guide to Cross-Validation for Artificial Intelligence in Medical Imaging. \\ \hline
-2023 & 225 & 36.2 & Predicting Microvascular Invasion in Hepatocellular Carcinoma Using CT-based Radiomics Model. \\ \hline
-\end{tabular}
-\\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 616 works, newest year first.}
-\end{frame}
-
-\begin{frame}{SPR: radiology AI works, 2023--2026}
-{\scriptsize \textbf{Society for Pediatric Radiology: Pediatric Radiology (journal)}. Radiology-AI works found, 2023--2026: 120 (2023: 27, 2024: 17, 2025: 37, 2026: 39); 70 pediatric (marked $\star$). SPR meeting abstracts are not indexed; the society's journal stands in.\par}\vspace{2pt}
-\tiny
-\renewcommand{\arraystretch}{1.0}
-\begin{tabular}{|l|r|r|>{\raggedright\arraybackslash}p{0.68\textwidth}|}
-\hline \textbf{Year} & \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} \\ \hline
-2025 & 18 & 4.6 & AI implementation in pediatric radiology for patient safety: a multi-society statement from the ACR, ESPR, SPR, SLARP,... $\star$ \\ \hline
-2025 & 17 & 27.9 & Scanner-based real-time three-dimensional brain + body slice-to-volume reconstruction for T2-weighted 0.55-T low-field... $\star$ \\ \hline
-2024 & 24 & 2.0 & Capability of multimodal large language models to interpret pediatric radiological images $\star$ \\ \hline
-2024 & 15 & -- & Artificial Intelligence vs. Doctors: Diagnosing Necrotizing Enterocolitis on Abdominal Radiographs \\ \hline
-2023 & 49 & 1.6 & Detecting pediatric wrist fractures using deep-learning-based object detection $\star$ \\ \hline
-2023 & 44 & 1.2 & Artificial intelligence to identify fractures on pediatric and young adult upper extremity radiographs $\star$ \\ \hline
-2023 & 43 & 9.7 & Deeplasia: deep learning for bone age assessment validated on skeletal dysplasias $\star$ \\ \hline
-2023 & 42 & 1.2 & Comparison of diagnostic performance of a deep learning algorithm, emergency physicians, junior radiologists and senior... \\ \hline
-2023 & 35 & 1.0 & Artificial intelligence-based detection of paediatric appendicular skeletal fractures: performance and limitations for... $\star$ \\ \hline
-2023 & 31 & 1.0 & The unintended consequences of artificial intelligence in paediatric radiology $\star$ \\ \hline
-2023 & 23 & 4.0 & Artificial Intelligence in Paediatric Tuberculosis $\star$ \\ \hline
-2023 & 20 & 4.2 & Innovative advances in pediatric radiology: computed tomography reconstruction techniques, photon-counting detector com... $\star$ \\ \hline
-\end{tabular}
-\\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 120 works, newest year first.}
-\end{frame}
-
-\begin{frame}{Which medical problems pediatric radiology AI addresses}
-\begin{center}\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{ped_problems.png}\end{center}
-\end{frame}
-
 \begin{frame}{AI fracture detection in a real pediatric emergency department}
 {\scriptsize Ziegner et al., European Radiology 2025 (second most-cited pediatric paper of 2025)\par}\vspace{2pt}
 \begin{columns}[T]
@@ -794,6 +573,31 @@ the other.}
 \end{itemize}
 \end{column}
 \end{columns}
+\end{frame}
+
+\begin{frame}{The biggest public pediatric radiology AI datasets}
+\tiny
+\renewcommand{\arraystretch}{0.92}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.21\textwidth}|l|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.21\textwidth}|>{\raggedright\arraybackslash}p{0.07\textwidth}|>{\raggedright\arraybackslash}p{0.10\textwidth}|}
+\hline \textbf{Dataset} & \textbf{Year} & \textbf{Modality} & \textbf{Size} & \textbf{Ages} & \textbf{Access} \\ \hline
+CBTN clinical MRI (Children's Brain Tumor Network) & 2023 & brain / spine tumor MRI & 23,101 exams (1,526 patients); tumor masks for 370 & pediatric & application (NCI CCDI) \\ \hline
+GRAZPEDWRI-DX & 2022 & wrist radiographs (trauma) & 20,327 images (6,091 patients) & 0.2--19 y & open \\ \hline
+RSNA Pediatric Bone Age Challenge & 2017 & hand radiographs & 14,236 images (bone age + sex) & mean 10.6 y & open (RSNA terms) \\ \hline
+FETAL\_PLANES\_DB & 2020 & fetal ultrasound (standard planes) & 12,400 images (1,792 pregnancies) & fetal & open \\ \hline
+ABCD Study & 2018-- & brain MRI, longitudinal & 11,878 participants, up to 7 follow-ups & 9--10 y at baseline & application (NBDC) \\ \hline
+PediCXR / VinDr-PCXR & 2023 & chest radiographs & 9,125 studies; 36 findings, 15 diagnoses & \textless{} 10 y & credentialed (PhysioNet) \\ \hline
+Guangzhou pediatric chest X-ray (Kermany) & 2018 & chest radiographs & 5,856 images (normal / bacterial / viral pneumonia) & 1--5 y & open \\ \hline
+ABIDE I + II (autism) & 2012 / 2016 & brain MRI (structural, resting fMRI) & 2,156 subjects & 5--64 y (mostly children) & open \\ \hline
+Regensburg Pediatric Appendicitis & 2023 & abdominal ultrasound + labs & 1,709 images (579 patients) & 0--18 y & open \\ \hline
+dHCP (Developing Human Connectome Project) & 2022--24 & neonatal + fetal brain MRI & 886 neonatal + 297 fetal datasets, with segmentations & 20--45 weeks & open (NDA) \\ \hline
+Pediatric-CT-SEG (TCIA) & 2022 & chest / abdomen / pelvis CT & 718 series (359 patients); 29 organ contours & 5 days -- 16 y & open \\ \hline
+BraTS-PEDs (pediatric brain tumor challenge) & 2023--25 & brain tumor MRI & 464 patients (2024 challenge); 1,649 series on TCIA & pediatric & registration / TCIA \\ \hline
+FeTA (fetal brain tissue annotation) & 2021--24 & fetal brain MRI & 280 volumes (120 train + 160 test); 7 tissue labels & 18--35 weeks & registration \\ \hline
+\end{tabular}
+\\[3pt]
+{\tiny Sizes verified against the primary paper or hosting page (2026-09). Only two pediatric radiograph sets exceed
+10,000 images; the largest public pediatric-only CT set has 359 patients; no RSNA pediatric challenge has run since
+bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude children.}
 \end{frame}
 
 \begin{frame}{Newsletters --- radiology AI stories, all ages}
@@ -958,13 +762,13 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
 \begin{frame}{What the field does well}
 \small
 \begin{itemize}
-  \item \textbf{Finding what is there.} Detection / diagnosis is the bulk of the literature (45\% of
+  \item \textbf{Finding what is there.} Detection / diagnosis is the bulk of the literature (44\% of
         radiology-AI papers, 46\% of pediatric); in adults it has become deployed worklist triage, the largest
         block of the 1,164 FDA-listed radiology AI devices.
   \item \textbf{Outlining and measuring.} Segmentation (26\% of papers) has open, strong defaults (nnU-Net,
         TotalSegmentator); in children the mature measurement task is bone age (RSNA challenge: 4.2-month error,
         several cleared products), and measurement / quantification is 22\% of pediatric papers.
-  \item \textbf{Better images from less dose.} Reconstruction / imputation is 23\% of radiology AI and
+  \item \textbf{Better images from less dose.} Reconstruction / imputation is 22\% of radiology AI and
         12\% of pediatric work; deep-learning reconstruction is on today's scanners and cut pediatric CT dose
         by about half at equal or better image quality.
   \item \textbf{Shared benchmarks where they exist.} Fetal and neonatal brain MRI (FeTA, dHCP) and pediatric brain
@@ -976,7 +780,7 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
 \begin{frame}{Bleeding edge}
 \small
 \begin{itemize}
-  \item \textbf{Foundation and vision-language models}: 7.2\% of radiology-AI papers (3.9\% pediatric);
+  \item \textbf{Foundation and vision-language models}: 7.2\% of radiology-AI papers (4.0\% pediatric);
         segment-anything style tools (MedSAM) and generalist radiology models are replacing task-specific training.
   \item \textbf{Report generation and LLMs}: 3.8\% of papers; drafting and extracting from reports, with
         fluency ahead of reliability.
@@ -994,8 +798,8 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
 \begin{frame}{Open problems --- where a children's hospital could contribute}
 \footnotesize
 \begin{itemize}
-  \item \textbf{Which diseases?} Since 2023 the pediatric corpus (6,723 papers) leans to
-        autism / ADHD / neurodevelopment (697); fetal anomalies / prenatal (534); brain tumors (325); congenital heart disease / cardiac (295). Barely studied: testicular / ovarian torsion (8); inflammatory bowel disease (22); lines and tubes / NICU support devices (54); neonatal jaundice / biliary atresia / liver (56); craniosynostosis / craniofacial (72); appendicitis / intussusception / NEC (72). Which of these deserve a model first is an open question for
+  \item \textbf{Which diseases?} Since 2023 the pediatric corpus (6,812 papers) leans to
+        autism / ADHD / neurodevelopment (710); fetal anomalies / prenatal (541); brain tumors (337); congenital heart disease / cardiac (302). Barely studied: testicular / ovarian torsion (8); inflammatory bowel disease (23); lines and tubes / NICU support devices (54); neonatal jaundice / biliary atresia / liver (56); craniosynostosis / craniofacial (72); chronic lung disease of prematurity / neonatal lung (74). Which of these deserve a model first is an open question for
         this group.
   \item \textbf{Dataset curation.} What would a multi-center pediatric dataset look like: age-stratified, consented,
         protocol-diverse, with rare phenotypes? Which of our own archives (CT, ultrasound, NICU radiographs) could
@@ -1023,6 +827,38 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
   \item \textbf{Invest in data}: a curated, shareable pediatric dataset is the scarcest resource in the field and the
         contribution a children's hospital is uniquely placed to make.
 \end{enumerate}
+\end{frame}
+
+\begin{frame}{An independent scoping review of pediatric radiology AI}
+\scriptsize
+Kamran et al., \textit{Pediatric Radiology} 2026 (doi 10.1007/s00247-025-06462-5): 789 original pediatric-focused
+articles hand-screened from four databases, 2005 to August 2024. Our PubMed counts are larger because they include any
+paper that mentions a pediatric term.
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+  \item \textbf{Modality}: radiography 38\%, MRI 33\%, ultrasound 14\%, CT 11\%, nuclear 2\%. Our pediatric query
+        ranks MRI first (MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 12\%) because MRI-heavy neurodevelopment papers mention children.
+  \item \textbf{Subspecialty}: musculoskeletal 33\%, neuro 29\%, chest 17\%, body 14\%, cardiac 6\%.
+  \item \textbf{Top applications}: bone age (88 articles), pneumonia (65), brain tumors (54), scoliosis (45),
+        hip dysplasia (28), congenital heart disease (25), autism (18), epilepsy (14), ADHD (9), hydrocephalus (9).
+  \item \textbf{Use of AI}: 91\% image interpretation / diagnosis; 5.6\% image quality; under 2\% for
+        acquisition, communication, protocoling, education, and policy combined.
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+  \item \textbf{Data}: 65\% used a single local hospital dataset; 7\% did not report the dataset;
+        China 28\%, USA 25\%, Canada 7\% of articles.
+  \item \textbf{Growth}: 23 articles in 2018, 158 in 2022, 171 in 2023, consistent with our PubMed curve.
+  \item \textbf{Recommendations}: multi-institutional, age-diverse pediatric datasets; CLAIM-style reporting with
+        subgroup results and calibration; funding for the neglected non-interpretive areas (policy, education,
+        implementation); children and families as stakeholders across the AI lifecycle.
+  \item \textbf{What it adds to this deck}: the same three leading tasks (bone age, pneumonia, brain tumor) and the
+        same gap (small local datasets, adult tools applied to children) reached by a manual review.
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
 \end{document}

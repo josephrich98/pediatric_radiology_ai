@@ -152,8 +152,10 @@ def build_popularity_report() -> list[str]:
     if preprints.get("yearly"):
         yr = str(config.END_YEAR - 1)
         L.append(
-            "_Publication counts are **PubMed records plus preprints**: PubMed does not index arXiv, so the "
-            "same queries, translated to arXiv API syntax, add the arXiv preprint layer: "
+            "_Publication counts are **PubMed records plus preprints**: PubMed does not index arXiv and "
+            "covers medRxiv only through the NIH preprint pilot, so the same queries, translated to arXiv "
+            "API and Europe PMC (medRxiv) syntax, add the arXiv + medRxiv preprint layer (bioRxiv not "
+            "searched): "
             f"{int(preprints['yearly'].get('radiology_ai', {}).get(yr, 0)):,} radiology-AI and "
             f"{int(preprints['yearly'].get('pediatric_radiology_ai', {}).get(yr, 0)):,} pediatric preprints in {yr}. "
             "The preprint query is an approximation (no MeSH expansion, stemming instead of truncation)._\n"

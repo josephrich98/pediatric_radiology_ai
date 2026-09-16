@@ -684,8 +684,8 @@ TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
 \begin{frame}{Methods}
 \tiny
 \textbf{Academic output.} \textbf{PubMed} (E-utilities) yearly counts per query and per modality/task term group,
-plus \textbf{preprints} (OpenAlex \texttt{type:preprint}: arXiv, medRxiv, bioRxiv, \dots) counted with the same
-queries, because PubMed does not index arXiv (@@pre_rad_latest@@ radiology-AI preprints in @@yr1@@).
+plus \textbf{preprints} (\textbf{arXiv API} and \textbf{medRxiv via Europe PMC}) counted with the same
+queries, because PubMed does not index arXiv and covers medRxiv only partially (@@pre_rad_latest@@ radiology-AI preprints in @@yr1@@).
 \textbf{Most-cited papers} from OpenAlex (union of modality/task searches, deduped, articles and preprints):
 one list for @@era_a@@, then one per year from 2023, each showing raw citations and the field-weighted citation
 impact (FWCI, 1 = world average for that field and year), so recent papers are not buried under 2023 ones.
@@ -719,16 +719,6 @@ NOT (``optical coherence'' OR fundus OR dental OR histopatholog* \dots))
 
 \begin{frame}{Radiology AI publication counts}
 @@fig_trend@@
-\end{frame}
-
-\begin{frame}{Radiology AI publications, stratified by modality and task}
-@@fig_mod_task@@
-\vspace{-6pt}
-{\tiny Bar = percentage of radiology-AI papers (@@rad_total@@ = @@rad_pub_total@@ PubMed + @@rad_pre_total@@ preprints, @@yr0@@--present) whose title/abstract names the modality;
-segments = which task terms those papers use (overlapping). What each task means, by what the model produces:}
-\vspace{-2pt}
-\tiny
-@@task_gloss@@
 \end{frame}
 
 \begin{frame}{Pediatric radiology AI publications, stratified by modality and task}

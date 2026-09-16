@@ -85,11 +85,21 @@ The questions it answers:
     leaves the files alone. `translate_pubmed_query` (PubMed boolean ->
     search syntax) is shared with `arxiv.py`. Do not put OpenAlex searches
     back into the collectors: 100 searches a day is not enough for one pull.
-  - `arxiv.py` — the **preprint layer** for the count-based views: the same
-    PubMed queries translated to arXiv API syntax (`all:` terms, `ANDNOT`,
-    `submittedDate` by year), `count` / `yearly_counts` / `crosstab` /
-    `problem_counts` in the PubMed shapes (see `collect_preprints.py`);
-    `paper_meta` resolves an arXiv id for the newsletter citations.
+  - `arxiv.py` — half of the **preprint layer** for the count-based views (the
+    other half is `medrxiv.py`): the same PubMed queries translated to arXiv
+    API syntax (`all:` terms, `ANDNOT`, `submittedDate` by year), `count` /
+    `yearly_counts` / `crosstab` / `problem_counts` in the PubMed shapes (see
+    `collect_preprints.py`); `paper_meta` resolves an arXiv id for the
+    newsletter citations.
+  - `medrxiv.py` — the other half of the **preprint layer**: the same PubMed
+    queries translated to Europe PMC syntax (`SRC:PPR AND PUBLISHER:"medRxiv"`,
+    `(TITLE:term OR ABSTRACT:term)`, `PUB_YEAR` by year — the medRxiv/bioRxiv
+    API itself has no keyword search), same `count` / `yearly_counts` /
+    `crosstab` / `problem_counts` shapes as `arxiv.py`. bioRxiv is not
+    searched: the count-based preprint layer is arXiv + medRxiv only.
+    `collect_preprints.py` runs both and writes their sum as the top-level
+    `yearly`/`crosstab`/`problems` in `preprint_counts.json`, keeping each
+    source's own counts under `by_source`.
   - `conferences.py` — ML/CV venues via DBLP (radiology share) and radiology
     societies via their journals (AI share). DBLP throttles hard; the collector
     paces gently and skips fast on failure. `collect_venue_works` builds the
@@ -219,7 +229,7 @@ python scripts/run_all.py --quick    # headline PubMed queries only (fast)
 
 # or one source at a time
 python scripts/collect_pubmed.py
-python scripts/collect_preprints.py     # arXiv preprint layer for the count-based views (~400 requests)
+python scripts/collect_preprints.py     # arXiv + medRxiv preprint layer for the count-based views (~800 requests; --source to run just one)
 python scripts/collect_landscape.py     # most-cited papers: overall, per era, per year (2023-), Semantic Scholar
 python scripts/enrich_fwci.py           # FWCI from OpenAlex by DOI, batched (after landscape + conferences)
 python scripts/collect_journals.py     # papers per journal per year + journal impact (the impact scatter)
@@ -459,12 +469,16 @@ Rules now in force in `config.py`:
   counts favor old papers: inside a 2023-present window every top-10 row was
   from 2023. The slides show the 2008-2022 table, then one slide per year with
   citations, FWCI and venue (preprints marked).
-- **Preprints.** PubMed does not index arXiv, so `collect_preprints.py` counts
-  arXiv papers with the same queries (translated) in the same shapes
-  (`preprint_counts.json`: yearly, crosstab, problems).
-  `analysis.add_preprints` / `merge_crosstab` / `merge_problems` add the two
-  layers; figures, slides and reports all use the merged numbers and say so.
-  The translation is approximate (stemming instead of truncation, no MeSH), so
+- **Preprints.** PubMed does not index arXiv and covers medRxiv only through
+  the NIH preprint pilot, so `collect_preprints.py` counts arXiv (arXiv API)
+  and medRxiv (Europe PMC, restricted to `PUBLISHER:"medRxiv"`) papers with the
+  same queries (translated) in the same shapes, and sums the two into the
+  top-level `yearly`/`crosstab`/`problems` of `preprint_counts.json`
+  (per-source counts kept under `by_source`). bioRxiv is not part of this
+  layer. `analysis.add_preprints` / `merge_crosstab` / `merge_problems` add the
+  preprint layer to PubMed; figures, slides and reports all use the merged
+  numbers and say so ("arXiv + medRxiv"). The translation is approximate
+  (stemming instead of truncation, no MeSH), so
   preprint counts are indicative. The most-cited and venue tables include
   preprints natively (Semantic Scholar indexes arXiv and medRxiv).
 - `pubmed.crosstab` builds the modality x task tables with one date-range
