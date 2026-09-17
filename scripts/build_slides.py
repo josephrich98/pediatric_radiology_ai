@@ -247,6 +247,16 @@ def venue_frames(works):
     frames = []
     for name, v in works.items():
         rows = sorted(v.get("works", [])[:12], key=lambda w: (w.get("year") or 0, w.get("citation_count", 0)), reverse=True)
+        # Pediatric papers on the acceptance list that the citation ranking left
+        # out go in as extra rows at the bottom, so a venue's few are never hidden.
+        key = lambda t: re.sub(r"[^a-z0-9]", "", (t or "").lower())
+        shown = {key(w.get("title")) for w in rows}
+        indexed = {key(w.get("title")): w for w in v.get("works", [])}
+        for pw in v.get("pediatric_works") or []:
+            if key(pw["title"]) not in shown:
+                title = pw["title"].title() if pw["title"].isupper() else pw["title"]
+                rows.append({**indexed.get(key(pw["title"]), {"citation_count": None}),
+                             "title": title, "year": pw["year"], "pediatric": True})
         yrs = v.get("years", [config.VENUE_WORKS_START, config.END_YEAR])
         by_year = ", ".join(f"{y}: {n}" for y, n in sorted(v.get("by_year", {}).items()))
         found = "accepted (from the meeting's paper list)" if v.get("count_source") else "found"
@@ -261,7 +271,8 @@ def venue_frames(works):
                    "\\hline \\textbf{Year} & \\textbf{Cites} & \\textbf{FWCI} & \\textbf{Paper} \\\\ \\hline"]
             for w in rows:
                 star = " $\\star$" if w.get("pediatric") else ""
-                out.append(f"{w.get('year')} & {w.get('citation_count', 0):,} & {_fwci(w)} & {_tex(w.get('title') or '')}{star} \\\\ \\hline")
+                cites = "--" if w.get("citation_count") is None else f"{w['citation_count']:,}"
+                out.append(f"{w.get('year')} & {cites} & {_fwci(w)} & {_tex(w.get('title') or '')}{star} \\\\ \\hline")
             out.append("\\end{tabular}")
             body = _fit(out, 0.60)
         src = "Semantic Scholar venue search, citations and FWCI from OpenAlex" if v.get("kind") == "s2" else "OpenAlex, restricted to the society's journals"
