@@ -16,6 +16,8 @@ request with the results.
 | [04_paper_database.md](04_paper_database.md) | The systematic review's corpus, read one paper at a time: model, modality, population, task, dataset, validation, availability, and citation impact. Same studies as the manuscript. |
 | [05_review_manuscript.md](05_review_manuscript.md) | Landscape/scoping review: historical trends, modalities, clinical topics, ages, shared datasets, open models, 2025–2026 developments, and research opportunities. [Supplement](05_review_supplement.md) contains search and eligibility methods. |
 | [05_landscape_analysis.md](05_landscape_analysis.md) | Reproducible era/topic/dataset tables, publication-version audit, and title-collapse sensitivity. Generated with `PYTHONPATH=. python scripts/build_landscape_review.py`; the manuscript prose requires editorial updates after a refresh. |
+| [05_dissemination_analysis.md](05_dissemination_analysis.md) | Separate publication-source, journal-output, conference, and news analyses (Tables D1–D4), with queries and source provenance. `PYTHONPATH=. python scripts/build_review_context.py` generates these tables and the four context figures without changing the screened cohort. |
+| [fda_pediatric_inventory.md](fda_pediatric_inventory.md) | Dated, source-exhaustive screen of every Radiology-panel record in the FDA AI-enabled-device CSV for pediatric/fetal labeling signals, with submission-level evidence and review flags. |
 | [06_search_strategy.md](06_search_strategy.md) | How the review's search was built and validated. |
 | [references.bib](references.bib) | BibTeX for every cited paper, resolved through doi2bib. |
 
@@ -52,3 +54,8 @@ data tables are in [`../data/processed/`](../data/processed).
   reason, and are not in the exported CSV.
 - Patent counts require a free PatentsView API key (`PATENTSVIEW_API_KEY`); without
   one that section reports zero.
+- The FDA pediatric inventory is exhaustive only for the dated FDA CSV snapshot
+  saved under `data/raw/fda_pediatric_inventory/`; FDA states that its public AI
+  list is not comprehensive. Keyword-positive records still require confirmation
+  against the current decision summary and labeling, and unavailable/scan-only
+  documents are flagged in the inventory.

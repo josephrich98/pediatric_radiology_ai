@@ -24,6 +24,7 @@ db: /home/jrich/Desktop/pediatric_radiology_ai/data/processed/pediatric_radiolog
 manuscript: /home/jrich/Desktop/pediatric_radiology_ai/reports/05_review_manuscript.md
 spr abstract: /home/jrich/Desktop/pediatric_radiology_ai/reports/07_spr_abstract.md
 Kamran review paper: /home/jrich/Desktop/pediatric_radiology_ai/reference.pdf, /home/jrich/Desktop/pediatric_radiology_ai/reference_supplement.pdf
+database UI: https://dist-4nvdgldu1-josephrich98s-projects.vercel.app
 
 ## AI slop:
 

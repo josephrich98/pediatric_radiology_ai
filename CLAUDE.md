@@ -208,6 +208,20 @@ The questions it answers:
     well-known repository is, and the "worth knowing" list.
   - `doi2bib.py` — DOI → BibTeX via doi.org content negotiation (see "Adding
     References" below).
+- `web/` — the static database website (`index.html`, `app.js`, `search.js`):
+  one tab each for articles (the unified paper table, with presets for included
+  studies / journal articles / preprints / conference papers), open-source
+  software (GitHub leaderboards plus code links stated in papers), newsletters,
+  commercial (curated pediatric products, one row per company product, and the
+  FDA radiology device list) and datasets. `scripts/build_site.py` snapshots
+  `data/processed` into `dist/data/*.json` and copies `web/` next to it; search
+  (boolean, `field:value`, `field:="exact"`, `year>=2024`, `field:*`), sort,
+  column choice and CSV export run in the browser, so `dist/` can be served by
+  any static host. `dist/` is gitignored; rebuild it rather than editing it.
+  `PRODUCT_SPLITS` in the builder splits grouped `COMMERCIAL_PEDIATRIC` entries
+  into per-company rows; `tests/test_build_site.py` fails if a config edit
+  orphans a split. Adding a column to a data file also needs a column entry in
+  `web/app.js`.
 - `scripts/` — runnable CLI entry points. `run_all.py` runs the whole pipeline;
   individual `collect_*.py` scripts run one source; `make_figures.py` and
   `build_reports.py` produce the deliverables.
@@ -256,6 +270,7 @@ python scripts/build_reports.py
 python scripts/build_slides.py      # writes slides/pedrad_ai_slides.tex
 cd slides && latexmk -xelatex pedrad_ai_slides.tex   # compile the Beamer deck (XeLaTeX: Helvetica Neue)
 python scripts/build_pptx.py        # editable PowerPoint version of the same deck (needs python-pptx)
+python scripts/build_site.py        # static database website -> dist/ (preview: cd dist && python -m http.server 8000)
 ```
 
 The Beamer deck (`slides/`) is generated from the same processed data, so its

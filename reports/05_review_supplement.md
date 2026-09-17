@@ -4,7 +4,7 @@
 
 **Authors:** Joseph Rich, Amit Sura
 
-**Scope of this supplement:** The existing search and eligibility protocol supports the landscape synthesis. The September 11, 2026 analysis preserves the current 3,496 included-record cohort. Unresolved duplicate entries and publication versions prevent interpreting this as a verified count of independent studies. The complete new era, topic, dataset-mention, and duplicate-audit tables are in [Landscape analysis, Tables L1–L6](05_landscape_analysis.md).
+**Scope of this supplement:** The existing search and eligibility protocol supports the landscape synthesis. The September 11, 2026 analysis preserves the current 3,496 included-record cohort. Unresolved duplicate entries and publication versions prevent interpreting this as a verified count of independent studies. The complete era, topic, dataset-mention, and duplicate-audit tables are in [Landscape analysis, Tables L1–L6](05_landscape_analysis.md). Separate contextual analyses added September 16, 2026 describe publication sources, journals, conference acceptance lists, and news archives; they do not change cohort eligibility or membership. Their numerical tables, queries, classification rules, and source-file fingerprints are in [Dissemination analysis, Tables D1–D4](05_dissemination_analysis.md).
 
 ## Supplementary Table S1. Information sources and complete search strategies
 
@@ -173,6 +173,44 @@ For publication-version sensitivity, titles are lowercased and stripped of non-a
 
 The shared selection figure displays the existing pipeline flow. The final box should be interpreted as included records pending publication-version reconciliation, as described above.
 
+## Supplementary methods: publication and dissemination context
+
+These post hoc descriptive analyses address where the field publishes and attracts attention. They are separate from the primary-study evidence map and were not used to select studies or establish clinical effectiveness. Existing archived data were analyzed offline on September 16, 2026; no new primary-study screening was performed.
+
+**Publication sources (main Fig. 2; Table D1).** Broad PubMed queries for radiology, AI, and pediatric populations were evaluated by publication year from 2008. These queries include PubMed's term mapping and differ from the title/abstract-only review search above. Approximate translations were queried through the arXiv API (`all:` fields; submission year) and Europe PMC (`SRC:PPR AND PUBLISHER:"medRxiv"`; title or abstract terms; publication year). bioRxiv was not searched. Query translations cannot reproduce MeSH expansion or identical field behavior. PubMed's companion summary records September 7, 2026, and the preprint aggregate records September 16, 2026; these dates do not establish when every cached response was collected. Sources are plotted separately because PubMed, preprints, and later journal versions have not been linked and deduplicated. Counts include publication types excluded from the main cohort. The full queries and current translation definitions are retained in the dissemination analysis.
+
+**Journal output (main Fig. 3; Table D2).** A separate, narrower title/abstract query retrieved PubMed records by year from 2015 through 2026, excluding retraction publication types. It did not apply the primary-study screening criteria. Journal titles and ISSNs were extracted from PubMed metadata. Aliases matched to the same OpenAlex source identifier were merged by the collector; unmatched source labels can remain distinct. The stored inventory contains 5,099 records across 1,061 source labels, including some proceedings and preprint sources. The figure shows the twelve journals with the largest record totals, ordered by descending count with alphabetical tie-breaking; it separates 2026 from earlier years. All twelve are journals. OpenAlex citedness values used in the presentation were omitted from the manuscript figure because journal-level metrics do not appraise individual studies. The journal aggregate has no recorded collection timestamp; its file fingerprint identifies the exact snapshot analyzed.
+
+**Conference context (Fig. S2; Table D3).** We used the stored counts from accepted-paper lists for NeurIPS, ICLR, ICML, CVPR, MICCAI, and MIDL, 2023–2026. Source sites were the meetings' official lists, CVF Open Access for CVPR, and PMLR for MIDL. Title rules require medical, imaging, and AI signals and exclude specified non-radiologic domains; a further title rule identifies pediatric or fetal terms. This is not an abstract-screened census of pediatric investigations. Generic method titles and titles omitting patient age can be missed, while keyword matches may be ineligible under the review criteria. Missing lists are unavailable rather than zero; 2026 coverage differs across meetings. These counts are distinct from the project's older DBLP samples and citation-ranked Semantic Scholar examples. RSNA and SPR journal proxies were not included as conference observations. The conference aggregate lacks an explicit collection timestamp. Proceedings remain excluded from the main review cohort, and a conference paper may overlap a preprint or later journal publication.
+
+**News context (Fig. S3; Table D4).** Seven accessible news archives were retrieved using WordPress APIs, an archive-page adapter, dated daily pages, or RSS. Issues were split at story boundaries; pediatric and AI terms had to co-occur within a story, with imaging terms additionally required for sources not specific to imaging. Repeated titles were deduplicated by the collector, but different coverage of the same study or product can remain. The stored snapshot is dated September 9, 2026. Matches were not independently adjudicated for this analysis and can reflect incidental population references, sponsor text, or a story covering several subjects. Counts therefore describe automated matches in retrieved archives, not verified news events, uptake, readership, or market share.
+
+| News source | Retrieved archive dates | Important coverage constraint |
+|:--|:--|:--|
+| The Imaging Wire | March 22, 2018–September 2, 2026 | Digest-story segmentation and keyword matches; sponsor text can contribute false positives |
+| RSNA News | January 1, 2014–September 1, 2026 | Bodies retrieved only when titles already contain pediatric or AI terms |
+| TLDR AI | January 2, 2024–September 9, 2026 | Daily-page enumeration begins in 2024; earlier years unavailable |
+| TLDR Tech | January 2, 2024–September 9, 2026 | Same enumeration limit; zero pediatric matches in retrieved items |
+| Signify Research | May 16, 2017–August 10, 2026 | Retrieved public archive only |
+| ESR / ECR | February 14, 2019–August 31, 2026 | Public society news and blog coverage |
+| Radiology Business | August 11–September 9, 2026 | Recent RSS items only; no historical comparison |
+
+AuntMinnie and Diagnostic Imaging blocked automated access; Health Imaging's RSS feed exposed no items; RSNA email-only AI newsletters had no public archive. Zero denotes no matches among retrieved items, not absence of coverage in the wider outlet. Available archive start and end dates do not prove complete retrieval between those dates. Source coverage and editorial selection prevent comparing annual totals as if they were a stable surveillance panel.
+
+**Interpretation of prominent sources.** Journal volume, conference title matches, and news matches were summarized within their respective sources and periods. Citation and field-normalized-impact leaderboards, GitHub-star rankings, and company-level device totals from the presentation were not added as effectiveness rankings. Existing manuscript Tables 2–4 instead identify resources and illustrative studies by their purpose and evidence. The analyses do not test whether dissemination predicts subsequent clinical use.
+
+## Supplementary figure S2. Radiology-AI title matches at selected conferences
+
+![Conference title matches and the pediatric subset](../figures/review_conference_context.png)
+
+Panel A shows radiology-AI title matches in retrieved accepted-paper lists; panel B shows the pediatric subset, 2023–2026. Each cell displays a raw count; panel color scales differ. NA denotes no retrieved acceptance list, including 2026 NeurIPS and MICCAI in this snapshot. Zero denotes no title matches within an available list. Counts are neither a complete census of pediatric research nor part of the screened primary-study denominator. The lists and title rules differ from PubMed retrieval and do not establish comparative research quality. Exact counts and retrieved-list denominators are in Table D3.
+
+## Supplementary figure S3. Pediatric radiology-AI matches in news archives
+
+![Automated pediatric radiology-AI story matches by news source and year](../figures/review_news_context.png)
+
+Raw automated story matches by source, 2023 through the September 9, 2026 news snapshot. NA denotes no retrieved source-year coverage; zero denotes no matches in retrieved items. Archive depth and screening vary substantially; Radiology Business contributes recent RSS items only. Matches may include incidental pediatric references and sponsor material and were not independently adjudicated. Neither between-source counts nor year-to-year totals establish readership, market share, clinical adoption, or a trend in the entire trade press. Coverage details and counts are in Table D4.
+
 ## Reproducing the landscape outputs
 
 From the repository root, using the committed data and installed project dependencies:
@@ -181,9 +219,10 @@ From the repository root, using the committed data and installed project depende
 PYTHONPATH=. python scripts/review_stats.py
 PYTHONPATH=. python scripts/make_review_figures.py
 PYTHONPATH=. python scripts/build_landscape_review.py
+PYTHONPATH=. python scripts/build_review_context.py
 pandoc --resource-path=reports reports/05_review_manuscript.md -o reports/05_review_manuscript_european_radiology.docx
 pandoc --resource-path=reports reports/05_review_supplement.md -o reports/05_review_supplement_european_radiology.docx
 pandoc reports/05_landscape_analysis.md -o reports/05_landscape_analysis.docx
 ```
 
-These commands perform no new literature search or model extraction. The new script creates topic–modality, age–modality, and recent-task figures as PNG and vector PDF, as well as Tables L1–L6. The narrative is an authored snapshot and needs editorial review after a data refresh; regenerating statistics does not rewrite it automatically.
+These commands perform no new literature search or model extraction. The landscape script creates topic–modality, age–modality, and recent-task figures as PNG and vector PDF, as well as Tables L1–L6. The context script creates four additional PNG/PDF figures, Tables D1–D4, query and classification-rule documentation, and `data/processed/review_context_manifest.json` with source-file SHA-256 fingerprints. The narrative is an authored snapshot and needs editorial review after a data refresh; regenerating statistics does not rewrite it automatically.

@@ -586,6 +586,31 @@ def commercial_footnote(fda):
     )
 
 
+def fda_pediatric_inventory_frames(inv):
+    """Appendix frames for every candidate from the dated FDA screen."""
+    if not inv:
+        return ""
+    rows = inv.get("records", [])
+    groups = [("label-positive candidates", [r for r in rows if r.get("status") == "label-positive-candidate"]),
+              ("needs label review", [r for r in rows if r.get("status") != "label-positive-candidate"])]
+    frames = [r"\begin{frame}[category=FDA appendix]{FDA pediatric-use inventory: scope}", r"\scriptsize\begin{itemize}",
+              f"\\item Screened all {inv.get('records_screened', 0):,} Radiology-panel records in the FDA AI-device CSV downloaded 2026-09-16.",
+              f"\\item {len(rows)} records had pediatric/fetal keywords; {sum(r.get('status') == 'label-positive-candidate' for r in rows)} are label-positive candidates.",
+              "\\item This is exhaustive for the dated FDA-list snapshot, not for the commercial market: FDA says its AI list is not comprehensive. Repeated submissions are retained so the result is auditable.",
+              "\\item Candidate status is a keyword screen of linked decision-summary PDFs. Confirm the current authorization and full labeling before purchase.",
+              r"\end{itemize}", r"\vspace{5pt}\tiny Source: \texttt{data/processed/fda\_pediatric\_inventory.json}; evidence pages are retained per submission.", r"\end{frame}"]
+    for label, group in groups:
+        for start in range(0, len(group), 20):
+            chunk = group[start:start+20]
+            lines = [r"\begin{tabular}{|p{0.12\textwidth}|p{0.10\textwidth}|p{0.20\textwidth}|p{0.46\textwidth}|p{0.08\textwidth}|}",
+                     r"\hline \textbf{Submission} & \textbf{Date} & \textbf{Company} & \textbf{Device} & \textbf{Code} \\\\ \hline"]
+            for r in chunk:
+                lines.append(f"{_tex(r['submission'])} & {_tex(r['decision_date'])} & {_tex(r['company'])} & {_tex(r['device'])} & {_tex(r['product_code'])} \\\\ \\hline")
+            lines.append(r"\end{tabular}")
+            frames.extend([f"\\begin{{frame}}[category=FDA appendix]{{FDA pediatric-use inventory: {label} ({start+1}--{start+len(chunk)} of {len(group)})}}", _fit(lines, 0.78), r"\end{frame}"])
+    return "\n".join(frames)
+
+
 def worth_knowing_items():
     return "\n".join(f"\\item \\textbf{{{_tex(n)}}} ({_tex(k)}): {_tex(w)}" for n, k, w in curated.WORTH_KNOWING)
 
@@ -692,6 +717,7 @@ def main() -> None:
     news = _load("newsletter_summary.json", {})
     news_items = _load("newsletter_items.json", [])
     fda = _load("fda_ai_devices.json", {})
+    fda_pediatric = _load("fda_pediatric_inventory.json", {})
     journals = _load("journal_impact.json", {})
     rstats = _load("review_stats.json", {})
     rrows = review_rows()
@@ -777,6 +803,7 @@ def main() -> None:
         "@@n_ped_news@@": str(n_ped_news),
         "@@commercial_table@@": commercial_table(fda),
         "@@commercial_footnote@@": commercial_footnote(fda),
+        "@@fda_pediatric_inventory_frames@@": fda_pediatric_inventory_frames(fda_pediatric),
         "@@worth_knowing@@": worth_knowing_items(),
         "@@fda_rad@@": f"{fda_rad:,}",
         "@@ped_mod_bullets@@": modality_bullets(counts, "ped_modality", "pediatric_radiology_ai"),
@@ -1075,6 +1102,8 @@ the other.}
 \\[4pt]
 @@commercial_footnote@@
 \end{frame}
+
+@@fda_pediatric_inventory_frames@@
 
 \begin{frame}{Worth knowing as a radiologist --- and why}
 \scriptsize

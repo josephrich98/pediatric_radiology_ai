@@ -169,7 +169,8 @@ def software(article_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             host = re.sub(r"^https?://(www\.)?", "", link).split("/")[0]
             row = rows.get(key)
             if row is None:
-                name = key.split("/", 1)[1] if key.startswith("github.com/") else key
+                m = re.search(r"github\.com/([^/]+/[^/#?]+)", link, re.I)
+                name = re.sub(r"\.git$", "", m.group(1)) if m else re.sub(r"^https?://(www\.)?", "", link).rstrip("/")
                 row = rows[key] = {
                     "name": name, "url": link.rstrip("/"), "host": "GitHub" if "github.com" in host else host,
                     "stars": None, "forks": None, "language": "", "description": "",
@@ -250,7 +251,8 @@ PRODUCT_SPLITS: dict[tuple[str, str], list[dict[str, str]]] = {
         {"product": "qXR family", "modality": "x-ray",
          "task": "Chest X-ray detection / triage, TB screening, tube / heart measurements"},
         {"product": "qER family", "modality": "CT",
-         "task": "Head CT triage / quantification and CTA LVO"},
+         "task": "Head CT triage / quantification and CTA LVO",
+         "pediatric": "US eligibility varies by module"},
     ],
     ("Aidoc / Viz.ai", "BriefCase, Viz LVO / ICH"): [
         {"vendor": "Aidoc", "product": "BriefCase", "fda_company": "Aidoc",

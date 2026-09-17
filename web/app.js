@@ -93,7 +93,7 @@
   ];
 
   const SOFTWARE_COLS = [
-    { key: "name", label: "Repository", show: true, cls: "nobreak", render: (r) => `<b>${link(r.url, r.name)}</b>` },
+    { key: "name", label: "Repository", show: true, cls: "repo-cell", render: (r) => `<b>${link(r.url, r.name)}</b>` },
     { key: "stars", label: "Stars", type: "num", show: true, cls: "num", render: (r) => fmtInt(r.stars) },
     { key: "forks", label: "Forks", type: "num", cls: "num", render: (r) => fmtInt(r.forks) },
     { key: "description", label: "Description", show: true, cls: "wide", render: (r) => clamp(r.description) },
@@ -306,6 +306,8 @@
       const count = t.id === "commercial" ? (META ? META.counts.products : "") : n;
       return `<button role="tab" data-tab="${t.id}" class="${t.id === state.tab ? "active" : ""}">${esc(t.label)}<span class="count">${count ? Number(count).toLocaleString() : ""}</span></button>`;
     }).join("");
+    const active = $("tabs").querySelector("button.active");
+    if (active && $("tabs").scrollWidth > $("tabs").clientWidth) active.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
 
   function renderPresets() {

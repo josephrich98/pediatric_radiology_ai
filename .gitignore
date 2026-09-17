@@ -11,6 +11,9 @@ venv/
 
 # HTTP cache and bulky raw pulls are regenerated; do not commit them.
 data/raw/cache/
+# Reproducible FDA authorization downloads; keep the dated CSV and source metadata.
+data/raw/fda_pediatric_inventory/*/documents/
+data/raw/fda_pediatric_inventory/*/text/
 data/raw/*.json
 
 # Processed datasets and figures ARE committed — they are the evidence behind

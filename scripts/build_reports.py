@@ -15,6 +15,7 @@ collected data so the prose stays consistent with the numbers.
 
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
 
 from pedrad_ai import analysis, config, doi2bib, utils
@@ -439,6 +440,48 @@ def _commercial_section() -> list[str]:
     return L
 
 
+def _fda_pediatric_inventory_section() -> list[str]:
+    """Source-exhaustive FDA Radiology-panel pediatric-use screen."""
+    inv = _load("fda_pediatric_inventory.json", {})
+    if not inv:
+        return []
+    rows = inv.get("records", [])
+    screening = _load("fda_pediatric_screening.json", {})
+    retrieval = screening.get("records", []) if isinstance(screening, dict) else []
+    retrieval_counts = Counter(r.get("retrieval_status") for r in retrieval)
+    positive = [r for r in rows if r.get("status") == "label-positive-candidate"]
+    review = [r for r in rows if r.get("status") != "label-positive-candidate"]
+    L = ["## FDA pediatric-use inventory (source-exhaustive screen)\n"]
+    L.append(
+        "This appendix screens **all 1,230 records in the Radiology lead panel** of the FDA AI-enabled-device "
+        "CSV downloaded 2026-09-16. Each linked FDA decision-summary PDF was downloaded when available and its "
+        "intended-use text searched for pediatric, fetal, infant, neonatal, child, adolescent, and pregnancy terms. "
+        "A *label-positive candidate* has a direct patient-population or intended-use statement; a *needs label review* "
+        "record contains a conflicting, exclusionary, validation-only, or ambiguous mention. This is exhaustive for the "
+        "dated FDA-list snapshot, not a claim that the FDA list itself captures every AI device. See the [screening dataset](../data/processed/fda_pediatric_inventory.json) and [collector](../scripts/collect_fda_pediatric_inventory.py).\n"
+    )
+    L.append(f"- {len(rows)} records had a pediatric/fetal keyword in extracted evidence.")
+    L.append(f"- {len(positive)} are label-positive candidates; {len(review)} require manual label review.")
+    L.append(f"- Evidence text was available for {retrieval_counts.get('text_available', 0):,} records; {retrieval_counts.get('needs_ocr', 0)} need OCR and {retrieval_counts.get('unavailable', 0)} linked documents were unavailable.")
+    L.append(f"- {inv.get('records_screened', 0):,} Radiology-panel records were in the source CSV; {inv.get('source_csv')}.\n")
+    L.append("### Label-positive candidates\n")
+    L.append("| Submission | Decision date | Company | Device | Product code | Evidence pages |")
+    L.append("|:--|:--|:--|:--|:--|:--:|")
+    for r in positive:
+        dev = (r["device"] or "").replace("|", "/")
+        comp = (r["company"] or "").replace("|", "/")
+        L.append(f"| {r['submission']} | {r['decision_date']} | {comp} | {dev} | {r['product_code']} | {', '.join(map(str,r.get('evidence_pages',[])))} |")
+    L.append("\n### Needs label review\n")
+    L.append("| Submission | Decision date | Company | Device | Why retained |")
+    L.append("|:--|:--|:--|:--|:--|")
+    for r in review:
+        dev = (r["device"] or "").replace("|", "/")
+        comp = (r["company"] or "").replace("|", "/")
+        L.append(f"| {r['submission']} | {r['decision_date']} | {comp} | {dev} | conflicting / non-indication keyword context |")
+    L.append("\nThe inventory intentionally includes scanner, ultrasound, radiation-therapy, dental, fetal, and software products because the FDA Radiology panel includes all of these. Repeated submissions are retained so the result is auditable; use the submission number to collapse versions into product families. Confirm the current 510(k), De Novo, or PMA labeling before purchase.\n")
+    return L
+
+
 def _venue_section() -> list[str]:
     """The radiology-AI works that appeared at each big venue (recent window)."""
     works = _load("conference_works.json", {})
@@ -549,6 +592,7 @@ def build_landscape_report() -> tuple[list[str], list[str]]:
         L.extend(year_sections("pediatric_radiology_ai", "Pediatric radiology AI"))
         L.extend(_venue_section())
         L.extend(_commercial_section())
+        L.extend(_fda_pediatric_inventory_section())
 
     if repos:
         seen: dict[str, dict] = {}
@@ -796,6 +840,9 @@ def main() -> None:
 
     news = build_newsletter_report()
     (REPORTS / "03_newsletter_watch.md").write_text("\n".join(news) + "\n", encoding="utf-8")
+    inventory = _fda_pediatric_inventory_section()
+    if inventory:
+        (REPORTS / "fda_pediatric_inventory.md").write_text("\n".join(inventory) + "\n", encoding="utf-8")
     # The curated report cites a fixed set of landmark DOIs.
     all_dois += CURATED_DOIS
 

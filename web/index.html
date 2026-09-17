@@ -66,7 +66,7 @@
 
     nav.tabs {
       display: flex; gap: 2px; padding: 12px 24px 0; border-bottom: 1px solid var(--border);
-      overflow-x: auto; scrollbar-width: thin;
+      overflow-x: auto; overflow-y: hidden; scrollbar-width: thin;
     }
     nav.tabs button {
       border: 1px solid transparent; border-bottom: none; border-radius: 8px 8px 0 0;
@@ -149,6 +149,7 @@
     tr.open .expand { transform: rotate(90deg); color: var(--accent); }
     .title-cell { min-width: 280px; max-width: 520px; font-weight: 600; }
     .wide { min-width: 220px; max-width: 420px; }
+    .repo-cell { min-width: 200px; max-width: 320px; overflow-wrap: anywhere; }
     .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .nobreak { white-space: nowrap; }
