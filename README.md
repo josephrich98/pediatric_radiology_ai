@@ -12,7 +12,7 @@ For Joel:
 ## TLDR:
 
 python scripts/refresh.py
-python scripts/build_slides.py
+# slides/pedrad_ai_slides.tex is hand-edited; do NOT run build_slides.py
 python scripts/build_pptx.py
 *download pptx*
 
@@ -77,8 +77,11 @@ Outputs land in:
   radiology AI: one point per journal, x = journal impact, y = cumulative
   papers; the GIF is the same chart built up year by year, as a standalone
   file (both decks show the final cumulative still)
-- `slides/pedrad_ai_slides.pdf` — Beamer deck summarizing the whole story
-  (regenerate with `python scripts/build_slides.py` then `latexmk -pdf` in `slides/`)
+- `slides/pedrad_ai_slides.pdf` — Beamer deck summarizing the whole story.
+  `slides/pedrad_ai_slides.tex` is **hand-owned**: it is edited directly and is
+  the source, not an output. Recompile with `latexmk -xelatex` in `slides/`.
+  `scripts/build_slides.py` generates the full deck this one was cut down from
+  and refuses to overwrite it (`--out <path>` to inspect its output)
 - `slides/pedrad_ai_slides.pptx` — the same deck as an editable PowerPoint file:
   every figure is a movable picture, text lives in text boxes, tables are real
   tables (`pip install -e ".[slides]"` then `python scripts/build_pptx.py`)

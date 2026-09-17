@@ -125,23 +125,35 @@ def multi(rows, field):
 # --------------------------------------------------------------------------- #
 # 1. PRISMA flow
 # --------------------------------------------------------------------------- #
-def prisma_figure(flow):
-    """PRISMA 2020 flow. A diagram, not a chart: boxes and arrows, no axes."""
+def _flow_canvas():
+    """A blank 10x10 diagram canvas plus the three primitives a flow needs.
+
+    Shared so every selection flow in the deck -- studies, and the FDA device
+    screen -- is drawn in one visual language.
+    """
     fig, ax = plt.subplots(figsize=(9.5, 8.2))
     ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis("off")
 
-    def box(x, y, w, h, lines, face="#f4f7fb", edge=BLUE):
+    def box(x, y, w, h, lines, face="#f4f7fb", edge=BLUE, fontsize=8.4):
         ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.12,rounding_size=0.10",
                                     facecolor=face, edgecolor=edge, linewidth=1.1))
         ax.text(x + w / 2, y + h / 2, "\n".join(lines), ha="center", va="center",
-                fontsize=8.4, color=INK, linespacing=1.45)
+                fontsize=fontsize, color=INK, linespacing=1.45)
 
     def arrow(x1, y1, x2, y2):
         ax.add_patch(FancyArrowPatch((x1, y1), (x2, y2), arrowstyle="-|>",
                                      mutation_scale=11, color="#888888", linewidth=1.0))
 
-    stage = lambda y, t: ax.text(0.15, y, t, rotation=90, va="center", ha="center",
-                                 fontsize=8.6, color=MUTED, fontweight="bold")
+    def stage(y, t):
+        ax.text(0.15, y, t, rotation=90, va="center", ha="center",
+                fontsize=8.6, color=MUTED, fontweight="bold")
+
+    return fig, ax, box, arrow, stage
+
+
+def prisma_figure(flow):
+    """PRISMA 2020 flow. A diagram, not a chart: boxes and arrows, no axes."""
+    fig, ax, box, arrow, stage = _flow_canvas()
 
     ident = flow["identified"]
     pending = flow.get("identified_not_screened") or {}
@@ -198,6 +210,82 @@ def prisma_figure(flow):
     ax.set_title("Study selection", fontsize=11, color=INK, loc="left", pad=6)
     fig.text(0.02, 0.015, flow.get("note", ""), fontsize=7, color=MUTED)
     _save(fig, "review_prisma.png")
+
+
+def fda_prisma_figure(flow):
+    """The FDA device screen as a selection flow, in the study-selection style.
+
+    Same four stages as the study PRISMA, applied to authorizations rather than
+    papers: the list is identified, the radiology panel is kept, every decision
+    summary is read, and the records whose labeling names a pediatric or fetal
+    population are what comes out. Counts come from the screen itself
+    (``fda_pediatric_inventory.json["flow"]``), so the figure cannot drift from
+    the inventory it summarizes.
+    """
+    fig, ax, box, arrow, stage = _flow_canvas()
+    n = lambda k: flow.get(k, 0)
+    panels = flow.get("panels_removed") or {}
+    removed = sum(panels.values())
+    head = list(panels.items())[:3]
+    rest = removed - sum(v for _, v in head)
+
+    stage(8.95, "Identification")
+    box(1.1, 8.30, 4.6, 1.3,
+        [f"FDA AI-enabled device list, {flow.get('snapshot') or 'undated'} snapshot",
+         f"Authorizations identified: n = {n('identified'):,}",
+         "510(k), De Novo and PMA records, all panels"])
+    box(6.2, 8.35, 3.3, 1.2,
+        [f"Removed: lead panel is not radiology: n = {removed:,}"] +
+        [f"  {k.lower()}: {v:,}" for k, v in head] + [f"  other panels: {rest:,}"],
+        face="#f7f7f7", edge="#b0b0b0")
+    arrow(5.7, 8.95, 6.2, 8.95)
+
+    stage(6.60, "Screening")
+    box(1.1, 6.70, 4.6, 0.85, ["Radiology-panel records", f"n = {n('radiology'):,}"])
+    arrow(3.4, 8.30, 3.4, 7.55)
+    box(6.2, 6.75, 3.3, 0.75, ["No machine-readable decision", f"summary retrieved: n = {n('no_document'):,}"],
+        face="#fdf6f2", edge=ORANGE)
+    arrow(5.7, 7.12, 6.2, 7.12)
+
+    box(1.1, 5.10, 4.6, 0.85, ["Decision summaries read in full",
+                               f"n = {n('documents_screened'):,}"])
+    arrow(3.4, 6.70, 3.4, 5.95)
+    box(6.2, 5.05, 3.3, 0.95, ["No pediatric / fetal term in an",
+                               "intended-use or patient-population",
+                               f"passage: n = {n('no_pediatric_evidence'):,}"],
+        face="#fdf6f2", edge=ORANGE)
+    arrow(5.7, 5.52, 6.2, 5.52)
+
+    stage(3.75, "Eligibility")
+    box(1.1, 3.50, 4.6, 0.85, ["Records with pediatric / fetal wording",
+                               f"in the reviewed passage: n = {n('pediatric_evidence'):,}"])
+    arrow(3.4, 5.10, 3.4, 4.35)
+    box(6.2, 3.25, 3.3, 1.35, [f"Retained for label review: n = {n('needs_label_review'):,}",
+                               "  phantom or image-quality use only,",
+                               "  validation-set mention only, or an",
+                               "  explicit pediatric exclusion"],
+        face="#fdf6f2", edge=ORANGE)
+    arrow(5.7, 3.92, 6.2, 3.92)
+
+    stage(1.85, "Included")
+    box(1.1, 1.30, 4.6, 1.1, ["Label-positive candidates: a direct pediatric",
+                              "or fetal patient-population statement",
+                              f"n = {n('label_positive'):,}"], face="#f1f9f5", edge=GREEN)
+    arrow(3.4, 3.50, 3.4, 2.40)
+
+    # Five boxes instead of the study flow's four, so crop the canvas to the
+    # drawn area rather than shrinking the type.
+    # Five boxes instead of the study flow's four, so crop the canvas to the
+    # drawn area rather than shrinking the type. The note is drawn inside the
+    # axes because _save calls tight_layout, which would ignore figure margins.
+    ax.set_xlim(0.0, 9.62); ax.set_ylim(0.30, 9.85)
+    ax.set_title("FDA AI-enabled device list: which authorizations name children",
+                 fontsize=11, color=INK, loc="left", pad=6)
+    ax.text(0.05, 1.00,
+            "Keyword screen of the linked FDA decision summaries, not a determination of pediatric authorization:\n"
+            "confirm the current labeling before purchase. One row per submission, so versions and resubmissions count separately.",
+            ha="left", va="top", fontsize=7, color=MUTED, linespacing=1.5)
+    _save(fig, "fda_pediatric_prisma.png")
 
 
 # --------------------------------------------------------------------------- #
@@ -429,12 +517,23 @@ def funnel_figure(steps, note=""):
     _save(fig, "review_funnel.png")
 
 
+def fda_flow_figure():
+    """Draw the FDA screening flow if the dated inventory is present."""
+    path = config.PROCESSED_DIR / "fda_pediatric_inventory.json"
+    if not path.exists():
+        return
+    flow = json.loads(path.read_text(encoding="utf-8")).get("flow")
+    if flow:
+        fda_prisma_figure(flow)
+
+
 def main() -> None:
     FIG.mkdir(parents=True, exist_ok=True)
     rows = load_rows()
     store = load_store()
     if not rows:
-        print("No paper database found; nothing to draw.")
+        print("No paper database found; drawing the FDA screen only.")
+        fda_flow_figure()
         return
     n = len(rows)
     print(f"Drawing review figures from {n} included papers...")
@@ -442,6 +541,7 @@ def main() -> None:
     flow_path = config.PROCESSED_DIR / "review_flow.json"
     if flow_path.exists():
         prisma_figure(json.loads(flow_path.read_text(encoding="utf-8")))
+    fda_flow_figure()
     year_figure(store)
     composition_over_time(rows, "modality", MODALITY_COLOR, config.PAPER_DB_MODALITIES,
                           "Included papers by imaging modality and year",

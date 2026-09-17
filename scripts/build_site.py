@@ -230,17 +230,6 @@ PRODUCT_SPLITS: dict[tuple[str, str], list[dict[str, str]]] = {
          "task": "Identifies standard fetal cardiac views; checks exam completeness",
          "pediatric": "Prenatal: 2nd / 3rd-trimester exams; maternal age 18+"},
     ],
-    ("GE HealthCare / Canon / Siemens / Philips", "TrueFidelity, AiCE, Deep Resolve, Precise Image"): [
-        {"vendor": "GE HealthCare", "product": "TrueFidelity", "modality": "CT",
-         "task": "CT deep-learning reconstruction (noise, dose)", "fda_company": "GE|General Electric"},
-        {"vendor": "Canon", "product": "AiCE", "modality": "CT / MRI",
-         "task": "CT deep-learning reconstruction (noise, dose); MRI (noise, resolution, scan time)",
-         "fda_company": "Canon"},
-        {"vendor": "Siemens Healthineers", "product": "Deep Resolve", "modality": "MRI",
-         "task": "MRI deep-learning reconstruction (noise, resolution, scan time)", "fda_company": "Siemens"},
-        {"vendor": "Philips", "product": "Precise Image", "modality": "CT",
-         "task": "CT deep-learning reconstruction (noise, dose)", "fda_company": "Philips"},
-    ],
     ("Subtle Medical / AIRS Medical", "SubtleMR, SwiftMR"): [
         {"vendor": "Subtle Medical", "product": "SubtleMR", "fda_company": "Subtle Medical",
          "pediatric": "No adult-only restriction in reviewed US indications"},

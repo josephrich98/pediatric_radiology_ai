@@ -392,9 +392,10 @@ def _question_table(papers, threshold) -> list[str]:
 
 
 def _commercial_section() -> list[str]:
-    from pedrad_ai import fda_devices
+    from pedrad_ai import commercial, fda_devices  # noqa: F401
 
     fda = _load("fda_ai_devices.json", {})
+    recs = commercial.records(fda, _load("fda_pediatric_inventory.json", {}))
     L = ["## Commercial players: the FDA AI-enabled device list\n"]
     if not fda:
         L.append("_FDA list not collected in this run (`scripts/collect_fda.py`)._\n")
@@ -415,6 +416,27 @@ def _commercial_section() -> list[str]:
     L.append("")
     L.append("![FDA AI devices per year](../figures/fda_devices_per_year.png)\n")
     L.append("![Companies with the most FDA radiology AI devices](../figures/fda_companies.png)\n")
+    L.append("![Products held per company, with the pediatric-labeled software subset]"
+             "(../figures/commercial_companies_by_year.png)\n")
+    if recs:
+        pc = commercial.problem_counts(recs)
+        L.append("### Which clinical problems the cleared products address\n")
+        L.append(
+            "The device list names no clinical problem, so one is read off the device name first and the FDA "
+            f"product code second: {pc['total'] - pc['unassigned']['all']:,} of {pc['total']:,} devices name "
+            "one, and the rest — scanner platforms and general image-processing software — are counted but "
+            "not plotted. Of the "
+            f"{pc['total_pediatric']} entries whose decision summary states a pediatric or fetal patient "
+            f"population, {pc['total_pediatric'] - pc['systems_pediatric']} are standalone software; the rest "
+            "are scanners, which are labeled for pediatric imaging whatever their AI was built for. A "
+            "population statement in a summary is not a pediatric indication and not pediatric evidence.\n")
+        L.append("![Clinical problems addressed by cleared radiology AI](../figures/commercial_problems.png)\n")
+        L.append("| Clinical problem | Devices | Pediatric population stated |")
+        L.append("|:--|---:|---:|")
+        for name, c in pc["counts"].items():
+            L.append(f"| {name} | {c['all']:,} | {c['pediatric']} |")
+        L.append(f"| _clinical problem not named_ | {pc['unassigned']['all']:,} | {pc['unassigned']['pediatric']} |")
+        L.append("")
     L.append("### Devices whose names carry a pediatric term\n")
     L.append("| Year | Company | Device |")
     L.append("|---:|:--|:--|")
@@ -422,21 +444,38 @@ def _commercial_section() -> list[str]:
         L.append(f"| {d['year']} | {d['company']} | {d['device']} |")
     L.append("")
     L.append("### Commercial software with a pediatric angle (curated)\n")
-    L.append("| Vendor | Selected products | Functions | Pediatric / regulatory scope | Company-wide FDA AI entries (n; years) |")
-    L.append("|:--|:--|:--|:--|:--|")
-    for c in config.COMMERCIAL_PEDIATRIC:
-        look = fda_devices.company_lookup(fda, c["fda_company"])
-        yrs = look["years"]
-        on = f"{look['devices']} entries, {yrs[0]}–{yrs[-1]}" if look["devices"] and yrs else "not listed"
-        L.append(f"| {c['vendor']} | {c['product']} | {c['task']} | {c['pediatric']} | {on} |")
+    L.append("| Vendor | Selected products | Functions | Pediatric / regulatory scope | "
+             "Company-wide FDA AI entries (n; years) | Of those, pediatric population stated (software) |")
+    L.append("|:--|:--|:--|:--|:--|:--|")
+    for c in commercial.company_rows(recs):
+        yrs = c["fda_years"]
+        on = f"{c['fda_entries']} entries, {yrs[0]}–{yrs[-1]}" if c["fda_entries"] and yrs else "not listed"
+        ped = f"{c['pediatric_entries']} ({c['pediatric_software']} software)" if c["fda_entries"] else "—"
+        L.append(f"| {c['vendor']} | {c['product']} | {c['task']} | {c['pediatric']} | {on} | {ped} |")
     L.append(
         f"\nCounts cover company-wide radiology entries in the FDA AI-enabled device list "
         f"saved {fda.get('collected_on', 'date unavailable')}; grouped vendors are summed. "
         "They include versions and unrelated products, not just the selected products or pediatric indications. "
         "Years are the range of decision years. The list is not exhaustive and may lag new authorizations. "
         "Functions / labeling checked 2026-09-16; features vary by market and version. "
+        "The last column counts entries whose decision summary states a pediatric or fetal patient population "
+        "(screened 2026-09-16), with standalone software in parentheses. "
         "See [verification and sources](commercial_software_verification.md).\n"
     )
+    L.append("### Products a pediatric radiologist should know\n")
+    L.append(
+        "One row per product rather than per company: tools in routine pediatric use, tools a pediatric "
+        "service could pilot now, and the first credible commercial attempts at a pediatric problem. The FDA "
+        "column gives the submission supporting the pediatric claim and its decision year; a blank means no US "
+        "authorization was identified. \"Where it stands\" is an editorial reading of deployment, not a "
+        "measured adoption rate.\n")
+    L.append("| Product | Vendor | Clinical problem | What it does | Pediatric scope | FDA | Where it stands |")
+    L.append("|:--|:--|:--|:--|:--|:--|:--|")
+    for r in commercial.product_rows(recs):
+        sub = f"{r['submission']} ({r['year']})" if r.get("submission") and r.get("year") else "—"
+        L.append(f"| {r['product']} | {r['vendor']} | {r['problem']} | {r['task']} | {r['pediatric']} | "
+                 f"{sub} | {r['standing']} |")
+    L.append("")
     return L
 
 

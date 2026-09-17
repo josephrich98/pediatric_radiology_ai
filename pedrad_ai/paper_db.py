@@ -604,12 +604,13 @@ def _commercial_names() -> list[tuple[str, str]]:
     """
     names: list[tuple[str, str]] = []
     for prod in config.COMMERCIAL_PEDIATRIC:
-        for part in re.split(r"[,/]", prod["product"]):
+        for part in re.split(r"[,/;]", prod["product"]):
             part = part.strip()
             if len(part) >= 4:
                 names.append((part, f"{prod['vendor']} {prod['product']} (curated commercial list)"))
         vendor = prod["vendor"].strip()
-        if len(vendor) >= 4 and "/" not in vendor:
+        if (len(vendor) >= 4 and "/" not in vendor
+                and vendor not in config.COMMERCIAL_GENERIC_VENDORS):
             names.append((vendor, f"{vendor} (curated commercial list)"))
     fda_path = config.PROCESSED_DIR / "fda_ai_devices.json"
     if fda_path.exists():

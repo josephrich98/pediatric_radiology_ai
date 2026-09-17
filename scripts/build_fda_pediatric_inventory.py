@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the dated, source-exhaustive FDA pediatric-use screening inventory."""
 from __future__ import annotations
-import json, re
+import collections, json, re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,11 +14,18 @@ DIRECT = re.compile(r"(?:intended|indicated|population|patients?|use).{0,140}(?:
 
 def main():
     rows = json.loads((ROOT / "data/processed/fda_pediatric_screening.json").read_text())["records"]
+    # Every gate of the screen is counted here as it is applied, so the funnel
+    # figure and the inventory can never drift apart.
+    panels = collections.Counter((r.get("Panel (Lead)") or "unstated").strip()
+                                 for r in rows if (r.get("Panel (Lead)") or "").strip() != "Radiology")
+    radiology = [r for r in rows if (r.get("Panel (Lead)") or "").strip() == "Radiology"]
+    screened = 0
     out=[]
     for r in rows:
         txt = RAW / "text" / f"{r['Submission Number']}.txt"
         if not txt.exists() or r.get("Panel (Lead)") != "Radiology":
             continue
+        screened += 1
         text = txt.read_text(errors="replace")
         pages=[]
         for page, body in enumerate(text.split("\f"), 1):
@@ -44,7 +51,17 @@ def main():
             "scope":"All FDA AI-list records with Panel (Lead)=Radiology; keyword screening of linked decision-summary PDFs."
                     " Candidate status is not an automated determination of pediatric indication.",
             "screening_method":"A record is label-positive-candidate when its extracted intended-use evidence contains a direct pediatric/fetal patient-population statement; phantom, validation-only, and explicit exclusion mentions are retained as needs-label-review.",
-            "records_screened":1230, "screen_positive_candidates":sum(x["status"]=="label-positive-candidate" for x in out),
+            "records_screened":len(radiology), "screen_positive_candidates":sum(x["status"]=="label-positive-candidate" for x in out),
+            "flow":{"snapshot":"2026-09-16",
+                    "identified":len(rows),
+                    "panels_removed":dict(panels.most_common()),
+                    "radiology":len(radiology),
+                    "no_document":len(radiology)-screened,
+                    "documents_screened":screened,
+                    "no_pediatric_evidence":screened-len(out),
+                    "pediatric_evidence":len(out),
+                    "needs_label_review":sum(x["status"]=="needs-label-review" for x in out),
+                    "label_positive":sum(x["status"]=="label-positive-candidate" for x in out)},
             "records":out}
     OUT.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
     print(result["records_screened"],len(out),result["screen_positive_candidates"])

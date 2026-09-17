@@ -475,39 +475,70 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 
 **How obtained.** The FDA publishes a spreadsheet of every AI-enabled device it has authorized ([source](https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-enabled-medical-devices)). Restricting to the *Radiology* lead panel gives products per year and clearances per company. The list carries no pediatric flag; device names were matched against pediatric terms and a curated list of products with pediatric indications was cross-checked against it.
 
-- 1,164 of 1,524 AI-enabled devices (76.4%) are in the Radiology panel (snapshot 2026-09-03).
+- 1,230 of 1,614 AI-enabled devices (76.2%) are in the Radiology panel (snapshot 2026-09-17).
 
 | Company | Radiology AI devices | Years | Examples |
 |:--|---:|:--|:--|
-| GE HealthCare | 107 | 2014–2026 | Automated Aortic Stenosis Software (AutoAS); LOGIQ Vita; LOGIQ Vita Pro; LOGIQ Vita Express; LOGIQ Vita Plus; LOGIQ Vita Power; LOGIQ S20; LOGIQ S20 Pro; LOGIQ S20 Express; LOGIQ S20 Plus; LOGIQ S20 Power; True Definition DL |
-| Siemens Healthineers | 90 | 2014–2026 | SOMATOM X.cite; SOMATOM X.ceed; MAGNETOM Flow.Ace; MAGNETOM Flow.Plus; MI View&GO |
-| Philips | 44 | 2018–2026 | Spectral CT Verida Family; EPIQ Series Diagnostic Ultrasound System, Affiniti Series Diagnostic Ultrasound System; CT Rembra RT; CT Areta RT; CT Rembra |
-| Canon Medical | 43 | 2019–2026 | Vantage Fortian/Orian 1.5T, MRT-1550, V10.0 with AiCE Reconstruction Processing Unit for MR; Aquilion ServeSP (TSX-307B) V2.0; Alphenix, INFX-8000V/B, INFX-8000V/S, V9.6 with aEvolve Imaging (FOV Extension) |
-| United Imaging | 40 | 2020–2026 | uMI Panvivo (uMI Panvivo); uMI Panvivo (uMI Panvivo S); uMI Panvivo (uMI Panvivo EX); uMI Panvivo (uMI Panvivo ES); uCT 780 with uWS-CT-Dual Energy Analysis; uMR 680 |
-| Aidoc | 34 | 2018–2026 | BriefCase-Triage: CARE Multi-Triage CT for Pneumothorax; Pericardial effusion; Large aortic aneurysm; Shoulder fracture or dislocation device; BriefCase-Triage; BriefCase-Triage: CARE Multi-triage CT Body |
+| GE HealthCare | 109 | 2014–2026 | Enhanced Boundary for PCCT; Critical Care Suite with Enteric Tube Positioning AI Algorithm; Automated Aortic Stenosis Software (AutoAS) |
+| Siemens Healthineers | 96 | 2014–2026 | syngo.CT Coronary Cockpit; ACUSON Sequoia Diagnostic Ultrasound System;ACUSON Sequoia Select Diagnostic Ultrasound System;ACUSON Origin Diagnostic Ultrasound System;ACUSON Origin ICE Diagnostic Ultrasound System; LungMaps |
+| Philips | 48 | 2018–2026 | Alturion Series Diagnostic Ultrasound System; EPIQ Series Diagnostic Ultrasound System; EPIQ Series Diagnostic Ultrasound Systems; Affiniti Series Diagnostic Ultrasound Systems |
+| Canon Medical | 46 | 2019–2026 | Vitrea CT Transcatheter Aortic Valve Replacement (TAVR) Planning; Aquilion ONE (TSX-308A/TSX-306A) V2.0; Intelligent NR |
+| United Imaging | 43 | 2020–2026 | uMR Astra; uOmnispace.MR; uMI Panvivo (uMI Panvivo LS); uMI Panvivo (uMI Panvivo); uMI Panvivo (uMI Panvivo S); uMI Panvivo (uMI Panvivo EX); uMI Panvivo (uMI Panvivo ES) |
+| Aidoc | 35 | 2018–2026 | BriefCase-Triage; BriefCase-Triage: CARE Multi-Triage CT for Pneumothorax; Pericardial effusion; Large aortic aneurysm; Shoulder fracture or dislocation device; BriefCase-Triage |
 | Samsung | 19 | 2021–2026 | HERA Z20 Diagnostic Ultrasound System; HERA Z20e Diagnostic Ultrasound System; HERA Z20s Diagnostic Ultrasound System; R20 Diagnostic Ultrasound System; HERA Z30 Diagnostic Ultrasound System; R30 Diagnostic Ultrasound System; V8 Diagnostic Ultrasound System; cV8 Diagnostic Ultrasound System; V7 Diagnostic Ultrasound System; cV7 Diagnostic Ultrasound System; V6 Diagnostic Ultrasound System; cV6 Diagnostic Ultrasound System; V5 Diagnostic Ultrasound System; cV5 Diagnostic Ultrasound System; V4 Diagnostic Ultrasound System; cV4 Diagnostic Ultrasound System; V8 Diagnostic Ultrasound System; cV8 Diagnostic Ultrasound System; V7 Diagnostic Ultrasound System; cV7 Diagnostic Ultrasound System; V6 Diagnostic Ultrasound System; cV6 Diagnostic Ultrasound System |
 | iSchemaView (RapidAI) | 17 | 2018–2025 | Rapid Aortic Measurements; Rapid Obstructive Hydrocephalus, Rapid OH; Rapid CTA 360 |
 | Hyperfine | 13 | 2021–2025 | Swoop® Portable MR Imaging® System; Swoop® Portable MR Imaging® System (V2); Swoop® Portable MR Imaging® System |
 | Clarius Mobile Health | 12 | 2016–2026 | Clarius Ejection Fraction AI; Clarius Median Nerve AI; Clarius Prostate AI |
+| Fujifilm | 12 | 2021–2026 | Synapse PACS (7.6.0); Synapse Lung Nodule AI; Synapse 3D Base Tools (V7.2) |
+| Overjet | 11 | 2021–2026 | Overjet Iris Intelligent Imaging System; Overjet CBCT Assist; Overjet Image Enhancement Assist |
 | Viz.ai | 11 | 2018–2025 | Viz Subdural+, Viz SUBDURAL PLUS; Viz HDS, Viz Volume Plus, Viz ICH+; Viz AAA |
 | Circle CVI | 10 | 2014–2025 | cvi42 Coronary Plaque Software Application; StrokeSENS ASPECTS Software Application; cvi42 Software Application |
 | Coreline | 10 | 2020–2025 | AVIEW Lung Nodule CAD; AVIEW; AVIEW CAC |
 | DiA Imaging Analysis | 10 | 2020–2025 | LVivo Software Application; LVivo Seamless; LVivo Software Application |
-| Overjet | 10 | 2021–2025 | Overjet CBCT Assist; Overjet Image Enhancement Assist; Overjet Charting Assist |
-| Fujifilm | 9 | 2021–2025 | ECHELON Synergy; Sonosite LX and Sonosite PX Ultrasound Systems; Synapse PACS (7.5) |
+| Subtle Medical | 10 | 2018–2026 | SubtleHD-CT (1.x); SubtleHD-PET (1.x); SubtleHD (1.x) |
+| Quantib | 9 | 2017–2026 | DeepHealth ProstateAI; Brain WMH; Quantib Prostate |
 | Qure.ai | 9 | 2020–2026 | qXR-Detect; qER-CTA (v1.0); qCT LN Quant |
-| Zebra Medical | 9 | 2018–2021 | HealthPPT; HealthCCSng; HealthJOINT |
-| Annalise.ai | 8 | 2022–2025 | Annalise Enterprise; Annalise Enterprise CTB Triage Trauma; Annalise Enterprise CTB Triage Trauma |
-| Ever FortuneAI | 8 | 2022–2025 | EFAI Chestsuite XR Malpositioned ETT Assessment System (ETT-XR-100); EFAI Neurosuite CT Midline Shift Assessment System (MLS-CT-100); EFAI Bonesuite XR Bone Age Pro Assessment System (BAP-XR-100) |
+| RadNet / DeepHealth | 9 | 2021–2026 | Saige-Dx; BAC; Saige-Dx |
 
 ![FDA AI devices per year](../figures/fda_devices_per_year.png)
 
 ![Companies with the most FDA radiology AI devices](../figures/fda_companies.png)
 
+![Products held per company, with the pediatric-labeled software subset](../figures/commercial_companies_by_year.png)
+
+### Which clinical problems the cleared products address
+
+The device list names no clinical problem, so one is read off the device name first and the FDA product code second: 542 of 1,230 devices name one, and the rest — scanner platforms and general image-processing software — are counted but not plotted. Of the 230 entries whose decision summary states a pediatric or fetal patient population, 110 are standalone software; the rest are scanners, which are labeled for pediatric imaging whatever their AI was built for. A population statement in a summary is not a pediatric indication and not pediatric evidence.
+
+![Clinical problems addressed by cleared radiology AI](../figures/commercial_problems.png)
+
+| Clinical problem | Devices | Pediatric population stated |
+|:--|---:|---:|
+| radiation therapy planning | 79 | 3 |
+| triage / worklist prioritization | 70 | 22 |
+| image quality: dose, noise, speed | 52 | 3 |
+| chest / lung | 49 | 4 |
+| stroke / intracranial bleed | 41 | 1 |
+| brain / neurologic | 40 | 3 |
+| cancer lesion detection | 38 | 1 |
+| cardiac / echo | 36 | 6 |
+| abdomen / pelvis | 28 | 3 |
+| fracture / trauma | 20 | 5 |
+| measurement / quantification | 20 | 4 |
+| spine / scoliosis | 19 | 8 |
+| breast | 18 | 1 |
+| dental / craniofacial | 11 | 3 |
+| fetal / obstetric | 10 | 10 |
+| bone density / body composition | 7 | 1 |
+| tube / line placement | 3 | 1 |
+| bone age / growth | 1 | 1 |
+| _clinical problem not named_ | 688 | 150 |
+
 ### Devices whose names carry a pediatric term
 
 | Year | Company | Device |
 |---:|:--|:--|
+| 2026 | AZmed | Rayvolve |
 | 2025 | Brightheart | Fetal EchoScan (v1.2) |
 | 2025 | Pearl, Inc. | Second Opinion® Pediatric |
 | 2025 | BrightHeart | Fetal EchoScan (v1.1) |
@@ -524,20 +555,59 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 
 ### Commercial software with a pediatric angle (curated)
 
-| Vendor | Selected products | Functions | Pediatric / regulatory scope | Company-wide FDA AI entries (n; years) |
-|:--|:--|:--|:--|:--|
-| Gleamer | BoneView | X-ray fracture detection; international versions also flag dislocations, effusions and focal bone lesions | US fracture aid: ages 2--21 for specified extremity views; other anatomy adult-only (2023) | 4 entries, 2022–2025 |
-| AZmed | Rayvolve suite | MSK / chest finding detection; orthopedic measurements; GP bone age (separate modules) | US fracture indication age 2+ (2024); AZboneage is CE-marked; other eligibility varies by module | 4 entries, 2022–2025 |
-| Visiana | BoneXpert | Hand X-ray bone age (GP / TW3), Bone Health Index; associated adult-height prediction tool | Designed for children; CE-marked; US research use only | not listed |
-| 16 Bit | Physis | Hand X-ray bone-age estimation, GP atlas matching and report assistance | Pediatric tool; no FDA authorization identified. Company's FDA entry is Rho (low bone density, age 50+) | 1 entries, 2024–2024 |
-| Ever Fortune.AI | EFAI Bonesuite XR Bone Age Pro | GP bone-age quantification from PA left-hand / wrist radiographs | FDA-cleared 2024 for ages 2--16 (K234042) | 11 entries, 2022–2026 |
-| BrightHeart | Fetal EchoScan; View Classifier | EchoScan: flags 8 findings suspicious for fetal CHD; View Classifier: standard views / exam completeness | Prenatal: EchoScan, 2nd trimester; View Classifier, 2nd / 3rd; maternal age 18+ | 5 entries, 2024–2025 |
-| GE HealthCare / Canon / Siemens / Philips | TrueFidelity, AiCE, Deep Resolve, Precise Image | CT: TrueFidelity / AiCE / Precise Image (noise, dose); MRI: AiCE / Deep Resolve (noise, resolution, scan time) | Pediatric applications documented; age / anatomy / protocol depend on scanner and software version | 284 entries, 2014–2026 |
-| Subtle Medical / AIRS Medical | SubtleMR, SwiftMR | MRI image post-processing: denoising / sharpening to support shorter acquisitions or better image quality | No adult-only restriction in reviewed US indications; SwiftMR 2026 validation includes ages 0--21 | 13 entries, 2018–2026 |
-| Qure.ai | qXR / qER families | Chest X-ray detection / triage, TB screening, tube / heart measurements; head CT triage / quantification and CTA LVO | US eligibility varies by module; vendor reports CE-marked qXR TB use across ages 0--15 | 9 entries, 2020–2026 |
-| Aidoc / Viz.ai | BriefCase, Viz LVO / ICH | Aidoc: CT / CTA triage (e.g., ICH, LVO, PE, pneumothorax, fractures, free gas); Viz: LVO / ICH alerts, care coordination | Age / anatomy eligibility is module-specific; company totals do not establish pediatric indications | 43 entries, 2018–2026 |
+| Vendor | Selected products | Functions | Pediatric / regulatory scope | Company-wide FDA AI entries (n; years) | Of those, pediatric population stated (software) |
+|:--|:--|:--|:--|:--|:--|
+| Philips | Precise Image; SmartSpeed | CT deep-learning reconstruction at reduced dose (Precise Image); MRI acceleration with deep-learning reconstruction (SmartSpeed) | Pediatric applications documented; dose reduction depends on clinical task, patient size and anatomy, and is not a separate pediatric indication | 48 entries, 2018–2026 | 28 (1 software) |
+| Aidoc / Viz.ai | BriefCase, Viz LVO / ICH | Aidoc: CT / CTA triage (e.g., ICH, LVO, PE, pneumothorax, fractures, free gas); Viz: LVO / ICH alerts, care coordination | Age / anatomy eligibility is module-specific; company totals do not establish pediatric indications | 44 entries, 2018–2026 | 23 (23 software) |
+| GE HealthCare | TrueFidelity; AIR Recon DL | CT deep-learning reconstruction (noise, dose); MRI deep-learning reconstruction (noise, shorter acquisitions) | Pediatric applications documented; sold across ages, with no separate pediatric indication; availability depends on scanner and software version | 109 entries, 2014–2026 | 19 (2 software) |
+| Butterfly Network / Clarius | Butterfly iQ+ tools; Clarius AI tools | Handheld ultrasound with on-device AI: bladder volume, gestational age, ejection fraction, nerve and lung tools | Scanner labeling covers pediatric imaging; each AI tool's age scope is separate and mostly adult | 16 entries, 2016–2026 | 12 (2 software) |
+| Siemens Healthineers | Deep Resolve | MRI deep-learning reconstruction: denoising and resolution enhancement supporting accelerated acquisition | Vendor publishes pediatric MRI protocols using Deep Resolve; scan-time reduction is the pediatric argument | 96 entries, 2014–2026 | 10 (3 software) |
+| Hyperfine | Swoop Portable MR; BrainInsight | Point-of-care low-field brain MRI whose image quality depends on deep-learning reconstruction; BrainInsight adds automated volumes and midline measurements | Bedside neuro-imaging in children, including the NICU; the Swoop decision summaries state a pediatric population | 13 entries, 2021–2025 | 9 (1 software) |
+| BrightHeart | Fetal EchoScan; View Classifier | EchoScan: flags 8 findings suspicious for fetal CHD; View Classifier: standard views / exam completeness | Prenatal: EchoScan, 2nd trimester; View Classifier, 2nd / 3rd; maternal age 18+ | 5 entries, 2024–2025 | 5 (5 software) |
+| Sonio | Sonio Detect; Sonio Suspect | Fetal ultrasound: standard-plane recognition and exam-completeness checking (Detect); flagging of images suspicious for anomalies (Suspect) | Entirely prenatal: every FDA entry states a fetal / maternal population | 5 entries, 2023–2026 | 5 (2 software) |
+| EOS imaging (Alphatec) | spineEOS, VEA Align, AutoDensity | Biplanar low-dose full-body radiography with automated 3D spine and lower-limb modeling; AutoDensity reports vertebral bone density | Routine in pediatric scoliosis and limb-alignment follow-up, where cumulative dose matters; entries state a pediatric population | 4 entries, 2024–2025 | 4 (4 software) |
+| Smart Soft Healthcare | CoLumbo, CoLumbo C-Spine, CoLumboX | Spine MRI and radiograph segmentation, measurement and structured reporting (lumbar, then cervical) | Decision summaries state a pediatric population; pediatric-specific performance is not reported separately | 4 entries, 2022–2026 | 4 (4 software) |
+| Canon Medical | AiCE | CT deep-learning reconstruction (noise, dose) and MRI deep-learning reconstruction (noise, resolution, scan time) | Vendor publishes pediatric CT examples; protocol and software version determine what is available | 46 entries, 2019–2026 | 3 (0 software) |
+| Ever Fortune.AI | EFAI Bonesuite XR Bone Age Pro | GP bone-age quantification from PA left-hand / wrist radiographs | FDA-cleared 2024 for ages 2--16 (K234042) | 12 entries, 2022–2026 | 3 (3 software) |
+| AZmed | Rayvolve suite | MSK / chest finding detection; orthopedic measurements; GP bone age (separate modules) | US fracture indication age 2+ (2024); AZboneage is CE-marked; other eligibility varies by module | 5 entries, 2022–2026 | 2 (2 software) |
+| Milvue | SmartChest; TechCare Trauma | Radiograph triage and finding detection: chest findings (SmartChest), fractures and trauma findings (TechCare Trauma) | The TechCare Trauma summary (K242171) states a pediatric population | 2 entries, 2024–2025 | 2 (2 software) |
+| Gleamer | BoneView | X-ray fracture detection; international versions also flag dislocations, effusions and focal bone lesions | US fracture aid: ages 2--21 for specified extremity views; other anatomy adult-only (2023) | 4 entries, 2022–2025 | 1 (1 software) |
+| Subtle Medical / AIRS Medical | SubtleMR, SwiftMR | MRI image post-processing: denoising / sharpening to support shorter acquisitions or better image quality | No adult-only restriction in reviewed US indications; SwiftMR 2026 validation includes ages 0--21 | 15 entries, 2018–2026 | 0 (0 software) |
+| Qure.ai | qXR / qER families | Chest X-ray detection / triage, TB screening, tube / heart measurements; head CT triage / quantification and CTA LVO | US eligibility varies by module; vendor reports CE-marked qXR TB use across ages 0--15 | 9 entries, 2020–2026 | 0 (0 software) |
+| 16 Bit | Physis | Hand X-ray bone-age estimation, GP atlas matching and report assistance | Pediatric tool; no FDA authorization identified. Company's FDA entry is Rho (low bone density, age 50+) | 1 entries, 2024–2024 | 0 (0 software) |
+| Visiana | BoneXpert | Hand X-ray bone age (GP / TW3), Bone Health Index; associated adult-height prediction tool | Designed for children; CE-marked; US research use only | not listed | — |
 
-Counts cover company-wide radiology entries in the FDA AI-enabled device list saved 2026-09-03; grouped vendors are summed. They include versions and unrelated products, not just the selected products or pediatric indications. Years are the range of decision years. The list is not exhaustive and may lag new authorizations. Functions / labeling checked 2026-09-16; features vary by market and version. See [verification and sources](commercial_software_verification.md).
+Counts cover company-wide radiology entries in the FDA AI-enabled device list saved 2026-09-17; grouped vendors are summed. They include versions and unrelated products, not just the selected products or pediatric indications. Years are the range of decision years. The list is not exhaustive and may lag new authorizations. Functions / labeling checked 2026-09-16; features vary by market and version. The last column counts entries whose decision summary states a pediatric or fetal patient population (screened 2026-09-16), with standalone software in parentheses. See [verification and sources](commercial_software_verification.md).
+
+### Products a pediatric radiologist should know
+
+One row per product rather than per company: tools in routine pediatric use, tools a pediatric service could pilot now, and the first credible commercial attempts at a pediatric problem. The FDA column gives the submission supporting the pediatric claim and its decision year; a blank means no US authorization was identified. "Where it stands" is an editorial reading of deployment, not a measured adoption rate.
+
+| Product | Vendor | Clinical problem | What it does | Pediatric scope | FDA | Where it stands |
+|:--|:--|:--|:--|:--|:--|:--|
+| BoneXpert | Visiana | bone age / growth | Automated Greulich--Pyle and Tanner--Whitehouse bone age plus a Bone Health Index, from a hand radiograph | Built for children; CE-marked and in routine European use; US research use only | — | Widely deployed (Europe) |
+| BoneView | Gleamer | fracture / trauma | Fracture detection on trauma radiographs, presented as regions of interest alongside the image | US indication covers ages 2--21 for specified extremity views; pelvis, hip, femur, ribs and spine are adult-only | K222176 (2023) | Widely deployed |
+| Rayvolve (AZtrauma) | AZmed | fracture / trauma | Fracture and MSK finding detection on radiographs; sibling modules cover chest findings, measurements and bone age | US fracture indication from age 2; the bone-age module is CE-marked only | K240845 (2024) | Widely deployed |
+| TechCare Trauma | Milvue | fracture / trauma | Trauma radiograph triage: fractures, effusions and dislocations flagged for the reader | The decision summary states a pediatric population | K242171 (2025) | Early US deployments |
+| EFAI Bonesuite XR Bone Age Pro | Ever Fortune.AI | bone age / growth | Greulich--Pyle bone age from a PA left hand and wrist radiograph, as an adjunct to the radiologist | FDA-cleared for ages 2--16 --- the pediatric-specific US bone-age clearance | K234042 (2024) | FDA-cleared, early adoption |
+| Physis | 16 Bit | bone age / growth | Bone-age estimation with Greulich--Pyle atlas matching and draft report text | Pediatric tool; Health Canada licensed, no FDA authorization identified | — | Promising, limited US access |
+| Fetal EchoScan | BrightHeart | fetal / obstetric | Flags eight morphological findings suspicious for congenital heart disease on second-trimester views | Prenatal by definition: second-trimester exams, maternal age 18+ | K252294 (2025) | Early deployments / pilots |
+| Sonio Detect / Sonio Suspect | Sonio | fetal / obstetric | Checks that the required fetal views were obtained and are of usable quality (Detect); flags images suspicious for anomalies (Suspect) | Prenatal by definition; every FDA entry states a fetal population | K252433 (2026) | Early deployments / pilots |
+| Delivery Date AI | Ultrasound AI | fetal / obstetric | Predicts the delivery date from a second- or third-trimester ultrasound when dating is unreliable | Prenatal; the first De Novo of its kind (a new device class) | DEN250007 (2026) | Newly authorized, unproven in practice |
+| Swoop Portable MR + BrainInsight | Hyperfine | brain / neurologic | Bedside low-field brain MRI whose usable image quality comes from deep-learning reconstruction; BrainInsight adds automated volumes and midline shift | Decision summaries state a pediatric population; the natural use is the NICU and PICU, where transport is the risk | K253489 (2025) | In pediatric pilots |
+| spineEOS / VEA Align | EOS imaging (Alphatec) | spine / scoliosis | Automated 3D spine and lower-limb modeling from biplanar low-dose full-body radiographs | Scoliosis follow-up is repeated imaging of a growing child, so the dose saving compounds | K251747 (2025) | Widely deployed (pediatric orthopedics) |
+| CoLumbo | Smart Soft Healthcare | spine / scoliosis | Spine MRI segmentation, measurement and structured reporting, lumbar and cervical | Decision summaries state a pediatric population; no pediatric-specific performance reported | K254015 (2026) | Early deployments |
+| BriefCase-Triage (CARE modules) | Aidoc | triage / worklist prioritization | Worklist triage on CT and CTA: intracranial hemorrhage, pulmonary embolism, pneumothorax, cervical-spine and rib fractures, free gas and more | Most entries state a pediatric population; the evidence behind them is adult, so treat pediatric use as local validation work | K253578 (2026) | Widely deployed |
+| Viz LVO / Viz ICH | Viz.ai | stroke / intracranial bleed | Detects large-vessel occlusion and intracranial hemorrhage and pushes the case to the stroke team's phones | No pediatric population statement found in the screened summaries; pediatric stroke use would be off-label | — | Widely deployed (adult) |
+| qXR-TB | Qure.ai | chest / lung | Chest radiograph screening for tuberculosis, built for high-burden settings with few readers | Vendor reports CE-marked use from age 0--15; US eligibility varies by module | — | Deployed in global-health screening |
+| AIR Recon DL / TrueFidelity | GE HealthCare | image quality: dose, noise, speed | Deep-learning reconstruction: shorter MRI acquisitions at the same quality, and CT images at lower dose | Sold across ages; the pediatric benefit is fewer sedations and less dose, and it is the AI most children actually meet | — | Widely deployed |
+| Deep Resolve | Siemens Healthineers | image quality: dose, noise, speed | MRI deep-learning denoising and resolution enhancement that supports accelerated acquisition | Vendor publishes pediatric protocols; scan-time reduction is the pediatric argument | — | Widely deployed |
+| AiCE | Canon Medical | image quality: dose, noise, speed | Deep-learning reconstruction for both CT (noise, dose) and MRI (noise, resolution, scan time) | Vendor publishes pediatric CT galleries; protocol and version determine what is available | — | Widely deployed |
+| SmartSpeed / Precise Image | Philips | image quality: dose, noise, speed | MRI acceleration with deep-learning reconstruction (SmartSpeed); CT reconstruction at reduced dose (Precise Image) | Sold across ages; pediatric protocols are the vendor's own, not a separate indication | — | Widely deployed |
+| SubtleMR / SwiftMR | Subtle Medical / AIRS Medical | image quality: dose, noise, speed | Vendor-neutral MRI post-processing: denoising and sharpening so a shorter acquisition still reads | No adult-only restriction in the reviewed US indications; SwiftMR's 2026 validation includes ages 0--21 | — | Deployed, vendor-neutral retrofit |
+| Arterys Cardio DL | Arterys (Tempus) | cardiac / echo | Cardiac MRI segmentation, flow and volume quantification with a cloud workflow | One of the earliest AI clearances to name neonates, infants, children and adolescents outright (2017) | K163253 (2017) | Historically important; now a Tempus product |
+| Acorn 3D | Mighty Oak Medical | spine / scoliosis | Automated vertebral segmentation from CT to build patient-specific 3D models and surgical guides | Decision summaries state a pediatric population; the use case is pediatric deformity surgery | K260322 (2026) | Niche, surgical |
+| Second Opinion Pediatric | Pearl | dental / craniofacial | Detects caries and other findings on pediatric dental radiographs | The rare device whose name and indication are pediatric from the start | K243893 (2025) | Deployed in dentistry |
 
 ## FDA pediatric-use inventory (source-exhaustive screen)
 

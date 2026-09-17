@@ -725,10 +725,22 @@ COMMERCIAL_PEDIATRIC: list[dict[str, str]] = [
      "task": "EchoScan: flags 8 findings suspicious for fetal CHD; View Classifier: standard views / exam completeness",
      "pediatric": "Prenatal: EchoScan, 2nd trimester; View Classifier, 2nd / 3rd; maternal age 18+", "modality": "ultrasound",
      "fda_company": "BrightHeart", "url": "https://www.brightheart.ai/"},
-    {"vendor": "GE HealthCare / Canon / Siemens / Philips", "product": "TrueFidelity, AiCE, Deep Resolve, Precise Image",
-     "task": "CT: TrueFidelity / AiCE / Precise Image (noise, dose); MRI: AiCE / Deep Resolve (noise, resolution, scan time)",
-     "pediatric": "Pediatric applications documented; age / anatomy / protocol depend on scanner and software version", "modality": "CT / MRI",
-     "fda_company": "GE|General Electric|Canon|Siemens|Philips", "url": ""},
+    {"vendor": "GE HealthCare", "product": "TrueFidelity; AIR Recon DL",
+     "task": "CT deep-learning reconstruction (noise, dose); MRI deep-learning reconstruction (noise, shorter acquisitions)",
+     "pediatric": "Pediatric applications documented; sold across ages, with no separate pediatric indication; availability depends on scanner and software version", "modality": "CT / MRI",
+     "fda_company": "GE|General Electric", "url": "https://www.gehealthcare.com/static/truefidelity/"},
+    {"vendor": "Canon Medical", "product": "AiCE",
+     "task": "CT deep-learning reconstruction (noise, dose) and MRI deep-learning reconstruction (noise, resolution, scan time)",
+     "pediatric": "Vendor publishes pediatric CT examples; protocol and software version determine what is available", "modality": "CT / MRI",
+     "fda_company": "Canon", "url": "https://global.medical.canon/products/magnetic-resonance-imaging/aice/"},
+    {"vendor": "Siemens Healthineers", "product": "Deep Resolve",
+     "task": "MRI deep-learning reconstruction: denoising and resolution enhancement supporting accelerated acquisition",
+     "pediatric": "Vendor publishes pediatric MRI protocols using Deep Resolve; scan-time reduction is the pediatric argument", "modality": "MRI",
+     "fda_company": "Siemens", "url": "https://www.magnetomworld.siemens-healthineers.com/clinical-corner/protocols/pediatric-mri-protocols/deep-resolve-pediatric"},
+    {"vendor": "Philips", "product": "Precise Image; SmartSpeed",
+     "task": "CT deep-learning reconstruction at reduced dose (Precise Image); MRI acceleration with deep-learning reconstruction (SmartSpeed)",
+     "pediatric": "Pediatric applications documented; dose reduction depends on clinical task, patient size and anatomy, and is not a separate pediatric indication", "modality": "CT / MRI",
+     "fda_company": "Philips", "url": "https://www.philips.com/healthcare/resources/landing/smartspeed"},
     {"vendor": "Subtle Medical / AIRS Medical", "product": "SubtleMR, SwiftMR",
      "task": "MRI image post-processing: denoising / sharpening to support shorter acquisitions or better image quality",
      "pediatric": "No adult-only restriction in reviewed US indications; SwiftMR 2026 validation includes ages 0--21",
@@ -741,6 +753,237 @@ COMMERCIAL_PEDIATRIC: list[dict[str, str]] = [
      "task": "Aidoc: CT / CTA triage (e.g., ICH, LVO, PE, pneumothorax, fractures, free gas); Viz: LVO / ICH alerts, care coordination",
      "pediatric": "Age / anatomy eligibility is module-specific; company totals do not establish pediatric indications", "modality": "CT / CTA",
      "fda_company": "Aidoc|Viz.ai", "url": "https://www.aidoc.com/solutions/"},
+    {"vendor": "Hyperfine", "product": "Swoop Portable MR; BrainInsight",
+     "task": "Point-of-care low-field brain MRI whose image quality depends on deep-learning reconstruction; BrainInsight adds automated volumes and midline measurements",
+     "pediatric": "Bedside neuro-imaging in children, including the NICU; the Swoop decision summaries state a pediatric population", "modality": "MRI",
+     "fda_company": "Hyperfine", "url": "https://hyperfine.io/"},
+    {"vendor": "EOS imaging (Alphatec)", "product": "spineEOS, VEA Align, AutoDensity",
+     "task": "Biplanar low-dose full-body radiography with automated 3D spine and lower-limb modeling; AutoDensity reports vertebral bone density",
+     "pediatric": "Routine in pediatric scoliosis and limb-alignment follow-up, where cumulative dose matters; entries state a pediatric population", "modality": "x-ray",
+     "fda_company": "EOS imaging", "url": "https://www.eos-imaging.com/"},
+    {"vendor": "Sonio", "product": "Sonio Detect; Sonio Suspect",
+     "task": "Fetal ultrasound: standard-plane recognition and exam-completeness checking (Detect); flagging of images suspicious for anomalies (Suspect)",
+     "pediatric": "Entirely prenatal: every FDA entry states a fetal / maternal population", "modality": "ultrasound",
+     "fda_company": "Sonio", "url": "https://sonio.ai/"},
+    {"vendor": "Smart Soft Healthcare", "product": "CoLumbo, CoLumbo C-Spine, CoLumboX",
+     "task": "Spine MRI and radiograph segmentation, measurement and structured reporting (lumbar, then cervical)",
+     "pediatric": "Decision summaries state a pediatric population; pediatric-specific performance is not reported separately", "modality": "MRI / x-ray",
+     "fda_company": "Smart Soft Healthcare", "url": "https://www.smartsofthealthcare.com/"},
+    {"vendor": "Milvue", "product": "SmartChest; TechCare Trauma",
+     "task": "Radiograph triage and finding detection: chest findings (SmartChest), fractures and trauma findings (TechCare Trauma)",
+     "pediatric": "The TechCare Trauma summary (K242171) states a pediatric population", "modality": "x-ray",
+     "fda_company": "Milvue", "url": "https://milvue.com/"},
+    {"vendor": "Butterfly Network / Clarius", "product": "Butterfly iQ+ tools; Clarius AI tools",
+     "task": "Handheld ultrasound with on-device AI: bladder volume, gestational age, ejection fraction, nerve and lung tools",
+     "pediatric": "Scanner labeling covers pediatric imaging; each AI tool's age scope is separate and mostly adult", "modality": "ultrasound",
+     "fda_company": "Butterfly|Clarius", "url": "https://www.butterflynetwork.com/"},
+]
+
+# Vendors whose name in an abstract says nothing about whether the model
+# described is a product: every pediatric MRI paper names its scanner maker.
+# ``paper_db.match_commercial`` matches their products but not these names.
+COMMERCIAL_GENERIC_VENDORS: set[str] = {
+    "GE HealthCare", "Canon Medical", "Siemens Healthineers", "Philips",
+}
+
+# --------------------------------------------------------------------------- #
+# Commercial landscape: how the FDA list is read for the slides
+# --------------------------------------------------------------------------- #
+# The device list says what was authorized, when, and by whom; it does not say
+# which clinical problem a product addresses or which patients it is labeled
+# for. Two derived views fill that in (:mod:`pedrad_ai.commercial`):
+#
+#   who    - authorizations per company per year, with the subset whose
+#            decision summary states a pediatric or fetal patient population
+#            (``data/processed/fda_pediatric_inventory.json``).
+#   what   - a clinical problem per device, assigned from the device name
+#            first and the FDA product code second. Names win because the code
+#            is often generic: more than a third of the radiology panel sits
+#            under QIH ("Automated Radiological Image Processing Software").
+#            A device whose name and code name no clinical problem stays
+#            unassigned and is reported as such rather than guessed at.
+
+# Companies drawn on the commercial line chart: the n with the most radiology
+# entries, plus any named here (pediatric-relevant vendors that hold few
+# clearances and would never make the top of the list).
+COMMERCIAL_LINE_TOP_N = 6
+COMMERCIAL_LINE_ALWAYS = ["Hyperfine", "Sonio", "BrightHeart", "Gleamer", "EOS imaging"]
+
+# Clinical problem per device, from the device name. Ordered: the first group
+# that matches wins, so the specific clinical problems are listed before the
+# cross-cutting ones (image quality, measurement, triage) that almost any
+# product could also be said to do.
+COMMERCIAL_PROBLEM_TERMS: dict[str, list[str]] = {
+    "fetal / obstetric": [r"f[oe]tal", r"obstetric", r"prenatal", r"gestational age", r"nuchal",
+                          r"delivery date", r"echoscan", r"biometry", r"\bsonio\b", r"pregnan"],
+    "bone age / growth": [r"bone ?age", r"skeletal matur", r"bonexpert", r"\bphysis\b", r"growth plate"],
+    "fracture / trauma": [r"fractur", r"bone ?view", r"rayvolve", r"trauma", r"dislocat", r"\brib fx\b"],
+    "spine / scoliosis": [r"scolio", r"\bcobb\b", r"vertebr", r"\bspine\b", r"spinal", r"columbo",
+                          r"lumbar", r"c-spine", r"cervical spine", r"spineeos"],
+    "stroke / intracranial bleed": [r"stroke", r"\blvo\b", r"large vessel", r"\bich\b", r"intracranial",
+                                    r"h[ae]?emorrhag", r"aspects", r"perfusion", r"aneurysm", r"midline shift"],
+    "brain / neurologic": [r"\bbrain", r"neuro", r"hydroceph", r"white matter", r"hippocamp",
+                           r"multiple sclerosis", r"epilep", r"myelin", r"cortical"],
+    "chest / lung": [r"chest", r"\blung", r"pneumo", r"nodule", r"pulmonary", r"tubercul",
+                     r"pleural", r"effusion", r"emphysema", r"airway", r"\bcxr\b", r"fibrotic"],
+    "tube / line placement": [r"\btube\b", r"catheter", r"line placement", r"enteric", r"endotrach",
+                              r"\bett\b", r"malposition"],
+    "cardiac / echo": [r"cardiac", r"cardio", r"echocardio", r"ejection fraction", r"\bvalve",
+                       r"aort", r"coronary", r"\bheart\b", r"myocard", r"\btavr\b", r"\bstrain\b"],
+    "breast": [r"breast", r"mammo", r"tomosynthesis"],
+    "abdomen / pelvis": [r"liver", r"hepat", r"steato", r"abdom", r"appendic", r"kidney", r"renal",
+                         r"bladder", r"bowel", r"pancrea", r"spleen", r"prostate", r"hydroneph"],
+    "cancer lesion detection": [r"cancer", r"tumou?r", r"lesion", r"oncolog", r"metasta"],
+    "dental / craniofacial": [r"dental", r"caries", r"periapical", r"maxillofacial", r"cranio"],
+    "bone density / body composition": [r"bone (mineral )?density", r"osteopor", r"body composition",
+                                        r"\bbmd\b", r"densitometr", r"autodensity", r"sarcopen"],
+    "radiation therapy planning": [r"radiation therapy", r"radiotherapy", r"ablation", r"brachy",
+                                   r"treatment planning", r"\bcontour"],
+    "image quality: dose, noise, speed": [r"recon", r"denois", r"deep resolve", r"truefidelity",
+                                          r"\baice\b", r"precise image", r"\bnoise\b", r"clarity",
+                                          r"smart ?speed", r"acceler", r"swift", r"subtle",
+                                          r"\bair\b", r"\bdlr\b", r"low[- ]dose", r"\bhyper\b"],
+    "measurement / quantification": [r"quantif", r"measure", r"volumetr", r"segment", r"auto-?seg",
+                                     r"morpholog", r"calculat", r"\bsizing\b", r"\bmetrics\b"],
+    "triage / worklist prioritization": [r"triage", r"notif", r"briefcase", r"priorit", r"worklist", r"\balert"],
+}
+
+# Clinical problem per device from the FDA product code, used only when the
+# name says nothing. Codes left out here are the generic ones (QIH, LLZ, and
+# the scanner codes) that carry no clinical problem at all.
+COMMERCIAL_PROBLEM_CODES: dict[str, str] = {
+    "QBS": "fracture / trauma",
+    "QAS": "triage / worklist prioritization",
+    "QFM": "triage / worklist prioritization",
+    "QDQ": "cancer lesion detection",
+    "POK": "cancer lesion detection",
+    "OEB": "chest / lung",
+    "QWO": "chest / lung",
+    "OTE": "breast",
+    "SEZ": "breast",
+    "SAO": "bone density / body composition",
+    "KGI": "bone density / body composition",
+    "SHE": "fetal / obstetric",
+    "QHA": "cardiac / echo",
+    "PCS": "abdomen / pelvis",
+    "MUJ": "radiation therapy planning",
+    "QKB": "radiation therapy planning",
+    "QTZ": "radiation therapy planning",
+}
+
+# Product codes that are whole imaging systems rather than software products.
+# They matter because a scanner's labeling lists pediatric imaging as a
+# clinical application, so a scanner platform screens as pediatric on the
+# strength of generic labeling rather than a pediatric AI indication.
+COMMERCIAL_SYSTEM_CODES: set[str] = {
+    "IYN", "IYO", "JAK", "LNH", "KPS", "IZL", "JAA", "KPR", "MQB", "OWB", "OXO",
+    "IYE", "NQQ", "OTE", "OUO", "QNK", "NFJ", "KGI", "LDK",
+}
+
+# --------------------------------------------------------------------------- #
+# The products a pediatric radiologist should be able to name
+# --------------------------------------------------------------------------- #
+# One row per product, as against COMMERCIAL_PEDIATRIC above, which is one row
+# per company. Products are here because they are in routine pediatric use,
+# because a pediatric service is piloting them now, or because they are the
+# first credible commercial attempt at a pediatric problem. ``submission`` is
+# the FDA record that supports the pediatric claim, where there is one, and is
+# checked against data/processed/fda_ai_devices.json by
+# tests/test_commercial.py; products with no US authorization say so.
+# ``standing`` is an editorial judgment about deployment, not a measurement.
+COMMERCIAL_PRODUCTS: list[dict[str, str]] = [
+    {"product": "BoneXpert", "vendor": "Visiana", "problem": "bone age / growth", "modality": "x-ray",
+     "task": "Automated Greulich--Pyle and Tanner--Whitehouse bone age plus a Bone Health Index, from a hand radiograph",
+     "pediatric": "Built for children; CE-marked and in routine European use; US research use only",
+     "standing": "Widely deployed (Europe)", "submission": ""},
+    {"product": "BoneView", "vendor": "Gleamer", "problem": "fracture / trauma", "modality": "x-ray",
+     "task": "Fracture detection on trauma radiographs, presented as regions of interest alongside the image",
+     "pediatric": "US indication covers ages 2--21 for specified extremity views; pelvis, hip, femur, ribs and spine are adult-only",
+     "standing": "Widely deployed", "submission": "K222176"},
+    {"product": "Rayvolve (AZtrauma)", "vendor": "AZmed", "problem": "fracture / trauma", "modality": "x-ray",
+     "task": "Fracture and MSK finding detection on radiographs; sibling modules cover chest findings, measurements and bone age",
+     "pediatric": "US fracture indication from age 2; the bone-age module is CE-marked only",
+     "standing": "Widely deployed", "submission": "K240845"},
+    {"product": "TechCare Trauma", "vendor": "Milvue", "problem": "fracture / trauma", "modality": "x-ray",
+     "task": "Trauma radiograph triage: fractures, effusions and dislocations flagged for the reader",
+     "pediatric": "The decision summary states a pediatric population",
+     "standing": "Early US deployments", "submission": "K242171"},
+    {"product": "EFAI Bonesuite XR Bone Age Pro", "vendor": "Ever Fortune.AI", "problem": "bone age / growth", "modality": "x-ray",
+     "task": "Greulich--Pyle bone age from a PA left hand and wrist radiograph, as an adjunct to the radiologist",
+     "pediatric": "FDA-cleared for ages 2--16 --- the pediatric-specific US bone-age clearance",
+     "standing": "FDA-cleared, early adoption", "submission": "K234042"},
+    {"product": "Physis", "vendor": "16 Bit", "problem": "bone age / growth", "modality": "x-ray",
+     "task": "Bone-age estimation with Greulich--Pyle atlas matching and draft report text",
+     "pediatric": "Pediatric tool; Health Canada licensed, no FDA authorization identified",
+     "standing": "Promising, limited US access", "submission": ""},
+    {"product": "Fetal EchoScan", "vendor": "BrightHeart", "problem": "fetal / obstetric", "modality": "ultrasound",
+     "task": "Flags eight morphological findings suspicious for congenital heart disease on second-trimester views",
+     "pediatric": "Prenatal by definition: second-trimester exams, maternal age 18+",
+     "standing": "Early deployments / pilots", "submission": "K252294"},
+    {"product": "Sonio Detect / Sonio Suspect", "vendor": "Sonio", "problem": "fetal / obstetric", "modality": "ultrasound",
+     "task": "Checks that the required fetal views were obtained and are of usable quality (Detect); flags images suspicious for anomalies (Suspect)",
+     "pediatric": "Prenatal by definition; every FDA entry states a fetal population",
+     "standing": "Early deployments / pilots", "submission": "K252433"},
+    {"product": "Delivery Date AI", "vendor": "Ultrasound AI", "problem": "fetal / obstetric", "modality": "ultrasound",
+     "task": "Predicts the delivery date from a second- or third-trimester ultrasound when dating is unreliable",
+     "pediatric": "Prenatal; the first De Novo of its kind (a new device class)",
+     "standing": "Newly authorized, unproven in practice", "submission": "DEN250007"},
+    {"product": "Swoop Portable MR + BrainInsight", "vendor": "Hyperfine", "problem": "brain / neurologic", "modality": "MRI",
+     "task": "Bedside low-field brain MRI whose usable image quality comes from deep-learning reconstruction; BrainInsight adds automated volumes and midline shift",
+     "pediatric": "Decision summaries state a pediatric population; the natural use is the NICU and PICU, where transport is the risk",
+     "standing": "In pediatric pilots", "submission": "K253489"},
+    {"product": "spineEOS / VEA Align", "vendor": "EOS imaging (Alphatec)", "problem": "spine / scoliosis", "modality": "x-ray",
+     "task": "Automated 3D spine and lower-limb modeling from biplanar low-dose full-body radiographs",
+     "pediatric": "Scoliosis follow-up is repeated imaging of a growing child, so the dose saving compounds",
+     "standing": "Widely deployed (pediatric orthopedics)", "submission": "K251747"},
+    {"product": "CoLumbo", "vendor": "Smart Soft Healthcare", "problem": "spine / scoliosis", "modality": "MRI",
+     "task": "Spine MRI segmentation, measurement and structured reporting, lumbar and cervical",
+     "pediatric": "Decision summaries state a pediatric population; no pediatric-specific performance reported",
+     "standing": "Early deployments", "submission": "K254015"},
+    {"product": "BriefCase-Triage (CARE modules)", "vendor": "Aidoc", "problem": "triage / worklist prioritization", "modality": "CT / CTA",
+     "task": "Worklist triage on CT and CTA: intracranial hemorrhage, pulmonary embolism, pneumothorax, cervical-spine and rib fractures, free gas and more",
+     "pediatric": "Most entries state a pediatric population; the evidence behind them is adult, so treat pediatric use as local validation work",
+     "standing": "Widely deployed", "submission": "K253578"},
+    {"product": "Viz LVO / Viz ICH", "vendor": "Viz.ai", "problem": "stroke / intracranial bleed", "modality": "CT / CTA",
+     "task": "Detects large-vessel occlusion and intracranial hemorrhage and pushes the case to the stroke team's phones",
+     "pediatric": "No pediatric population statement found in the screened summaries; pediatric stroke use would be off-label",
+     "standing": "Widely deployed (adult)", "submission": ""},
+    {"product": "qXR-TB", "vendor": "Qure.ai", "problem": "chest / lung", "modality": "x-ray",
+     "task": "Chest radiograph screening for tuberculosis, built for high-burden settings with few readers",
+     "pediatric": "Vendor reports CE-marked use from age 0--15; US eligibility varies by module",
+     "standing": "Deployed in global-health screening", "submission": ""},
+    {"product": "AIR Recon DL / TrueFidelity", "vendor": "GE HealthCare", "problem": "image quality: dose, noise, speed", "modality": "MRI / CT",
+     "task": "Deep-learning reconstruction: shorter MRI acquisitions at the same quality, and CT images at lower dose",
+     "pediatric": "Sold across ages; the pediatric benefit is fewer sedations and less dose, and it is the AI most children actually meet",
+     "standing": "Widely deployed", "submission": ""},
+    {"product": "Deep Resolve", "vendor": "Siemens Healthineers", "problem": "image quality: dose, noise, speed", "modality": "MRI",
+     "task": "MRI deep-learning denoising and resolution enhancement that supports accelerated acquisition",
+     "pediatric": "Vendor publishes pediatric protocols; scan-time reduction is the pediatric argument",
+     "standing": "Widely deployed", "submission": ""},
+    {"product": "AiCE", "vendor": "Canon Medical", "problem": "image quality: dose, noise, speed", "modality": "CT / MRI",
+     "task": "Deep-learning reconstruction for both CT (noise, dose) and MRI (noise, resolution, scan time)",
+     "pediatric": "Vendor publishes pediatric CT galleries; protocol and version determine what is available",
+     "standing": "Widely deployed", "submission": ""},
+    {"product": "SmartSpeed / Precise Image", "vendor": "Philips", "problem": "image quality: dose, noise, speed", "modality": "MRI / CT",
+     "task": "MRI acceleration with deep-learning reconstruction (SmartSpeed); CT reconstruction at reduced dose (Precise Image)",
+     "pediatric": "Sold across ages; pediatric protocols are the vendor's own, not a separate indication",
+     "standing": "Widely deployed", "submission": ""},
+    {"product": "SubtleMR / SwiftMR", "vendor": "Subtle Medical / AIRS Medical", "problem": "image quality: dose, noise, speed", "modality": "MRI",
+     "task": "Vendor-neutral MRI post-processing: denoising and sharpening so a shorter acquisition still reads",
+     "pediatric": "No adult-only restriction in the reviewed US indications; SwiftMR's 2026 validation includes ages 0--21",
+     "standing": "Deployed, vendor-neutral retrofit", "submission": ""},
+    {"product": "Arterys Cardio DL", "vendor": "Arterys (Tempus)", "problem": "cardiac / echo", "modality": "MRI",
+     "task": "Cardiac MRI segmentation, flow and volume quantification with a cloud workflow",
+     "pediatric": "One of the earliest AI clearances to name neonates, infants, children and adolescents outright (2017)",
+     "standing": "Historically important; now a Tempus product", "submission": "K163253"},
+    {"product": "Acorn 3D", "vendor": "Mighty Oak Medical", "problem": "spine / scoliosis", "modality": "CT",
+     "task": "Automated vertebral segmentation from CT to build patient-specific 3D models and surgical guides",
+     "pediatric": "Decision summaries state a pediatric population; the use case is pediatric deformity surgery",
+     "standing": "Niche, surgical", "submission": "K260322"},
+    {"product": "Second Opinion Pediatric", "vendor": "Pearl", "problem": "dental / craniofacial", "modality": "x-ray",
+     "task": "Detects caries and other findings on pediatric dental radiographs",
+     "pediatric": "The rare device whose name and indication are pediatric from the start",
+     "standing": "Deployed in dentistry", "submission": "K243893"},
 ]
 
 # Company / tool names counted in newsletter stories ("who is being talked

@@ -1,6 +1,6 @@
 # Pediatric radiology AI: paper database
 
-Generated 2026-09-11 from `data/processed/pedrad_paper_db.csv`.
+Generated 2026-09-17 from `data/processed/pedrad_paper_db.csv`.
 
 This table is the corpus of the systematic review (`reports/05_review_manuscript.md`): the 3,496 included primary studies, of which 816 name a model or product. It is not a selection of the literature — no citation floor is applied — so every proportion here is a proportion of the review's corpus and can be quoted next to the manuscript without reconciliation.
 

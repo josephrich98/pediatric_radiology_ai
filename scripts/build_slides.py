@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
-"""Generate a Beamer slide deck (slides/pedrad_ai_slides.tex) from the data.
+"""Generate a Beamer slide deck from the data.
+
+**slides/pedrad_ai_slides.tex is no longer an output of this script.** The
+presented deck is hand-owned: slides have been deleted, retitled and reordered
+in the .tex itself, and none of that is expressed here, so a rebuild would
+restore every deleted slide. This script therefore refuses to write that path
+unless --overwrite is passed. To change a slide, edit the .tex. To look at what
+the generator would produce, send it somewhere else:
+
+    python scripts/build_slides.py --out slides/pedrad_ai_slides_generated.tex
 
 Headline numbers are pulled from data/processed/ so the slides stay consistent
-with the reports. Figures are included from ../figures/. Compile with:
+with the reports. Figures are included from ../figures/. Compile the deck with:
 
     cd slides && latexmk -xelatex pedrad_ai_slides.tex
 
@@ -11,7 +20,9 @@ uses ``@@KEY@@`` placeholders (not str.format) because the LaTeX body is full of
 literal braces. Slides whose data file is missing degrade to a one-line note
 rather than breaking the build.
 
-Deck outline (2026-09 revision):
+Deck outline the generator builds (2026-09 revision; the hand-owned deck is a
+subset of it, without the review section, the FDA appendix, the RSNA/SPR venue
+slides or the commercial product tables):
   title; objectives; methods; growth graph; modality x task with task
   definitions (all, pediatric); cross-check against the 2025 scoping review;
   biggest pediatric datasets; most-cited papers (all: 2008-2022, then one
@@ -20,20 +31,27 @@ Deck outline (2026-09 revision):
   with the radiology-AI works that appeared there; clinical problems addressed
   (pediatric, per era); one spotlight slide per landmark pediatric paper
   (2025-2026 focus); newsletters (all ages, pediatric, then one slide per year
-  listing the pediatric stories and the paper each story reports on);
-  commercial products with a pediatric angle; worth knowing; does well /
-  bleeding edge / open problems / implications.
+  listing the pediatric stories and the paper each story reports on); the
+  commercial section (products held per company over time with the
+  pediatric-labeled software subset, clinical problems the cleared products
+  address, the company table, then the product tables -- all from
+  pedrad_ai.commercial); worth knowing; does well / bleeding edge / open
+  problems / implications.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
+from pathlib import Path
 
-from pedrad_ai import analysis, config, corpus, curated, fda_devices, utils
+from pedrad_ai import analysis, commercial, config, corpus, curated, fda_devices, utils
 
 SLIDES_DIR = config.REPO_ROOT / "slides"
 SLIDES_DIR.mkdir(exist_ok=True)
+# The hand-owned deck. This script will not overwrite it without --overwrite.
+DECK = SLIDES_DIR / "pedrad_ai_slides.tex"
 
 MAX_TABLE_ROWS = 10
 # One fewer for the review tables: their rows carry a wrapped venue and a
@@ -75,7 +93,7 @@ def _tex(s) -> str:
     s = str(s) if s is not None else ""
     for a, b in _UNICODE_MAP.items():
         s = s.replace(a, b)
-    s = "".join(ch if ord(ch) < 0x250 else (unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode() or "") for ch in s)
+    s = "".join("" if 0x80 <= ord(ch) < 0xA0 else ch if ord(ch) < 0x250 else (unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode() or "") for ch in s)
     for a, b in (("\\", "\\textbackslash{}"), ("&", "\\&"), ("%", "\\%"), ("_", "\\_"), ("#", "\\#"),
                  ("$", "\\$"), ("{", "\\{"), ("}", "\\}"), ("~", "\\textasciitilde{}"), ("^", "\\^{}"),
                  ("<", "\\textless{}"), (">", "\\textgreater{}")):
@@ -559,30 +577,109 @@ def review_impact_bullets(stats):
     return "\n".join(items)
 
 
-def commercial_table(fda):
-    out = ["\\begin{tabular}{%s%s%s%s%s|}" % (_p(0.14), _p(0.11), _p(0.25), _p(0.23), _p(0.11)),
-           "\\hline \\textbf{Vendor} & \\textbf{Selected products} & \\textbf{Functions} & \\textbf{Pediatric / regulatory scope} & \\textbf{Company-wide FDA AI entries (n; years)} \\\\ \\hline"]
-    for c in config.COMMERCIAL_PEDIATRIC:
-        look = fda_devices.company_lookup(fda, c["fda_company"]) if fda else {"devices": 0, "years": []}
-        if look["devices"]:
-            yrs = look["years"]
-            fda_s = f"{look['devices']} ({yrs[0]}--{yrs[-1]})" if len(yrs) > 1 else f"{look['devices']} ({yrs[0]})"
+def commercial_table(recs):
+    """One row per company: what it sells, how many radiology AI entries it
+    holds, and how many of those state a pediatric population in the label
+    (standalone software in parentheses, because a scanner's labeling covers
+    pediatric imaging whatever its AI was built for)."""
+    out = ["\\begin{tabular}{%s%s%s%s%s%s|}" % (_p(0.13), _p(0.11), _p(0.22), _p(0.21), _p(0.09), _p(0.10)),
+           "\\hline \\textbf{Vendor} & \\textbf{Selected products} & \\textbf{Functions} & "
+           "\\textbf{Pediatric / regulatory scope} & \\textbf{FDA radiology AI entries (n; years)} & "
+           "\\textbf{Of those, pediatric population stated (software)} \\\\ \\hline"]
+    # Ordered by the pediatric count, then the total: the vendors whose
+    # clearances actually name children first, the scanner makers after.
+    for c in commercial.company_rows(recs):
+        yrs = c["fda_years"]
+        if c["fda_entries"]:
+            fda_s = f"{c['fda_entries']} ({yrs[0]}--{yrs[-1]})" if len(yrs) > 1 else f"{c['fda_entries']} ({yrs[0]})"
         else:
             fda_s = "not listed"
-        out.append(f"{_tex(c['vendor'])} & {_tex(c['product'])} & {_tex(c['task'])} & {_tex(c['pediatric'])} & {fda_s} \\\\ \\hline")
+        ped_s = f"{c['pediatric_entries']} ({c['pediatric_software']})" if c["fda_entries"] else "--"
+        out.append(f"{_tex(c['vendor'])} & {_tex(c['product'])} & {_tex(c['task'])} & "
+                   f"{_tex(c['pediatric'])} & {fda_s} & {ped_s} \\\\ \\hline")
     out.append("\\end{tabular}")
-    return _fit(out, 0.66)
+    return _fit(out, 0.64)
+
+
+PRODUCT_TABLE_ROWS = 12
+
+
+def product_frames(recs):
+    """One row per product, split across frames: the tools a pediatric
+    radiologist should be able to name, whether or not they are FDA-cleared."""
+    rows = commercial.product_rows(recs)
+    if not rows:
+        return ""
+    frames, n = [], len(rows)
+    for start in range(0, n, PRODUCT_TABLE_ROWS):
+        chunk = rows[start:start + PRODUCT_TABLE_ROWS]
+        part = f" ({start + 1}--{start + len(chunk)} of {n})" if n > PRODUCT_TABLE_ROWS else ""
+        out = ["\\begin{tabular}{%s%s%s%s%s|}" % (_p(0.16), _p(0.13), _p(0.28), _p(0.24), _p(0.13)),
+               "\\hline \\textbf{Product (vendor)} & \\textbf{Clinical problem} & \\textbf{What it does} & "
+               "\\textbf{Pediatric scope} & \\textbf{Where it stands} \\\\ \\hline"]
+        for r in chunk:
+            sub = f" [{r['submission']}, {r['year']}]" if r.get("submission") and r.get("year") else ""
+            out.append(f"{_tex(r['product'])} ({_tex(r['vendor'])}) & {_tex(r['problem'])} & {_tex(r['task'])} & "
+                       f"{_tex(r['pediatric'])}{_tex(sub)} & {_tex(r['standing'])} \\\\ \\hline")
+        out.append("\\end{tabular}")
+        frames.extend([
+            "\\begin{frame}[category=Commercial Software]{Products a pediatric radiologist should know%s}" % _tex(part),
+            "\\tiny", _fit(out, 0.72),
+            r"\\[3pt]{\scriptsize Square brackets give the FDA submission supporting the pediatric claim and its "
+            r"decision year; a blank means no US authorization was identified for that product. "
+            r"``Where it stands'' is our reading of deployment, not a measured adoption rate.}",
+            r"\end{frame}", ""])
+    return "\n".join(frames)
 
 
 def commercial_footnote(fda):
     date = _tex((fda or {}).get("collected_on", "date unavailable"))
     return (
-        r"{\scriptsize Counts = company-wide radiology entries in the FDA AI-enabled device list "
-        f"(saved {date}); grouped vendors are summed. "
-        r"Includes versions and unrelated products, not pediatric-clearance counts; parentheses = decision-year range. "
-        r"The list is not exhaustive and may lag new authorizations.\\[2pt]"
-        r"Functions / labeling checked 2026-09-16; features vary by market and version. "
-        r"GP = Greulich--Pyle; TW3 = Tanner--Whitehouse 3; CHD = congenital heart disease.}"
+        r"{\scriptsize Company-wide radiology entries in the FDA AI-enabled device list "
+        f"(saved {date}); grouped vendors summed; parentheses = decision-year range; entries include versions. "
+        r"Last column: entries stating a pediatric or fetal population in the decision summary (screened "
+        r"2026-09-16), standalone software in parentheses --- a scanner is labeled for pediatric imaging "
+        r"whatever its AI was built for, and a population statement is not an indication. "
+        r"Labeling checked 2026-09-16; GP = Greulich--Pyle; TW3 = Tanner--Whitehouse 3.}"
+    )
+
+
+def commercial_line_footnote(recs):
+    """Numbers the commercial figures are read against."""
+    pc = commercial.problem_counts(recs)
+    software = pc["total_pediatric"] - pc["systems_pediatric"]
+    return _tex(
+        f"Running total of each company's Radiology-panel entries in the FDA AI-enabled device list; an entry is a "
+        f"submission, so versions count separately. Dashed = standalone software whose decision summary states a "
+        f"pediatric or fetal population: {software} such entries panel-wide, against {pc['total_pediatric']} "
+        f"including scanner platforms, out of {pc['total']:,}. The biggest portfolios hold almost no pediatric "
+        f"software; Aidoc is the exception, and its pediatric statements rest on adult evidence."
+    )
+
+
+def fda_screen_line(inv):
+    """One sentence of FDA-screen arithmetic, to sit under the flow figure."""
+    flow = (inv or {}).get("flow") or {}
+    if not flow:
+        return ""
+    rad, pos, rev = flow.get("radiology", 0), flow.get("label_positive", 0), flow.get("needs_label_review", 0)
+    pct = f"{100 * pos / rad:.0f}\\%" if rad else "--"
+    return (f"{pos:,} of the {rad:,} radiology-panel authorizations ({pct}) name a pediatric or fetal "
+            f"population in the labeling passage reviewed; {rev} more name children only as a phantom, a "
+            f"validation set or an exclusion, and are kept for label review.")
+
+
+def commercial_problem_footnote(recs):
+    """How a device got its clinical problem, and what the biggest bars mean."""
+    pc = commercial.problem_counts(recs)
+    named = pc["total"] - pc["unassigned"]["all"]
+    top = next(iter(pc["counts"]), "")
+    bone = pc["counts"].get("bone age / growth", {}).get("all", 0)
+    return _tex(
+        f"The list names no clinical problem, so one is read off the device name first and the product code "
+        f"second: {named:,} of {pc['total']:,} devices name one, and the rest -- scanner platforms and general "
+        f"image-processing software -- are not plotted. By volume the cleared market is {top} and workflow "
+        f"rather than diagnosis, and {bone} entry in the whole panel names bone age."
     )
 
 
@@ -706,7 +803,16 @@ def journal_note(data, *, since, min_papers):
 
 
 
-def main() -> None:
+def main(argv=None) -> None:
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--out", type=Path, default=DECK,
+                    help="where to write the generated deck (default: slides/pedrad_ai_slides.tex, "
+                         "which is hand-owned and therefore refused unless --overwrite is given)")
+    ap.add_argument("--overwrite", action="store_true",
+                    help="overwrite the hand-owned deck, discarding every edit made to it by hand")
+    args = ap.parse_args(argv)
+
     preprints = _load("preprint_counts.json", {})
     counts = analysis.add_preprints(_load("pubmed_yearly_counts.json", {}), preprints)
     summary = analysis.summarize(counts) if counts else _load("pubmed_summary.json", {})
@@ -718,6 +824,9 @@ def main() -> None:
     news_items = _load("newsletter_items.json", [])
     fda = _load("fda_ai_devices.json", {})
     fda_pediatric = _load("fda_pediatric_inventory.json", {})
+    # One annotated record per radiology-panel device: the company tables, the
+    # product table and both commercial figures are all read off this.
+    commercial_recs = commercial.records(fda, fda_pediatric)
     journals = _load("journal_impact.json", {})
     rstats = _load("review_stats.json", {})
     rrows = review_rows()
@@ -801,8 +910,15 @@ def main() -> None:
         "@@spotlights@@": spotlight_frames(manifest),
         "@@news_year_frames@@": news_year_frames(news_items),
         "@@n_ped_news@@": str(n_ped_news),
-        "@@commercial_table@@": commercial_table(fda),
+        "@@fig_commercial_companies@@": _fig("commercial_companies_by_year.png", 0.58),
+        "@@fig_commercial_problems@@": _fig("commercial_problems.png", 0.60),
+        "@@commercial_line_footnote@@": commercial_line_footnote(commercial_recs),
+        "@@commercial_problem_footnote@@": commercial_problem_footnote(commercial_recs),
+        "@@commercial_table@@": commercial_table(commercial_recs),
         "@@commercial_footnote@@": commercial_footnote(fda),
+        "@@product_frames@@": product_frames(commercial_recs),
+        "@@fig_fda_prisma@@": _fig("fda_pediatric_prisma.png", 0.72),
+        "@@fda_screen_line@@": fda_screen_line(fda_pediatric),
         "@@fda_pediatric_inventory_frames@@": fda_pediatric_inventory_frames(fda_pediatric),
         "@@worth_knowing@@": worth_knowing_items(),
         "@@fda_rad@@": f"{fda_rad:,}",
@@ -834,9 +950,23 @@ def main() -> None:
     for k, v in repl.items():
         tex = tex.replace(k, v)
 
-    out = SLIDES_DIR / "pedrad_ai_slides.tex"
+    out = args.out
+    n_frames = tex.count(chr(92) + "begin{frame}") + 1
+    if out == DECK and DECK.exists() and not args.overwrite:
+        kept = DECK.read_text(encoding="utf-8").count(chr(92) + "begin{frame}") + 1
+        print(
+            f"Refusing to overwrite {DECK.relative_to(config.REPO_ROOT)}.\n"
+            f"  That deck is hand-owned: it is edited directly and is the source, not an output.\n"
+            f"  It has {kept} frames; this script would write {n_frames}, restoring every slide\n"
+            f"  that was deleted by hand and undoing every hand edit to titles and ordering.\n"
+            f"  To change a slide, edit {DECK.relative_to(config.REPO_ROOT)} directly.\n"
+            f"  To see what the generator would produce: --out slides/pedrad_ai_slides_generated.tex\n"
+            f"  To discard the hand-edited deck anyway: --overwrite"
+        )
+        return
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(tex, encoding="utf-8")
-    print(f"Wrote {out} ({tex.count(chr(10))} lines, {tex.count(chr(92) + 'begin{frame}') + 1} frames)")
+    print(f"Wrote {out} ({tex.count(chr(10))} lines, {n_frames} frames)")
 
 
 TEMPLATE = r"""\documentclass[aspectratio=169]{beamer}
@@ -1126,11 +1256,29 @@ the other.}
 
 @@news_year_frames@@
 
+\begin{frame}[category=Commercial Software]{Who is building commercial radiology AI}
+@@fig_commercial_companies@@
+{\scriptsize @@commercial_line_footnote@@}
+\end{frame}
+
+\begin{frame}[category=Commercial Software]{Which clinical problems the cleared products address}
+@@fig_commercial_problems@@
+{\scriptsize @@commercial_problem_footnote@@}
+\end{frame}
+
 \begin{frame}[category=Commercial Software]{Commercial software with a pediatric angle}
 \tiny
 @@commercial_table@@
 \\[4pt]
 @@commercial_footnote@@
+\end{frame}
+
+@@product_frames@@
+
+\begin{frame}[category=Commercial Software]{How many cleared devices actually name children?}
+@@fig_fda_prisma@@
+\vspace{2pt}
+{\scriptsize @@fda_screen_line@@}
 \end{frame}
 
 @@fda_pediatric_inventory_frames@@

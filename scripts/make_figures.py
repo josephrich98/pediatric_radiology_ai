@@ -23,7 +23,7 @@ import matplotlib.transforms  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.ticker import MultipleLocator, NullLocator  # noqa: E402
 
-from pedrad_ai import analysis, config, utils  # noqa: E402
+from pedrad_ai import analysis, commercial, config, utils  # noqa: E402
 
 FIG = config.FIGURE_DIR
 # Fixed categorical order (validated for color-vision-deficiency separation).
@@ -277,7 +277,9 @@ def venue_line_figure(rows, value_key, group_key, title, ylabel, fname):
     _save(fig, fname)
 
 
-def _all_vs_pediatric_lines(series, title, ylabel, fname):
+def _all_vs_pediatric_lines(series, title, ylabel, fname,
+                            labels=("Radiology AI (all ages)", "Pediatric radiology AI"),
+                            markers=False):
     """One color per source: solid line = radiology AI (all ages), dashed line =
     the pediatric subset. ``series`` maps source -> (all_by_year, ped_by_year),
     both {year: count}; each source is drawn only over the years it has data,
@@ -287,16 +289,21 @@ def _all_vs_pediatric_lines(series, title, ylabel, fname):
         return
     fig, ax = plt.subplots(figsize=(10, 5))
     years_all: set[int] = set()
-    palette = matplotlib.colormaps["tab10"].colors
+    # More series than the palette has colors: give each one its own marker as
+    # well, so a repeated color is still told apart -- and so a pediatric line
+    # that sits exactly on its own company's line stays visible.
+    palette = PALETTE if markers else matplotlib.colormaps["tab10"].colors
+    shapes = "os^Dv<>Ppd*X"
     for i, (name, (rad, ped)) in enumerate(series.items()):
         color = palette[i % len(palette)]
+        mk = shapes[i % len(shapes)] if markers else "o"
         xs = sorted(rad)
         years_all.update(xs)
-        ax.plot(xs, [rad[y] for y in xs], color=color, marker="o", markersize=4.5,
+        ax.plot(xs, [rad[y] for y in xs], color=color, marker=mk, markersize=4.5,
                 linewidth=2, label=name)
         if any(ped.get(y, 0) for y in xs):
-            ax.plot(xs, [ped.get(y, 0) for y in xs], color=color, marker="o", markersize=4,
-                    linewidth=1.6, linestyle=(0, (4, 2.5)))
+            ax.plot(xs, [ped.get(y, 0) for y in xs], color=color, marker=mk, markersize=3.6,
+                    markerfacecolor="white", linewidth=1.6, linestyle=(0, (4, 2.5)))
     ax.set_yscale("symlog", linthresh=10, linscale=0.6)
     ax.set_ylim(bottom=0)
     top = ax.get_ylim()[1]
@@ -318,7 +325,7 @@ def _all_vs_pediatric_lines(series, title, ylabel, fname):
     ax.add_artist(ax.legend(fontsize=8, frameon=False, loc="upper left", bbox_to_anchor=(1.01, 1.0)))
     ax.legend([Line2D([], [], color="0.25", linewidth=2),
                Line2D([], [], color="0.25", linewidth=1.6, linestyle=(0, (4, 2.5)))],
-              ["Radiology AI (all ages)", "Pediatric radiology AI"],
+              list(labels),
               fontsize=8, frameon=False, loc="lower left", bbox_to_anchor=(1.01, 0.0))
     _save(fig, fname)
 
@@ -497,6 +504,62 @@ def fda_figures(fda):
         ax.tick_params(axis="y", labelsize=8)
         ax.set_xlim(0, top[-1]["devices"] * 1.3)
         _save(fig, "fda_companies.png")
+
+
+def commercial_company_figure(recs):
+    """How many radiology AI products each big company holds, year by year, and
+    how much of that is software with a pediatric population in its label."""
+    series = commercial.company_series(recs)
+    if not series:
+        return
+    _all_vs_pediatric_lines(
+        series,
+        "Commercial radiology AI: FDA-authorized products held, by company",
+        "Cumulative FDA radiology AI entries (log scale above 10)",
+        "commercial_companies_by_year.png",
+        labels=("All radiology AI entries", "Pediatric-labeled software"),
+        markers=True,
+    )
+
+
+def commercial_problem_figure(recs, fname="commercial_problems.png"):
+    """Grouped horizontal bars: FDA-authorized radiology AI devices per clinical
+    problem, and the subset whose decision summary states a pediatric or fetal
+    patient population. Bars carry the count and the share of their own series,
+    so the two magnitudes (a whole panel against its pediatric slice) can be
+    compared without a second axis."""
+    data = commercial.problem_counts(recs)
+    rows = [(k, v) for k, v in data["counts"].items()]
+    if not rows:
+        return
+    rows.sort(key=lambda kv: kv[1]["all"])
+    tot_all, tot_ped = data["total"], data["total_pediatric"] or 1
+    # Wide and short: the frame is 16:9, and a tall chart shrinks to a column
+    # of unreadable type when it is scaled to the frame's height.
+    fig, ax = plt.subplots(figsize=(12.5, 6.2))
+    h = 0.4
+    for j, (key, color, total, label) in enumerate([
+        ("all", GRAY, tot_all, f"All radiology AI devices (n = {tot_all:,})"),
+        ("pediatric", GREEN, tot_ped, f"Pediatric population stated in the label (n = {data['total_pediatric']:,})"),
+    ]):
+        ys = [i + (j - 0.5) * h for i in range(len(rows))]
+        vals = [c[key] for _, c in rows]
+        ax.barh(ys, vals, height=h, color=color, label=label)
+        for y, v in zip(ys, vals):
+            ax.text(v + max(c["all"] for _, c in rows) * 0.01, y,
+                    f"{v:,} ({100 * v / total:.0f}%)", va="center", fontsize=6.5)
+    ax.set_yticks(range(len(rows)))
+    ax.set_yticklabels([r for r, _ in rows], fontsize=8)
+    un = data["unassigned"]
+    ax.set_xlabel(
+        "FDA-authorized AI-enabled devices, Radiology panel\n"
+        f"(a further {un['all']:,} devices, {un['pediatric']:,} of them pediatric-labeled, name no\n"
+        "clinical problem in the device name or product code and are not shown)", fontsize=8.5)
+    ax.set_title("Which clinical problems commercial radiology AI addresses")
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.set_xlim(0, max(c["all"] for _, c in rows) * 1.25)
+    ax.legend(frameon=False, loc="lower right", fontsize=8)
+    _save(fig, fname)
 
 
 # --------------------------------------------------------------------------- #
@@ -799,7 +862,11 @@ def main() -> None:
     github_figure(_load("github_repos.json") or {})
     venue_works_figure(_load("conference_works.json") or {})
     newsletter_figures(_load("newsletter_summary.json") or {})
-    fda_figures(_load("fda_ai_devices.json") or {})
+    fda = _load("fda_ai_devices.json") or {}
+    fda_figures(fda)
+    commercial_records = commercial.records(fda, _load("fda_pediatric_inventory.json") or {})
+    commercial_company_figure(commercial_records)
+    commercial_problem_figure(commercial_records)
     journal_impact_figures(_load("journal_impact.json") or {})
     print("Done.")
 

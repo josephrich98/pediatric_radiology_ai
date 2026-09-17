@@ -133,6 +133,28 @@ The questions it answers:
     clearances per company, pediatric-named devices. The commercial-players
     slide/report also cross-checks `config.COMMERCIAL_PEDIATRIC` (curated
     products with pediatric indications) against it.
+  - `commercial.py` — **who holds the clearances, and for what.** The device
+    list says what was authorized, when and by whom; it says nothing about
+    which clinical problem a product addresses or which patients it is labeled
+    for, so this module derives both and everything in the commercial section
+    of the deck (two figures, the company table, the product tables) and the
+    report reads off it. *Who*: authorizations per company per year, joined by
+    submission number to `fda_pediatric_inventory.json` so the pediatric series
+    is always a subset. *What*: a clinical problem per device, from the device
+    name first (`config.COMMERCIAL_PROBLEM_TERMS`) and the FDA product code
+    second (`COMMERCIAL_PROBLEM_CODES`, wording taken from openFDA); names win
+    because QIH alone covers a quarter of the panel, and a device that names no
+    problem stays unassigned and is reported as a count. Two facts the figures
+    must keep carrying: a pediatric population statement in a decision summary
+    is not a pediatric indication, and 120 of the 230 pediatric-labeled entries
+    are whole scanners whose labels list pediatric imaging as one clinical
+    application (`COMMERCIAL_SYSTEM_CODES`), which is why the pediatric series
+    is standalone software only. `config.COMMERCIAL_PRODUCTS` is the curated
+    product-level list behind the "products a pediatric radiologist should
+    know" slides; every FDA submission it cites is checked against the saved
+    snapshot by `tests/test_commercial.py`, and
+    `reports/commercial_software_verification.md` records what each claim rests
+    on.
   - `validation.py` — "is the query sufficient?": recall on
     `config.GOLD_PAPERS` (landmark DOIs resolved to PMIDs), a strict
     title/abstract-only variant of each query as a precision proxy, and an
@@ -267,21 +289,34 @@ python scripts/export_unified_db.py    # merge every paper file into data/proces
 python scripts/make_figures.py
 python scripts/make_review_figures.py  # PRISMA, composition, rigor, funnel, citation impact
 python scripts/build_reports.py
-python scripts/build_slides.py      # writes slides/pedrad_ai_slides.tex
+# NOT slides/pedrad_ai_slides.tex: that deck is hand-owned (see below).
+python scripts/build_slides.py --out slides/pedrad_ai_slides_generated.tex   # inspect the generator only
 cd slides && latexmk -xelatex pedrad_ai_slides.tex   # compile the Beamer deck (XeLaTeX: Helvetica Neue)
 python scripts/build_pptx.py        # editable PowerPoint version of the same deck (needs python-pptx)
 python scripts/build_site.py        # static database website -> dist/ (preview: cd dist && python -m http.server 8000)
 ```
 
-The Beamer deck (`slides/`) is generated from the same processed data, so its
-headline numbers stay consistent with the reports. The template uses `@@KEY@@`
-placeholders (not `str.format`) because the LaTeX body is full of literal braces.
-The footline is just "n / N" bottom-right (no Madrid bottom bar).
-`scripts/build_pptx.py` parses the generated `.tex` and rebuilds each frame as
-a native PowerPoint slide (pictures, text boxes, tables, columns), so figures
-can be moved and resized in PowerPoint. It only understands the LaTeX subset
-the template uses; if a new construct is added to the template, add a case
-there too. Requires `python-pptx` (`pip install -e ".[slides]"`).
+**`slides/pedrad_ai_slides.tex` is hand-owned. Never regenerate it.** It began
+as `build_slides.py` output but has since been edited directly: slides deleted,
+frames retitled, categories renamed (`Journals/Preprints` -> `Journals`), order
+changed. None of that is expressed in the generator, which still emits the full
+82-frame deck against the kept 44, so running `build_slides.py` over it restores
+every slide that was deliberately cut. To change a slide, **edit the `.tex`**.
+`build_slides.py` now refuses to write that path (`--out <path>` to see what it
+would produce, `--overwrite` to discard the hand-edited deck); `refresh.py` and
+`run_all.py` no longer call it and only recompile the deck that is there. The
+deck's numbers were pulled from `data/processed/`, so a data refresh can make a
+figure move while a hard-coded number in the `.tex` stays put — update those by
+hand, from the regenerated report or the generator's `--out` output.
+
+The template inside `build_slides.py` uses `@@KEY@@` placeholders (not
+`str.format`) because the LaTeX body is full of literal braces. The footline is
+just "n / N" bottom-right (no Madrid bottom bar). `scripts/build_pptx.py` parses
+the `.tex` and rebuilds each frame as a native PowerPoint slide (pictures, text
+boxes, tables, columns), so figures can be moved and resized in PowerPoint. It
+only understands the LaTeX subset the deck uses; if a new construct is added to
+the `.tex`, add a case there too. Requires `python-pptx`
+(`pip install -e ".[slides]"`).
 
 ### API etiquette and keys
 
@@ -527,7 +562,9 @@ Rules now in force in `config.py`:
   decile", `SLIDE_IMPACT_TOP_N` the rows per table, `SLIDE_REVIEW_YEARS_FROM` the
   first per-year table). Embase-only rows are marked with a dagger so it is
   visible that the corpus is not PubMed-only.
-- Slides are regenerated by `scripts/build_slides.py`; the most-cited tables
+- Slides are **not** regenerated (see above); the notes below describe how
+  `scripts/build_slides.py` built the deck the hand-owned `.tex` came from, and
+  are what to follow when a section of it is rebuilt by hand. The most-cited tables
   show the top 10 (2008-2022, then per year) with citations, FWCI and venue,
   and fall back to a title heuristic for papers not in
   `curated.PAPER_QUESTIONS`. Add new entries there when the rankings change.
@@ -564,7 +601,8 @@ Rules now in force in `config.py`:
   images, adds the papers that are new since the last run to the paper database
   (`--skip paperdb`, `--paper-db-limit N`, `--paper-db-all`), runs `enrich_fwci.py` (skipped
   gracefully when the OpenAlex budget is spent), then review statistics, figures (including the
-  review figures), reports, slides, latexmk, and the `.pptx` export; `--quick`, `--keep-cache`, `--no-slides`, `--skip <collector>`,
+  review figures), reports, then latexmk and the `.pptx` export over the
+  hand-owned deck (it does **not** regenerate the `.tex`); `--quick`, `--keep-cache`, `--no-slides`, `--skip <collector>`,
   `--dry-run`). The same script runs monthly in
   `.github/workflows/refresh.yml`, which opens a pull request with the
   regenerated deliverables rather than pushing to main; it can also be

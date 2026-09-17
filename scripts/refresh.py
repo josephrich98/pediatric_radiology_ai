@@ -8,7 +8,7 @@ Usage:
     python scripts/refresh.py                 # full refresh (30-60 min)
     python scripts/refresh.py --quick         # headline PubMed queries only
     python scripts/refresh.py --keep-cache    # re-run without re-fetching
-    python scripts/refresh.py --no-slides     # skip build_slides + latexmk + build_pptx
+    python scripts/refresh.py --no-slides     # skip latexmk + build_pptx
     python scripts/refresh.py --skip conferences --skip patents
     python scripts/refresh.py --skip paperdb     # leave the paper database alone
     python scripts/refresh.py --paper-db-all     # read every outstanding paper (slow, costs money)
@@ -111,7 +111,7 @@ def main() -> int:
     ap.add_argument("--quick", action="store_true", help="headline PubMed queries only")
     ap.add_argument("--keep-cache", action="store_true", help="do not clear data/raw/cache/")
     ap.add_argument("--drop-dblp-cache", action="store_true", help="also clear cached DBLP responses")
-    ap.add_argument("--no-slides", action="store_true", help="skip build_slides.py, latexmk, and build_pptx.py")
+    ap.add_argument("--no-slides", action="store_true", help="skip latexmk and build_pptx.py")
     ap.add_argument("--skip", action="append", default=[], choices=sorted(COLLECTORS) + ["paperdb"],
                     help="collector(s) to skip (repeatable); 'paperdb' skips the paper database")
     ap.add_argument("--paper-db-limit", type=int, default=None,
@@ -180,9 +180,11 @@ def main() -> int:
     results["reports"], _ = run_step("reports", [py, str(SCRIPTS / "build_reports.py")],
                                      LOGS / f"refresh-{stamp}-reports.log", args.dry_run)
 
+    # build_slides.py is deliberately NOT run here: slides/pedrad_ai_slides.tex is
+    # hand-owned (slides deleted, retitled and reordered by hand), so regenerating
+    # it would restore every deleted slide. The refresh recompiles the deck that is
+    # there, with the figures it has just redrawn, and leaves its content alone.
     if not args.no_slides:
-        results["slides"], _ = run_step("slides", [py, str(SCRIPTS / "build_slides.py")],
-                                        LOGS / f"refresh-{stamp}-slides.log", args.dry_run)
         if shutil.which("latexmk"):
             results["pdf"], _ = run_step(
                 "pdf",
@@ -190,7 +192,7 @@ def main() -> int:
                 LOGS / f"refresh-{stamp}-pdf.log", args.dry_run,
             )
         else:
-            print("\n=== pdf: latexmk not found; slides/pedrad_ai_slides.tex written but not compiled")
+            print("\n=== pdf: latexmk not found; slides/pedrad_ai_slides.tex left uncompiled")
         try:
             import pptx  # noqa: F401  (python-pptx; pip install -e ".[slides]")
         except ImportError:

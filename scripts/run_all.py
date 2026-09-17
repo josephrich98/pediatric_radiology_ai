@@ -60,7 +60,8 @@ def main() -> None:
     run("make_review_figures.py")
     run("build_landscape_review.py")
     run("build_reports.py")
-    run("build_slides.py")
+    # build_slides.py is not run: slides/pedrad_ai_slides.tex is hand-owned (see
+    # its docstring), and regenerating it would restore every slide deleted by hand.
     print("\nPipeline complete. See reports/, figures/, and slides/.")
 
 
