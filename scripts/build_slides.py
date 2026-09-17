@@ -1060,74 +1060,20 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
 \end{itemize}
 \end{frame}
 
-\begin{frame}{What the field does well}
-\small
+\begin{frame}{Recommendations for pediatric radiologists}
 \begin{itemize}
-  \item \textbf{Finding what is there.} Detection / diagnosis is the bulk of the literature (@@det_rad@@ of
-        radiology-AI papers, @@det_ped@@ of pediatric); in adults it has become deployed worklist triage, the largest
-        block of the @@fda_rad@@ FDA-listed radiology AI devices.
-  \item \textbf{Outlining and measuring.} Segmentation (@@seg_rad@@ of papers) has open, strong defaults (nnU-Net,
-        TotalSegmentator); in children the mature measurement task is bone age (RSNA challenge: 4.2-month error,
-        several cleared products), and measurement / quantification is @@meas_ped@@ of pediatric papers.
-  \item \textbf{Better images from less dose.} Reconstruction / imputation is @@recon_rad@@ of radiology AI and
-        @@recon_ped@@ of pediatric work; deep-learning reconstruction is on today's scanners and cut pediatric CT dose
-        by about half at equal or better image quality.
-  \item \textbf{Shared benchmarks where they exist.} Fetal and neonatal brain MRI (FeTA, dHCP) and pediatric brain
-        tumors (BraTS-PEDs) now have challenge datasets, and multi-site pediatric neuro-oncology models match
-        radiologists retrospectively.
+  \setlength{\itemsep}{12pt}
+  \item Choose one task worth improving in your practice: bone-age measurements,
+        fracture detection, or reducing CT dose / MRI scan time.
+  \item Before adopting a tool, ask which children it was tested on. Check the
+        intended age range and test it on your own cases, including younger children
+        and unusual anatomy.
+  \item In a local pilot, measure what changes with AI: reading time, missed findings,
+        false alarms, dose, or scan time. Review errors and keep checking after rollout.
+  \item Help build the evidence we need: choose a pediatric problem you see often,
+        label cases carefully, and work with other hospitals to test whether a model
+        works beyond the site that built it.
 \end{itemize}
-\end{frame}
-
-\begin{frame}{Bleeding edge}
-\small
-\begin{itemize}
-  \item \textbf{Foundation and vision-language models}: @@fm_rad@@ of radiology-AI papers (@@fm_ped@@ pediatric);
-        segment-anything style tools (MedSAM) and generalist radiology models are replacing task-specific training.
-  \item \textbf{Report generation and LLMs}: @@llm_rad@@ of papers; drafting and extracting from reports, with
-        fluency ahead of reliability.
-  \item \textbf{Agents}: @@agent_rad@@ of radiology-AI papers (@@agent_ped_n@@ pediatric papers in total); LLMs that
-        call imaging tools and take multi-step actions.
-  \item \textbf{Pediatric-specific}: bone age robust to skeletal dysplasias (Deeplasia); fetal ultrasound AI is the
-        most active commercial pediatric area in the trade press (BrightHeart, Sonio, DeepEcho clearances,
-        2023--2026); adult fracture tools extended to children (Gleamer 2023, AZmed 2024) and now tested in a
-        real pediatric emergency department.
-  \item \textbf{Generalization studies}: adult-trained CT organ segmentation degrades in small children, and the
-        first pediatric prospective-style reader studies show smaller gains than stand-alone accuracy implies.
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Open problems --- where a children's hospital could contribute}
-\footnotesize
-\begin{itemize}
-  \item \textbf{Which diseases?} Since 2023 the pediatric corpus (@@prob_n_recent@@ papers) leans to
-        @@prob_top@@. Barely studied: @@prob_low@@. Which of these deserve a model first is an open question for
-        this group.
-  \item \textbf{Dataset curation.} What would a multi-center pediatric dataset look like: age-stratified, consented,
-        protocol-diverse, with rare phenotypes? Which of our own archives (CT, ultrasound, NICU radiographs) could
-        become the pediatric benchmark that does not yet exist?
-  \item \textbf{Validation.} Local, age-stratified testing of adult-cleared tools; prospective reader studies rather
-        than retrospective accuracy; monitoring for drift as children grow and protocols change.
-  \item \textbf{Beyond interpretation.} Workflow / non-interpretive work is @@wf_rad@@ of papers, but communication
-        with families, education, protocoling and policy are almost absent; these are cheaper to build and evaluate
-        than diagnostic models.
-  \item \textbf{Regulation and liability.} Few of the @@fda_rad@@ radiology clearances carry a pediatric indication;
-        which adult clearances are acceptable to use off-label in children, and under what local validation?
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Implications for a children's hospital}
-\small
-\begin{enumerate}
-  \item \textbf{Buy maturity, build for the gaps}: adopt cleared adult-derived tools that transfer (reconstruction,
-        bone age, fracture with a pediatric indication); treat the under-studied pediatric problems as local
-        validation and research.
-  \item \textbf{Demand local pediatric validation} before clinical use, by age group, and check the age range in
-        the clearance.
-  \item \textbf{Prioritize dose and throughput}: deep-learning reconstruction gives the clearest pediatric benefit
-        today.
-  \item \textbf{Invest in data}: a curated, shareable pediatric dataset is the scarcest resource in the field and the
-        contribution a children's hospital is uniquely placed to make.
-\end{enumerate}
 \end{frame}
 
 \end{document}

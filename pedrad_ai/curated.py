@@ -165,18 +165,31 @@ REPO_NOTES: dict[str, tuple[str, str]] = {
     "ANTsX/ANTs": ("registration toolkit", "brain MRI registration standard"),
 }
 
-# The short list for the "worth knowing" slide: (name, kind, why)
+# The short list for the "worth knowing" slide: (name, kind, why).
+# Clinical applications first, then appraisal resources, then research tools.
+# Primary sources checked 2026-09-16:
+# https://pubmed.ncbi.nlm.nih.gov/33201790/
+# https://www.rsna.org/artificial-intelligence/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017
+# https://www.accessdata.fda.gov/cdrh_docs/pdf22/K222176.pdf
+# https://www.accessdata.fda.gov/cdrh_docs/pdf24/K240845.pdf
+# https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-enabled-medical-devices
+# https://pubs.rsna.org/doi/10.1148/ryai.240300
+# https://doi.org/10.1371/journal.pmed.1002683
+# https://github.com/wasserth/TotalSegmentator
+# https://github.com/MIC-DKFZ/nnUNet
+# https://doi.org/10.1038/s41467-024-44824-z
+# https://project-monai.github.io/MONAI/
 WORTH_KNOWING: list[tuple[str, str, str]] = [
-    ("TotalSegmentator", "open tool", "free, one-command segmentation of 100+ structures on any CT (and MR); the basis for opportunistic measurements (bone density, muscle, organ volumes)"),
-    ("nnU-Net", "open tool", "if a vendor claims a segmentation result, this is the baseline they had to beat"),
-    ("MONAI", "open framework", "what your data scientists will build with; knowing the name lets you read a methods section"),
-    ("RSNA Pediatric Bone Age Challenge (2017)", "paper / dataset", "the one pediatric task with a public benchmark, many models, and cleared products (BoneXpert, Rho)"),
-    ("\"Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs\" (Zech et al., PLoS Med 2018)", "paper", "the cleanest demonstration that a model can learn the hospital instead of the disease; the reason to demand local validation"),
-    ("CLAIM checklist (Radiology: AI 2020)", "guideline", "how to tell a well-reported AI study from a weak one"),
-    ("\"Improving Image Quality and Reducing Radiation Dose for Pediatric CT by Using Deep Learning Reconstruction\" (Brady et al., Radiology 2021)", "paper", "the most-cited non-bone-age pediatric paper: deep-learning reconstruction lowers pediatric CT dose with better image quality; the most immediately usable pediatric benefit"),
-    ("FDA AI-enabled device list", "registry", "the authoritative list of what is cleared; check the indication's age range before buying"),
-    ("Gleamer BoneView / AZmed Rayvolve", "products", "the first fracture-detection tools with pediatric indications; realistic first pediatric AI purchases"),
-    ("MedSAM / segment-anything models", "foundation models", "where annotation and segmentation tooling is heading: click, don't draw"),
+    ("Pediatric CT reconstruction (Brady et al., Radiology 2021)", "paper", "a concrete dose-reduction application: lower dose with improved image quality in the studied protocols"),
+    ("RSNA Pediatric Bone Age Challenge (2017)", "benchmark / dataset", "a landmark pediatric benchmark; useful for understanding automated bone-age accuracy and its limits"),
+    ("Gleamer BoneView / AZmed Rayvolve", "clinical products", "examples of fracture-detection assistance with pediatric indications; eligibility depends on age, anatomy, and product version"),
+    ("FDA AI-enabled device list and linked labeling", "regulatory resource", "a starting point for checking authorized use and pediatric age ranges; the list is not exhaustive"),
+    ("CLAIM checklist (2024 update)", "reporting guideline", "check whether data, reference standards, and testing are adequately described; reporting completeness alone does not establish clinical benefit"),
+    ("Cross-hospital pneumonia testing (Zech et al., PLoS Med 2018)", "paper", "models can exploit hospital-specific cues; ask for external testing and performance in your own patient population"),
+    ("TotalSegmentator", "research tool", "automated CT / MR organ segmentation for volumes and body composition; check accuracy in children before trusting measurements"),
+    ("nnU-Net", "research framework", "a strong baseline for training segmentation models; ask whether a new method improves on an appropriate comparator"),
+    ("MedSAM / segment-anything models", "research models", "prompt-guided contours can assist annotation; radiologists still need to review and correct the output"),
+    ("MONAI", "research framework", "infrastructure for imaging-AI development; useful when collaborating with a research team, rather than a ready-to-use diagnostic tool"),
 ]
 
 
