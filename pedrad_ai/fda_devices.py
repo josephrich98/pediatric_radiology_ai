@@ -182,10 +182,13 @@ def collect() -> dict[str, Any]:
 
 
 def company_lookup(fda: dict[str, Any], pattern: str) -> dict[str, Any]:
-    """Find companies in the radiology list matching a ``|``-separated pattern."""
+    """Match literal company aliases at word boundaries, not inside other names."""
     if not fda:
         return {"devices": 0, "years": []}
-    rx = re.compile("|".join(re.escape(p.strip()) for p in pattern.split("|") if p.strip()), re.I)
+    aliases = [re.escape(p.strip()) for p in pattern.split("|") if p.strip()]
+    if not aliases:
+        return {"devices": 0, "years": [], "names": []}
+    rx = re.compile(r"(?<!\w)(?:" + "|".join(aliases) + r")(?!\w)", re.I)
     hits = [d for d in fda.get("devices", []) if rx.search(d["company"] or "")]
     years = sorted({d["year"] for d in hits if d["year"]})
     return {"devices": len(hits), "years": years, "names": sorted({d["device"] for d in hits})[:6]}

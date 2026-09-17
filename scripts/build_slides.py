@@ -561,7 +561,7 @@ def review_impact_bullets(stats):
 
 def commercial_table(fda):
     out = ["\\begin{tabular}{%s%s%s%s%s|}" % (_p(0.14), _p(0.11), _p(0.25), _p(0.23), _p(0.11)),
-           "\\hline \\textbf{Vendor} & \\textbf{Product} & \\textbf{Task} & \\textbf{Pediatric status} & \\textbf{FDA list} \\\\ \\hline"]
+           "\\hline \\textbf{Vendor} & \\textbf{Selected products} & \\textbf{Functions} & \\textbf{Pediatric / regulatory scope} & \\textbf{Company-wide FDA AI entries (n; years)} \\\\ \\hline"]
     for c in config.COMMERCIAL_PEDIATRIC:
         look = fda_devices.company_lookup(fda, c["fda_company"]) if fda else {"devices": 0, "years": []}
         if look["devices"]:
@@ -572,6 +572,18 @@ def commercial_table(fda):
         out.append(f"{_tex(c['vendor'])} & {_tex(c['product'])} & {_tex(c['task'])} & {_tex(c['pediatric'])} & {fda_s} \\\\ \\hline")
     out.append("\\end{tabular}")
     return _fit(out, 0.66)
+
+
+def commercial_footnote(fda):
+    date = _tex((fda or {}).get("collected_on", "date unavailable"))
+    return (
+        r"{\scriptsize Counts = company-wide radiology entries in the FDA AI-enabled device list "
+        f"(saved {date}); grouped vendors are summed. "
+        r"Includes versions and unrelated products, not pediatric-clearance counts; parentheses = decision-year range. "
+        r"The list is not exhaustive and may lag new authorizations.\\[2pt]"
+        r"Functions / labeling checked 2026-09-16; features vary by market and version. "
+        r"GP = Greulich--Pyle; TW3 = Tanner--Whitehouse 3; CHD = congenital heart disease.}"
+    )
 
 
 def worth_knowing_items():
@@ -764,6 +776,7 @@ def main() -> None:
         "@@news_year_frames@@": news_year_frames(news_items),
         "@@n_ped_news@@": str(n_ped_news),
         "@@commercial_table@@": commercial_table(fda),
+        "@@commercial_footnote@@": commercial_footnote(fda),
         "@@worth_knowing@@": worth_knowing_items(),
         "@@fda_rad@@": f"{fda_rad:,}",
         "@@ped_mod_bullets@@": modality_bullets(counts, "ped_modality", "pediatric_radiology_ai"),
@@ -1060,8 +1073,7 @@ the other.}
 \tiny
 @@commercial_table@@
 \\[4pt]
-{\scriptsize ``FDA list'' = number of radiology AI-enabled devices the company has on the FDA list (years). Pediatric
-status is the publicly stated indication; confirm the age range in the 510(k) summary before purchase.}
+@@commercial_footnote@@
 \end{frame}
 
 \begin{frame}{Worth knowing as a radiologist --- and why}

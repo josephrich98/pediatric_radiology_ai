@@ -833,34 +833,30 @@ bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude child
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.66\textheight}}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|>{\raggedright\arraybackslash}p{0.154\textwidth}|>{\raggedright\arraybackslash}p{0.121\textwidth}|>{\raggedright\arraybackslash}p{0.275\textwidth}|>{\raggedright\arraybackslash}p{0.253\textwidth}|>{\raggedright\arraybackslash}p{0.121\textwidth}|}
-\hline \textbf{Vendor} & \textbf{Product} & \textbf{Task} & \textbf{Pediatric status} & \textbf{FDA list} \\ \hline
-Gleamer & BoneView & fracture detection on radiographs & pediatric indication (age 2+) cleared 2023 & 4 (2022--2025) \\ \hline
-AZmed & Rayvolve & fracture (and chest) findings on radiographs & pediatric fracture indication cleared 2024 & 4 (2022--2025) \\ \hline
-Visiana & BoneXpert & automated bone age (GP / TW) & pediatric by design; CE-marked since 2009 (not on the FDA AI list) & not listed \\ \hline
-16 Bit & Rho & automated bone age & pediatric by design & 1 (2024) \\ \hline
-Ever Fortune.AI & EFAI Bonesuite Bone Age Pro & automated bone age & pediatric by design & 11 (2022--2026) \\ \hline
-BrightHeart & Fetal EchoScan & fetal echocardiography view / anomaly assist & prenatal (fetal) by design & 5 (2024--2025) \\ \hline
-GE HealthCare / Canon / Siemens / Philips & TrueFidelity, AiCE, Deep Resolve, Precise Image & deep-learning CT / MR reconstruction (lower dose, faster scans) & adult-cleared scanner software, widely used for pediatric dose reduction & 307 (2014--2026) \\ \hline
-Subtle Medical / AIRS Medical & SubtleMR, SwiftMR & accelerated MRI via deep-learning denoising & adult-cleared; pediatric scan-time studies & 13 (2018--2026) \\ \hline
-Qure.ai & qXR / qER & chest radiograph and head CT triage / quantification & adult indications; pediatric TB-screening evidence only & 9 (2020--2026) \\ \hline
-Aidoc / Viz.ai & BriefCase, Viz LVO / ICH & worklist triage (hemorrhage, LVO, PE, pneumothorax) & adult-only indications; the largest deployed category & 43 (2018--2026) \\ \hline
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.210\textwidth}|>{\raggedright\arraybackslash}p{0.165\textwidth}|>{\raggedright\arraybackslash}p{0.375\textwidth}|>{\raggedright\arraybackslash}p{0.345\textwidth}|>{\raggedright\arraybackslash}p{0.165\textwidth}|}
+\hline \textbf{Vendor} & \textbf{Selected products} & \textbf{Functions} & \textbf{Pediatric / regulatory scope} & \textbf{Number of FDA AI entries} \\ \hline
+Gleamer & BoneView & X-ray fracture detection; international versions also flag dislocations, effusions and focal bone lesions & US fracture aid: ages 2--21 for specified extremity views; other anatomy adult-only (2023) & 4 (2022--2025) \\ \hline
+AZmed & Rayvolve suite & MSK / chest finding detection; orthopedic measurements; GP bone age (separate modules) & US fracture indication age 2+ (2024); AZboneage is CE-marked; other eligibility varies by module & 4 (2022--2025) \\ \hline
+Visiana & BoneXpert & Hand X-ray bone age (GP / TW3), Bone Health Index; associated adult-height prediction tool & Designed for children; CE-marked; US research use only & not listed \\ \hline
+16 Bit & Physis & Hand X-ray bone-age estimation, GP atlas matching and report assistance & Pediatric tool; no FDA authorization identified. Company's FDA entry is Rho (low bone density, age 50+) & 1 (2024) \\ \hline
+Ever Fortune.AI & EFAI Bonesuite XR Bone Age Pro & GP bone-age quantification from PA left-hand / wrist radiographs & FDA-cleared 2024 for ages 2--16 (K234042) & 11 (2022--2026) \\ \hline
+BrightHeart & Fetal EchoScan; View Classifier & EchoScan: flags 8 findings suspicious for fetal CHD; View Classifier: standard views / exam completeness & Prenatal: EchoScan, 2nd trimester; View Classifier, 2nd / 3rd; maternal age 18+ & 5 (2024--2025) \\ \hline
+GE HealthCare / Canon / Siemens / Philips & TrueFidelity, AiCE, Deep Resolve, Precise Image & CT: TrueFidelity / AiCE / Precise Image (noise, dose); MRI: AiCE / Deep Resolve (noise, resolution, scan time) & Pediatric applications documented; age / anatomy / protocol depend on scanner and software version & 284 (2014--2026) \\ \hline
+Subtle Medical / AIRS Medical & SubtleMR, SwiftMR & MRI image post-processing: denoising / sharpening to support shorter acquisitions or better image quality & No adult-only restriction in reviewed US indications; SwiftMR 2026 validation includes ages 0--21 & 13 (2018--2026) \\ \hline
+Qure.ai & qXR / qER families & Chest X-ray detection / triage, TB screening, tube / heart measurements; head CT triage / quantification and CTA LVO & US eligibility varies by module; vendor reports CE-marked qXR TB use across ages 0--15 & 9 (2020--2026) \\ \hline
+Aidoc / Viz.ai & BriefCase, Viz LVO / ICH & Aidoc: CT / CTA triage (e.g., ICH, LVO, PE, pneumothorax, fractures, free gas); Viz: LVO / ICH alerts, care coordination & Age / anatomy eligibility is module-specific; company totals do not establish pediatric indications & 43 (2018--2026) \\ \hline
 \end{tabular}
 \end{adjustbox}
 \\[4pt]
-{\scriptsize ``FDA list'' = number of radiology AI-enabled devices the company has on the FDA list (years). Pediatric
-status is the publicly stated indication; confirm the age range in the 510(k) summary before purchase.}
 \end{frame}
 
 \begin{frame}{Worth knowing as a radiologist --- and why}
 \scriptsize
 \begin{itemize}
-\item \textbf{Pediatric CT reconstruction (Brady et al., Radiology 2021)} (paper): a concrete dose-reduction application: lower dose with improved image quality in the studied protocols
 \item \textbf{RSNA Pediatric Bone Age Challenge (2017)} (benchmark / dataset): a landmark pediatric benchmark; useful for understanding automated bone-age accuracy and its limits
 \item \textbf{Gleamer BoneView / AZmed Rayvolve} (clinical products): examples of fracture-detection assistance with pediatric indications; eligibility depends on age, anatomy, and product version
 \item \textbf{FDA AI-enabled device list and linked labeling} (regulatory resource): a starting point for checking authorized use and pediatric age ranges; the list is not exhaustive
 \item \textbf{CLAIM checklist (2024 update)} (reporting guideline): check whether data, reference standards, and testing are adequately described; reporting completeness alone does not establish clinical benefit
-\item \textbf{Cross-hospital pneumonia testing (Zech et al., PLoS Med 2018)} (paper): models can exploit hospital-specific cues; ask for external testing and performance in your own patient population
 \item \textbf{TotalSegmentator} (research tool): automated CT / MR organ segmentation for volumes and body composition; check accuracy in children before trusting measurements
 \item \textbf{nnU-Net} (research framework): a strong baseline for training segmentation models; ask whether a new method improves on an appropriate comparator
 \item \textbf{MedSAM / segment-anything models} (research models): prompt-guided contours can assist annotation; radiologists still need to review and correct the output

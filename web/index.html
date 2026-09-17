@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pediatric Radiology AI Database</title>
+  <meta name="description" content="Searchable tables of pediatric radiology AI articles, open-source software, trade-press stories, commercial products, FDA devices and public datasets." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩻</text></svg>" />
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --panel: #ffffff;
+      --panel-2: #fafbfc;
+      --border: #e2e6eb;
+      --text: #1f2933;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-weak: #eff4ff;
+      --green: #15803d;
+      --green-weak: #e8f6ec;
+      --orange: #c2410c;
+      --orange-weak: #fdf0e7;
+      --blue: #1d4ed8;
+      --blue-weak: #e8efff;
+      --red: #b91c1c;
+      --gray-weak: #f0f1f3;
+      --shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0f1216;
+        --panel: #171b21;
+        --panel-2: #1c2128;
+        --border: #2b323b;
+        --text: #e5e7eb;
+        --muted: #9aa3ad;
+        --accent: #6ea0ff;
+        --accent-weak: #1d2a44;
+        --green: #5cc98a;
+        --green-weak: #16301f;
+        --orange: #f59e5b;
+        --orange-weak: #3a2616;
+        --blue: #8fb0ff;
+        --blue-weak: #1b2a4d;
+        --red: #f87171;
+        --gray-weak: #232932;
+        --shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header { padding: 20px 24px 4px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .header-text { min-width: 0; }
+    h1 { font-size: 20px; margin: 0 0 2px; }
+    .subtitle { color: var(--muted); font-size: 13px; margin: 0; max-width: 900px; }
+    .repo-link { flex: none; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .repo-link:hover { color: var(--text); text-decoration: none; }
+    .repo-link svg { width: 16px; height: 16px; fill: currentColor; }
+
+    nav.tabs {
+      display: flex; gap: 2px; padding: 12px 24px 0; border-bottom: 1px solid var(--border);
+      overflow-x: auto; scrollbar-width: thin;
+    }
+    nav.tabs button {
+      border: 1px solid transparent; border-bottom: none; border-radius: 8px 8px 0 0;
+      background: transparent; color: var(--muted); padding: 9px 14px; font-size: 14px;
+      cursor: pointer; white-space: nowrap; margin-bottom: -1px;
+    }
+    nav.tabs button:hover { color: var(--text); }
+    nav.tabs button.active { background: var(--bg); color: var(--text); border-color: var(--border); font-weight: 600; }
+    nav.tabs .count { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: 4px; }
+
+    .intro { padding: 14px 24px 0; color: var(--muted); font-size: 13px; max-width: 1100px; line-height: 1.45; }
+    .intro b { color: var(--text); font-weight: 600; }
+
+    .presets { padding: 12px 24px 0; display: flex; gap: 6px; flex-wrap: wrap; }
+    .presets button {
+      padding: 5px 11px; font-size: 13px; border-radius: 999px; border: 1px solid var(--border);
+      background: var(--panel); color: var(--text); cursor: pointer;
+    }
+    .presets button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .presets .count { opacity: 0.75; font-size: 12px; margin-left: 3px; }
+
+    .controls { padding: 12px 24px 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    #query {
+      flex: 1 1 420px; min-width: 240px; padding: 9px 12px; font-size: 14px;
+      border: 1px solid var(--border); border-radius: 6px; background: var(--panel); color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    button.btn {
+      padding: 9px 14px; font-size: 14px; border: 1px solid var(--border); border-radius: 6px;
+      background: var(--panel); color: var(--text); cursor: pointer;
+    }
+    button.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    button.btn:hover { filter: brightness(0.97); }
+    .columns-menu { position: relative; }
+    #columns-panel {
+      position: absolute; top: calc(100% + 6px); right: 0; z-index: 10; min-width: 220px;
+      max-height: 60vh; overflow-y: auto; padding: 8px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow);
+    }
+    #columns-panel[hidden] { display: none; }
+    #columns-panel .col-actions { display: flex; gap: 10px; padding: 4px 6px 8px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+    #columns-panel .col-actions a { cursor: pointer; font-size: 12px; }
+    #columns-panel label { display: flex; align-items: center; gap: 8px; padding: 5px 6px; font-size: 13px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+    #columns-panel label:hover { background: var(--accent-weak); }
+
+    .syntax { padding: 0 24px 10px; color: var(--muted); font-size: 12px; line-height: 1.9; }
+    .syntax code { background: var(--accent-weak); color: var(--text); padding: 1px 5px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+    #help-toggle { color: var(--accent); cursor: pointer; text-decoration: underline; }
+    #fields-help {
+      display: none; margin: 8px 0 0; padding: 10px 12px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 6px; max-width: 900px; line-height: 1.4;
+    }
+    #fields-help table { border-collapse: collapse; font-size: 12px; }
+    #fields-help td { padding: 2px 14px 2px 0; vertical-align: top; }
+    #fields-help .fname { font-family: ui-monospace, monospace; color: var(--text); }
+
+    #status { padding: 0 24px 8px; color: var(--muted); font-size: 13px; min-height: 18px; }
+    #status.err { color: var(--red); }
+    .table-wrap { padding: 0 24px 16px; overflow-x: auto; }
+    table.results {
+      width: 100%; border-collapse: separate; border-spacing: 0; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 8px; font-size: 13px;
+    }
+    table.results th, table.results td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.results th {
+      background: var(--panel-2); font-weight: 600; white-space: nowrap; user-select: none;
+      position: sticky; top: 0; z-index: 2;
+    }
+    table.results th.sortable { cursor: pointer; }
+    table.results th:first-child { border-top-left-radius: 8px; }
+    table.results th:last-child { border-top-right-radius: 8px; }
+    table.results th .arrow { color: var(--accent); font-size: 11px; }
+    table.results tbody tr:last-child td { border-bottom: none; }
+    table.results tbody tr.row:hover td { background: var(--panel-2); }
+    td.expand-cell, th.expand-cell { width: 26px; padding-right: 0; }
+    .expand {
+      border: none; background: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 2px 4px;
+      transition: transform 0.12s;
+    }
+    tr.open .expand { transform: rotate(90deg); color: var(--accent); }
+    .title-cell { min-width: 280px; max-width: 520px; font-weight: 600; }
+    .wide { min-width: 220px; max-width: 420px; }
+    .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .nobreak { white-space: nowrap; }
+    .muted { color: var(--muted); }
+    .tag {
+      display: inline-block; background: var(--accent-weak); color: var(--text); border-radius: 4px;
+      padding: 1px 6px; margin: 1px 3px 1px 0; font-size: 12px; white-space: nowrap; cursor: pointer;
+    }
+    .tag:hover { outline: 1px solid var(--accent); }
+    .tag.green { background: var(--green-weak); color: var(--green); }
+    .tag.orange { background: var(--orange-weak); color: var(--orange); }
+    .tag.blue { background: var(--blue-weak); color: var(--blue); }
+    .tag.gray { background: var(--gray-weak); color: var(--muted); }
+    .paper-list { margin: 0; padding-left: 16px; }
+    .paper-list li { margin: 0 0 2px; }
+
+    tr.detail td { background: var(--panel-2); padding: 12px 16px 14px 36px; }
+    .detail-grid { display: grid; grid-template-columns: minmax(140px, max-content) 1fr; gap: 4px 16px; font-size: 13px; max-width: 1100px; }
+    .detail-grid .k { color: var(--muted); }
+    .detail-grid .v { white-space: pre-wrap; word-break: break-word; }
+
+    .more { padding: 0 24px 40px; display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: 13px; }
+    footer { padding: 0 24px 32px; color: var(--muted); font-size: 12px; max-width: 1100px; line-height: 1.5; }
+
+    @media (max-width: 640px) {
+      header, .intro, .presets, .controls, .syntax, #status, .table-wrap, .more, footer { padding-left: 16px; padding-right: 16px; }
+      nav.tabs { padding-left: 16px; padding-right: 16px; }
+      .title-cell { min-width: 220px; }
+    }
+  </style>
+  <style id="col-style"></style>
+</head>
+<body>
+  <header>
+    <div class="header-text">
+      <h1>Pediatric Radiology AI Database</h1>
+      <p class="subtitle" id="subtitle">Articles, open-source software, trade-press stories, commercial products and public datasets for AI in pediatric radiology. Search, sort, pick columns, and export any view as CSV.</p>
+    </div>
+    <a class="repo-link" href="https://github.com/josephrich98/pediatric_radiology_ai" target="_blank" rel="noopener noreferrer" title="View source on GitHub">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+      GitHub
+    </a>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+
+  <div class="intro" id="intro"></div>
+  <div class="presets" id="presets"></div>
+
+  <div class="controls">
+    <input id="query" type="text" autocomplete="off" spellcheck="false" aria-label="Search" />
+    <button class="btn primary" id="search-btn">Search</button>
+    <button class="btn" id="clear-btn" title="Clear the search">Clear</button>
+    <div class="columns-menu">
+      <button class="btn" id="columns-btn" title="Choose which columns are visible">Columns ▾</button>
+      <div id="columns-panel" hidden>
+        <div class="col-actions">
+          <a id="columns-all">Show all</a>
+          <a id="columns-none">Hide all</a>
+          <a id="columns-default">Defaults</a>
+        </div>
+        <div id="columns-list"></div>
+      </div>
+    </div>
+    <button class="btn" id="csv-btn" title="Download the rows matching the current view (all columns)">Export CSV</button>
+  </div>
+
+  <div class="syntax">
+    Examples: <span id="examples"></span>
+    &nbsp;·&nbsp;<span id="help-toggle">show fields</span>
+    <div id="fields-help"></div>
+  </div>
+
+  <div id="status"></div>
+
+  <div class="table-wrap">
+    <table class="results">
+      <thead><tr id="header-row"></tr></thead>
+      <tbody id="results-body"></tbody>
+    </table>
+  </div>
+  <div class="more" id="more"></div>
+
+  <footer id="footer"></footer>
+
+  <script src="search.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

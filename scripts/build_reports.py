@@ -421,14 +421,21 @@ def _commercial_section() -> list[str]:
         L.append(f"| {d['year']} | {d['company']} | {d['device']} |")
     L.append("")
     L.append("### Commercial software with a pediatric angle (curated)\n")
-    L.append("| Vendor | Product | Task | Pediatric status | On FDA list |")
+    L.append("| Vendor | Selected products | Functions | Pediatric / regulatory scope | Company-wide FDA AI entries (n; years) |")
     L.append("|:--|:--|:--|:--|:--|")
     for c in config.COMMERCIAL_PEDIATRIC:
         look = fda_devices.company_lookup(fda, c["fda_company"])
         yrs = look["years"]
-        on = f"{look['devices']} device(s), {yrs[0]}–{yrs[-1]}" if look["devices"] and yrs else "not listed"
+        on = f"{look['devices']} entries, {yrs[0]}–{yrs[-1]}" if look["devices"] and yrs else "not listed"
         L.append(f"| {c['vendor']} | {c['product']} | {c['task']} | {c['pediatric']} | {on} |")
-    L.append("")
+    L.append(
+        f"\nCounts cover company-wide radiology entries in the FDA AI-enabled device list "
+        f"saved {fda.get('collected_on', 'date unavailable')}; grouped vendors are summed. "
+        "They include versions and unrelated products, not just the selected products or pediatric indications. "
+        "Years are the range of decision years. The list is not exhaustive and may lag new authorizations. "
+        "Functions / labeling checked 2026-09-16; features vary by market and version. "
+        "See [verification and sources](commercial_software_verification.md).\n"
+    )
     return L
 
 
