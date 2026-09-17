@@ -60,25 +60,19 @@
 
 \begin{frame}{Methods}
 \vspace{-4pt}
-{\tiny\renewcommand{\arraystretch}{1.05}\setlength{\tabcolsep}{3pt}
-\begin{tabular}{|>{\raggedright\arraybackslash}p{0.10\textwidth}|>{\raggedright\arraybackslash}p{0.47\textwidth}|>{\raggedright\arraybackslash}p{0.39\textwidth}|}
-\hline \textbf{Source} & \textbf{How the data were collected} & \textbf{How pediatric was subset} \\ \hline
-\textbf{Journals, preprints} & PubMed yearly counts, plus arXiv and medRxiv (Europe PMC) with the same query. Most-cited papers: Semantic Scholar, ranked by citations. Systematic review: PubMed + Embase, 2005--present, every record screened and read (3,496 primary studies). & Counts: radiology AND AI, then AND pediatric (query below). Review: pediatric query, then screened for a pediatric population. Most-cited lists: the title must also contain a pediatric term (as for conferences). \\ \hline
-\textbf{Conferences} & Semantic Scholar venue search, 2023--present: NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL (radiology terms, then a title filter); RSNA and SPR through their journals (AI terms), since meeting abstracts are not indexed. & Title contains a pediatric term (pediatric, paediatric, child, infant, neonat, adolescent, fetal, foetal, newborn, bone age, pediatrics, paediatrics, kawasaki, scoliosis, preterm, premature, congenital, young adult); marked with a star. \\ \hline
-\textbf{Datasets} & Hand-curated list of public imaging datasets; sizes checked against the primary paper or hosting page. & Pediatric by selection: only datasets of children or fetuses are listed. \\ \hline
-\textbf{Newsletters} & Full archives of The Imaging Wire, RSNA News, TLDR AI, TLDR Tech, Signify Research, ESR / ECR, Radiology Business, split into individual stories. Radiology AI = an AI term and an imaging term in the same story. & A pediatric term (pediatric, child, infant, neonat, newborn, adolescen, fetal, bone age, preterm, NICU, prenatal, ...) also in the same story. \\ \hline
-\textbf{Commercial} & FDA list of AI-enabled devices, Radiology panel (all ages). & Curated products with a stated pediatric indication or pediatric-by-design use, cross-checked against the FDA list. \\ \hline
-\end{tabular}\par}
+{\small
+\textbf{Journals, Preprints}: PubMed, Embase, arXiv, medRxiv\\
+\textbf{Conferences}: NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL\\
+\textbf{Datasets}: Hand-curated list\\
+\textbf{Newsletters}: The Imaging Wire, RSNA News, TLDR AI, TLDR Tech, Signify Research, ESR / ECR, Radiology Business\\
+\textbf{Commercial}: FDA list of AI-enabled devices\par}
 \vspace{2pt}
-{\tiny\fontsize{4}{4.8}\selectfont\raggedright
-\textbf{PubMed query = radiology AND AI AND pediatric} (systematic review corpus, 2005--present; translated term for term for Embase; [tiab] = title/abstract)\\
-\textbf{radiology}: (radiology[tiab] OR radiological[tiab] OR radiograph*[tiab] OR "medical imaging"[tiab] OR "diagnostic imaging"[tiab] OR tomography[tiab] OR "magnetic resonance"[tiab] OR MRI[tiab] OR "MR imaging"[tiab] OR "MR images"[tiab] OR MRIs[tiab] OR "MR image"[tiab] OR "MR scan"[tiab] OR "MR scans"[tiab] OR "computed tomography"[tiab] OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] OR mammograph*[tiab] OR "chest x-ray"[tiab] OR "x-ray"[tiab] OR fluoroscop*[tiab] OR scintigraph*[tiab] OR "positron emission"[tiab] OR PET[tiab] OR SPECT[tiab] OR angiograph*[tiab] OR neuroimaging[tiab] OR tractograph*[tiab] OR elastograph*[tiab] OR "fMRI"[tiab] OR "functional MRI"[tiab] OR "functional magnetic resonance"[tiab] OR connectome*[tiab] OR "diffusion tensor"[tiab] OR DTI[tiab] OR "bone age"[tiab] OR "skeletal age"[tiab] OR "skeletal maturity"[tiab] OR "barium enema"[tiab])\\
-\textbf{AI}: ("artificial intelligence"[tiab] OR "machine learning"[tiab] OR "deep learning"[tiab] OR "convolutional neural network"[tiab] OR "convolutional neural networks"[tiab] OR "neural network"[tiab] OR "neural networks"[tiab] OR "computer-aided diagnosis"[tiab] OR "computer aided diagnosis"[tiab] OR "computer-aided detection"[tiab] OR radiomic*[tiab] OR "computer vision"[tiab] OR "large language model"[tiab] OR "large language models"[tiab] OR "foundation model"[tiab] OR "foundation models"[tiab] OR "transfer learning"[tiab] OR "vision transformer"[tiab] OR "self-supervised"[tiab] OR "random forest"[tiab] OR "support vector machine"[tiab] OR "gradient boosting"[tiab] OR "natural language processing"[tiab])\\
-\textbf{pediatric}: (pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR neonat*[tiab] OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR fetus*[tiab] OR foetus*[tiab] OR newborn*[tiab] OR preterm[tiab] OR "premature infant"[tiab] OR "premature infants"[tiab] OR "premature birth"[tiab] OR "premature neonate"[tiab] OR "premature neonates"[tiab] OR prenatal[tiab] OR antenatal[tiab] OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab] OR "children's hospital"[tiab] OR schoolchild*[tiab] OR toddler*[tiab])\\
-\textbf{Publication-count charts} (radiology AI = radiology AND AI; pediatric = AND pediatric):\\
-\textbf{radiology}: ((radiology OR radiological OR radiograph* OR "medical imaging" OR "diagnostic imaging"[tiab] OR "tomography, x-ray computed"[MeSH Terms] OR "tomography, emission-computed"[MeSH Terms] OR tomograph*[tiab] OR "magnetic resonance" OR MRI OR "computed tomography" OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] OR "ultrasonography"[MeSH Terms] OR mammograph* OR "chest x-ray") NOT ("optical coherence"[tiab] OR fundus[tiab] OR retina*[tiab] OR dental[tiab] OR histopatholog*[tiab] OR "whole slide"[tiab] OR dermoscop*[tiab] OR endoscop*[tiab] OR colonoscop*[tiab] OR microscop*[tiab]))\\
-\textbf{AI}: ("artificial intelligence" OR "machine learning" OR "deep learning" OR "convolutional neural network" OR "neural network" OR "computer-aided diagnosis" OR radiomics OR "computer vision")\\
-\textbf{pediatric}: (pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* OR "children's hospital")
+{\small\textbf{Search strategy}: radiology AND AI [AND pediatric]\par}
+\vspace{2pt}
+{\tiny\fontsize{6}{7.3}\selectfont\raggedright
+\textbf{radiology}: (radiology[tiab] OR radiological[tiab] OR radiograph*[tiab] OR "medical imaging"[tiab] OR "diagnostic imaging"[tiab] OR tomography[tiab] OR "magnetic resonance"[tiab] OR MRI[tiab] OR "MR imaging"[tiab] OR "MR images"[tiab] OR MRIs[tiab] OR "MR image"[tiab] OR "MR scan"[tiab] OR "MR scans"[tiab] OR "computed tomography"[tiab] OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] OR mammograph*[tiab] OR "chest x-ray"[tiab] OR "x-ray"[tiab] OR fluoroscop*[tiab] OR scintigraph*[tiab] OR "positron emission"[tiab] OR PET[tiab] OR SPECT[tiab] OR angiograph*[tiab] OR neuroimaging[tiab] OR tractograph*[tiab] OR elastograph*[tiab] OR "fMRI"[tiab] OR "functional MRI"[tiab] OR "functional magnetic resonance"[tiab] OR connectome*[tiab] OR "diffusion tensor"[tiab] OR DTI[tiab] OR "bone age"[tiab] OR "skeletal age"[tiab] OR "skeletal maturity"[tiab] OR "barium enema"[tiab])\\[2pt]
+\textbf{AI}: ("artificial intelligence"[tiab] OR "machine learning"[tiab] OR "deep learning"[tiab] OR "convolutional neural network"[tiab] OR "convolutional neural networks"[tiab] OR "neural network"[tiab] OR "neural networks"[tiab] OR "computer-aided diagnosis"[tiab] OR "computer aided diagnosis"[tiab] OR "computer-aided detection"[tiab] OR radiomic*[tiab] OR "computer vision"[tiab] OR "large language model"[tiab] OR "large language models"[tiab] OR "foundation model"[tiab] OR "foundation models"[tiab] OR "transfer learning"[tiab] OR "vision transformer"[tiab] OR "self-supervised"[tiab] OR "random forest"[tiab] OR "support vector machine"[tiab] OR "gradient boosting"[tiab] OR "natural language processing"[tiab])\\[2pt]
+\textbf{pediatric}: (pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR neonat*[tiab] OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR fetus*[tiab] OR foetus*[tiab] OR newborn*[tiab] OR preterm[tiab] OR "premature infant"[tiab] OR "premature infants"[tiab] OR "premature birth"[tiab] OR "premature neonate"[tiab] OR "premature neonates"[tiab] OR prenatal[tiab] OR antenatal[tiab] OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab] OR "children's hospital"[tiab] OR schoolchild*[tiab] OR toddler*[tiab])
 \par}
 \end{frame}
 
@@ -151,7 +145,7 @@ MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 12\%. Mammography is omi
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
-{\tiny Rows are the most-cited papers of the period, ordered by FWCI = field-weighted citation impact (OpenAlex): citations relative to the world average for papers of the same field and year (1 = average), so a recent paper can be compared with an older one. Preprints (arXiv, medRxiv) are included; the venue column names the server.}
+{\tiny FWCI = field-weighted citation impact (OpenAlex): citations relative to the world average for papers of the same field and year (1 = average)}
 \end{frame}
 
 \begin{frame}[category=Journals]{Most-cited radiology AI papers, 2023}
@@ -173,7 +167,6 @@ MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 12\%. Mammography is omi
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
-{\tiny Rows are the most-cited papers of the period, ordered by FWCI = field-weighted citation impact (OpenAlex): citations relative to the world average for papers of the same field and year (1 = average), so a recent paper can be compared with an older one. Preprints (arXiv, medRxiv) are included; the venue column names the server. 1 of the 10 rows are preprints.}
 \end{frame}
 
 \begin{frame}[category=Journals]{Most-cited radiology AI papers, 2024}
@@ -217,7 +210,6 @@ MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 12\%. Mammography is omi
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
-{\tiny  1 of the 10 rows are preprints.}
 \end{frame}
 
 \begin{frame}[category=Journals]{Most-cited radiology AI papers, 2026 (year to date)}
@@ -239,7 +231,6 @@ MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 12\%. Mammography is omi
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
-{\tiny Citations for the current year are still accumulating; the FWCI column is the more stable signal here. 1 of the 10 rows are preprints.}
 \end{frame}
 
 \begin{frame}[category=Journals]{Most-cited pediatric radiology AI papers, 2008-2022}
@@ -286,7 +277,6 @@ the other.}
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
-{\tiny Rows are the most-cited papers of the period, ordered by FWCI = field-weighted citation impact (OpenAlex): citations relative to the world average for papers of the same field and year (1 = average), so a recent paper can be compared with an older one. Preprints (arXiv, medRxiv) are included; the venue column names the server. 1 of the 10 rows are preprints.}
 \end{frame}
 
 \begin{frame}[category=Journals]{Most-cited pediatric radiology AI papers, 2024}
@@ -352,7 +342,17 @@ the other.}
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
-{\tiny Citations for the current year are still accumulating; the FWCI column is the more stable signal here.}
+\end{frame}
+
+\begin{frame}[category=Journals]{An independent scoping review of pediatric radiology AI}
+{\scriptsize Kamran et al., \textit{Pediatric Radiology} 2026 (doi 10.1007/s00247-025-06462-5)\par}
+\medskip
+\begin{itemize}
+  \item \textbf{Scope}: 789 pediatric-focused original articles, 2005--August 2024.
+  \item \textbf{Modalities}: radiography 38\%, MRI 33\%, ultrasound 14\%, CT 11\%, nuclear 2\%.
+  \item \textbf{Top applications}: bone age (88), pneumonia (65), brain tumors (54).
+  \item \textbf{Data}: 65\% used a single-hospital dataset.
+\end{itemize}
 \end{frame}
 
 \begin{frame}[category=Conferences]{Radiology AI works per year, by conference}
@@ -360,7 +360,7 @@ the other.}
 \end{frame}
 
 \begin{frame}[category=Conferences]{NeurIPS: radiology AI works, 2023--2026}
-{\scriptsize \textbf{Conference on Neural Information Processing Systems}. Radiology-AI works found, 2023--2026: 45 (2023: 13, 2024: 12, 2025: 20); 0 pediatric (marked $\star$).\par}\vspace{2pt}
+{\scriptsize \textbf{Conference on Neural Information Processing Systems}. Radiology-AI works accepted (from the meeting's paper list), 2023--2026: 58 (2023: 12, 2024: 17, 2025: 29); 0 pediatric (marked $\star$).\par}\vspace{2pt}
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.60\textheight}}
 \renewcommand{\arraystretch}{1.2}
@@ -381,11 +381,10 @@ the other.}
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 45 works, newest year first.}
 \end{frame}
 
 \begin{frame}[category=Conferences]{ICLR: radiology AI works, 2023--2026}
-{\scriptsize \textbf{International Conference on Learning Representations}. Radiology-AI works found, 2023--2026: 17 (2023: 4, 2024: 5, 2025: 8); 0 pediatric (marked $\star$).\par}\vspace{2pt}
+{\scriptsize \textbf{International Conference on Learning Representations}. Radiology-AI works accepted (from the meeting's paper list), 2023--2026: 42 (2023: 6, 2024: 3, 2025: 7, 2026: 26); 1 pediatric (marked $\star$).\par}\vspace{2pt}
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.60\textheight}}
 \renewcommand{\arraystretch}{1.2}
@@ -406,11 +405,10 @@ the other.}
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 17 works, newest year first.}
 \end{frame}
 
 \begin{frame}[category=Conferences]{ICML: radiology AI works, 2023--2026}
-{\scriptsize \textbf{International Conference on Machine Learning}. Radiology-AI works found, 2023--2026: 12 (2023: 4, 2024: 2, 2025: 6); 0 pediatric (marked $\star$).\par}\vspace{2pt}
+{\scriptsize \textbf{International Conference on Machine Learning}. Radiology-AI works accepted (from the meeting's paper list), 2023--2026: 27 (2023: 2, 2024: 3, 2025: 7, 2026: 15); 0 pediatric (marked $\star$).\par}\vspace{2pt}
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.60\textheight}}
 \renewcommand{\arraystretch}{1.2}
@@ -431,11 +429,10 @@ the other.}
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 12 works, newest year first.}
 \end{frame}
 
 \begin{frame}[category=Conferences]{CVPR: radiology AI works, 2023--2026}
-{\scriptsize \textbf{IEEE/CVF Conference on Computer Vision and Pattern Recognition}. Radiology-AI works found, 2023--2026: 57 (2023: 15, 2024: 24, 2025: 18); 1 pediatric (marked $\star$).\par}\vspace{2pt}
+{\scriptsize \textbf{IEEE/CVF Conference on Computer Vision and Pattern Recognition}. Radiology-AI works accepted (from the meeting's paper list), 2023--2026: 154 (2023: 18, 2024: 35, 2025: 42, 2026: 59); 1 pediatric (marked $\star$).\par}\vspace{2pt}
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.60\textheight}}
 \renewcommand{\arraystretch}{1.2}
@@ -456,11 +453,10 @@ the other.}
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 57 works, newest year first.}
 \end{frame}
 
 \begin{frame}[category=Conferences]{MICCAI: radiology AI works, 2023--2026}
-{\scriptsize \textbf{Medical Image Computing and Computer-Assisted Intervention}. Radiology-AI works found, 2023--2026: 521 (2023: 139, 2024: 195, 2025: 187); 25 pediatric (marked $\star$).\par}\vspace{2pt}
+{\scriptsize \textbf{Medical Image Computing and Computer-Assisted Intervention}. Radiology-AI works accepted (from the meeting's paper list), 2023--2026: 854 (2023: 236, 2024: 298, 2025: 320); 26 pediatric (marked $\star$).\par}\vspace{2pt}
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.60\textheight}}
 \renewcommand{\arraystretch}{1.2}
@@ -481,11 +477,10 @@ the other.}
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 521 works, newest year first.}
 \end{frame}
 
 \begin{frame}[category=Conferences]{MIDL: radiology AI works, 2023--2026}
-{\scriptsize \textbf{Medical Imaging with Deep Learning}. Radiology-AI works found, 2023--2026: 62 (2023: 33, 2024: 29); 2 pediatric (marked $\star$).\par}\vspace{2pt}
+{\scriptsize \textbf{Medical Imaging with Deep Learning}. Radiology-AI works accepted (from the meeting's paper list), 2023--2026: 200 (2023: 47, 2024: 39, 2025: 40, 2026: 74); 9 pediatric (marked $\star$).\par}\vspace{2pt}
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.60\textheight}}
 \renewcommand{\arraystretch}{1.2}
@@ -506,57 +501,80 @@ the other.}
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 62 works, newest year first.}
 \end{frame}
 
-\begin{frame}[category=Conferences]{RSNA: radiology AI works, 2023--2026}
-{\scriptsize \textbf{Radiological Society of North America: Radiology, Radiology: AI, RadioGraphics}. Radiology-AI works found, 2023--2026: 616 (2023: 151, 2024: 174, 2025: 185, 2026: 106); 13 pediatric (marked $\star$). RSNA annual-meeting abstracts are not indexed; the society's journals stand in.\par}\vspace{2pt}
+\begin{frame}[category=Conferences]{MICCAI: pediatric radiology AI works (1/2)}
+\relax{\scriptsize 26 pediatric radiology-AI papers accepted 2023--2026 (21 fetal, 4 infant / neonatal, 1 pediatric). Meetings with a published paper list: 2023, 2024, 2025.\par}\vspace{2pt}
 \tiny
-\begin{adjustbox}{max totalsize={\textwidth}{0.60\textheight}}
+\begin{adjustbox}{max totalsize={\textwidth}{0.66\textheight}}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|r|r|>{\raggedright\arraybackslash}p{0.782\textwidth}|}
-\hline \textbf{Year} & \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} \\ \hline
-2024 & 452 & 113.7 & Checklist for Artificial Intelligence in Medical Imaging (CLAIM): 2024 Update. \\ \hline
-2024 & 324 & 26.4 & Chatbots and Large Language Models in Radiology: A Practical Primer for Clinical and Research Applications. \\ \hline
-2024 & 215 & 58.7 & The Image Biomarker Standardization Initiative: Standardized Convolutional Filters for Reproducible Radiomics and Enhanced Clinical Insights. \\ \hline
-2023 & 919 & 29.4 & ChatGPT and Other Large Language Models Are Double-edged Swords. \\ \hline
-2023 & 419 & 13.5 & Performance of ChatGPT on a Radiology Board-style Examination: Insights into Current Strengths and Limitations. \\ \hline
-2023 & 392 & 33.2 & Deep Learning Image Reconstruction for CT: Technical Principles and Clinical Prospects. \\ \hline
-2023 & 282 & 9.1 & Automation Bias in Mammography: The Impact of Artificial Intelligence BI-RADS Suggestions on Reader Performance. \\ \hline
-2023 & 273 & 44.4 & Potential of ChatGPT and GPT-4 for Data Mining of Free-Text CT Reports on Lung Cancer. \\ \hline
-2023 & 265 & 37.0 & MRI-based Quantification of Intratumoral Heterogeneity for Predicting Treatment Response to Neoadjuvant Chemotherapy in Breast Cancer. \\ \hline
-2023 & 259 & 47.2 & How AI Responds to Common Lung Cancer Questions: ChatGPT vs Google Bard. \\ \hline
-2023 & 258 & 35.5 & A Guide to Cross-Validation for Artificial Intelligence in Medical Imaging. \\ \hline
-2023 & 225 & 36.2 & Predicting Microvascular Invasion in Hepatocellular Carcinoma Using CT-based Radiomics Model. \\ \hline
+\begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{0.792\textwidth}|}
+\hline \textbf{Year} & \textbf{Population} & \textbf{Paper} \\ \hline
+2025 & Fetal & Accurate and Efficient Fetal Birth Weight Estimation from 3D Ultrasound \\ \hline
+2025 & Fetal & Adaptive Frame Selection for Gestational Age Estimation from Blind Sweep Fetal Ultrasound Videos \\ \hline
+2025 & Infant / neonatal & Flexibly Distilled 3D Rectified Flow with Anatomical Constraints for Developmental Infant Brain MRI Prediction \\ \hline
+2025 & Fetal & Fusing Radiomic Features with Deep Representations for Gestational Age Estimation in Fetal Ultrasound Images \\ \hline
+2025 & Fetal & General Methods Make Great Domain-specific Foundation Models: A Case-study on Fetal Ultrasound \\ \hline
+2025 & Fetal & Influence of Classification Task and Distribution Shift Type on OOD Detection in Fetal Ultrasound \\ \hline
+2025 & Fetal & Latent Motion Profiling for Annotation-free Cardiac Phase Detection in Adult and Fetal Echocardiography Videos \\ \hline
+2025 & Fetal & Robust Fetal Pose Estimation across Gestational Ages via Cross-Population Augmentation \\ \hline
+2025 & Fetal & Self-supervised Normality Learning and Divergence Vector-guided Model Merging for Zero-shot Congenital Heart Disease Detection in Fetal Ultrasound Videos \\ \hline
+2025 & Fetal & You Can Detect It: Fetal Biometric Estimation Using Ellipse Detection \\ \hline
+2024 & Fetal & Cycle-consistent Learning for Fetal Cortical Surface Reconstruction \\ \hline
+2024 & Pediatric & Efficient and Gender-adaptive Graph Vision Mamba for Pediatric Bone Age Assessment \\ \hline
+2024 & Fetal & Fetal MRI Reconstruction by Global Diffusion and Consistent Implicit Representation \\ \hline
+2024 & Fetal & Geometric Transformation Uncertainty for Improving 3D Fetal Brain Pose Prediction from Freehand 2D Ultrasound Videos \\ \hline
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 616 works, newest year first.}
+{\tiny Source: the meeting's accepted-paper list; a title counts when it names an imaging modality, an AI method and a pediatric term (fetal included). Titles only, so pediatric work that does not say so in its title is missed.}
 \end{frame}
 
-\begin{frame}[category=Conferences]{SPR: radiology AI works, 2023--2026}
-{\scriptsize \textbf{Society for Pediatric Radiology: Pediatric Radiology (journal)}. Radiology-AI works found, 2023--2026: 120 (2023: 27, 2024: 17, 2025: 37, 2026: 39); 70 pediatric (marked $\star$). SPR meeting abstracts are not indexed; the society's journal stands in.\par}\vspace{2pt}
+\begin{frame}[category=Conferences]{MICCAI: pediatric radiology AI works (2/2)}
+\relax{\scriptsize 26 pediatric radiology-AI papers accepted 2023--2026 (21 fetal, 4 infant / neonatal, 1 pediatric). Meetings with a published paper list: 2023, 2024, 2025.\par}\vspace{2pt}
 \tiny
-\begin{adjustbox}{max totalsize={\textwidth}{0.60\textheight}}
+\begin{adjustbox}{max totalsize={\textwidth}{0.66\textheight}}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|r|r|>{\raggedright\arraybackslash}p{0.748\textwidth}|}
-\hline \textbf{Year} & \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} \\ \hline
-2025 & 18 & 4.6 & AI implementation in pediatric radiology for patient safety: a multi-society statement from the ACR, ESPR, SPR, SLARP, AOSPR, SPIN $\star$ \\ \hline
-2025 & 17 & 27.9 & Scanner-based real-time three-dimensional brain + body slice-to-volume reconstruction for T2-weighted 0.55-T low-field fetal magnetic resonance imaging $\star$ \\ \hline
-2024 & 24 & 2.0 & Capability of multimodal large language models to interpret pediatric radiological images $\star$ \\ \hline
-2024 & 15 & -- & Artificial Intelligence vs. Doctors: Diagnosing Necrotizing Enterocolitis on Abdominal Radiographs \\ \hline
-2023 & 49 & 1.6 & Detecting pediatric wrist fractures using deep-learning-based object detection $\star$ \\ \hline
-2023 & 44 & 1.2 & Artificial intelligence to identify fractures on pediatric and young adult upper extremity radiographs $\star$ \\ \hline
-2023 & 43 & 9.7 & Deeplasia: deep learning for bone age assessment validated on skeletal dysplasias $\star$ \\ \hline
-2023 & 42 & 1.2 & Comparison of diagnostic performance of a deep learning algorithm, emergency physicians, junior radiologists and senior radiologists in the detection of appendicular fractures in children \\ \hline
-2023 & 35 & 1.0 & Artificial intelligence-based detection of paediatric appendicular skeletal fractures: performance and limitations for common fracture types and locations $\star$ \\ \hline
-2023 & 31 & 1.0 & The unintended consequences of artificial intelligence in paediatric radiology $\star$ \\ \hline
-2023 & 23 & 4.0 & Artificial Intelligence in Paediatric Tuberculosis $\star$ \\ \hline
-2023 & 20 & 4.2 & Innovative advances in pediatric radiology: computed tomography reconstruction techniques, photon-counting detector computed tomography, and beyond $\star$ \\ \hline
+\begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{0.720\textwidth}|}
+\hline \textbf{Year} & \textbf{Population} & \textbf{Paper} \\ \hline
+2024 & Fetal & Improving cross-domain brain tissue segmentation in fetal MRI with synthetic data \\ \hline
+2024 & Fetal & Intrapartum Ultrasound Image Segmentation of Pubic Symphysis and Fetal Head Using Dual Student-Teacher Framework with CNN-ViT Collaborative Learning \\ \hline
+2024 & Fetal & Pose-GuideNet: Automatic Scanning Guidance for Fetal Head Ultrasound from Pose Estimation \\ \hline
+2024 & Infant / neonatal & Super-Field MRI Synthesis for Infant Brains Enhanced by Dual Channel Latent Diffusion \\ \hline
+2023 & Fetal & An automated pipeline for quantitative T2* fetal body MRI and segmentation at low field \\ \hline
+2023 & Fetal & ASC: Appearance and Structure Consistency for Unsupervised Domain Adaptation in Fetal Brain MRI Segmentation \\ \hline
+2023 & Fetal & Dual Conditioned Diffusion Models for Out-Of-Distribution Detection: Application to Fetal Ultrasound Videos \\ \hline
+2023 & Fetal & Improving Automatic Fetal Biometry Measurement with Swoosh Activation Function \\ \hline
+2023 & Infant / neonatal & Punctate White Matter Lesion Segmentation in Preterm Infants Powered by Counterfactually Generative Learning \\ \hline
+2023 & Fetal & Simulation-based parameter optimization for fetal brain MRI super-resolution reconstruction \\ \hline
+2023 & Infant / neonatal & SurfFlow: A Flow-Based Approach for Rapid and Accurate Cortical Surface Reconstruction from Infant Brain MRI \\ \hline
+2023 & Fetal & UM-CAM: Uncertainty-weighted Multi-resolution Class Activation Maps for Weakly-supervised Fetal Brain Segmentation \\ \hline
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
-{\tiny Source: Semantic Scholar venue search, citations and FWCI from OpenAlex; title-level relevance filter; the 12 most-cited of 120 works, newest year first.}
+{\tiny Source: the meeting's accepted-paper list; a title counts when it names an imaging modality, an AI method and a pediatric term (fetal included). Titles only, so pediatric work that does not say so in its title is missed.}
+\end{frame}
+
+\begin{frame}[category=Conferences]{MIDL: pediatric radiology AI works}
+\relax{\scriptsize 9 pediatric radiology-AI papers accepted 2023--2026 (7 fetal, 2 pediatric). Meetings with a published paper list: 2023, 2024, 2025, 2026.\par}\vspace{2pt}
+\tiny
+\begin{adjustbox}{max totalsize={\textwidth}{0.66\textheight}}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{0.720\textwidth}|}
+\hline \textbf{Year} & \textbf{Population} & \textbf{Paper} \\ \hline
+2026 & Fetal & Calibration-Aware Semi-Supervised Fetal Head Segmentation with Boundary-Positive Contrast \\ \hline
+2026 & Fetal & Orientation-Aware Diffusion Super-Resolution for 3T-Like Fetal MRI from Routine 1.5T Scans \\ \hline
+2026 & Fetal & SuD-CoTAN: Sulcal Depth-guided Anatomically Consistent Fetal Cortical Surface Reconstruction \\ \hline
+2026 & Fetal & Ultra-ECP: Ellipse-Constrained and Point-Robust Foundation Model Adaptation for Fetal Cardiac Ultrasound Segmentation \\ \hline
+2026 & Pediatric & WristMIR: Coarse-to-Fine Region-Aware Retrieval of Pediatric Wrist Radiographs with Radiology Report-Driven Learning \\ \hline
+2025 & Fetal & FERN: A Fetal Echocardiography Registration Network for 2D-to-3D Alignment \\ \hline
+2025 & Pediatric & GAMBAS: Generalised-Hilbert Mamba for Super-resolution of Paediatric Ultra-Low-Field MRI \\ \hline
+2024 & Fetal & Joint Motion Estimation with Geometric Deformation Correction for Fetal Echo Planar Images Via Deep Learning \\ \hline
+2023 & Fetal & FUSQA: Fetal Ultrasound Segmentation Quality Assessment \\ \hline
+\end{tabular}
+\end{adjustbox}
+\\[2pt]
+{\tiny Source: the meeting's accepted-paper list; a title counts when it names an imaging modality, an AI method and a pediatric term (fetal included). Titles only, so pediatric work that does not say so in its title is missed.}
 \end{frame}
 
 \begin{frame}[category=Journals]{AI fracture detection in a real pediatric emergency department}
@@ -941,38 +959,6 @@ status is the publicly stated indication; confirm the age range in the 510(k) su
   \item \textbf{Invest in data}: a curated, shareable pediatric dataset is the scarcest resource in the field and the
         contribution a children's hospital is uniquely placed to make.
 \end{enumerate}
-\end{frame}
-
-\begin{frame}[category=Journals]{An independent scoping review of pediatric radiology AI}
-\scriptsize
-Kamran et al., \textit{Pediatric Radiology} 2026 (doi 10.1007/s00247-025-06462-5): 789 original pediatric-focused
-articles hand-screened from four databases, 2005 to August 2024. Our PubMed counts are larger because they include any
-paper that mentions a pediatric term.
-\begin{columns}[T]
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-  \item \textbf{Modality}: radiography 38\%, MRI 33\%, ultrasound 14\%, CT 11\%, nuclear 2\%. Our pediatric query
-        ranks MRI first (MRI 41\%, CT 16\%, ultrasound 13\%, x-ray / radiography 12\%) because MRI-heavy neurodevelopment papers mention children.
-  \item \textbf{Subspecialty}: musculoskeletal 33\%, neuro 29\%, chest 17\%, body 14\%, cardiac 6\%.
-  \item \textbf{Top applications}: bone age (88 articles), pneumonia (65), brain tumors (54), scoliosis (45),
-        hip dysplasia (28), congenital heart disease (25), autism (18), epilepsy (14), ADHD (9), hydrocephalus (9).
-  \item \textbf{Use of AI}: 91\% image interpretation / diagnosis; 5.6\% image quality; under 2\% for
-        acquisition, communication, protocoling, education, and policy combined.
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-  \item \textbf{Data}: 65\% used a single local hospital dataset; 7\% did not report the dataset;
-        China 28\%, USA 25\%, Canada 7\% of articles.
-  \item \textbf{Growth}: 23 articles in 2018, 158 in 2022, 171 in 2023, consistent with our PubMed curve.
-  \item \textbf{Recommendations}: multi-institutional, age-diverse pediatric datasets; CLAIM-style reporting with
-        subgroup results and calibration; funding for the neglected non-interpretive areas (policy, education,
-        implementation); children and families as stakeholders across the AI lifecycle.
-  \item \textbf{What it adds to this deck}: the same three leading tasks (bone age, pneumonia, brain tumor) and the
-        same gap (small local datasets, adult tools applied to children) reached by a manual review.
-\end{itemize}
-\end{column}
-\end{columns}
 \end{frame}
 
 \end{document}

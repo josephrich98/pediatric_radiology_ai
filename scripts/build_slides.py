@@ -249,7 +249,8 @@ def venue_frames(works):
         rows = sorted(v.get("works", [])[:12], key=lambda w: (w.get("year") or 0, w.get("citation_count", 0)), reverse=True)
         yrs = v.get("years", [config.VENUE_WORKS_START, config.END_YEAR])
         by_year = ", ".join(f"{y}: {n}" for y, n in sorted(v.get("by_year", {}).items()))
-        head = (f"\\textbf{{{_tex(v.get('full', name))}}}. Radiology-AI works found, {yrs[0]}--{yrs[1]}: "
+        found = "accepted (from the meeting's paper list)" if v.get("count_source") else "found"
+        head = (f"\\textbf{{{_tex(v.get('full', name))}}}. Radiology-AI works {found}, {yrs[0]}--{yrs[1]}: "
                 f"{v.get('n_works', 0)} ({by_year}); {v.get('n_pediatric', 0)} pediatric (marked $\\star$).")
         if v.get("note"):
             head += " " + _tex(v["note"])
@@ -264,8 +265,48 @@ def venue_frames(works):
             out.append("\\end{tabular}")
             body = _fit(out, 0.60)
         src = "Semantic Scholar venue search, citations and FWCI from OpenAlex" if v.get("kind") == "s2" else "OpenAlex, restricted to the society's journals"
-        frames.append("\\begin{frame}[category=Conferences]{%s: radiology AI works, %d--%d}\n{\\scriptsize %s\\par}\\vspace{2pt}\n\\tiny\n%s\n\\\\[2pt]\n{\\tiny Source: %s; title-level relevance filter; the %d most-cited of %d works, newest year first.}\n\\end{frame}"
-                      % (_tex(name), yrs[0], yrs[1], head, body, src, len(rows), v.get("n_works", 0)))
+        frames.append("\\begin{frame}[category=Conferences]{%s: radiology AI works, %d--%d}\n{\\scriptsize %s\\par}\\vspace{2pt}\n\\tiny\n%s\n\\\\[2pt]\n{\\tiny Source: %s; title-level relevance filter; the %d most-cited of the %d works indexed there, newest year first.}\n\\end{frame}"
+                      % (_tex(name), yrs[0], yrs[1], head, body, src, len(rows), v.get("n_indexed", v.get("n_works", 0))))
+    return "\n\n".join(frames)
+
+
+def _population(title):
+    t = (title or "").lower()
+    if re.search(r"fetal|foetal|fetus|gestational|intrapartum|prenatal", t):
+        return "Fetal"
+    if re.search(r"infant|neonat|newborn|preterm|premature", t):
+        return "Infant / neonatal"
+    return "Pediatric"
+
+
+def venue_pediatric_frames(works):
+    """Every pediatric radiology-AI title on each listed conference's acceptance
+    lists, newest year first, split across slides when long."""
+    frames = []
+    for name in config.VENUE_PEDIATRIC_SLIDES:
+        v = (works or {}).get(name) or {}
+        rows = sorted(v.get("pediatric_works") or [], key=lambda w: (-w["year"], w["title"].lower()))
+        if not rows:
+            continue
+        yrs = v.get("years", [config.VENUE_WORKS_START, config.END_YEAR])
+        held = sorted(int(y) for y in v.get("accepted_by_year") or {})
+        n = config.VENUE_PEDIATRIC_ROWS
+        chunks = [rows[i:i + n] for i in range(0, len(rows), n)]
+        pops = [_population(w["title"]) for w in rows]
+        mix = ", ".join(f"{pops.count(p)} {p.lower()}" for p in ("Fetal", "Infant / neonatal", "Pediatric") if pops.count(p))
+        for k, chunk in enumerate(chunks):
+            out = ["\\begin{tabular}{|l|l%s|}" % _p(0.72),
+                   "\\hline \\textbf{Year} & \\textbf{Population} & \\textbf{Paper} \\\\ \\hline"]
+            for w in chunk:
+                out.append(f"{w['year']} & {_population(w['title'])} & {_tex(w['title'])} \\\\ \\hline")
+            out.append("\\end{tabular}")
+            cont = f" ({k + 1}/{len(chunks)})" if len(chunks) > 1 else ""
+            head = (f"{len(rows)} pediatric radiology-AI papers accepted {yrs[0]}--{yrs[1]} ({mix}). "
+                    f"Meetings with a published paper list: {', '.join(map(str, held))}.")
+            frames.append(
+                "\\begin{frame}[category=Conferences]{%s: pediatric radiology AI works%s}\n\\relax{\\scriptsize %s\\par}\\vspace{2pt}\n\\tiny\n%s\n\\\\[2pt]\n"
+                "{\\tiny Source: the meeting's accepted-paper list; a title counts when it names an imaging modality, an AI method and a pediatric term (fetal included). Titles only, so pediatric work that does not say so in its title is missed.}\n\\end{frame}"
+                % (_tex(name), cont, head, _fit(out, 0.66)))
     return "\n\n".join(frames)
 
 
@@ -284,57 +325,29 @@ def _methods_query_line(label: str, terms: str) -> str:
 
 
 def methods_query_block() -> str:
-    """The pediatric query written out in full, one line per concept block, so
-    the slide shows exactly what was searched (straight from config)."""
-    review = [("radiology", config._REVIEW_MODALITY_TIAB), ("AI", config._REVIEW_AI_TIAB),
+    """The search strategy, one line per concept block, straight from config."""
+    blocks = [("radiology", config._REVIEW_MODALITY_TIAB), ("AI", config._REVIEW_AI_TIAB),
               ("pediatric", config._REVIEW_PEDIATRIC_TIAB)]
-    counts = [("radiology", config._RADIOLOGY_TERMS), ("AI", config._AI_TERMS), ("pediatric", config._PEDIATRIC_TERMS)]
-    out = ["{\\tiny\\fontsize{4}{4.8}\\selectfont\\raggedright",
-           "\\textbf{PubMed query = radiology AND AI AND pediatric} "
-           f"(systematic review corpus, {config.REVIEW_START_YEAR}--present; translated term for term for Embase; [tiab] = title/abstract)\\\\"]
-    out += [_methods_query_line(k, v) + "\\\\" for k, v in review]
-    out.append("\\textbf{Publication-count charts} (radiology AI = radiology AND AI; pediatric = AND pediatric):\\\\")
-    out.append("\\\\\n".join(_methods_query_line(k, v) for k, v in counts))
+    out = ["{\\small\\textbf{Search strategy}: radiology AND AI [AND pediatric]\\par}",
+           "\\vspace{2pt}",
+           "{\\tiny\\fontsize{6}{7.3}\\selectfont\\raggedright"]
+    out.append("\\\\[2pt]\n".join(_methods_query_line(k, v) for k, v in blocks))
     out.append("\\par}")
     return "\n".join(out)
 
 
-def methods_table(review_n: str) -> str:
-    """One row per data source: how the records were collected, and how the
-    general radiology-AI set was narrowed to pediatrics."""
-    news = ", ".join(config.NEWSLETTER_SOURCES)
-    ped_title = ", ".join(dict.fromkeys(config.PAPER_PEDIATRIC_SIGNAL))
+def methods_table(review_n: str = "") -> str:
+    """One line per data source."""
     rows = [
-        ("Journals, preprints",
-         "PubMed yearly counts, plus arXiv and medRxiv (Europe PMC) with the same query. Most-cited papers: Semantic "
-         f"Scholar, ranked by citations. Systematic review: PubMed + Embase, {config.REVIEW_START_YEAR}--present, every "
-         f"record screened and read ({review_n} primary studies).",
-         "Counts: radiology AND AI, then AND pediatric (query below). Review: pediatric query, then screened for a "
-         "pediatric population. Most-cited lists: the title must also contain a pediatric term (as for conferences)."),
-        ("Conferences",
-         f"Semantic Scholar venue search, {config.VENUE_WORKS_START}--present: NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL "
-         "(radiology terms, then a title filter); RSNA and SPR through their journals (AI terms), since meeting "
-         "abstracts are not indexed.",
-         f"Title contains a pediatric term ({ped_title}); marked with a star."),
-        ("Datasets",
-         "Hand-curated list of public imaging datasets; sizes checked against the primary paper or hosting page.",
-         "Pediatric by selection: only datasets of children or fetuses are listed."),
-        ("Newsletters",
-         f"Full archives of {news}, split into individual stories. Radiology AI = an AI term and an imaging term "
-         "in the same story.",
-         "A pediatric term (pediatric, child, infant, neonat, newborn, adolescen, fetal, bone age, preterm, NICU, "
-         "prenatal, ...) also in the same story."),
-        ("Commercial",
-         "FDA list of AI-enabled devices, Radiology panel (all ages).",
-         "Curated products with a stated pediatric indication or pediatric-by-design use, cross-checked against the FDA list."),
+        ("Journals, Preprints", "PubMed, Embase, arXiv, medRxiv"),
+        ("Conferences", "NeurIPS, ICLR, ICML, CVPR, MICCAI, MIDL"),
+        ("Datasets", "Hand-curated list"),
+        ("Newsletters", ", ".join(config.NEWSLETTER_SOURCES)),
+        ("Commercial", "FDA list of AI-enabled devices"),
     ]
-    out = ["{\\tiny\\renewcommand{\\arraystretch}{1.05}\\setlength{\\tabcolsep}{3pt}",
-           "\\begin{tabular}{%s%s%s|}" % (_p(0.10), _p(0.47), _p(0.39)),
-           "\\hline \\textbf{Source} & \\textbf{How the data were collected} & \\textbf{How pediatric was subset} \\\\ \\hline"]
-    for name, how, ped in rows:
-        out.append(f"\\textbf{{{name}}} & {_tex(how)} & {_tex(ped)} \\\\ \\hline")
-    out.append("\\end{tabular}\\par}")
-    return "\n".join(out)
+    lines = "\\\\\n".join(f"\\textbf{{{_tex(k)}}}: {_tex(v)}" for k, v in rows)
+    return "{\\small\n" + lines + "\\par}"
+
 
 def task_gloss_columns():
     items = list(config.TASK_GLOSS.items())
@@ -703,6 +716,7 @@ def main() -> None:
         "@@year_frames_rad@@": year_frames("radiology_ai", "radiology AI"),
         "@@year_frames_ped@@": year_frames("pediatric_radiology_ai", "pediatric radiology AI"),
         "@@venue_frames@@": venue_frames(venue_works),
+        "@@venue_pediatric_frames@@": venue_pediatric_frames(venue_works),
         "@@fwci_note@@": FWCI_NOTE,
         "@@pre_rad_latest@@": f"{int((preprints.get('yearly') or {}).get('radiology_ai', {}).get(str(yr1), 0)):,}",
         "@@pre_ped_latest@@": f"{int((preprints.get('yearly') or {}).get('pediatric_radiology_ai', {}).get(str(yr1), 0)):,}",
@@ -1016,6 +1030,8 @@ the other.}
 \end{frame}
 
 @@venue_frames@@
+
+@@venue_pediatric_frames@@
 
 \begin{frame}[category=Journals/Preprints]{Which medical problems pediatric radiology AI addresses}
 @@fig_problems@@

@@ -177,6 +177,93 @@ def _venue_works_s2(spec: dict[str, Any], start: int, end: int) -> list[dict[str
     return [p for p in papers if is_radiology_paper(p.get("title") or "")]
 
 
+def is_imaging_title(title: str) -> bool:
+    """Stricter rule for titles taken from a whole acceptance list."""
+    t = title or ""
+    return is_radiology_paper(t) and _matches(t, config.PAPER_IMAGING_SIGNAL)
+
+
+def _clean_title(raw: str) -> str:
+    import html
+
+    return html.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", raw))).strip()
+
+
+def accepted_titles(venue: str, year: int) -> list[str]:
+    """Every accepted paper title at ``venue`` in ``year`` from the meeting's own
+    listing (``config.VENUE_ACCEPTED_LISTS``); [] when not published or unreachable.
+    The current year is never read from the cache: its list may still be filling."""
+    import json
+
+    spec = config.VENUE_ACCEPTED_LISTS.get(venue)
+    if not spec:
+        return []
+    url = (spec.get("urls") or {}).get(year) or (spec["url"].format(year=year) if spec.get("url") else None)
+    if not url:
+        return []
+    try:
+        text = utils.http_get(url, pause=1.0, max_retries=2, timeout=180, use_cache=year < config.END_YEAR)
+    except Exception:
+        return []
+    kind = spec["kind"]
+    try:
+        if kind == "json":
+            titles = [r.get("name") or "" for r in json.loads(text).get("results") or []]
+        elif kind == "cvf":
+            titles = re.findall(r'class="ptitle"><br><a[^>]*>(.*?)</a>', text, re.S)
+        elif kind == "pmlr":
+            titles = re.findall(r'<p class="title">(.*?)</p>', text, re.S)
+        elif kind == "miccai":
+            titles = (re.findall(r"&bullet; <b>(.*?)</b>", text, re.S)
+                      or re.findall(r'<a href="/\d{4}/papers/[^"]*">(.*?)</a>', text, re.S))
+        else:
+            return []
+    except ValueError:  # an error page where JSON was expected
+        return []
+    titles = [_clean_title(t) for t in titles]
+    return list(dict.fromkeys(t for t in titles if t and not t.lower().startswith("preface")))
+
+
+def accepted_counts(venue: str, start: int, end: int) -> dict[str, Any] | None:
+    """Per-year radiology-AI and pediatric counts from the acceptance lists."""
+    if venue not in config.VENUE_ACCEPTED_LISTS:
+        return None
+    by_year: dict[str, int] = {}
+    ped: dict[str, int] = {}
+    totals: dict[str, int] = {}
+    ped_works: list[dict[str, Any]] = []
+    for year in range(start, end + 1):
+        titles = accepted_titles(venue, year)
+        if not titles:
+            continue
+        rad = [t for t in titles if is_imaging_title(t)]
+        totals[str(year)] = len(titles)
+        by_year[str(year)] = len(rad)
+        ped_titles = [t for t in rad if is_pediatric_title(t)]
+        if ped_titles:
+            ped[str(year)] = len(ped_titles)
+            ped_works.extend({"year": year, "title": t} for t in ped_titles)
+    return {"by_year": by_year, "pediatric_by_year": ped, "accepted_by_year": totals, "pediatric_works": ped_works}
+
+
+def apply_accepted_counts(out: dict[str, Any]) -> dict[str, Any]:
+    """Replace each conference's per-year counts in ``collect_venue_works``
+    output with the acceptance-list counts; the ranked ``works`` stay."""
+    for name, v in out.items():
+        start, end = v.get("years") or [config.VENUE_WORKS_START, config.END_YEAR]
+        counts = accepted_counts(name, start, end)
+        if not counts or not counts["by_year"]:
+            continue
+        if "count_source" not in v:  # the Semantic Scholar total the works table is ranked from
+            v["n_indexed"] = v.get("n_works", 0)
+        v.update(counts)
+        v["n_works"] = sum(counts["by_year"].values())
+        v["n_pediatric"] = sum(counts["pediatric_by_year"].values())
+        v["count_source"] = "accepted-paper list"
+        print(f"  {name}: {counts['by_year']} (pediatric {counts['pediatric_by_year']})")
+    return out
+
+
 def collect_venue_works(start: int | None = None, end: int | None = None, top_n: int = 40) -> dict[str, Any]:
     """Per venue: radiology-AI works over the window, ranked by citations.
 
@@ -225,4 +312,4 @@ def collect_venue_works(start: int | None = None, end: int | None = None, top_n:
             "works": rows,
         }
         print(f"    -> {len(works)} radiology-AI works, {out[name]['n_pediatric']} pediatric; top: {rows[0]['title'][:60] if rows else '-'}")
-    return out
+    return apply_accepted_counts(out)

@@ -108,7 +108,14 @@ The questions it answers:
     with an AI term query, since meeting abstracts are not indexed), all via
     Semantic Scholar, filtered by the shared title rules `is_radiology_paper`
     / `is_pediatric_title` (`config.PAPER_MEDICAL_SIGNAL`,
-    `PAPER_EXCLUDE_DOMAIN`, `PAPER_PEDIATRIC_SIGNAL`).
+    `PAPER_EXCLUDE_DOMAIN`, `PAPER_PEDIATRIC_SIGNAL`). The per-year conference
+    counts (`by_year`, `n_works`) are then replaced from each meeting's own
+    accepted-paper list (`config.VENUE_ACCEPTED_LISTS`: neurips.cc / iclr.cc /
+    icml.cc data files, CVF open access, PMLR, papers.miccai.org) with the
+    stricter `is_imaging_title` rule, because Semantic Scholar's venue coverage
+    is patchy and lags a year; the ranked `works` rows stay Semantic Scholar
+    (`n_indexed`). `collect_conferences.py --counts-only` redoes just the counts.
+    Add each new MIDL PMLR volume to the config by hand.
   - `newsletters.py` — newsletter / trade-press archive scanner. Four adapter
     kinds (`wordpress` REST API, `rsna_news` archive page, `tldr` dated daily
     pages, `rss`); each issue is split into stories at heading boundaries and

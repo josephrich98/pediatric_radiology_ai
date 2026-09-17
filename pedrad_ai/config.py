@@ -465,6 +465,44 @@ CONFERENCE_WORKS: dict[str, dict] = {
         "note": "SPR meeting abstracts are not indexed; the society's journal stands in.",
     },
 }
+# Semantic Scholar's venue coverage is patchy (no MIDL 2025, about two-thirds
+# of MICCAI, nothing yet for a meeting held this year), so the per-year counts
+# for the conferences come from each meeting's own accepted-paper list instead,
+# for every year, so a line never mixes the two sources. Titles only: a work
+# counts when ``is_radiology_paper`` holds AND the title names an imaging
+# modality or medical imaging (``PAPER_IMAGING_SIGNAL``) -- on a full ML
+# acceptance list the looser rule alone lets in battery-fault diagnosis and
+# spiking-network "brain" papers. Semantic Scholar still supplies the ranked
+# works tables (it has citations). A year whose list is not published yet
+# (NeurIPS before December, MICCAI before its proceedings go up) is a gap.
+#   kind: json   - neurips.cc / iclr.cc / icml.cc virtual-site data file
+#         cvf    - CVF open-access listing (``ptitle`` entries)
+#         pmlr   - PMLR proceedings volume (``<p class="title">``)
+#         miccai - papers.miccai.org list (2024-) / conferences.miccai.org (2023)
+VENUE_ACCEPTED_LISTS: dict[str, dict] = {
+    "NeurIPS": {"kind": "json", "url": "https://neurips.cc/static/virtual/data/neurips-{year}-orals-posters.json"},
+    "ICLR": {"kind": "json", "url": "https://iclr.cc/static/virtual/data/iclr-{year}-orals-posters.json"},
+    "ICML": {"kind": "json", "url": "https://icml.cc/static/virtual/data/icml-{year}-orals-posters.json"},
+    "CVPR": {"kind": "cvf", "url": "https://openaccess.thecvf.com/CVPR{year}?day=all"},
+    "MICCAI": {"kind": "miccai", "url": "https://papers.miccai.org/miccai-{year}/",
+               "urls": {2023: "https://conferences.miccai.org/2023/papers/"}},
+    # PMLR volume numbers are not predictable; add the new one each year.
+    "MIDL": {"kind": "pmlr", "urls": {2023: "https://proceedings.mlr.press/v227/", 2024: "https://proceedings.mlr.press/v250/",
+                                      2025: "https://proceedings.mlr.press/v301/", 2026: "https://proceedings.mlr.press/v315/"}},
+}
+# Conferences that get a slide listing every pediatric radiology-AI title on
+# their acceptance lists (the per-venue slides rank by citations, which buries them).
+VENUE_PEDIATRIC_SLIDES = ["MICCAI", "MIDL"]
+VENUE_PEDIATRIC_ROWS = 14  # rows per slide; a longer list continues on the next
+PAPER_IMAGING_SIGNAL = [
+    "radiology", "radiological", "radiologist", "radiologists", "mri", "mr", "magnetic resonance",
+    "x-ray", "x-rays", "xray", "radiograph", "radiographs", "radiography", "ultrasound",
+    "ultrasonography", "echocardiography", "computed tomography", "tomography", "ct", "cta",
+    "pet", "pet/ct", "spect", "mammography", "mammogram", "mammograms", "mammographic", "dxa",
+    "angiography", "fluoroscopy", "chest", "bone age", "fetal", "medical image", "medical images",
+    "medical imaging", "medical volumetric", "medical segmentation", "3d medical", "radiotherapy",
+    "lesion segmentation", "tumor segmentation", "tumour segmentation", "brain imaging", "nodule",
+]
 S2_AI_QUERY = (
     '("artificial intelligence" | "machine learning" | "deep learning" | "neural network" | radiomics | '
     'convolutional | "foundation model" | "language model" | "computer-aided")'

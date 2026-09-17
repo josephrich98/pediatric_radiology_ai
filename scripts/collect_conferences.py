@@ -26,7 +26,15 @@ def main() -> None:
     ap.add_argument("--end", type=int, default=config.CONF_END_YEAR)
     ap.add_argument("--works-only", action="store_true", help="only the per-venue works tables")
     ap.add_argument("--no-works", action="store_true", help="skip the per-venue works tables")
+    ap.add_argument("--counts-only", action="store_true",
+                    help="only redo the per-year conference counts from the acceptance lists, "
+                         "keeping the stored works tables")
     args = ap.parse_args()
+
+    if args.counts_only:
+        path = config.PROCESSED_DIR / "conference_works.json"
+        utils.save_json(conferences.apply_accepted_counts(utils.load_json(path)), path)
+        return
 
     if not args.no_works:
         print(f"Venue works {config.VENUE_WORKS_START}-{config.END_YEAR}: {list(config.CONFERENCE_WORKS)}")
