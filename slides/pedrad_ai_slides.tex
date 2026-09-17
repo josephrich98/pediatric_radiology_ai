@@ -345,13 +345,46 @@ the other.}
 \end{frame}
 
 \begin{frame}[category=Journals]{An independent scoping review of pediatric radiology AI}
-{\scriptsize Kamran et al., \textit{Pediatric Radiology} 2026 (doi 10.1007/s00247-025-06462-5)\par}
+\relax
+{\scriptsize Kamran et al., \textit{Pediatric Radiology} 2026
+(\href{https://doi.org/10.1007/s00247-025-06462-5}{doi 10.1007/s00247-025-06462-5})\par}
 \medskip
+\small
 \begin{itemize}
   \item \textbf{Scope}: 789 pediatric-focused original articles, 2005--August 2024.
   \item \textbf{Modalities}: radiography 38\%, MRI 33\%, ultrasound 14\%, CT 11\%, nuclear 2\%.
   \item \textbf{Top applications}: bone age (88), pneumonia (65), brain tumors (54).
   \item \textbf{Data}: 65\% used a single-hospital dataset.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[category=Journals]{ACR white paper: the pediatric AI gap}
+\relax
+{\scriptsize Sammer et al., \textit{J Am Coll Radiol} 2023;20:730--737
+(\href{https://doi.org/10.1016/j.jacr.2023.06.003}{doi 10.1016/j.jacr.2023.06.003})\par}
+\medskip
+\small
+\begin{itemize}
+  \item \textbf{Scope}: ACR Pediatric AI Workgroup white paper framing limited access to pediatric AI as a health equity issue.
+  \item \textbf{Availability}: at the time of the review, only 6 of more than 200 FDA-cleared tools in the ACR catalog indicated pediatric use (about 3\%).
+  \item \textbf{Why adult AI may fail}: growth, disease patterns, and imaging protocols differ; published studies show uneven performance across pediatric subgroups.
+  \item \textbf{Barriers}: scarce labeled pediatric data, consent and privacy concerns, and weak financial incentives for smaller pediatric markets.
+  \item \textbf{Recommendations}: validate in children, disclose age-specific evidence, fund pediatric development, involve families, and protect pediatric workflows. The authors introduce \textit{Image IntelliGently} to advance this work.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[category=Journals]{Multisociety statement: safe pediatric AI implementation}
+\relax
+{\scriptsize Shelmerdine et al., \textit{J Am Coll Radiol} 2026;23:89--101
+(\href{https://doi.org/10.1016/j.jacr.2025.08.019}{doi 10.1016/j.jacr.2025.08.019})\par}
+\medskip
+{\small ACR, ESPR, SPR, SLARP, AOSPR, and SPIN propose four pillars for safe adoption:\par}
+\small
+\begin{itemize}
+  \item \textbf{Regulation and purchasing}: pediatric labeling and proposed safety ratings; diverse datasets, subgroup performance, transparency, and cybersecurity.
+  \item \textbf{Implementation and integration}: define a local clinical need, select tools validated in children, pilot before scaling, and involve pediatric specialists and families.
+  \item \textbf{Interpretation and postmarket surveillance}: retain human oversight; audit performance and patient outcomes; manage discrepancies, report adverse events, and address automation bias.
+  \item \textbf{Education}: foundational AI literacy for all staff, pediatric-specific training, continuing education, and patient/public engagement.
 \end{itemize}
 \end{frame}
 
@@ -834,7 +867,7 @@ bone age in 2017. Adult benchmarks (CheXpert 224k, MIMIC-CXR 377k) exclude child
 \begin{adjustbox}{max totalsize={\textwidth}{0.66\textheight}}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|>{\raggedright\arraybackslash}p{0.210\textwidth}|>{\raggedright\arraybackslash}p{0.165\textwidth}|>{\raggedright\arraybackslash}p{0.375\textwidth}|>{\raggedright\arraybackslash}p{0.345\textwidth}|>{\raggedright\arraybackslash}p{0.165\textwidth}|}
-\hline \textbf{Vendor} & \textbf{Selected products} & \textbf{Functions} & \textbf{Pediatric / regulatory scope} & \textbf{Number of FDA AI entries} \\ \hline
+\hline \textbf{Vendor} & \textbf{Selected products} & \textbf{Functions} & \textbf{Pediatric / regulatory scope} & \textbf{Company-wide FDA AI entries (n; years)} \\ \hline
 Gleamer & BoneView & X-ray fracture detection; international versions also flag dislocations, effusions and focal bone lesions & US fracture aid: ages 2--21 for specified extremity views; other anatomy adult-only (2023) & 4 (2022--2025) \\ \hline
 AZmed & Rayvolve suite & MSK / chest finding detection; orthopedic measurements; GP bone age (separate modules) & US fracture indication age 2+ (2024); AZboneage is CE-marked; other eligibility varies by module & 4 (2022--2025) \\ \hline
 Visiana & BoneXpert & Hand X-ray bone age (GP / TW3), Bone Health Index; associated adult-height prediction tool & Designed for children; CE-marked; US research use only & not listed \\ \hline
@@ -848,6 +881,7 @@ Aidoc / Viz.ai & BriefCase, Viz LVO / ICH & Aidoc: CT / CTA triage (e.g., ICH, L
 \end{tabular}
 \end{adjustbox}
 \\[4pt]
+{\scriptsize Counts = company-wide radiology entries in the FDA AI-enabled device list (saved 2026-09-03); grouped vendors are summed. Includes versions and unrelated products, not pediatric-clearance counts; parentheses = decision-year range. The list is not exhaustive and may lag new authorizations.\\[2pt]Functions / labeling checked 2026-09-16; features vary by market and version. GP = Greulich--Pyle; TW3 = Tanner--Whitehouse 3; CHD = congenital heart disease.}
 \end{frame}
 
 \begin{frame}{Worth knowing as a radiologist --- and why}
@@ -868,6 +902,7 @@ Aidoc / Viz.ai & BriefCase, Viz LVO / ICH & Aidoc: CT / CTA triage (e.g., ICH, L
 \begin{frame}{Recommendations for pediatric radiologists}
 \begin{itemize}
   \setlength{\itemsep}{12pt}
+  \item AI development is constrained by scarce public datasets, fragmented institutional data, rare diseases, and heterogeneous reporting practices.
   \item Choose one task worth improving in your practice: bone-age measurements,
         fracture detection, or reducing CT dose / MRI scan time.
   \item Before adopting a tool, ask which children it was tested on. Check the
@@ -882,4 +917,3 @@ Aidoc / Viz.ai & BriefCase, Viz LVO / ICH & Aidoc: CT / CTA triage (e.g., ICH, L
 \end{frame}
 
 \end{document}
-

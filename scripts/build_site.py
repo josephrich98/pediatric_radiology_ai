@@ -314,12 +314,24 @@ def _submission_url(number: str) -> str:
 
 
 def fda_rows(fda: dict[str, Any]) -> list[dict[str, Any]]:
+    # Join the dated FDA pediatric-use screen by submission number. The
+    # inventory retains repeated submissions so the commercial tab can expose
+    # every one of the 230 direct-label candidates without collapsing versions.
+    inventory_path = config.PROCESSED_DIR / "fda_pediatric_inventory.json"
+    inventory = json.loads(inventory_path.read_text()) if inventory_path.exists() else {}
+    pediatric = {
+        r.get("submission"): r for r in inventory.get("records", [])
+        if r.get("status") == "label-positive-candidate"
+    }
     out = []
+    seen_submissions = set()
     for d in fda.get("devices", []):
         try:
             date = dt.datetime.strptime(d["date"], "%m/%d/%Y").date().isoformat()
         except (TypeError, ValueError):
             date = ""
+        candidate = pediatric.get(d.get("submission") or "")
+        seen_submissions.add(d.get("submission") or "")
         out.append({
             "date": date, "year": d.get("year"), "device": d.get("device") or "",
             "company": d.get("company_norm") or d.get("company") or "",
@@ -327,6 +339,27 @@ def fda_rows(fda: dict[str, Any]) -> list[dict[str, Any]]:
             "submission_url": _submission_url(d.get("submission") or ""),
             "product_code": d.get("product_code") or "",
             "pediatric_name": "yes" if d.get("pediatric_name_hit") else "",
+            "pediatric_status": "label-positive-candidate" if candidate else "",
+            "pediatric_evidence_pages": ", ".join(str(p) for p in (candidate or {}).get("evidence_pages", [])),
+        })
+    # The general FDA snapshot predates 19 of the pediatric candidates in the
+    # 2026-09-16 inventory. Add those rows so the commercial tab contains all
+    # 230 candidates while retaining the older FDA table rows unchanged.
+    for r in pediatric.values():
+        submission = r.get("submission") or ""
+        if submission in seen_submissions:
+            continue
+        try:
+            date = dt.datetime.strptime(r.get("decision_date", ""), "%m/%d/%Y").date().isoformat()
+        except (TypeError, ValueError):
+            date = ""
+        out.append({
+            "date": date, "year": int(date[:4]) if date else None,
+            "device": r.get("device") or "", "company": r.get("company") or "",
+            "company_full": r.get("company") or "", "submission": submission,
+            "submission_url": _submission_url(submission), "product_code": r.get("product_code") or "",
+            "pediatric_name": "", "pediatric_status": "label-positive-candidate",
+            "pediatric_evidence_pages": ", ".join(str(p) for p in r.get("evidence_pages", [])),
         })
     return sorted(out, key=lambda r: r["date"], reverse=True)
 
@@ -376,6 +409,7 @@ def build(out_dir: Path) -> dict[str, Any]:
             "software": mtime(config.PROCESSED_DIR / "github_repos.json"),
             "news": mtime(config.PROCESSED_DIR / "newsletter_items.json"),
             "fda": fda.get("collected_on", ""),
+            "fda_pediatric": json.loads((config.PROCESSED_DIR / "fda_pediatric_inventory.json").read_text()).get("retrieved_on", "") if (config.PROCESSED_DIR / "fda_pediatric_inventory.json").exists() else "",
             "products": "2026-09-16",
             "datasets": "2026-09-07",
         },

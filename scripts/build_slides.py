@@ -964,6 +964,36 @@ paper that mentions a pediatric term.
 \end{columns}
 \end{frame}
 
+\begin{frame}[category=Journals]{ACR white paper: the pediatric AI gap}
+\relax
+{\scriptsize Sammer et al., \textit{J Am Coll Radiol} 2023;20:730--737
+(\href{https://doi.org/10.1016/j.jacr.2023.06.003}{doi 10.1016/j.jacr.2023.06.003})\par}
+\medskip
+\small
+\begin{itemize}
+  \item \textbf{Scope}: ACR Pediatric AI Workgroup white paper framing limited access to pediatric AI as a health equity issue.
+  \item \textbf{Availability}: at the time of the review, only 6 of more than 200 FDA-cleared tools in the ACR catalog indicated pediatric use (about 3\%).
+  \item \textbf{Why adult AI may fail}: growth, disease patterns, and imaging protocols differ; published studies show uneven performance across pediatric subgroups.
+  \item \textbf{Barriers}: scarce labeled pediatric data, consent and privacy concerns, and weak financial incentives for smaller pediatric markets.
+  \item \textbf{Recommendations}: validate in children, disclose age-specific evidence, fund pediatric development, involve families, and protect pediatric workflows. The authors introduce \textit{Image IntelliGently} to advance this work.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[category=Journals]{Multisociety statement: safe pediatric AI implementation}
+\relax
+{\scriptsize Shelmerdine et al., \textit{J Am Coll Radiol} 2026;23:89--101
+(\href{https://doi.org/10.1016/j.jacr.2025.08.019}{doi 10.1016/j.jacr.2025.08.019})\par}
+\medskip
+{\small ACR, ESPR, SPR, SLARP, AOSPR, and SPIN propose four pillars for safe adoption:\par}
+\small
+\begin{itemize}
+  \item \textbf{Regulation and purchasing}: pediatric labeling and proposed safety ratings; diverse datasets, subgroup performance, transparency, and cybersecurity.
+  \item \textbf{Implementation and integration}: define a local clinical need, select tools validated in children, pilot before scaling, and involve pediatric specialists and families.
+  \item \textbf{Interpretation and postmarket surveillance}: retain human oversight; audit performance and patient outcomes; manage discrepancies, report adverse events, and address automation bias.
+  \item \textbf{Education}: foundational AI literacy for all staff, pediatric-specific training, continuing education, and patient/public engagement.
+\end{itemize}
+\end{frame}
+
 \begin{frame}[category=Journals/Preprints]{Reading the whole pediatric literature, not a sample of it}
 \scriptsize
 Counting publications says how much is being published; it does not say what was built, for which

@@ -150,6 +150,8 @@
     { key: "submission", label: "Submission", show: true, cls: "nobreak", render: (r) => link(r.submission_url, r.submission) },
     { key: "product_code", label: "Product code", type: "tags", show: true, render: (r) => tags("product_code", r.product_code) },
     { key: "pediatric_name", label: "Pediatric term in name", show: true, render: (r) => (r.pediatric_name ? '<span class="tag green" data-q="pediatric_name:yes">yes</span>' : "") },
+    { key: "pediatric_status", label: "Pediatric-use screen", show: true, render: (r) => (r.pediatric_status ? '<span class="tag green" data-q="pediatric_status:=label-positive-candidate">label-positive candidate</span>' : DASH) },
+    { key: "pediatric_evidence_pages", label: "Evidence pages", render: (r) => text(r.pediatric_evidence_pages) },
     { key: "year", label: "Year", type: "num" },
     { key: "company_full", label: "Company (as filed)", cls: "wide" },
   ];
@@ -215,6 +217,7 @@
       presets: [
         { id: "products", label: "Pediatric products (curated)", file: "products" },
         { id: "fda", label: "FDA AI-enabled radiology devices", file: "fda" },
+        { id: "fda-pediatric-candidates", label: "FDA pediatric-use candidates (230)", file: "fda", filter: (r) => r.pediatric_status === "label-positive-candidate" },
         { id: "fda-pediatric", label: "FDA devices with a pediatric term in the name", file: "fda", filter: (r) => r.pediatric_name === "yes" },
       ],
       examplesByPreset: {
@@ -223,7 +226,7 @@
       },
       intro: (m, preset) => preset === "products"
         ? `Selected commercial products with a pediatric indication or documented pediatric use, one row per company product, checked against vendor and FDA sources on ${m.snapshots.products}. <b>Company-wide FDA AI entries</b> counts every radiology-panel entry for that company in the FDA snapshot (${m.snapshots.fda}), including versions and unrelated products; it is not a count of this product or of pediatric indications. Click a count to see the entries.`
-        : `The FDA's list of AI-enabled medical devices, Radiology panel only (snapshot ${m.snapshots.fda}; <a href="${esc(m.fda_source)}" target="_blank" rel="noopener">source</a>). One row per authorization, so a company appears once per device or version. The FDA describes the list as noncomprehensive. “Pediatric term in name” is a name match (e.g. pediatric, bone age, fetal), not an indication.`,
+        : `The FDA's list of AI-enabled medical devices, Radiology panel only (snapshot ${m.snapshots.fda}; <a href="${esc(m.fda_source)}" target="_blank" rel="noopener">source</a>). One row per authorization, so a company appears once per device or version. The FDA describes the list as noncomprehensive. “Pediatric-use candidates” are the 230 records from the ${m.snapshots.fda_pediatric} linked-label screen with a direct pediatric/fetal patient-population or intended-use statement; confirm the current authorization before purchase. “Pediatric term in name” is only a name match.`,
     },
     {
       id: "datasets", label: "Datasets",
