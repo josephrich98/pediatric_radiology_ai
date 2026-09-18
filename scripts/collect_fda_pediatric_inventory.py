@@ -89,6 +89,16 @@ def collect_one(row):
 
 
 def main():
+    import argparse
+
+    # Authorization documents are archived under data/raw/fda_pediatric_inventory/
+    # and re-runs resume that archive, so this script does not use the HTTP cache
+    # and takes no --refresh flag. The parser keeps `--help` from re-screening
+    # all 1,600 documents.
+    argparse.ArgumentParser(
+        description="Archive and screen FDA authorization documents. Resumes the "
+                    "dated archive under data/raw/fda_pediatric_inventory/.",
+    ).parse_args()
     for part in ['documents', 'text']:
         (RAW / part).mkdir(parents=True, exist_ok=True)
     with (RAW/'ai_devices.csv').open(encoding='utf-8-sig', newline='') as stream:

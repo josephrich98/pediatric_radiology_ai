@@ -21,6 +21,7 @@ from __future__ import annotations
 import collections
 import csv
 import json
+import textwrap
 
 import matplotlib
 
@@ -134,10 +135,14 @@ def _flow_canvas():
     fig, ax = plt.subplots(figsize=(9.5, 8.2))
     ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis("off")
 
-    def box(x, y, w, h, lines, face="#f4f7fb", edge=BLUE, fontsize=8.4):
+    def box(x, y, w, h, lines, face="#f4f7fb", edge=BLUE, fontsize=8.4, align="center"):
         ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.12,rounding_size=0.10",
                                     facecolor=face, edgecolor=edge, linewidth=1.1))
-        ax.text(x + w / 2, y + h / 2, "\n".join(lines), ha="center", va="center",
+        # Left alignment exists for the boxes that carry a total over an
+        # itemized breakdown: centered text throws away the leading spaces that
+        # are what make a component read as subordinate to its total.
+        tx, ha = (x + 0.16, "left") if align == "left" else (x + w / 2, "center")
+        ax.text(tx, y + h / 2, "\n".join(lines), ha=ha, va="center",
                 fontsize=fontsize, color=INK, linespacing=1.45)
 
     def arrow(x1, y1, x2, y2):
@@ -152,63 +157,95 @@ def _flow_canvas():
 
 
 def prisma_figure(flow):
-    """PRISMA 2020 flow. A diagram, not a chart: boxes and arrows, no axes."""
+    """PRISMA 2020 flow. A diagram, not a chart: boxes and arrows, no axes.
+
+    Every box states its own total and then itemizes it, and the items always
+    add up to that total: identification lists one line per database under the
+    records identified, and each removal box lists one line per reason under the
+    number removed. ``review_stats.py`` builds the removal boxes as
+    (identified - screened) and carries any unnamed remainder as its own line,
+    so the figure cannot show a breakdown that fails to balance.
+    """
     fig, ax, box, arrow, stage = _flow_canvas()
 
-    ident = flow["identified"]
+    LX, LW, RX, RW = 1.1, 4.6, 6.05, 3.80   # left column, right column
+    MID = LX + LW / 2
+
+    def lines_for(total_label, parts, width=46, order=None):
+        """A total, then one indented line per component of it.
+
+        Components are ordered largest first unless ``order`` is given, which the
+        identification box uses to keep the databases in the order they were
+        searched rather than in order of yield. A lone component carries no
+        number of its own: repeating the total under itself reads as a second,
+        different quantity.
+        """
+        items = list(parts.items()) if order == "given" else \
+            sorted(parts.items(), key=lambda kv: -kv[1])
+        out = [f"{total_label}: n = {sum(parts.values()):,}"]
+        for k, v in items:
+            text = k if len(items) == 1 else f"{k}: {v:,}"
+            out += textwrap.wrap(text, width=width,
+                                 initial_indent="   ", subsequent_indent="       ")
+        return out
+
+    def left(cy, lines, **kw):
+        h = max(0.85, 0.245 * len(lines) + 0.40)
+        box(LX, cy - h / 2, LW, h, lines, **kw)
+        return cy - h / 2, cy + h / 2
+
+    def right(cy, lines, face="#fdf6f2", edge=ORANGE):
+        h = max(0.80, 0.235 * len(lines) + 0.36)
+        box(RX, cy - h / 2, RW, h, lines, face=face, edge=edge,
+            fontsize=7.6, align="left")
+        arrow(LX + LW, cy, RX, cy)
+
+    # -- Identification ----------------------------------------------------- #
+    ident = dict(flow["identified"])
+    ident_lines = lines_for("Records identified", ident, order="given")
     pending = flow.get("identified_not_screened") or {}
-    ident_lines = ["Records identified"] + [f"  {k}: {v:,}" for k, v in ident.items()]
     if pending:
-        ident_lines += ["", "Identified, not yet screened"] + \
-                       [f"  {k}: {v:,}" for k, v in pending.items()]
+        ident_lines += [""] + lines_for("Identified, not yet screened", pending,
+                                        order="given")
     stage(8.65, "Identification")
-    box(1.1, 7.75, 4.6, 1.8, ident_lines)
+    id_bot, _ = left(8.65, ident_lines, align="left")
+
     # Pre-screening removals. Duplicates and publication-form exclusions are both
     # removed before screening under PRISMA 2020, so they share one box.
     removed = flow.get("removed_before_screening")
     if not removed and flow.get("duplicates"):
         removed = {"duplicate records": flow["duplicates"]}
     if removed:
-        lines = [f"Removed before screening: n = {sum(removed.values()):,}"] + \
-                [f"  {k}: {v:,}" for k, v in sorted(removed.items(), key=lambda kv: -kv[1])]
-        box(6.2, 7.85, 3.3, 1.6, lines, face="#f7f7f7", edge="#b0b0b0")
-        arrow(5.7, 8.65, 6.2, 8.65)
+        right(8.65, lines_for("Removed before screening", removed),
+              face="#f7f7f7", edge="#b0b0b0")
 
+    # -- Screening ---------------------------------------------------------- #
     stage(6.45, "Screening")
-    box(1.1, 5.95, 4.6, 1.0, ["Records screened (title / abstract)", f"n = {flow['screened']:,}"])
-    arrow(3.4, 7.75, 3.4, 6.95)
+    scr_bot, scr_top = left(6.45, ["Records screened (title / abstract)",
+                                   f"n = {flow['screened']:,}"])
+    arrow(MID, id_bot, MID, scr_top)
+    right(6.45, lines_for("Excluded at screening", flow["excluded_screening"]))
 
-    excl = flow["excluded_screening"]
-    excl_lines = [f"Excluded at screening: n = {sum(excl.values()):,}"]
-    if len(excl) > 1:
-        excl_lines += [f"  {k}: {v:,}" for k, v in sorted(excl.items(), key=lambda kv: -kv[1])]
-    elif excl:
-        excl_lines = [f"Excluded at screening", f"({next(iter(excl))})", f"n = {sum(excl.values()):,}"]
-    box(6.2, 5.55, 3.3, 1.8, excl_lines, face="#fdf6f2", edge=ORANGE)
-    arrow(5.7, 6.45, 6.2, 6.45)
-
-    stage(4.3, "Eligibility")
-    box(1.1, 3.8, 4.6, 1.0, ["Records assessed for eligibility", f"n = {flow['eligible']:,}"])
-    arrow(3.4, 5.95, 3.4, 4.8)
-
+    # -- Eligibility -------------------------------------------------------- #
+    stage(4.30, "Eligibility")
+    el_bot, el_top = left(4.30, ["Records assessed for eligibility",
+                                 f"n = {flow['eligible']:,}"])
+    arrow(MID, scr_bot, MID, el_top)
     if flow.get("excluded_eligibility"):
-        e2 = flow["excluded_eligibility"]
-        lines = [f"Excluded, not primary research: n = {sum(e2.values()):,}"]
-        if len(e2) > 1:
-            lines += [f"  {k}: {v:,}" for k, v in sorted(e2.items(), key=lambda kv: -kv[1])[:5]]
-        else:
-            lines = ["Excluded, not primary research",
-                     f"({next(iter(e2))})", f"n = {sum(e2.values()):,}"]
-        box(6.2, 3.5, 3.3, 1.6, lines, face="#fdf6f2", edge=ORANGE)
-        arrow(5.7, 4.3, 6.2, 4.3)
+        right(4.30, lines_for("Excluded, not primary research",
+                              flow["excluded_eligibility"]))
 
-    stage(2.0, "Included")
-    box(1.1, 1.4, 4.6, 1.2, ["Studies included in the review",
+    # -- Included ----------------------------------------------------------- #
+    stage(2.00, "Included")
+    _, inc_top = left(2.00, ["Studies included in the review",
                              f"n = {flow['included']:,}"], face="#f1f9f5", edge=GREEN)
-    arrow(3.4, 3.8, 3.4, 2.6)
+    arrow(MID, el_bot, MID, inc_top)
 
+    ax.set_xlim(0.0, 10.05); ax.set_ylim(0.95, 9.85)
     ax.set_title("Study selection", fontsize=11, color=INK, loc="left", pad=6)
-    fig.text(0.02, 0.015, flow.get("note", ""), fontsize=7, color=MUTED)
+    note = flow.get("note", "")
+    if note:
+        ax.text(0.05, 1.12, note, ha="left", va="bottom", fontsize=7, color=MUTED)
     _save(fig, "review_prisma.png")
 
 

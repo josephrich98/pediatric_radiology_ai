@@ -283,10 +283,10 @@ def main() -> None:
         embase.get("embase_medline_overlap_records") or 0)
     if n_emb_total:
         identified["Embase"] = n_emb_total
-    n_legacy = sum(1 for r in recs if r.get("source") == "openalex") + \
-               sum(1 for r in conference if r.get("source") == "openalex")
-    if n_legacy:
-        identified["OpenAlex (earlier build)"] = n_legacy
+    n_oa = sum(1 for r in recs if r.get("source") == "openalex") + \
+           sum(1 for r in conference if r.get("source") == "openalex")
+    if n_oa:
+        identified["OpenAlex"] = n_oa
 
     total_removed = sum(identified.values()) - len(recs)
     removed = {}

@@ -19,13 +19,15 @@ from __future__ import annotations
 
 import argparse
 
-from pedrad_ai import config, newsletters, utils
+from pedrad_ai import cache, config, newsletters, utils
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--source", action="append", help="restrict to named source(s)")
+    cache.add_cli(ap)
     args = ap.parse_args()
+    cache.apply_cli(args)
 
     sources = config.NEWSLETTER_SOURCES
     if args.source:

@@ -18,14 +18,16 @@ from __future__ import annotations
 
 import argparse
 
-from pedrad_ai import analysis, config, pubmed, utils
+from pedrad_ai import analysis, cache, config, pubmed, utils
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--quick", action="store_true", help="headline queries only")
     ap.add_argument("--top", type=int, default=150, help="top articles per query")
+    cache.add_cli(ap)
     args = ap.parse_args()
+    cache.apply_cli(args)
 
     if args.quick:
         counts = {name: pubmed.yearly_counts(q) for name, q in config.QUERIES.items()}

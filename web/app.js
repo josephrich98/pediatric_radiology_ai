@@ -36,6 +36,15 @@
   const text = (v, cls = "") => (S.isEmpty(v) ? DASH : `<div class="${cls}">${esc(v)}</div>`);
   const clamp = (v) => text(v, "clamp");
 
+  // A read-only checkbox cell. Clicking it filters to the ticked rows; `why`
+  // becomes the tooltip, so a tick always says what it rests on.
+  function checkbox(field, on, why) {
+    const q = esc(`${field}:yes`);
+    const title = esc(on ? (why || "yes") : "no");
+    return `<span class="check${on ? " on" : ""}" data-q="${q}" title="${title}">` +
+      `<input type="checkbox" ${on ? "checked" : ""} tabindex="-1" aria-label="${title}"></span>`;
+  }
+
   const RECORD_CLASS = {
     "included study": "green", "review / editorial": "blue", "screened out": "gray",
     "Embase, not retrieved": "gray",
@@ -52,7 +61,7 @@
     { key: "year", label: "Year", type: "num", show: true, render: (r) => r.year ?? DASH },
     { key: "venue", label: "Journal / venue", show: true, cls: "wide", aliases: ["journal"] },
     { key: "publication_form", label: "Form", type: "tags", show: true, render: (r) => tags("publication_form", r.publication_form) },
-    { key: "record_type", label: "Record", type: "tags", show: true, render: (r) => tags("record_type", r.record_type, (v) => RECORD_CLASS[v] || "") },
+    { key: "record_type", label: "Record", type: "tags", render: (r) => tags("record_type", r.record_type, (v) => RECORD_CLASS[v] || "") },
     { key: "modality", label: "Modality", type: "tags", show: true, render: (r) => tags("modality", r.modality) },
     { key: "task", label: "Task", type: "tags", show: true, render: (r) => tags("task", r.task) },
     { key: "age_groups", label: "Ages", type: "tags", show: true, render: (r) => tags("age_groups", r.age_groups) },
@@ -108,6 +117,10 @@
     { key: "created", label: "Created", type: "date", cls: "nobreak" },
     { key: "host", label: "Host", type: "tags", render: (r) => tags("host", r.host) },
     { key: "url", label: "URL", render: (r) => link(r.url, "link") },
+    { key: "pediatric_evidence", label: "Why pediatric", cls: "wide", render: (r) => text(r.pediatric_evidence) },
+    // Last, so the checkbox sits at the right edge of the table.
+    { key: "pediatric", label: "Pediatric use", show: true, cls: "check-cell",
+      render: (r) => checkbox("pediatric", r.pediatric === "yes", r.pediatric_evidence) },
   ];
 
   const NEWS_COLS = [
@@ -126,23 +139,6 @@
     { key: "url", label: "URL", render: (r) => link(r.url, "link") },
   ];
 
-  const PRODUCT_COLS = [
-    { key: "vendor", label: "Company", show: true, cls: "nobreak", render: (r) => `<b>${esc(r.vendor)}</b>` },
-    { key: "product", label: "Product", show: true, render: (r) => (r.url ? link(r.url, r.product) : esc(r.product)) },
-    { key: "modality", label: "Modality", type: "tags", show: true, render: (r) => tags("modality", r.modality) },
-    { key: "task", label: "Functions", show: true, cls: "wide", render: (r) => text(r.task) },
-    { key: "pediatric", label: "Pediatric / regulatory scope", show: true, cls: "wide", render: (r) => text(r.pediatric) },
-    { key: "fda_entries", label: "Company-wide FDA AI entries", type: "num", show: true, cls: "num",
-      render: (r) => {
-        if (!r.fda_entries) return '<span class="muted">not listed</span>';
-        const q = r.fda_companies.map((c) => `company:=${quoteVal(c)}`).join(" OR ");
-        return `<a href="#" data-goto="commercial" data-preset="fda" data-q="${esc(q)}" title="Show these entries in the FDA device list">${r.fda_entries}</a> <span class="muted">(${esc(r.fda_years)})</span>`;
-      } },
-    { key: "fda_years", label: "FDA years", cls: "nobreak" },
-    { key: "fda_companies", label: "FDA company names", type: "list", render: (r) => tags("fda_companies", r.fda_companies) },
-    { key: "url", label: "URL", render: (r) => (r.url ? link(r.url, "link") : DASH) },
-  ];
-
   const FDA_COLS = [
     { key: "date", label: "Decision date", type: "date", show: true, cls: "nobreak" },
     { key: "device", label: "Device", show: true, cls: "title-cell" },
@@ -150,10 +146,16 @@
     { key: "submission", label: "Submission", show: true, cls: "nobreak", render: (r) => link(r.submission_url, r.submission) },
     { key: "product_code", label: "Product code", type: "tags", show: true, render: (r) => tags("product_code", r.product_code) },
     { key: "pediatric_name", label: "Pediatric term in name", show: true, render: (r) => (r.pediatric_name ? '<span class="tag green" data-q="pediatric_name:yes">yes</span>' : "") },
-    { key: "pediatric_status", label: "Pediatric-use screen", show: true, render: (r) => (r.pediatric_status ? '<span class="tag green" data-q="pediatric_status:=label-positive-candidate">label-positive candidate</span>' : DASH) },
+    { key: "pediatric_status", label: "Pediatric-use screen", render: (r) => (r.pediatric_status ? '<span class="tag green" data-q="pediatric_status:=label-positive-candidate">label-positive candidate</span>' : DASH) },
     { key: "pediatric_evidence_pages", label: "Evidence pages", render: (r) => text(r.pediatric_evidence_pages) },
+    { key: "curated_product", label: "Curated pediatric product", type: "list", show: true, cls: "wide",
+      render: (r) => tags("curated_product", r.curated_product) },
     { key: "year", label: "Year", type: "num" },
     { key: "company_full", label: "Company (as filed)", cls: "wide" },
+    // Last, so the checkbox sits at the right edge of the table.
+    { key: "pediatric", label: "Pediatric use", show: true, cls: "check-cell",
+      render: (r) => checkbox("pediatric", r.pediatric === "yes",
+        r.pediatric_evidence_pages ? `Pediatric intended use or population in the label (pages ${r.pediatric_evidence_pages})` : "Pediatric intended use or population in the label") },
   ];
 
   const DATASET_COLS = [
@@ -170,44 +172,35 @@
     articles: { cols: ARTICLE_COLS, sort: { key: "year", order: "desc" } },
     software: { cols: SOFTWARE_COLS, sort: { key: "stars", order: "desc" } },
     news: { cols: NEWS_COLS, sort: { key: "date", order: "desc" } },
-    products: { cols: PRODUCT_COLS, sort: null },
     fda: { cols: FDA_COLS, sort: { key: "date", order: "desc" } },
     datasets: { cols: DATASET_COLS, sort: null },
   };
 
   // --------------------------------------------------------------------- tabs
 
-  const notScreened = (r) => r.record_type !== "screened out" && r.record_type !== "Embase, not retrieved";
-
   const TABS = [
     {
       id: "articles", label: "Articles",
       presets: [
+        // The file already holds only the corpus; the filter keeps the tab
+        // honest if a future build ships more.
         { id: "included", label: "Included studies", file: "articles", filter: (r) => r.record_type === "included study" },
-        { id: "journal", label: "Journal articles", file: "articles", filter: (r) => notScreened(r) && r.publication_form === "journal article" },
-        { id: "preprint", label: "Preprints", file: "articles", filter: (r) => notScreened(r) && r.publication_form === "preprint" },
-        { id: "conference", label: "Conference papers", file: "articles", filter: (r) => notScreened(r) && r.publication_form === "conference paper" },
-        { id: "all", label: "All records, incl. screened out", file: "articles" },
       ],
       examples: ['bone age', 'modality:MRI AND task:segmentation', 'year>=2024 AND release_status:open-source', 'age_groups:neonate', 'impact>=2 AND validation:external', '(fracture OR trauma) AND NOT modality:CT'],
-      intro: (m) => `Every paper record the project holds: journal articles, preprints and conference papers. <b>Included studies</b> is the systematic-review corpus (primary pediatric radiology-AI studies), with model, modality, population, task and release status read from each abstract. <b>Release “unclear”</b> means the abstract does not say, not that the model is unavailable. <b>Impact</b> is field-normalized (FWCI, else iCite RCR; 1.0 = average paper of that field and year). Recent years undercount because of indexing lag. Snapshot ${m.snapshots.articles}.`,
+      intro: (m) => `The ${Number(m.counts.articles).toLocaleString()} primary studies included in the systematic review, with model, modality, population, task and release status read from each abstract. <b>Release “unclear”</b> means the abstract does not say, not that the model is unavailable. <b>Impact</b> is field-normalized (FWCI, else iCite RCR; 1.0 = average paper of that field and year). Recent years undercount because of indexing lag. Snapshot ${m.snapshots.articles}.`,
     },
     {
-      id: "software", label: "Open-source software",
+      id: "software", label: "Open source software",
       presets: [
         { id: "all", label: "All", file: "software" },
-        { id: "papers", label: "Linked to papers", file: "software", filter: (r) => r.n_papers > 0 },
-        { id: "known", label: "Well-known tools", file: "software", filter: (r) => r.lists.includes("well-known tool") },
-        { id: "pediatric", label: "Pediatric / bone age", file: "software", filter: (r) => r.lists.includes("pediatric imaging AI") || r.lists.includes("bone age") },
       ],
-      examples: ['segmentation', 'stars>=1000', 'lists:"bone age"', 'language:Python AND updated>=2025', 'papers:* AND host:GitHub'],
-      intro: (m) => `Repositories from the GitHub leaderboards (searched by topic, plus well-known tools fetched by name; stars as of ${m.snapshots.software}) and every code link stated in a pediatric radiology-AI paper. Code links that are not on a leaderboard have no star count.`,
+      examples: ['segmentation', 'pediatric:yes', 'stars>=1000', 'language:Python AND updated>=2025', 'papers:* AND host:GitHub'],
+      intro: (m) => `Repositories from the GitHub leaderboards (searched by topic, plus well-known tools fetched by name; stars as of ${m.snapshots.software}) and every code link stated in a pediatric radiology-AI paper. Code links that are not on a leaderboard have no star count. <b>Pediatric use</b> is ticked when the repository came from the pediatric-imaging or bone-age searches, or names a pediatric population itself; hover the box for which. A general tool that a pediatric study merely used is not ticked.`,
     },
     {
       id: "news", label: "Newsletters",
       presets: [
         { id: "all", label: "All stories", file: "news" },
-        { id: "paper", label: "With a linked paper", file: "news", filter: (r) => !!r.paper },
       ],
       examples: ['bone age', 'source:"RSNA News"', 'date>=2026-01', 'players:*', 'topics:fracture'],
       intro: (m) => `Newsletter and trade-press stories in which pediatric and AI terms co-occur, with topic tags, the companies or tools named, and the paper a story links to. Not scanned: ${m.news_blocked.map((b) => `${esc(b.name)} (${esc(b.reason)})`).join("; ")}. Snapshot ${m.snapshots.news}.`,
@@ -215,18 +208,10 @@
     {
       id: "commercial", label: "Commercial",
       presets: [
-        { id: "products", label: "Pediatric products (curated)", file: "products" },
         { id: "fda", label: "FDA AI-enabled radiology devices", file: "fda" },
-        { id: "fda-pediatric-candidates", label: "FDA pediatric-use candidates (230)", file: "fda", filter: (r) => r.pediatric_status === "label-positive-candidate" },
-        { id: "fda-pediatric", label: "FDA devices with a pediatric term in the name", file: "fda", filter: (r) => r.pediatric_name === "yes" },
       ],
-      examplesByPreset: {
-        products: ['bone age', 'modality:MRI', 'fda_entries>=10'],
-        fda: ['company:="GE HealthCare"', 'date>=2025', 'fetal OR pediatric', 'submission:DEN'],
-      },
-      intro: (m, preset) => preset === "products"
-        ? `Selected commercial products with a pediatric indication or documented pediatric use, one row per company product, checked against vendor and FDA sources on ${m.snapshots.products}. <b>Company-wide FDA AI entries</b> counts every radiology-panel entry for that company in the FDA snapshot (${m.snapshots.fda}), including versions and unrelated products; it is not a count of this product or of pediatric indications. Click a count to see the entries.`
-        : `The FDA's list of AI-enabled medical devices, Radiology panel only (snapshot ${m.snapshots.fda}; <a href="${esc(m.fda_source)}" target="_blank" rel="noopener">source</a>). One row per authorization, so a company appears once per device or version. The FDA describes the list as noncomprehensive. “Pediatric-use candidates” are the 230 records from the ${m.snapshots.fda_pediatric} linked-label screen with a direct pediatric/fetal patient-population or intended-use statement; confirm the current authorization before purchase. “Pediatric term in name” is only a name match.`,
+      examples: ['pediatric:yes', 'company:="GE HealthCare"', 'date>=2025', 'fetal OR pediatric', 'curated_product:*'],
+      intro: (m) => `The FDA's list of AI-enabled medical devices, Radiology panel only (snapshot ${m.snapshots.fda}; <a href="${esc(m.fda_source)}" target="_blank" rel="noopener">source</a>). One row per authorization, so a company appears once per device or version. The FDA describes the list as noncomprehensive. <b>Pediatric use</b> is ticked for the ${Number(m.counts.fda_pediatric).toLocaleString()} records whose linked label states a pediatric or fetal patient population or intended use (${m.snapshots.fda_pediatric} screen); about half of those are whole scanners whose labels list pediatric imaging as one clinical application, so confirm the current authorization before purchase. <b>Curated pediatric product</b> marks the ${Number(m.counts.products).toLocaleString()} products with a documented pediatric indication reviewed by hand on ${m.snapshots.products}; it is a company-level flag, not a claim about that row's authorization.`,
     },
     {
       id: "datasets", label: "Datasets",
@@ -304,9 +289,9 @@
 
   function renderTabs() {
     $("tabs").innerHTML = TABS.map((t) => {
-      const n = t.presets.map((p) => p.file).filter((f, i, a) => a.indexOf(f) === i)
-        .reduce((s, f) => s + ((META && META.counts[f]) || 0), 0);
-      const count = t.id === "commercial" ? (META ? META.counts.products : "") : n;
+      const count = !META ? "" : t.presets.map((p) => p.file)
+        .filter((f, i, a) => a.indexOf(f) === i)
+        .reduce((n, f) => n + (META.counts[f] || 0), 0);
       return `<button role="tab" data-tab="${t.id}" class="${t.id === state.tab ? "active" : ""}">${esc(t.label)}<span class="count">${count ? Number(count).toLocaleString() : ""}</span></button>`;
     }).join("");
     const active = $("tabs").querySelector("button.active");
@@ -327,7 +312,7 @@
   function renderIntro() {
     const t = currentTab();
     $("intro").innerHTML = META ? t.intro(META, currentPreset().id) : "";
-    const ex = (t.examplesByPreset && t.examplesByPreset[currentPreset().file]) || t.examples || [];
+    const ex = t.examples || [];
     $("examples").innerHTML = ex.map((q) => `<code data-example="${esc(q)}">${esc(q)}</code>`).join(" ");
     $("query").placeholder = ex.length ? `e.g.  ${ex[1] || ex[0]}` : "Search";
     renderFieldsHelp();
@@ -384,7 +369,7 @@
       const v = r[c.key];
       let html;
       if (c.key === "papers") html = c.render(r);
-      else if (/url$/.test(c.key) || c.key === "doi" || c.key === "pmid" || c.key === "arxiv_id" || c.key === "submission" || c.key === "fda_entries") html = c.render(r);
+      else if (/url$/.test(c.key) || c.key === "doi" || c.key === "pmid" || c.key === "arxiv_id" || c.key === "submission") html = c.render(r);
       else if (c.type === "list" || c.type === "tags") html = c.render ? c.render(r) : esc(S.asText(v));
       else if (c.type === "num") html = esc(String(v));
       else html = esc(S.asText(v));

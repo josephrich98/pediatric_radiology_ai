@@ -20,11 +20,13 @@ Output::
     dist/
       index.html, app.js, search.js     # copied from web/
       data/meta.json                    # snapshot dates and counts
-      data/articles.json                # data/processed/pediatric_radiology_ai.csv
+      data/articles.json                # the review corpus of
+                                        #   data/processed/pediatric_radiology_ai.csv
       data/software.json                # GitHub leaderboards + code links in papers
       data/news.json                    # newsletter_items.json
-      data/products.json                # config.COMMERCIAL_PEDIATRIC, one row per product
       data/fda.json                     # FDA AI-enabled devices, Radiology panel
+                                        # (config.COMMERCIAL_PEDIATRIC rides on it
+                                        #  as the curated_product column)
       data/datasets.json                # config.PEDIATRIC_DATASETS
 """
 
@@ -127,6 +129,28 @@ REPO_LIST_LABELS = {
 }
 
 
+# "Intended pediatric use" for a repository. Two kinds of evidence, both
+# recorded in ``pediatric_evidence``: the repository was found by the pediatric
+# leaderboard searches, or it names a pediatric population in its own metadata.
+# A general tool that a pediatric paper happens to use does not count.
+PEDIATRIC_REPO_LISTS = ("pediatric imaging AI", "bone age")
+PEDIATRIC_TERM_RE = re.compile(
+    r"(?<!\w)(p(a)?ediatric(s)?|child(ren|hood)?|infant(s)?|neonat\w*|newborn(s)?|"
+    r"fetal|foetal|fetus(es)?|prenatal|preterm|premature|adolescen\w*|bone.?age)(?!\w)",
+    re.I,
+)
+
+
+def _repo_pediatric(row: dict[str, Any]) -> tuple[str, str]:
+    """('yes' | '', why) for the pediatric checkbox of one repository row."""
+    why = [f"{name} leaderboard" for name in row["lists"] if name in PEDIATRIC_REPO_LISTS]
+    text = " ".join([row["name"], row["description"], " ".join(row["topics"])])
+    terms = sorted({m.group(0).lower() for m in PEDIATRIC_TERM_RE.finditer(text)})
+    if terms:
+        why.append("names " + ", ".join(terms))
+    return ("yes" if why else ""), "; ".join(why)
+
+
 def _repo_key(url: str) -> str:
     u = url.strip().lower().rstrip("/")
     u = re.sub(r"\.git$", "", u)
@@ -187,6 +211,7 @@ def software(article_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     row["description"] = a["model_description"]
     for row in rows.values():
         row["n_papers"] = len(row["papers"])
+        row["pediatric"], row["pediatric_evidence"] = _repo_pediatric(row)
     return sorted(rows.values(), key=lambda r: (-(r["stars"] or -1), r["name"].lower()))
 
 
@@ -302,7 +327,24 @@ def _submission_url(number: str) -> str:
     return ""
 
 
-def fda_rows(fda: dict[str, Any]) -> list[dict[str, Any]]:
+def _curated_by_company(product_rows: list[dict[str, Any]]) -> dict[str, list[str]]:
+    """Normalized FDA company name -> the curated pediatric products it sells.
+
+    The commercial tab is one table of authorizations, so the curated product
+    list survives as a company-level column rather than a second table. It is a
+    company flag, not a claim about the authorization on that row.
+    """
+    out: dict[str, list[str]] = {}
+    for r in product_rows:
+        for company in r["fda_companies"]:
+            names = out.setdefault(company, [])
+            if r["product"] not in names:
+                names.append(r["product"])
+    return out
+
+
+def fda_rows(fda: dict[str, Any], product_rows: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+    curated = _curated_by_company(product_rows or [])
     # Join the dated FDA pediatric-use screen by submission number. The
     # inventory retains repeated submissions so the commercial tab can expose
     # every one of the 230 direct-label candidates without collapsing versions.
@@ -330,6 +372,8 @@ def fda_rows(fda: dict[str, Any]) -> list[dict[str, Any]]:
             "pediatric_name": "yes" if d.get("pediatric_name_hit") else "",
             "pediatric_status": "label-positive-candidate" if candidate else "",
             "pediatric_evidence_pages": ", ".join(str(p) for p in (candidate or {}).get("evidence_pages", [])),
+            "curated_product": curated.get(d.get("company_norm") or d.get("company") or "", []),
+            "pediatric": "yes" if candidate else "",
         })
     # The general FDA snapshot predates 19 of the pediatric candidates in the
     # 2026-09-16 inventory. Add those rows so the commercial tab contains all
@@ -349,6 +393,8 @@ def fda_rows(fda: dict[str, Any]) -> list[dict[str, Any]]:
             "submission_url": _submission_url(submission), "product_code": r.get("product_code") or "",
             "pediatric_name": "", "pediatric_status": "label-positive-candidate",
             "pediatric_evidence_pages": ", ".join(str(p) for p in r.get("evidence_pages", [])),
+            "curated_product": curated.get(r.get("company") or "", []),
+            "pediatric": "yes",
         })
     return sorted(out, key=lambda r: r["date"], reverse=True)
 
@@ -376,12 +422,21 @@ def build(out_dir: Path) -> dict[str, Any]:
     fda = json.loads((config.PROCESSED_DIR / "fda_ai_devices.json").read_text())
 
     arts = articles()
+    # The articles tab is the review corpus, so only the included primary
+    # studies are shipped; the other record types of the unified table (screened
+    # out, reviews, venue and most-cited rows) stay in
+    # data/processed/pediatric_radiology_ai.csv. `software` still reads every
+    # record, because a code link in a review is still a code link.
+    corpus = [r for r in arts if r["record_type"] == "included study"]
+    # The curated pediatric-product list is not a table of its own on the site:
+    # the commercial tab is the FDA authorization list, and each curated product
+    # rides along as a company-level column on it.
+    product_rows = products(fda)
     tables = {
-        "articles": arts,
+        "articles": corpus,
         "software": software(arts),
         "news": news(),
-        "products": products(fda),
-        "fda": fda_rows(fda),
+        "fda": fda_rows(fda, product_rows),
         "datasets": datasets(),
     }
     for name, rows in tables.items():
@@ -392,7 +447,11 @@ def build(out_dir: Path) -> dict[str, Any]:
 
     meta = {
         "built_on": dt.date.today().isoformat(),
-        "counts": {k: len(v) for k, v in tables.items()},
+        "counts": {
+            **{k: len(v) for k, v in tables.items()},
+            "products": len(product_rows),
+            "fda_pediatric": sum(r["pediatric"] == "yes" for r in tables["fda"]),
+        },
         "snapshots": {
             "articles": mtime(config.UNIFIED_DB_CSV),
             "software": mtime(config.PROCESSED_DIR / "github_repos.json"),
@@ -419,8 +478,10 @@ def main() -> None:
     meta = build(args.out)
     print(f"wrote {args.out}/")
     for name, n in meta["counts"].items():
-        size = (args.out / "data" / f"{name}.json").stat().st_size / 1e6
-        print(f"  {name:10s} {n:6d} rows  {size:5.1f} MB")
+        path = args.out / "data" / f"{name}.json"
+        if not path.exists():  # a derived count (articles_included, products)
+            continue
+        print(f"  {name:10s} {n:6d} rows  {path.stat().st_size / 1e6:5.1f} MB")
 
 
 if __name__ == "__main__":

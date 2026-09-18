@@ -36,7 +36,7 @@ import argparse
 import datetime as dt
 from typing import Any
 
-from pedrad_ai import arxiv, config, medrxiv, utils
+from pedrad_ai import arxiv, cache, config, medrxiv, utils
 
 SOURCES = {
     "arXiv": (arxiv, arxiv.to_arxiv_query),
@@ -89,7 +89,9 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--quick", action="store_true", help="yearly counts only (no crosstab / problems)")
     ap.add_argument("--source", choices=["arXiv", "medRxiv"], help="run only one source (for a fast top-up of the other)")
+    cache.add_cli(ap)
     args = ap.parse_args()
+    cache.apply_cli(args)
 
     sources = {args.source: SOURCES[args.source]} if args.source else SOURCES
 

@@ -7,6 +7,15 @@ from pedrad_ai import config, fda_devices, utils
 
 
 def main() -> None:
+    import argparse
+
+    # The spreadsheet is fetched with urllib directly, outside the HTTP cache, so
+    # this script is already a refresh every time it runs and takes no --refresh
+    # flag. The parser is here so `--help` prints help instead of re-downloading.
+    argparse.ArgumentParser(
+        description="Collect the FDA AI-enabled device list (Radiology panel). "
+                    "Always downloads the current list; nothing is cached.",
+    ).parse_args()
     print("FDA AI-enabled device list...")
     fda = fda_devices.collect()
     if not fda:

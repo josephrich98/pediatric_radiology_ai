@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import re
 
-from pedrad_ai import conferences, config, github_repos, semantic_scholar, utils
+from pedrad_ai import cache, conferences, config, github_repos, semantic_scholar, utils
 
 def _is_relevant(paper: dict, pediatric: bool = False) -> bool:
     """Title-level filter (see config.PAPER_MEDICAL_SIGNAL / PAPER_EXCLUDE_DOMAIN).
@@ -97,6 +97,12 @@ def collect_software() -> None:
 
 
 def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    cache.add_cli(ap)
+    cache.apply_cli(ap.parse_args())
     collect_papers()
     collect_software()
 

@@ -159,7 +159,7 @@ The September 11 analysis corrected a keyword false positive: bare “intelligen
 
 ## Supplementary methods: screening and analysis provenance
 
-The stored screening flow identifies 13,510 records (6,000 PubMed/MEDLINE, 7,288 Embase, and 222 from an earlier OpenAlex build). It records 6,602 screened, 2,650 excluded at screening, 456 non-primary publications excluded, and 3,496 included primary-study records. The removal boxes are derived from source-layer counts and include a remainder of 14 other duplicates/unresolved records. These arithmetic flow boxes do not prove complete deduplication: the additional audit identified 79 repeated-title groups involving 161 included records.
+The stored screening flow identifies 13,510 records (6,000 PubMed/MEDLINE, 7,288 Embase, and 222 OpenAlex). It records 6,602 screened, 2,650 excluded at screening, 456 non-primary publications excluded, and 3,496 included primary-study records. The removal boxes are derived from source-layer counts and include a remainder of 14 other duplicates/unresolved records. These arithmetic flow boxes do not prove complete deduplication: the additional audit identified 79 repeated-title groups involving 161 included records.
 
 The existing screening reliability file reports a second automated review of 150 records, with 94.7% agreement and Cohen's κ=0.885. This measures inter-model agreement, not accuracy against independent human screening. Human validation of eligibility and extraction is outstanding. Aggregate claims are consequently provisional.
 

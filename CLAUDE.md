@@ -60,6 +60,25 @@ The questions it answers:
   collector module; `analysis.py` derives trends and fractions; `utils.py` is a
   cached, rate-limited HTTP client. Collectors use **only the standard library**
   for networking so pulls run anywhere.
+  - `cache.py` — **the refresh policy: what a re-run is allowed to re-fetch.**
+    The HTTP cache has no expiry, which is what makes a re-run reproducible and
+    also what would make it useless as an update: a cached PubMed ESearch
+    returns the PMID list as it stood at the first pull, so a plain
+    `collect_pubmed.py` re-run reproduces last month's numbers. Refresh mode
+    fixes that without deleting anything. A rule classifies each request URL:
+    `INDEX` (a listing or unbounded search — the thing that hides a new record)
+    is always re-fetched, `WINDOW` (a year-scoped count) only when its year
+    range reaches the live window (`--refresh-years`, default the current and
+    previous year), `METRICS` (citations, FWCI, RCR, stars) is opt-in because it
+    drifts rather than hides and costs thousands of requests against budgeted
+    APIs, and `KEEP` (fetched records, article bodies, settled years — most of
+    the 1.3 GB) is never re-fetched. **Anything no rule matches is kept**, so a
+    refresh can only re-fetch what `_RULES` names. The year comes off the URL
+    itself (`2015[pdat]`, `submittedDate:[…]`, `PUB_YEAR:[…]`,
+    `from_publication_date:`), so there is nothing to back-fill and no
+    enumeration to keep in sync with the collectors. `tests/test_cache_refresh.py`
+    builds its URLs from the collectors' own param dicts so a rule that drifts
+    fails loudly instead of silently skipping a source.
   - `config.py` — **the single place to retune scope**: search queries, year
     range, venues, keyword sets.
   - `pubmed.py`, `crossref.py` — publication counts over time; `pubmed.py` also
@@ -231,19 +250,30 @@ The questions it answers:
   - `doi2bib.py` — DOI → BibTeX via doi.org content negotiation (see "Adding
     References" below).
 - `web/` — the static database website (`index.html`, `app.js`, `search.js`):
-  one tab each for articles (the unified paper table, with presets for included
-  studies / journal articles / preprints / conference papers), open-source
-  software (GitHub leaderboards plus code links stated in papers), newsletters,
-  commercial (curated pediatric products, one row per company product, and the
-  FDA radiology device list) and datasets. `scripts/build_site.py` snapshots
-  `data/processed` into `dist/data/*.json` and copies `web/` next to it; search
-  (boolean, `field:value`, `field:="exact"`, `year>=2024`, `field:*`), sort,
-  column choice and CSV export run in the browser, so `dist/` can be served by
-  any static host. `dist/` is gitignored; rebuild it rather than editing it.
-  `PRODUCT_SPLITS` in the builder splits grouped `COMMERCIAL_PEDIATRIC` entries
-  into per-company rows; `tests/test_build_site.py` fails if a config edit
-  orphans a split. Adding a column to a data file also needs a column entry in
-  `web/app.js`.
+  **one table per tab, no sub-tabs.** Articles is the review corpus and nothing
+  else — the builder ships only the `included study` rows of the unified table
+  (3,496 as of 2026-09-17), so the site and the manuscript quote the same n;
+  the other record types stay in `pediatric_radiology_ai.csv`. Open source
+  software is the GitHub leaderboards plus every code link stated in a paper,
+  with a **pediatric-use checkbox** (`_repo_pediatric`: the pediatric-imaging /
+  bone-age leaderboards, or a pediatric term in the repository's own name,
+  description or topics — a general tool a pediatric study merely used is not
+  ticked; the reason is in `pediatric_evidence`, shown as the tooltip).
+  Newsletters is the trade-press table. Commercial is the FDA radiology-panel
+  authorization list with the same kind of checkbox, ticked for the 230
+  label-positive candidates of the linked-label screen; the curated
+  `COMMERCIAL_PEDIATRIC` products are no longer a table of their own and ride
+  along as the company-level `curated_product` column (`PRODUCT_SPLITS` still
+  splits the grouped config entries, and `tests/test_build_site.py` fails if a
+  config edit orphans a split). Datasets is unchanged.
+  `scripts/build_site.py` snapshots `data/processed` into `dist/data/*.json`
+  and copies `web/` next to it; search (boolean, `field:value`,
+  `field:="exact"`, `year>=2024`, `field:*`), sort, column choice and CSV
+  export run in the browser, so `dist/` can be served by any static host.
+  `dist/` is gitignored; rebuild it rather than editing it. Adding a column to
+  a data file also needs a column entry in `web/app.js`; a checkbox column is a
+  `"yes"` / `""` string field (so `field:yes` searches it) rendered with
+  `checkbox()` and placed last, at the right edge of the table.
 - `scripts/` — runnable CLI entry points. `run_all.py` runs the whole pipeline;
   individual `collect_*.py` scripts run one source; `make_figures.py` and
   `build_reports.py` produce the deliverables.
@@ -295,6 +325,45 @@ cd slides && latexmk -xelatex pedrad_ai_slides.tex   # compile the Beamer deck (
 python scripts/build_pptx.py        # editable PowerPoint version of the same deck (needs python-pptx)
 python scripts/build_site.py        # static database website -> dist/ (preview: cd dist && python -m http.server 8000)
 ```
+
+### Refreshing a crawl
+
+Every collector that uses the HTTP cache takes `--refresh`, which re-fetches the
+cached listings and the searches whose year range reaches the live window and
+serves everything else from disk. Nothing is deleted, so this is a top-up, not a
+cold re-pull:
+
+```bash
+python scripts/collect_pubmed.py --refresh        # journal-paper counts
+python scripts/collect_preprints.py --refresh     # arXiv + medRxiv
+python scripts/collect_conferences.py --refresh   # venues (add --refresh-dblp to re-sample DBLP)
+python scripts/collect_newsletters.py --refresh   # archives (bodies stay cached)
+python scripts/collect_journals.py --refresh
+python scripts/collect_landscape.py --refresh
+python scripts/collect_patents.py --refresh
+python scripts/collect_fda.py                     # always fetches fresh; not cached, no flag
+python scripts/refresh.py                         # all of the above, plus the rebuild
+```
+
+`--refresh-years N` widens the live window (default 2: the current and previous
+calendar year; earlier years are assumed settled and are served from cache).
+`--refresh-metrics` adds citations, FWCI, RCR and GitHub stars, which are
+otherwise left alone. `--refresh-max-age HOURS` skips what a previous, interrupted
+refresh already re-fetched. `refresh.py --drop-cache` is the old destructive
+behavior and is only needed after a query change that invalidates stored answers.
+
+A re-fetch that fails falls back to the cached answer rather than taking the step
+down, so one unreachable service still cannot abort a run. Responses that arrive
+as HTTP 200 with an error body (NCBI does this under load: `"ERROR":"Search
+Backend failed…"`) are never written to the cache and never served from it, so a
+poisoned entry from an earlier run heals itself on the next request.
+
+Two scoping flags rewrite the whole output file rather than patching it:
+`collect_pubmed.py --quick` / `collect_preprints.py --quick` drop the crosstab and
+problem series, and `collect_newsletters.py --source X` drops every other source's
+stories. They are fine for a look, but a refresh that is meant to stick should run
+the collector unscoped.
+
 
 **`slides/pedrad_ai_slides.tex` is hand-owned. Never regenerate it.** It began
 as `build_slides.py` output but has since been edited directly: slides deleted,

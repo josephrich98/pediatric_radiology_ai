@@ -7,10 +7,16 @@ Outputs:
 
 from __future__ import annotations
 
-from pedrad_ai import config, patents, utils
+from pedrad_ai import cache, config, patents, utils
 
 
 def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    cache.add_cli(ap)
+    cache.apply_cli(ap.parse_args())
     print("PatentsView: radiology-AI granted patents per year...")
     overall = patents.collect_yearly(pediatric=False)
     pediatric = patents.collect_yearly(pediatric=True)

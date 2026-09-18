@@ -1,24 +1,37 @@
 #!/usr/bin/env python3
-"""Refresh everything to today: clear the HTTP cache, re-collect, rebuild.
+"""Refresh everything to today: re-fetch what can hide a new record, rebuild.
 
 This is the one command behind both a manual refresh and the scheduled GitHub
 Action (.github/workflows/refresh.yml).
 
 Usage:
-    python scripts/refresh.py                 # full refresh (30-60 min)
+    python scripts/refresh.py                 # refresh to today (nothing is deleted)
     python scripts/refresh.py --quick         # headline PubMed queries only
-    python scripts/refresh.py --keep-cache    # re-run without re-fetching
+    python scripts/refresh.py --keep-cache    # rebuild deliverables, fetch nothing new
+    python scripts/refresh.py --drop-cache    # cold re-pull (hours; deletes the cache)
     python scripts/refresh.py --no-slides     # skip latexmk + build_pptx
     python scripts/refresh.py --skip conferences --skip patents
     python scripts/refresh.py --skip paperdb     # leave the paper database alone
     python scripts/refresh.py --paper-db-all     # read every outstanding paper (slow, costs money)
     python scripts/refresh.py --dry-run       # print the plan, touch nothing
 
-Cache policy: the on-disk HTTP cache (data/raw/cache/) makes re-runs
-reproducible but also freezes counts at the time of the first pull, so a
-refresh deletes it. DBLP entries are kept by default because DBLP throttles
-hard and a cold re-pull can lose venue-years; pass --drop-dblp-cache to
-re-sample those too.
+Cache policy: the on-disk HTTP cache (data/raw/cache/) has no expiry, which is
+what makes a re-run reproducible and also what would make it useless as an
+update — a cached PubMed ESearch returns the PMID list as it stood at the first
+pull. This script therefore runs every collector in *refresh mode*
+(``pedrad_ai/cache.py``): the cached listings and the searches whose year range
+reaches into the live window are re-fetched, and everything else — fetched
+records, settled years, article bodies, the 1.3 GB that cannot go stale — is
+still served from disk. Nothing is deleted, so a refresh is a top-up rather
+than a cold re-pull, and a re-fetch that fails falls back to the cached answer
+instead of taking the step down.
+
+Citation counts, FWCI, RCR and GitHub stars drift rather than hide a new paper,
+and refreshing them costs thousands of requests against budgeted APIs, so they
+are opt-in with --refresh-metrics. (enrich_fwci.py and build_paper_db.py
+--refresh-metrics remain the deliberate way to move those numbers.) DBLP is
+opt-in with --refresh-dblp for the same reason it was always kept: it throttles
+hard and a cold re-sample can lose venue-years.
 
 The paper database (scripts/build_paper_db.py) runs as one of the steps. It is
 the only step that spends money: each paper that is new since the last refresh
@@ -39,6 +52,8 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+
+from pedrad_ai import cache
 
 REPO = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO / "scripts"
@@ -109,8 +124,21 @@ def run_step(name: str, cmd: list[str], log: Path, dry_run: bool) -> tuple[bool,
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--quick", action="store_true", help="headline PubMed queries only")
-    ap.add_argument("--keep-cache", action="store_true", help="do not clear data/raw/cache/")
-    ap.add_argument("--drop-dblp-cache", action="store_true", help="also clear cached DBLP responses")
+    ap.add_argument("--keep-cache", action="store_true",
+                    help="reuse every cached response: rebuild the deliverables without "
+                         "discovering anything new")
+    ap.add_argument("--drop-cache", action="store_true",
+                    help="delete the HTTP cache and re-pull cold (hours; only needed after a "
+                         "query change that invalidates stored answers)")
+    ap.add_argument("--drop-dblp-cache", action="store_true",
+                    help="with --drop-cache, delete the cached DBLP responses too")
+    ap.add_argument("--refresh-years", type=int, default=cache.DEFAULT_WINDOW_YEARS, metavar="N",
+                    help=f"how many calendar years count as unsettled and are re-fetched "
+                         f"(default {cache.DEFAULT_WINDOW_YEARS})")
+    ap.add_argument("--refresh-metrics", action="store_true",
+                    help="also re-fetch citations, FWCI, RCR and GitHub stars")
+    ap.add_argument("--refresh-dblp", action="store_true",
+                    help="also re-sample DBLP (throttles hard; can lose venue-years)")
     ap.add_argument("--no-slides", action="store_true", help="skip latexmk and build_pptx.py")
     ap.add_argument("--skip", action="append", default=[], choices=sorted(COLLECTORS) + ["paperdb"],
                     help="collector(s) to skip (repeatable); 'paperdb' skips the paper database")
@@ -131,10 +159,29 @@ def main() -> int:
 
     print(f"Refresh started {dt.datetime.now():%Y-%m-%d %H:%M} (repo: {REPO})")
     if args.keep_cache:
-        print("Cache: kept (--keep-cache)")
-    else:
+        print("Cache: every cached response reused (--keep-cache); nothing new will be discovered")
+    elif args.drop_cache or args.drop_dblp_cache:
+        # --drop-dblp-cache used to modify the old always-delete default, so it
+        # still implies the cold re-pull rather than quietly doing nothing.
         removed, kept = clear_cache(keep_dblp=not args.drop_dblp_cache, dry_run=args.dry_run)
-        print(f"Cache: {'would remove' if args.dry_run else 'removed'} {removed} entries, kept {kept} DBLP entries")
+        print(f"Cache: {'would remove' if args.dry_run else 'removed'} {removed} entries, "
+              f"kept {kept} DBLP entries (--drop-cache: cold re-pull)")
+    else:
+        # Selective refresh. enable() exports the settings to the environment,
+        # and run_step's subprocesses inherit it, so every collector below runs
+        # in refresh mode without needing a flag of its own.
+        scopes = set()
+        if args.refresh_metrics:
+            scopes.add("metrics")
+        if args.refresh_dblp:
+            scopes.add("dblp")
+        cache.enable(window_years=args.refresh_years, scopes=scopes)
+        lo, hi = cache.live_window()
+        extra = (" + " + " + ".join(sorted(scopes))) if scopes else ""
+        print(f"Cache: refresh mode — re-fetching listings and {lo}-{hi} searches{extra}; "
+              f"records and settled years served from disk (nothing deleted)")
+        if args.dry_run:
+            cache.disable()
 
     for key, script in COLLECTORS.items():
         if key in args.skip:

@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import argparse
 
-from pedrad_ai import conferences, config, utils
+from pedrad_ai import cache, conferences, config, utils
 
 
 def main() -> None:
@@ -29,7 +29,9 @@ def main() -> None:
     ap.add_argument("--counts-only", action="store_true",
                     help="only redo the per-year conference counts from the acceptance lists, "
                          "keeping the stored works tables")
+    cache.add_cli(ap)
     args = ap.parse_args()
+    cache.apply_cli(args)
 
     if args.counts_only:
         path = config.PROCESSED_DIR / "conference_works.json"

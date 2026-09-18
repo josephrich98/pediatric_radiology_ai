@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import argparse
 
-from pedrad_ai import config, journals, utils
+from pedrad_ai import cache, config, journals, utils
 
 
 def main() -> None:
@@ -26,7 +26,9 @@ def main() -> None:
         "Use it after the OpenAlex daily budget resets, or after editing "
         "data/journal_impact_overrides.json.",
     )
+    cache.add_cli(ap)
     args = ap.parse_args()
+    cache.apply_cli(args)
 
     if args.impact_only:
         print("Impact lookup only (stored counts) ...")
