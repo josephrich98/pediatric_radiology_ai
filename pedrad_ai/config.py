@@ -891,11 +891,14 @@ COMMERCIAL_SYSTEM_CODES: set[str] = {
 # checked against data/processed/fda_ai_devices.json by
 # tests/test_commercial.py; products with no US authorization say so.
 # ``standing`` is an editorial judgment about deployment, not a measurement.
+# ``no_us_authorization`` marks a product with no US authorization at all (as
+# against one whose pediatric claim simply cites no submission); the website
+# lists those as rows of their own, since the FDA list cannot carry them.
 COMMERCIAL_PRODUCTS: list[dict[str, str]] = [
     {"product": "BoneXpert", "vendor": "Visiana", "problem": "bone age / growth", "modality": "x-ray",
      "task": "Automated Greulich--Pyle and Tanner--Whitehouse bone age plus a Bone Health Index, from a hand radiograph",
      "pediatric": "Built for children; CE-marked and in routine European use; US research use only",
-     "standing": "Widely deployed (Europe)", "submission": ""},
+     "standing": "Widely deployed (Europe)", "submission": "", "no_us_authorization": True},
     {"product": "BoneView", "vendor": "Gleamer", "problem": "fracture / trauma", "modality": "x-ray",
      "task": "Fracture detection on trauma radiographs, presented as regions of interest alongside the image",
      "pediatric": "US indication covers ages 2--21 for specified extremity views; pelvis, hip, femur, ribs and spine are adult-only",
@@ -915,7 +918,7 @@ COMMERCIAL_PRODUCTS: list[dict[str, str]] = [
     {"product": "Physis", "vendor": "16 Bit", "problem": "bone age / growth", "modality": "x-ray",
      "task": "Bone-age estimation with Greulich--Pyle atlas matching and draft report text",
      "pediatric": "Pediatric tool; Health Canada licensed, no FDA authorization identified",
-     "standing": "Promising, limited US access", "submission": ""},
+     "standing": "Promising, limited US access", "submission": "", "no_us_authorization": True},
     {"product": "Fetal EchoScan", "vendor": "BrightHeart", "problem": "fetal / obstetric", "modality": "ultrasound",
      "task": "Flags eight morphological findings suspicious for congenital heart disease on second-trimester views",
      "pediatric": "Prenatal by definition: second-trimester exams, maternal age 18+",
@@ -951,7 +954,7 @@ COMMERCIAL_PRODUCTS: list[dict[str, str]] = [
     {"product": "qXR-TB", "vendor": "Qure.ai", "problem": "chest / lung", "modality": "x-ray",
      "task": "Chest radiograph screening for tuberculosis, built for high-burden settings with few readers",
      "pediatric": "Vendor reports CE-marked use from age 0--15; US eligibility varies by module",
-     "standing": "Deployed in global-health screening", "submission": ""},
+     "standing": "Deployed in global-health screening", "submission": "", "no_us_authorization": True},
     {"product": "AIR Recon DL / TrueFidelity", "vendor": "GE HealthCare", "problem": "image quality: dose, noise, speed", "modality": "MRI / CT",
      "task": "Deep-learning reconstruction: shorter MRI acquisitions at the same quality, and CT images at lower dose",
      "pediatric": "Sold across ages; the pediatric benefit is fewer sedations and less dose, and it is the AI most children actually meet",

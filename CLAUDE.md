@@ -255,15 +255,24 @@ The questions it answers:
   (3,496 as of 2026-09-17), so the site and the manuscript quote the same n;
   the other record types stay in `pediatric_radiology_ai.csv`. Open source
   software is the GitHub leaderboards plus every code link stated in a paper,
-  with a **pediatric-use checkbox** (`_repo_pediatric`: the pediatric-imaging /
+  with a **pediatric-use yes / no column** (`_repo_pediatric`: the pediatric-imaging /
   bone-age leaderboards, or a pediatric term in the repository's own name,
-  description or topics — a general tool a pediatric study merely used is not
-  ticked; the reason is in `pediatric_evidence`, shown as the tooltip).
+  description or topics — a general tool a pediatric study merely used is a
+  no; the reason is in `pediatric_evidence`, shown as the tooltip).
   Newsletters is the trade-press table. Commercial is the FDA radiology-panel
-  authorization list with the same kind of checkbox, ticked for the 230
-  label-positive candidates of the linked-label screen; the curated
-  `COMMERCIAL_PEDIATRIC` products are no longer a table of their own and ride
-  along as the company-level `curated_product` column (`PRODUCT_SPLITS` still
+  authorization list, **one row per device**: the 1,230 authorizations fold
+  into 994 rows, a device authorized again (new version or indication) sitting
+  at its most recent one with the earlier submissions listed, because the site
+  answers "what is this device" while the slides count authorizations. The
+  pediatric yes / no is therefore the device's — set when *any* of its
+  authorizations screened label-positive, with `pediatric_evidence` (the
+  tooltip) naming which — so the 230 label-positive authorizations are 172
+  devices. A curated product with no US authorization at all
+  (`config.COMMERCIAL_PRODUCTS` with `no_us_authorization`: BoneXpert, Physis,
+  qXR-TB) is on the slides but cannot be on the FDA list, so it is added as a
+  row of its own marked `not FDA-authorized`; the rest of the curated
+  `COMMERCIAL_PEDIATRIC` products are not a table of their own and ride along
+  as the company-level `curated_product` column (`PRODUCT_SPLITS` still
   splits the grouped config entries, and `tests/test_build_site.py` fails if a
   config edit orphans a split). Datasets is unchanged.
   `scripts/build_site.py` snapshots `data/processed` into `dist/data/*.json`
@@ -271,9 +280,16 @@ The questions it answers:
   `field:="exact"`, `year>=2024`, `field:*`), sort, column choice and CSV
   export run in the browser, so `dist/` can be served by any static host.
   `dist/` is gitignored; rebuild it rather than editing it. Adding a column to
-  a data file also needs a column entry in `web/app.js`; a checkbox column is a
+  a data file also needs a column entry in `web/app.js`; a yes / no column is a
   `"yes"` / `""` string field (so `field:yes` searches it) rendered with
-  `checkbox()` and placed last, at the right edge of the table.
+  `yesNo()` as a yes / no tag and placed last, at the right edge of the table.
+  Each header can carry an Excel-style ▾ value checklist (on by default for
+  `tags` / `list` columns, `facet: true|false` on the column entry overrides).
+  It has no state of its own: OK writes one top-level clause for that column
+  into the search box (`(modality:="MRI" OR modality:="CT")`, or `NOT year:="2026"`
+  for a one-value-per-row column when dropping is shorter), and reopening reads
+  the checkboxes back out of the query (`topClauses` / `joinClauses` in
+  `search.js`), so links, row counts and CSV export follow it unchanged.
 - `scripts/` — runnable CLI entry points. `run_all.py` runs the whole pipeline;
   individual `collect_*.py` scripts run one source; `make_figures.py` and
   `build_reports.py` produce the deliverables.

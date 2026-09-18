@@ -801,7 +801,7 @@ FeTA (fetal brain tissue annotation) & 2021--24 & fetal brain MRI & 280 volumes 
 2026-01-28 & ESR / ECR & Guerbet: Innovation and French Cooperation in the Spotlight at ECR 2026 &  \\ \hline
 2026-02-01 & The Imaging Wire & DL-Based CT Reduces Radiation Dose &  \\ \hline
 2026-02-08 & The Imaging Wire & GE Bolsters Ultrasound with Fetal AI &  \\ \hline
-2026-02-26 & ESR / ECR & MRI Unveiling at the &  \\ \hline
+2026-02-26 & ESR / ECR & MRI Unveiling at the European Congress of Radiology (ECR) 2026 &  \\ \hline
 2026-03-29 & The Imaging Wire & Ultrasound AI Gets Breakthrough Nod &  \\ \hline
 2026-05-10 & The Imaging Wire & Pediatric MRI Safety, RTs and Remote Radiology, and PSMA-PET &  \\ \hline
 2026-06-22 & RSNA News & Researchers Use AI to Establish Body Charts for CT Imaging Across the Adult Lifespan &  \\ \hline
@@ -811,6 +811,91 @@ FeTA (fetal brain tissue annotation) & 2021--24 & fetal brain MRI & 280 volumes 
 2026-08-25 & RSNA News & AI Challenges Fuel Innovation Beyond the Leaderboard &  \\ \hline
 \end{tabular}
 \end{adjustbox}
+\end{frame}
+
+\begin{frame}[category=Newsletters]{Story 1: a breakthrough designation is not a clearance}
+\relax
+{\scriptsize The Imaging Wire, 29 March 2026: ``Ultrasound AI Gets Breakthrough Nod''
+(\href{https://theimagingwire.com/newsletter/mammography-use-falls/}{theimagingwire.com})\par}
+\medskip
+\small
+\begin{itemize}
+  \item \textbf{What happened}: the FDA granted \textbf{Breakthrough Device Designation} to DeepEcho's Blind Sweep Platform, a prenatal ultrasound AI that talks the operator through a set of blind sweeps and then reads them.
+  \item \textbf{What it does}: from B-mode sweeps rather than expert-acquired standard planes, it automates fetal presentation, placental location and gestational age --- the measurements that decide whether a pregnancy needs referral.
+  \item \textbf{Why the acquisition end matters}: most fetal AI assumes a sonographer who can already find the view. Moving the AI into acquisition is what makes obstetric ultrasound possible where there is no sonographer, which is where most undetected pathology is.
+  \item \textbf{Read the regulatory word carefully}: Breakthrough Designation buys priority FDA interaction, not market authorization. DeepEcho is still working toward clearance, following a separate prenatal algorithm cleared in 2025.
+\end{itemize}
+\medskip
+\textbf{Take-home}: trade-press headlines blur designation, clearance and CE mark. For a children's hospital, only clearance with a pediatric or fetal indication is deployable today.
+\end{frame}
+
+\begin{frame}[category=Newsletters]{Story 2: fetal cardiac AI reaches the clinic}
+\relax
+{\scriptsize The Imaging Wire, 28 June 2026: ``BrightHeart's Bright Future''
+(\href{https://theimagingwire.com/newsletter/interventional-work-changes-heat-wave-melts-mri-and-aidoc-breakthrough/}{theimagingwire.com})\par}
+\medskip
+\small
+\begin{itemize}
+  \item \textbf{What happened}: BrightHeart received the CE mark and debuted its fetal ultrasound AI in the EU at FMF 2026. It now holds \textbf{five FDA clearances}, raised a EUR 11M Series A in January 2026, and is installed at Mount Sinai.
+  \item \textbf{The evidence behind it}: Zelop et al., \textit{Obstetrics \& Gynecology} 2025 --- 877 second-trimester examinations from 11 centers, read for eight morphologic findings of severe congenital heart disease; \textbf{sensitivity 0.97} for severe CHD, and 0.99 sensitivity / 0.98 specificity against fetal cardiologists for any suspicious finding.
+  \item \textbf{The gap it targets}: up to half of major congenital anomalies still go undetected antenatally, and prenatal detection of CHD changes delivery planning and neonatal survival.
+  \item \textbf{What is still missing}: the study is retrospective, not prospective. Nobody has yet shown detection rates rise in routine screening practice.
+\end{itemize}
+\medskip
+\textbf{Take-home}: this is the pediatric AI story furthest along the path from paper to product --- and it is fetal, not pediatric. The pattern to watch is peer-reviewed multicenter accuracy first, clearances second, funding third.
+\end{frame}
+
+\begin{frame}[category=Newsletters]{Story 3: what pediatric departments actually report using}
+\relax
+{\scriptsize The Imaging Wire, 12 July 2026: ``AI's Rise in Pediatric Imaging'' --- Shah et al., \textit{European Radiology} 2026
+(\href{https://doi.org/10.1007/s00330-026-12728-9}{doi 10.1007/s00330-026-12728-9})\par}
+\medskip
+\small
+\begin{itemize}
+  \item \textbf{Why it was news}: after a decade of radiology AI research, almost no data existed on what pediatric departments have actually deployed. This international survey of 18 academic pediatric radiology centers (69\% response) is the first real answer.
+  \item \textbf{Adoption is wide but shallow}: \textbf{88.9\%} run at least one AI tool, yet the tools cluster on two tasks --- bone age (44.4\%) and segmentation / quantification (22.2\%) --- and only \textbf{16.7\%} called AI ``transformational''.
+  \item \textbf{The barriers named}: lack of pediatric datasets (83.3\%), integration into PACS and workflow (66.7\%), cost (50\%).
+  \item \textbf{It matches this deck's own data}: bone age is also the most common pediatric clinical problem in the published literature and the one task with a mature commercial product.
+\end{itemize}
+\medskip
+\textbf{Take-home}: the constraint is not model accuracy. It is pediatric training data and integration --- both of which a children's hospital, not a vendor, is positioned to fix.
+\end{frame}
+
+\begin{frame}[category=Newsletters]{Story 4: challenges as pediatric data infrastructure}
+\relax
+{\scriptsize RSNA News, 25 August 2026: ``AI Challenges Fuel Innovation Beyond the Leaderboard''
+(\href{https://www.rsna.org/news/2026/august/ai-challenges-fuel-innovation}{rsna.org})\par}
+\medskip
+\small
+\begin{itemize}
+  \item \textbf{What happened}: RSNA looked back at a decade of its Kaggle AI Challenges and argued that the lasting product is not the winning model but the \textbf{curated multinational datasets with expert annotations}, which stay public after the leaderboard closes, plus the open-sourced top solutions.
+  \item \textbf{The pediatric one}: the \textbf{2017 Pediatric Bone Age Challenge} drew 700+ entries and remains one of the largest open pediatric imaging datasets (14,236 hand radiographs).
+  \item \textbf{The generalization lesson}: Kitamura's team placed third, then revalidated on Brazilian data and found performance did not transfer unchanged --- the same population-shift problem that makes adult-trained tools unsafe in children.
+  \item \textbf{The honest caveat}: Pan notes these algorithms target one urgent finding and behave as triage, not as a general assistant --- leaderboard rank does not predict clinical usefulness.
+\end{itemize}
+\medskip
+\textbf{Take-home}: challenges are how pediatric imaging has historically gotten public data. Contributing annotated pediatric cases is a concrete, low-cost way for a children's hospital to move the field.
+\end{frame}
+
+\begin{frame}[category=Commercial Software]{Radiology keeps its lead in FDA AI authorizations}
+\noindent{\scriptsize The Imaging Wire, 14 September 2026: FDA AI-enabled device list, updated through June 2026\par}\vspace{2pt}
+\begin{columns}[T]
+\begin{column}{0.54\textwidth}\centering
+\includegraphics[height=0.66\textheight,width=\textwidth,keepaspectratio]{examples/imagingwire_fda_top10_2026q2.png}\\[2pt]
+{\tiny Top 10 vendors by radiology FDA authorizations, counts include acquisitions}\\{\tiny source: theimagingwire.com}
+\end{column}
+\begin{column}{0.44\textwidth}
+\scriptsize\setlength{\itemsep}{1pt}
+\begin{itemize}
+\item \textbf{1,614} AI-enabled devices authorized since the FDA began tracking, up 5.9\% from Q1 2026.
+\item \textbf{1,230} of them (76\%) are radiology, the same radiology-panel total this deck's own FDA pull finds.
+\item Q2 2026: 89 authorizations (92 in Q1), 66 of them (74\%) radiology.
+\item Scanner makers lead: GE HealthCare 134, Siemens Healthineers 101, Philips 62, Canon 51, United Imaging 45.
+\item The largest software-only vendors are Aidoc (34), DeepHealth (32) and RapidAI (20).
+\item The FDA is still deciding how to regulate generative AI used in direct clinical care.
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}[category=Commercial Software]{How many cleared devices actually name children?}

@@ -24,7 +24,10 @@ Output::
                                         #   data/processed/pediatric_radiology_ai.csv
       data/software.json                # GitHub leaderboards + code links in papers
       data/news.json                    # newsletter_items.json
-      data/fda.json                     # FDA AI-enabled devices, Radiology panel
+      data/fda.json                     # FDA AI-enabled devices, Radiology panel,
+                                        # one row per device (repeat clearances
+                                        # folded into the latest), plus the curated
+                                        # products with no US authorization
                                         # (config.COMMERCIAL_PEDIATRIC rides on it
                                         #  as the curated_product column)
       data/datasets.json                # config.PEDIATRIC_DATASETS
@@ -142,7 +145,7 @@ PEDIATRIC_TERM_RE = re.compile(
 
 
 def _repo_pediatric(row: dict[str, Any]) -> tuple[str, str]:
-    """('yes' | '', why) for the pediatric checkbox of one repository row."""
+    """('yes' | '', why) for the pediatric yes / no of one repository row."""
     why = [f"{name} leaderboard" for name in row["lists"] if name in PEDIATRIC_REPO_LISTS]
     text = " ".join([row["name"], row["description"], " ".join(row["topics"])])
     terms = sorted({m.group(0).lower() for m in PEDIATRIC_TERM_RE.finditer(text)})
@@ -343,59 +346,127 @@ def _curated_by_company(product_rows: list[dict[str, Any]]) -> dict[str, list[st
     return out
 
 
+def _device_key(company: str, device: str) -> tuple[str, str]:
+    """Same company and same device name, ignoring case and spacing."""
+    norm = lambda x: re.sub(r"\s+", " ", (x or "").strip().lower())
+    return norm(company), norm(device)
+
+
+def _one_row_per_device(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Fold repeat authorizations of one device into its most recent row.
+
+    The FDA list has one entry per authorization, so a device cleared again
+    for a new version or indication (BoneView: K212365 in 2022, K222176 in
+    2023) appears once per clearance. The site shows the device once, dated by
+    its latest authorization, and lists the earlier ones. The pediatric tick
+    is the device's: set if any of its authorizations has a label-positive
+    screen, and the evidence says which one, because a later clearance whose
+    label was not screened positive does not undo an earlier pediatric one.
+    """
+    groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for r in rows:
+        groups.setdefault(_device_key(r["company"], r["device"]), []).append(r)
+    out = []
+    for group in groups.values():
+        group.sort(key=lambda r: (r["date"], r["submission"]), reverse=True)
+        latest = dict(group[0])
+        latest["earlier_submissions"] = [
+            f"{r['submission']} ({r['date'][:4]})" if r["date"] else r["submission"] for r in group[1:]]
+        positive = next((r for r in group if r["pediatric"] == "yes"), None)
+        if positive is not None:
+            for k in ("pediatric", "pediatric_status", "pediatric_evidence_pages"):
+                latest[k] = positive[k]
+            pages = f", pages {positive['pediatric_evidence_pages']}" if positive["pediatric_evidence_pages"] else ""
+            which = "this authorization" if positive is group[0] else \
+                f"an earlier authorization, {positive['submission']} ({positive['date'][:4]})"
+            latest["pediatric_evidence"] = (
+                f"Pediatric intended use or population in the label of {which}{pages}")
+        if any(r["pediatric_name"] for r in group):
+            latest["pediatric_name"] = "yes"
+        out.append(latest)
+    return out
+
+
+def _products_without_us_authorization() -> list[dict[str, Any]]:
+    """Curated products with no US authorization, as rows of the commercial tab.
+
+    The tab is the FDA list, so a product the FDA never authorized (BoneXpert,
+    for one) would otherwise be missing from the site while it is on the
+    slides. These rows have no date, submission or product code, and say why
+    in ``us_status`` and ``pediatric_evidence``.
+    """
+    urls = {c["vendor"]: c.get("url") or "" for c in config.COMMERCIAL_PEDIATRIC}
+    out = []
+    for p in config.COMMERCIAL_PRODUCTS:
+        if not p.get("no_us_authorization"):
+            continue
+        out.append({
+            "date": "", "year": None, "device": p["product"], "company": p["vendor"],
+            "company_full": p["vendor"], "submission": "", "submission_url": urls.get(p["vendor"], ""),
+            "product_code": "", "pediatric_name": "", "pediatric_status": "",
+            "pediatric_evidence_pages": "", "curated_product": [p["product"]],
+            "us_status": "not FDA-authorized",
+            "pediatric_evidence": _detex(p["pediatric"]),
+            "pediatric": "yes",
+            "earlier_submissions": [],
+        })
+    return out
+
+
 def fda_rows(fda: dict[str, Any], product_rows: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
     curated = _curated_by_company(product_rows or [])
-    # Join the dated FDA pediatric-use screen by submission number. The
-    # inventory retains repeated submissions so the commercial tab can expose
-    # every one of the 230 direct-label candidates without collapsing versions.
+    # Join the dated FDA pediatric-use screen by submission number.
     inventory_path = config.PROCESSED_DIR / "fda_pediatric_inventory.json"
     inventory = json.loads(inventory_path.read_text()) if inventory_path.exists() else {}
     pediatric = {
         r.get("submission"): r for r in inventory.get("records", [])
         if r.get("status") == "label-positive-candidate"
     }
+
+    def row(date: str, year: Any, device: str, company: str, company_full: str,
+            submission: str, product_code: str, name_hit: bool) -> dict[str, Any]:
+        candidate = pediatric.get(submission)
+        pages = ", ".join(str(p) for p in (candidate or {}).get("evidence_pages", []))
+        return {
+            "date": date, "year": year, "device": device, "company": company,
+            "company_full": company_full, "submission": submission,
+            "submission_url": _submission_url(submission), "product_code": product_code,
+            "pediatric_name": "yes" if name_hit else "",
+            "pediatric_status": "label-positive-candidate" if candidate else "",
+            "pediatric_evidence_pages": pages,
+            "curated_product": curated.get(company, []),
+            "us_status": "FDA-authorized",
+            "pediatric_evidence": ("Pediatric intended use or population in the label"
+                                   + (f", pages {pages}" if pages else "")) if candidate else "",
+            "pediatric": "yes" if candidate else "",
+        }
+
+    def iso(s: str) -> str:
+        try:
+            return dt.datetime.strptime(s or "", "%m/%d/%Y").date().isoformat()
+        except ValueError:
+            return ""
+
     out = []
     seen_submissions = set()
     for d in fda.get("devices", []):
-        try:
-            date = dt.datetime.strptime(d["date"], "%m/%d/%Y").date().isoformat()
-        except (TypeError, ValueError):
-            date = ""
-        candidate = pediatric.get(d.get("submission") or "")
-        seen_submissions.add(d.get("submission") or "")
-        out.append({
-            "date": date, "year": d.get("year"), "device": d.get("device") or "",
-            "company": d.get("company_norm") or d.get("company") or "",
-            "company_full": d.get("company") or "", "submission": d.get("submission") or "",
-            "submission_url": _submission_url(d.get("submission") or ""),
-            "product_code": d.get("product_code") or "",
-            "pediatric_name": "yes" if d.get("pediatric_name_hit") else "",
-            "pediatric_status": "label-positive-candidate" if candidate else "",
-            "pediatric_evidence_pages": ", ".join(str(p) for p in (candidate or {}).get("evidence_pages", [])),
-            "curated_product": curated.get(d.get("company_norm") or d.get("company") or "", []),
-            "pediatric": "yes" if candidate else "",
-        })
-    # The general FDA snapshot predates 19 of the pediatric candidates in the
-    # 2026-09-16 inventory. Add those rows so the commercial tab contains all
-    # 230 candidates while retaining the older FDA table rows unchanged.
+        submission = d.get("submission") or ""
+        seen_submissions.add(submission)
+        company = d.get("company_norm") or d.get("company") or ""
+        out.append(row(iso(d.get("date")), d.get("year"), d.get("device") or "", company,
+                       d.get("company") or "", submission, d.get("product_code") or "",
+                       bool(d.get("pediatric_name_hit"))))
+    # The general FDA snapshot predates some of the pediatric candidates in the
+    # inventory; add those so every candidate reaches the tab.
     for r in pediatric.values():
         submission = r.get("submission") or ""
         if submission in seen_submissions:
             continue
-        try:
-            date = dt.datetime.strptime(r.get("decision_date", ""), "%m/%d/%Y").date().isoformat()
-        except (TypeError, ValueError):
-            date = ""
-        out.append({
-            "date": date, "year": int(date[:4]) if date else None,
-            "device": r.get("device") or "", "company": r.get("company") or "",
-            "company_full": r.get("company") or "", "submission": submission,
-            "submission_url": _submission_url(submission), "product_code": r.get("product_code") or "",
-            "pediatric_name": "", "pediatric_status": "label-positive-candidate",
-            "pediatric_evidence_pages": ", ".join(str(p) for p in r.get("evidence_pages", [])),
-            "curated_product": curated.get(r.get("company") or "", []),
-            "pediatric": "yes",
-        })
+        date = iso(r.get("decision_date"))
+        out.append(row(date, int(date[:4]) if date else None, r.get("device") or "",
+                       r.get("company") or "", r.get("company") or "", submission,
+                       r.get("product_code") or "", False))
+    out = _one_row_per_device(out) + _products_without_us_authorization()
     return sorted(out, key=lambda r: r["date"], reverse=True)
 
 
@@ -450,7 +521,9 @@ def build(out_dir: Path) -> dict[str, Any]:
         "counts": {
             **{k: len(v) for k, v in tables.items()},
             "products": len(product_rows),
-            "fda_pediatric": sum(r["pediatric"] == "yes" for r in tables["fda"]),
+            "fda_pediatric": sum(r["pediatric"] == "yes" and r["us_status"] == "FDA-authorized" for r in tables["fda"]),
+            "fda_not_authorized": sum(r["us_status"] != "FDA-authorized" for r in tables["fda"]),
+            "fda_authorizations": sum(1 + len(r["earlier_submissions"]) for r in tables["fda"] if r["submission"]),
         },
         "snapshots": {
             "articles": mtime(config.UNIFIED_DB_CSV),

@@ -36,44 +36,34 @@
   const text = (v, cls = "") => (S.isEmpty(v) ? DASH : `<div class="${cls}">${esc(v)}</div>`);
   const clamp = (v) => text(v, "clamp");
 
-  // A read-only checkbox cell. Clicking it filters to the ticked rows; `why`
-  // becomes the tooltip, so a tick always says what it rests on.
-  function checkbox(field, on, why) {
-    const q = esc(`${field}:yes`);
-    const title = esc(on ? (why || "yes") : "no");
-    return `<span class="check${on ? " on" : ""}" data-q="${q}" title="${title}">` +
-      `<input type="checkbox" ${on ? "checked" : ""} tabindex="-1" aria-label="${title}"></span>`;
+  // A yes / no cell. Clicking it filters to the rows with the same answer;
+  // `why` becomes the tooltip on "yes", so it always says what it rests on.
+  function yesNo(field, on, why) {
+    return on
+      ? `<span class="tag green" data-q="${esc(`${field}:yes`)}" title="${esc(why || "yes")}">yes</span>`
+      : `<span class="tag gray" data-q="${esc(`NOT ${field}:yes`)}" title="no">no</span>`;
   }
 
-  const RECORD_CLASS = {
-    "included study": "green", "review / editorial": "blue", "screened out": "gray",
-    "Embase, not retrieved": "gray",
-  };
   const RELEASE_CLASS = { "open-source": "green", commercial: "blue", unreleased: "orange", unclear: "gray" };
 
   // ------------------------------------------------------------------ columns
   // key, label, type (text | tags | list | num | date), show (default visible),
-  // render(row) -> html, cls (cell class). Search can scope to any key.
+  // render(row) -> html, cls (cell class), facet (a value-filter dropdown in
+  // the header; default on for tags and list columns). Search can scope to
+  // any key.
 
   const ARTICLE_COLS = [
     { key: "title", label: "Title", show: true, cls: "title-cell", render: (r) => link(r.url, r.title) || DASH },
     { key: "first_author", label: "First author", show: true, cls: "nobreak" },
-    { key: "year", label: "Year", type: "num", show: true, render: (r) => r.year ?? DASH },
-    { key: "venue", label: "Journal / venue", show: true, cls: "wide", aliases: ["journal"] },
+    { key: "year", label: "Year", type: "num", show: true, facet: true, render: (r) => r.year ?? DASH },
+    { key: "venue", label: "Journal / venue", show: true, cls: "wide", aliases: ["journal"], facet: true },
     { key: "publication_form", label: "Form", type: "tags", show: true, render: (r) => tags("publication_form", r.publication_form) },
-    { key: "record_type", label: "Record", type: "tags", render: (r) => tags("record_type", r.record_type, (v) => RECORD_CLASS[v] || "") },
     { key: "modality", label: "Modality", type: "tags", show: true, render: (r) => tags("modality", r.modality) },
     { key: "task", label: "Task", type: "tags", show: true, render: (r) => tags("task", r.task) },
     { key: "age_groups", label: "Ages", type: "tags", show: true, render: (r) => tags("age_groups", r.age_groups) },
     { key: "clinical_problem", label: "Clinical problem", show: true, cls: "wide", render: (r) => clamp(r.clinical_problem) },
     { key: "release_status", label: "Release", type: "tags", show: true, render: (r) => tags("release_status", r.release_status, (v) => RELEASE_CLASS[v] || "") },
-    { key: "impact", label: "Impact", type: "num", show: true, cls: "num", render: (r) => (typeof r.impact === "number" ? `${fmtNum(r.impact)} <span class="muted">${esc((r.impact_measure || "").toUpperCase())}</span>` : DASH) },
     { key: "citations", label: "Citations", type: "num", show: true, cls: "num", render: (r) => fmtInt(r.citations) },
-    { key: "citations_per_year", label: "Citations / yr", type: "num", cls: "num", render: (r) => fmtNum(r.citations_per_year, 1) },
-    { key: "rcr", label: "RCR", type: "num", cls: "num", render: (r) => fmtNum(r.rcr) },
-    { key: "fwci", label: "FWCI", type: "num", cls: "num", render: (r) => fmtNum(r.fwci) },
-    { key: "nih_percentile", label: "NIH percentile", type: "num", cls: "num", render: (r) => fmtNum(r.nih_percentile, 1) },
-    { key: "impact_measure", label: "Impact measure" },
     { key: "model_name", label: "Model name" },
     { key: "model_family", label: "Model family", cls: "wide", render: (r) => clamp(r.model_family) },
     { key: "model_description", label: "Model description", cls: "wide", render: (r) => clamp(r.model_description) },
@@ -85,48 +75,23 @@
     { key: "validation", label: "Validation", type: "tags", render: (r) => tags("validation", r.validation) },
     { key: "headline_result", label: "Headline result", cls: "wide", render: (r) => clamp(r.headline_result) },
     { key: "code_url", label: "Code", render: (r) => (r.code_url ? link(r.code_url, r.code_url.replace(/^https?:\/\/(www\.)?/, "")) : DASH) },
-    { key: "release_evidence", label: "Release evidence", cls: "wide", render: (r) => clamp(r.release_evidence) },
-    { key: "exclusion_reason", label: "Exclusion reason", cls: "wide", render: (r) => clamp(r.exclusion_reason) },
-    { key: "scope", label: "Scope", type: "tags", render: (r) => tags("scope", r.scope) },
-    { key: "conference_venue", label: "Venue table", type: "tags", render: (r) => tags("conference_venue", r.conference_venue) },
-    { key: "top_lists", label: "Most-cited lists", type: "tags", render: (r) => tags("top_lists", r.top_lists) },
-    { key: "doi", label: "DOI", render: (r) => (r.doi ? link(`https://doi.org/${r.doi}`, r.doi) : DASH) },
-    { key: "pmid", label: "PMID", render: (r) => (r.pmid ? link(`https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`, r.pmid) : DASH) },
-    { key: "arxiv_id", label: "arXiv", render: (r) => (r.arxiv_id ? link(`https://arxiv.org/abs/${r.arxiv_id}`, r.arxiv_id) : DASH) },
-    { key: "publication_types", label: "Publication types", cls: "wide", render: (r) => clamp(r.publication_types) },
-    { key: "search_source", label: "Found via", type: "tags", render: (r) => tags("search_source", r.search_source) },
-    { key: "source_files", label: "Source files", cls: "wide", render: (r) => clamp(r.source_files) },
-    { key: "citations_source", label: "Citation index" },
-    { key: "record_id", label: "Record ID", cls: "nobreak" },
-    { key: "url", label: "URL", render: (r) => (r.url ? link(r.url, "link") : DASH) },
   ];
 
   const SOFTWARE_COLS = [
     { key: "name", label: "Repository", show: true, cls: "repo-cell", render: (r) => `<b>${link(r.url, r.name)}</b>` },
     { key: "stars", label: "Stars", type: "num", show: true, cls: "num", render: (r) => fmtInt(r.stars) },
-    { key: "forks", label: "Forks", type: "num", cls: "num", render: (r) => fmtInt(r.forks) },
     { key: "description", label: "Description", show: true, cls: "wide", render: (r) => clamp(r.description) },
-    { key: "lists", label: "Leaderboards", type: "list", show: true, render: (r) => tags("lists", r.lists) },
-    { key: "source", label: "Source", type: "tags", show: true, render: (r) => tags("source", r.source) },
-    { key: "papers", label: "Linked papers", type: "list", show: true, cls: "wide",
-      render: (r) => (r.papers.length ? `<ul class="paper-list">${r.papers.map((t, i) => `<li>${link(r.paper_urls[i], t)}${r.paper_years[i] ? ` <span class="muted">(${r.paper_years[i]})</span>` : ""}</li>`).join("")}</ul>` : DASH) },
-    { key: "n_papers", label: "# papers", type: "num", cls: "num", render: (r) => fmtInt(r.n_papers) },
-    { key: "language", label: "Language", type: "tags", show: true, render: (r) => tags("language", r.language) },
-    { key: "topics", label: "Topics", type: "list", cls: "wide", render: (r) => tags("topics", r.topics) },
     { key: "updated", label: "Last updated", type: "date", show: true, cls: "nobreak" },
     { key: "created", label: "Created", type: "date", cls: "nobreak" },
-    { key: "host", label: "Host", type: "tags", render: (r) => tags("host", r.host) },
-    { key: "url", label: "URL", render: (r) => link(r.url, "link") },
-    { key: "pediatric_evidence", label: "Why pediatric", cls: "wide", render: (r) => text(r.pediatric_evidence) },
-    // Last, so the checkbox sits at the right edge of the table.
-    { key: "pediatric", label: "Pediatric use", show: true, cls: "check-cell",
-      render: (r) => checkbox("pediatric", r.pediatric === "yes", r.pediatric_evidence) },
+    // Last, so the yes / no answer sits at the right edge of the table.
+    { key: "pediatric", label: "Pediatric use", show: true, cls: "check-cell", facet: true,
+      render: (r) => yesNo("pediatric", r.pediatric === "yes", r.pediatric_evidence) },
   ];
 
   const NEWS_COLS = [
+    { key: "story", label: "Story", show: true, cls: "title-cell", render: (r) => link(r.url, r.story) },
     { key: "date", label: "Date", type: "date", show: true, cls: "nobreak" },
     { key: "source", label: "Source", type: "tags", show: true, render: (r) => tags("source", r.source) },
-    { key: "story", label: "Story", show: true, cls: "title-cell", render: (r) => link(r.url, r.story) },
     { key: "snippet", label: "Snippet", show: true, cls: "wide", render: (r) => clamp(r.snippet) },
     { key: "topics", label: "Topics", type: "list", show: true, render: (r) => tags("topics", r.topics) },
     { key: "players", label: "Companies / tools", type: "list", show: true, render: (r) => tags("players", r.players) },
@@ -134,37 +99,36 @@
     { key: "paper_title", label: "Paper title", cls: "wide", render: (r) => clamp(r.paper_title) },
     { key: "issue_title", label: "Issue", cls: "wide", render: (r) => clamp(r.issue_title) },
     { key: "pediatric_terms", label: "Pediatric terms", type: "list", render: (r) => tags("pediatric_terms", r.pediatric_terms) },
-    { key: "ai_terms", label: "AI terms", type: "list", render: (r) => tags("ai_terms", r.ai_terms) },
-    { key: "year", label: "Year", type: "num" },
     { key: "url", label: "URL", render: (r) => link(r.url, "link") },
   ];
 
   const FDA_COLS = [
-    { key: "date", label: "Decision date", type: "date", show: true, cls: "nobreak" },
     { key: "device", label: "Device", show: true, cls: "title-cell" },
-    { key: "company", label: "Company", show: true, render: (r) => tag("company", r.company) },
-    { key: "submission", label: "Submission", show: true, cls: "nobreak", render: (r) => link(r.submission_url, r.submission) },
+    { key: "company", label: "Company", show: true, facet: true, render: (r) => tag("company", r.company) },
+    { key: "date", label: "Decision date", type: "date", show: true, cls: "nobreak" },
+    { key: "submission", label: "Submission", show: true, cls: "nobreak",
+      render: (r) => (r.submission ? link(r.submission_url, r.submission) : r.submission_url ? link(r.submission_url, "vendor site") : DASH) },
+    { key: "us_status", label: "US status", type: "tags", show: true,
+      render: (r) => tags("us_status", r.us_status, (v) => (v === "FDA-authorized" ? "" : "orange")) },
+    { key: "earlier_submissions", label: "Earlier authorizations", type: "list", show: true, cls: "nobreak", facet: false,
+      render: (r) => (r.earlier_submissions.length ? r.earlier_submissions.map(esc).join("<br>") : DASH) },
     { key: "product_code", label: "Product code", type: "tags", show: true, render: (r) => tags("product_code", r.product_code) },
-    { key: "pediatric_name", label: "Pediatric term in name", show: true, render: (r) => (r.pediatric_name ? '<span class="tag green" data-q="pediatric_name:yes">yes</span>' : "") },
-    { key: "pediatric_status", label: "Pediatric-use screen", render: (r) => (r.pediatric_status ? '<span class="tag green" data-q="pediatric_status:=label-positive-candidate">label-positive candidate</span>' : DASH) },
+    { key: "pediatric_status", label: "Pediatric-use screen", facet: true, render: (r) => (r.pediatric_status ? '<span class="tag green" data-q="pediatric_status:=label-positive-candidate">label-positive candidate</span>' : DASH) },
     { key: "pediatric_evidence_pages", label: "Evidence pages", render: (r) => text(r.pediatric_evidence_pages) },
     { key: "curated_product", label: "Curated pediatric product", type: "list", show: true, cls: "wide",
       render: (r) => tags("curated_product", r.curated_product) },
-    { key: "year", label: "Year", type: "num" },
-    { key: "company_full", label: "Company (as filed)", cls: "wide" },
-    // Last, so the checkbox sits at the right edge of the table.
-    { key: "pediatric", label: "Pediatric use", show: true, cls: "check-cell",
-      render: (r) => checkbox("pediatric", r.pediatric === "yes",
-        r.pediatric_evidence_pages ? `Pediatric intended use or population in the label (pages ${r.pediatric_evidence_pages})` : "Pediatric intended use or population in the label") },
+    // Last, so the yes / no answer sits at the right edge of the table.
+    { key: "pediatric", label: "Pediatric use", show: true, cls: "check-cell", facet: true,
+      render: (r) => yesNo("pediatric", r.pediatric === "yes", r.pediatric_evidence) },
   ];
 
   const DATASET_COLS = [
     { key: "name", label: "Dataset", show: true, cls: "title-cell" },
-    { key: "year", label: "Year", show: true, cls: "nobreak" },
+    { key: "year", label: "Year", show: true, cls: "nobreak", facet: true },
     { key: "modality", label: "Modality", show: true, cls: "wide" },
     { key: "size", label: "Size", show: true, cls: "wide" },
     { key: "ages", label: "Ages", show: true },
-    { key: "access", label: "Access", show: true },
+    { key: "access", label: "Access", show: true, facet: true },
     { key: "ref", label: "Reference", show: true },
   ];
 
@@ -186,7 +150,7 @@
         // honest if a future build ships more.
         { id: "included", label: "Included studies", file: "articles", filter: (r) => r.record_type === "included study" },
       ],
-      examples: ['bone age', 'modality:MRI AND task:segmentation', 'year>=2024 AND release_status:open-source', 'age_groups:neonate', 'impact>=2 AND validation:external', '(fracture OR trauma) AND NOT modality:CT'],
+      examples: ['bone age', 'modality:MRI AND task:segmentation', 'year>=2024 AND release_status:open-source', 'age_groups:neonate', 'citations>=50 AND validation:external', '(fracture OR trauma) AND NOT modality:CT'],
       intro: (m) => `The ${Number(m.counts.articles).toLocaleString()} primary studies included in the systematic review, with model, modality, population, task and release status read from each abstract. <b>Release “unclear”</b> means the abstract does not say, not that the model is unavailable. <b>Impact</b> is field-normalized (FWCI, else iCite RCR; 1.0 = average paper of that field and year). Recent years undercount because of indexing lag. Snapshot ${m.snapshots.articles}.`,
     },
     {
@@ -194,8 +158,8 @@
       presets: [
         { id: "all", label: "All", file: "software" },
       ],
-      examples: ['segmentation', 'pediatric:yes', 'stars>=1000', 'language:Python AND updated>=2025', 'papers:* AND host:GitHub'],
-      intro: (m) => `Repositories from the GitHub leaderboards (searched by topic, plus well-known tools fetched by name; stars as of ${m.snapshots.software}) and every code link stated in a pediatric radiology-AI paper. Code links that are not on a leaderboard have no star count. <b>Pediatric use</b> is ticked when the repository came from the pediatric-imaging or bone-age searches, or names a pediatric population itself; hover the box for which. A general tool that a pediatric study merely used is not ticked.`,
+      examples: ['segmentation', 'pediatric:yes', 'stars>=1000', 'updated>=2025', 'pediatric:yes AND stars>=100'],
+      intro: (m) => `Repositories from the GitHub leaderboards (searched by topic, plus well-known tools fetched by name; stars as of ${m.snapshots.software}) and every code link stated in a pediatric radiology-AI paper. Code links that are not on a leaderboard have no star count. <b>Pediatric use</b> is yes when the repository came from the pediatric-imaging or bone-age searches, or names a pediatric population itself; hover the yes for which. A general tool that a pediatric study merely used is a no.`,
     },
     {
       id: "news", label: "Newsletters",
@@ -208,10 +172,10 @@
     {
       id: "commercial", label: "Commercial",
       presets: [
-        { id: "fda", label: "FDA AI-enabled radiology devices", file: "fda" },
+        { id: "fda", label: "Commercial radiology AI devices", file: "fda" },
       ],
-      examples: ['pediatric:yes', 'company:="GE HealthCare"', 'date>=2025', 'fetal OR pediatric', 'curated_product:*'],
-      intro: (m) => `The FDA's list of AI-enabled medical devices, Radiology panel only (snapshot ${m.snapshots.fda}; <a href="${esc(m.fda_source)}" target="_blank" rel="noopener">source</a>). One row per authorization, so a company appears once per device or version. The FDA describes the list as noncomprehensive. <b>Pediatric use</b> is ticked for the ${Number(m.counts.fda_pediatric).toLocaleString()} records whose linked label states a pediatric or fetal patient population or intended use (${m.snapshots.fda_pediatric} screen); about half of those are whole scanners whose labels list pediatric imaging as one clinical application, so confirm the current authorization before purchase. <b>Curated pediatric product</b> marks the ${Number(m.counts.products).toLocaleString()} products with a documented pediatric indication reviewed by hand on ${m.snapshots.products}; it is a company-level flag, not a claim about that row's authorization.`,
+      examples: ['pediatric:yes', 'company:="GE HealthCare"', 'date>=2025', 'fetal OR pediatric', 'us_status:="not FDA-authorized"'],
+      intro: (m) => `The FDA's list of AI-enabled medical devices, Radiology panel only (snapshot ${m.snapshots.fda}; <a href="${esc(m.fda_source)}" target="_blank" rel="noopener">source</a>), one row per device: a device the FDA authorized more than once (a new version or indication) is shown at its most recent authorization, with the earlier ones listed, so the ${Number(m.counts.fda_authorizations).toLocaleString()} authorizations make ${Number(m.counts.fda - m.counts.fda_not_authorized).toLocaleString()} rows. The FDA describes the list as noncomprehensive. The ${Number(m.counts.fda_not_authorized).toLocaleString()} rows marked <b>not FDA-authorized</b> are pediatric products on our curated list that have no US authorization (for example BoneXpert, CE-marked and US research use only). <b>Pediatric use</b> is yes for the ${Number(m.counts.fda_pediatric).toLocaleString()} authorized devices with at least one authorization whose linked label states a pediatric or fetal patient population or intended use (${m.snapshots.fda_pediatric} screen); hover the yes for which. About half are whole scanners whose labels list pediatric imaging as one clinical application, so confirm the current authorization before purchase. <b>Curated pediatric product</b> marks the ${Number(m.counts.products).toLocaleString()} products with a documented pediatric indication reviewed by hand on ${m.snapshots.products}; on an FDA row it is a company-level flag, not a claim about that row's authorization.`,
     },
     {
       id: "datasets", label: "Datasets",
@@ -322,7 +286,7 @@
     const cols = currentFile().cols;
     const typeLabel = { num: "number: = > >= < <=", date: "date: 2025, 2025-06, >=2025-06-01", list: "list: substring, := exact item", tags: "text: substring, := exact value" };
     $("fields-help").innerHTML =
-      `<p class="muted" style="margin:0 0 6px">Bare words search every column. Combine with AND / OR / NOT and parentheses. <code>field:*</code> means the field is filled. Click any tag in the table to filter by it.</p>` +
+      `<p class="muted" style="margin:0 0 6px">Bare words search every column. Combine with AND / OR / NOT and parentheses. <code>field:*</code> means the field is filled. Click any tag in the table to filter by it, or use a column's ▾ to pick values from a list; either way the filter is written into the search.</p>` +
       `<table>${cols.map((c) => `<tr><td class="fname">${c.key}</td><td>${esc(c.label)}</td><td class="muted">${typeLabel[c.type] || "text: substring, := exact value"}</td></tr>`).join("")}</table>`;
   }
 
@@ -352,10 +316,151 @@
 
   function renderHeader() {
     const sort = currentSort();
+    const active = new Set(queryClauses().filter((c) => c.filter).map((c) => c.filter.key));
     $("header-row").innerHTML = `<th class="expand-cell"></th>` + currentFile().cols.map((c) => {
       const arrow = sort && sort.key === c.key ? ` <span class="arrow">${sort.order === "asc" ? "▲" : "▼"}</span>` : "";
-      return `<th data-col="${c.key}" data-sort="${c.key}" class="sortable">${esc(c.label)}${arrow}</th>`;
+      const on = active.has(c.key);
+      const filt = facetable(c)
+        ? `<button class="filt${on ? " on" : ""}" data-filter="${c.key}" title="${on ? "Filtered: change" : "Filter by value"}" aria-label="Filter ${esc(c.label)} by value">▾</button>`
+        : "";
+      return `<th data-col="${c.key}" data-sort="${c.key}" class="sortable${c.cls === "check-cell" ? " check-cell" : ""}">${esc(c.label)}${arrow}${filt}</th>`;
     }).join("");
+  }
+
+  // ----------------------------------------------------------- column filters
+  // Excel-style value lists behind each header's ▾. The search box stays the
+  // one source of truth: OK writes the choice into it as a single clause for
+  // that column (see search.js), so a filtered view is still a plain query
+  // that the link, the row count and the CSV export all follow, and editing
+  // the query by hand moves the checkboxes.
+
+  const facetable = (c) => c.facet ?? (c.type === "tags" || c.type === "list");
+  const FP_MAX = 1000; // values listed at once; the search box narrows the rest
+  let fp = null; // the open popup: {col, items: [{v, label, n, on}], single}
+
+  // Top-level clauses of the current query ([] when it does not parse).
+  function queryClauses() {
+    try { return S.topClauses($("query").value, currentFile().cols); } catch (e) { return []; }
+  }
+
+  function blankLabel(col) { return col.cls === "check-cell" ? "no" : "(blank)"; }
+
+  function openFilter(key, btn) {
+    const preset = currentPreset();
+    const cols = currentFile().cols;
+    const col = cols.find((c) => c.key === key);
+    const all = DATA[preset.file];
+    if (!col || !all) return;
+    let clauses;
+    try { clauses = S.topClauses($("query").value, cols); } catch (e) {
+      setStatus(`Fix the search before filtering by column: ${e.message}`, true);
+      return;
+    }
+    const mine = clauses.filter((c) => c.filter && c.filter.key === key).map((c) => c.filter);
+    const allowed = (v) => mine.every((f) => (f.include ? f.include.has(v) : !f.exclude.has(v)));
+
+    // Count values over the rows every *other* filter lets through, as Excel does.
+    const pred = S.buildPredicate(S.joinClauses(clauses.filter((c) => !(c.filter && c.filter.key === key))), cols);
+    let rows = preset.filter ? all.filter(preset.filter) : all;
+    if (pred) rows = rows.filter(pred);
+    const counts = new Map();
+    const bump = (v, label) => {
+      const x = counts.get(v);
+      if (x) x.n += 1; else counts.set(v, { v, label, n: 1 });
+    };
+    for (const r of rows) {
+      const vals = S.cellValues(col, r);
+      if (!vals.length) bump(S.BLANK, blankLabel(col));
+      for (const raw of new Set(vals)) bump(raw.toLowerCase(), raw);
+    }
+    // A value the filter keeps stays listed (at 0) even if other filters hide it.
+    for (const f of mine) for (const v of f.include || []) {
+      if (!counts.has(v)) counts.set(v, { v, label: v === S.BLANK ? blankLabel(col) : v, n: 0 });
+    }
+    const byLabel = (a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base", numeric: true });
+    const items = [...counts.values()].sort((a, b) =>
+      (a.v === S.BLANK) - (b.v === S.BLANK)
+      || (col.type === "num" ? Number(b.label) - Number(a.label) : b.n - a.n || byLabel(a, b)));
+    items.forEach((it, i) => { it.i = i; it.on = allowed(it.v); });
+
+    fp = { col, btn, items, single: all.every((r) => S.cellValues(col, r).length <= 1) };
+    const pop = $("filter-pop");
+    $("fp-title").textContent = col.label;
+    $("fp-search").value = "";
+    $("fp-clear").hidden = !mine.length;
+    renderFilterList();
+    pop.hidden = false;
+    placeFilter();
+    $("fp-search").focus({ preventScroll: true });
+  }
+
+  // Under the header's ▾; re-run when the table scrolls sideways.
+  function placeFilter() {
+    const pop = $("filter-pop");
+    const b = fp.btn.getBoundingClientRect();
+    const maxLeft = window.scrollX + document.documentElement.clientWidth - pop.offsetWidth - 8;
+    pop.style.left = `${Math.max(window.scrollX + 8, Math.min(window.scrollX + b.left, maxLeft))}px`;
+    pop.style.top = `${window.scrollY + b.bottom + 4}px`;
+  }
+
+  function visibleItems() {
+    const q = $("fp-search").value.trim().toLowerCase();
+    return q ? fp.items.filter((it) => it.label.toLowerCase().includes(q)) : fp.items;
+  }
+
+  function renderFilterList() {
+    const vis = visibleItems();
+    const shown = vis.slice(0, FP_MAX);
+    $("fp-list").innerHTML = shown.length
+      ? shown.map((it) => `<label${it.v === S.BLANK ? ' class="blank"' : ""}><input type="checkbox" data-i="${it.i}"${it.on ? " checked" : ""}><span class="fp-label">${esc(it.label)}</span><span class="fp-n">${it.n.toLocaleString()}</span></label>`).join("")
+        + (vis.length > FP_MAX ? `<div class="fp-note">${(vis.length - FP_MAX).toLocaleString()} more; type to narrow</div>` : "")
+      : '<div class="fp-note">No values match.</div>';
+    updateFilterControls(vis);
+  }
+
+  function updateFilterControls(vis = visibleItems()) {
+    const on = vis.filter((it) => it.on).length;
+    const all = $("fp-all");
+    all.checked = vis.length > 0 && on === vis.length;
+    all.indeterminate = on > 0 && on < vis.length;
+    $("fp-all-label").textContent = $("fp-search").value.trim() ? "Select all search results" : "Select all";
+    $("fp-ok").disabled = !vis.some((it) => it.on);
+  }
+
+  function closeFilter() {
+    fp = null;
+    $("filter-pop").hidden = true;
+  }
+
+  // The clause for the checked values: a list of values to keep, or, for a
+  // one-value-per-row column where that is shorter, the values to drop. (A
+  // row with several values is kept if any is checked, so dropping a value
+  // is only the same thing when no row has two.) With a search typed, only
+  // the checked values among the results count, as in Excel.
+  function filterClause() {
+    const vis = new Set(visibleItems());
+    const on = fp.items.filter((it) => it.on && vis.has(it));
+    const off = fp.items.filter((it) => !(it.on && vis.has(it)));
+    if (!off.length) return "";
+    const f = fp.col.key;
+    const lit = (it) => `${f}:="${it.label.replace(/"/g, "")}"`;
+    if (fp.single && off.length < on.length) {
+      const ts = off.map((it) => (it.v === S.BLANK ? `${f}:*` : `NOT ${lit(it)}`));
+      return ts.length > 1 ? `(${ts.join(" AND ")})` : ts[0];
+    }
+    const ts = on.map((it) => (it.v === S.BLANK ? `NOT ${f}:*` : lit(it)));
+    return ts.length > 1 ? `(${ts.join(" OR ")})` : ts[0];
+  }
+
+  function applyFilter(clause) {
+    const key = fp.col.key;
+    closeFilter();
+    let clauses;
+    try { clauses = S.topClauses($("query").value, currentFile().cols); } catch (e) { return; }
+    const kept = clauses.filter((c) => !(c.filter && c.filter.key === key));
+    if (clause) kept.push({ text: clause });
+    $("query").value = S.joinClauses(kept);
+    run();
   }
 
   function cellHtml(c, r) {
@@ -474,12 +579,13 @@
     if (presetId) state.preset[tabId] = presetId;
     $("query").value = query !== undefined ? query : (state.query[viewKey()] || "");
     $("columns-panel").hidden = true;
+    closeFilter();
     run();
   }
 
   function addToQuery(term) {
     const q = $("query").value.trim();
-    if (q.split(/\s+AND\s+|\s+/).includes(term)) return;
+    if (q.split(/\s+AND\s+/).includes(term) || q.split(/\s+/).includes(term)) return;
     $("query").value = q ? `${q} AND ${term}` : term;
     run();
   }
@@ -524,6 +630,12 @@
     if (c) { $("query").value = c.dataset.example; run(); }
   });
   $("header-row").addEventListener("click", (e) => {
+    const fb = e.target.closest("button[data-filter]");
+    if (fb) {
+      e.stopPropagation();
+      if (fp && fp.col.key === fb.dataset.filter) closeFilter(); else openFilter(fb.dataset.filter, fb);
+      return;
+    }
     const th = e.target.closest("th[data-sort]");
     if (!th) return;
     const cur = currentSort();
@@ -557,7 +669,27 @@
   $("columns-all").addEventListener("click", () => setCols(() => new Set()));
   $("columns-none").addEventListener("click", () => setCols((f) => new Set(FILES[f].cols.map((c) => c.key))));
   $("columns-default").addEventListener("click", () => setCols((f) => new Set(FILES[f].cols.filter((c) => !c.show).map((c) => c.key))));
-  document.addEventListener("click", (e) => { if (!e.target.closest(".columns-menu")) $("columns-panel").hidden = true; });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".columns-menu")) $("columns-panel").hidden = true;
+    if (fp && !e.target.closest("#filter-pop")) closeFilter();
+  });
+  $("fp-search").addEventListener("input", renderFilterList);
+  $("fp-search").addEventListener("keydown", (e) => { if (e.key === "Enter" && !$("fp-ok").disabled) applyFilter(filterClause()); });
+  $("fp-list").addEventListener("change", (e) => {
+    const it = fp.items[Number(e.target.dataset.i)];
+    if (it) it.on = e.target.checked;
+    updateFilterControls();
+  });
+  $("fp-all").addEventListener("change", (e) => {
+    visibleItems().forEach((it) => { it.on = e.target.checked; });
+    renderFilterList();
+  });
+  $("fp-ok").addEventListener("click", () => applyFilter(filterClause()));
+  $("fp-cancel").addEventListener("click", closeFilter);
+  $("fp-clear").addEventListener("click", () => applyFilter(""));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && fp) closeFilter(); });
+  window.addEventListener("resize", () => { if (fp) placeFilter(); });
+  document.querySelector(".table-wrap").addEventListener("scroll", () => { if (fp) placeFilter(); });
   $("help-toggle").addEventListener("click", () => {
     const h = $("fields-help");
     const showing = h.style.display === "block";
