@@ -817,14 +817,17 @@ COMMERCIAL_PROBLEM_TERMS: dict[str, list[str]] = {
     "fetal / obstetric": [r"f[oe]tal", r"obstetric", r"prenatal", r"gestational age", r"nuchal",
                           r"delivery date", r"echoscan", r"biometry", r"\bsonio\b", r"pregnan"],
     "bone age / growth": [r"bone ?age", r"skeletal matur", r"bonexpert", r"\bphysis\b", r"growth plate"],
-    "fracture / trauma": [r"fractur", r"bone ?view", r"rayvolve", r"trauma", r"dislocat", r"\brib fx\b"],
+    # No bare "rayvolve": AZmed's fracture products carry the QBS fracture code
+    # anyway, while the siblings under the same brand are lung nodule (LN) and
+    # pneumothorax / pulmonary embolism (PTX-PE) products.
+    "fracture / trauma": [r"fractur", r"bone ?view", r"trauma", r"dislocat", r"\brib fx\b"],
     "spine / scoliosis": [r"scolio", r"\bcobb\b", r"vertebr", r"\bspine\b", r"spinal", r"columbo",
                           r"lumbar", r"c-spine", r"cervical spine", r"spineeos"],
     "stroke / intracranial bleed": [r"stroke", r"\blvo\b", r"large vessel", r"\bich\b", r"intracranial",
                                     r"h[ae]?emorrhag", r"aspects", r"perfusion", r"aneurysm", r"midline shift"],
     "brain / neurologic": [r"\bbrain", r"neuro", r"hydroceph", r"white matter", r"hippocamp",
                            r"multiple sclerosis", r"epilep", r"myelin", r"cortical"],
-    "chest / lung": [r"chest", r"\blung", r"pneumo", r"nodule", r"pulmonary", r"tubercul",
+    "chest / lung": [r"chest", r"\blung", r"pneumo", r"\bptx\b", r"nodule", r"pulmonary", r"tubercul",
                      r"pleural", r"effusion", r"emphysema", r"airway", r"\bcxr\b", r"fibrotic"],
     "tube / line placement": [r"\btube\b", r"catheter", r"line placement", r"enteric", r"endotrach",
                               r"\bett\b", r"malposition"],
@@ -878,6 +881,60 @@ COMMERCIAL_PROBLEM_CODES: dict[str, str] = {
 COMMERCIAL_SYSTEM_CODES: set[str] = {
     "IYN", "IYO", "JAK", "LNH", "KPS", "IZL", "JAA", "KPR", "MQB", "OWB", "OXO",
     "IYE", "NQQ", "OTE", "OUO", "QNK", "NFJ", "KGI", "LDK",
+}
+
+# What the FDA itself calls each product code: the device-type name from the
+# openFDA device classification endpoint
+# (api.fda.gov/device/classification.json?search=product_code:..., retrieved
+# 2026-09-18), rewritten from the FDA's inverted index form ("System, X-Ray,
+# Tomography, Computed") into a readable phrase, meaning unchanged. This is the
+# detail column behind the broad clinical problem: every authorization has a
+# code, so unlike COMMERCIAL_PROBLEM_TERMS it covers the whole list, and it is
+# the FDA's own words rather than an inference from the device name. Several
+# codes name a clinical problem outright (QBS fracture, QWO fibrotic lung
+# disease, SHE delivery date) and several name none at all (QIH, LLZ, MYN),
+# which is exactly why the broad column is often empty.
+COMMERCIAL_CODE_DEVICE_TYPES: dict[str, str] = {
+    "IYE": "Medical linear accelerator",
+    "IYN": "Ultrasonic pulsed doppler imaging system",
+    "IYO": "Ultrasonic pulsed echo imaging system",
+    "IZL": "Mobile x-ray system",
+    "JAA": "Image-intensified fluoroscopic x-ray system",
+    "JAK": "Computed tomography x-ray system",
+    "KGI": "Bone densitometer",
+    "KPR": "Stationary x-ray system",
+    "KPS": "Emission computed tomography system (PET / SPECT)",
+    "LDK": "Optical contour sensing device",
+    "LLZ": "Radiological image processing system",
+    "LNH": "Magnetic resonance imaging system",
+    "MQB": "Solid-state x-ray imager (flat panel / digital imager)",
+    "MUJ": "Radiation therapy treatment planning system",
+    "MYN": "Medical image analyzer",
+    "NFJ": "Ophthalmic image management system",
+    "NQQ": "Optical coherence tomography imaging system",
+    "OEB": "Computer-aided detection, lung computed tomography",
+    "OTE": "Digital breast tomosynthesis",
+    "OUO": "Combined PET / MR tomographic imager",
+    "OWB": "Interventional fluoroscopic x-ray system",
+    "OXO": "Mobile image-intensified fluoroscopic x-ray system",
+    "PCS": "Liver iron concentration imaging companion diagnostic for deferasirox",
+    "POK": "Computer-assisted diagnostic software for lesions suspicious for cancer",
+    "QAS": "Radiological computer-assisted triage and notification software",
+    "QBS": "Radiological computer-assisted detection / diagnosis software for fracture",
+    "QDQ": "Radiological computer-assisted detection / diagnosis software for lesions suspicious for cancer",
+    "QFM": "Radiological computer-assisted prioritization software for lesions",
+    "QHA": "X-ray angiographic coronary vascular simulation software",
+    "QIH": "Automated radiological image processing software",
+    "QJU": "Image acquisition and/or optimization guided by artificial intelligence",
+    "QKB": "Radiological image processing software for radiation therapy",
+    "QNK": "Optoacoustic imaging system",
+    "QTZ": "Radiological image processing software for ablation therapy planning and evaluation",
+    "QVD": "Radiological machine learning based quantitative imaging software with change control plan",
+    "QWO": "Radiology software for referral of findings related to fibrotic lung disease",
+    "SAO": "Radiology software for opportunistic evaluation of low bone mineral density",
+    "SEZ": "Radiological software device to predict future breast cancer risk",
+    "SGH": "Ultrasound imaging for vascular access for hemodialysis",
+    "SHE": "Radiological software system for delivery date prediction",
 }
 
 # --------------------------------------------------------------------------- #

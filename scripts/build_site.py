@@ -25,11 +25,9 @@ Output::
       data/software.json                # GitHub leaderboards + code links in papers
       data/news.json                    # newsletter_items.json
       data/fda.json                     # FDA AI-enabled devices, Radiology panel,
-                                        # one row per device (repeat clearances
-                                        # folded into the latest), plus the curated
-                                        # products with no US authorization
-                                        # (config.COMMERCIAL_PEDIATRIC rides on it
-                                        #  as the curated_product column)
+                                        # one row per authorization, as on the
+                                        # slides (config.COMMERCIAL_PEDIATRIC rides
+                                        #  on it as the curated_product column)
       data/datasets.json                # config.PEDIATRIC_DATASETS
 """
 
@@ -44,7 +42,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from pedrad_ai import config, fda_devices
+from pedrad_ai import commercial, config, fda_devices
 
 WEB_DIR = config.REPO_ROOT / "web"
 ASSETS = ("index.html", "app.js", "search.js")
@@ -352,64 +350,26 @@ def _device_key(company: str, device: str) -> tuple[str, str]:
     return norm(company), norm(device)
 
 
-def _one_row_per_device(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Fold repeat authorizations of one device into its most recent row.
+def _earlier_authorizations(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Give each authorization the earlier authorizations of the same device.
 
-    The FDA list has one entry per authorization, so a device cleared again
-    for a new version or indication (BoneView: K212365 in 2022, K222176 in
-    2023) appears once per clearance. The site shows the device once, dated by
-    its latest authorization, and lists the earlier ones. The pediatric tick
-    is the device's: set if any of its authorizations has a label-positive
-    screen, and the evidence says which one, because a later clearance whose
-    label was not screened positive does not undo an earlier pediatric one.
+    The tab is one row per authorization, like the FDA list and the slides
+    (1,230 radiology-panel authorizations, 230 of them label-positive), so a
+    device cleared again for a new version or indication (BoneView: K212365 in
+    2022, K222176 in 2023) appears once per clearance. The column names the
+    clearances that came before the one on the row, so the device history is
+    still visible; the pediatric tick stays the row's own authorization's.
     """
     groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
     for r in rows:
         groups.setdefault(_device_key(r["company"], r["device"]), []).append(r)
     out = []
     for group in groups.values():
-        group.sort(key=lambda r: (r["date"], r["submission"]), reverse=True)
-        latest = dict(group[0])
-        latest["earlier_submissions"] = [
-            f"{r['submission']} ({r['date'][:4]})" if r["date"] else r["submission"] for r in group[1:]]
-        positive = next((r for r in group if r["pediatric"] == "yes"), None)
-        if positive is not None:
-            for k in ("pediatric", "pediatric_status", "pediatric_evidence_pages"):
-                latest[k] = positive[k]
-            pages = f", pages {positive['pediatric_evidence_pages']}" if positive["pediatric_evidence_pages"] else ""
-            which = "this authorization" if positive is group[0] else \
-                f"an earlier authorization, {positive['submission']} ({positive['date'][:4]})"
-            latest["pediatric_evidence"] = (
-                f"Pediatric intended use or population in the label of {which}{pages}")
-        if any(r["pediatric_name"] for r in group):
-            latest["pediatric_name"] = "yes"
-        out.append(latest)
-    return out
-
-
-def _products_without_us_authorization() -> list[dict[str, Any]]:
-    """Curated products with no US authorization, as rows of the commercial tab.
-
-    The tab is the FDA list, so a product the FDA never authorized (BoneXpert,
-    for one) would otherwise be missing from the site while it is on the
-    slides. These rows have no date, submission or product code, and say why
-    in ``us_status`` and ``pediatric_evidence``.
-    """
-    urls = {c["vendor"]: c.get("url") or "" for c in config.COMMERCIAL_PEDIATRIC}
-    out = []
-    for p in config.COMMERCIAL_PRODUCTS:
-        if not p.get("no_us_authorization"):
-            continue
-        out.append({
-            "date": "", "year": None, "device": p["product"], "company": p["vendor"],
-            "company_full": p["vendor"], "submission": "", "submission_url": urls.get(p["vendor"], ""),
-            "product_code": "", "pediatric_name": "", "pediatric_status": "",
-            "pediatric_evidence_pages": "", "curated_product": [p["product"]],
-            "us_status": "not FDA-authorized",
-            "pediatric_evidence": _detex(p["pediatric"]),
-            "pediatric": "yes",
-            "earlier_submissions": [],
-        })
+        group.sort(key=lambda r: (r["date"], r["submission"]))
+        for i, r in enumerate(group):
+            out.append({**r, "earlier_submissions": [
+                f"{e['submission']} ({e['date'][:4]})" if e["date"] else e["submission"]
+                for e in reversed(group[:i])]})
     return out
 
 
@@ -431,6 +391,13 @@ def fda_rows(fda: dict[str, Any], product_rows: list[dict[str, Any]] | None = No
             "date": date, "year": year, "device": device, "company": company,
             "company_full": company_full, "submission": submission,
             "submission_url": _submission_url(submission), "product_code": product_code,
+            # What the device is for, at two grains: the broad problem derived
+            # from the device name and the product code (the slides' own
+            # assignment, so tab and deck group devices the same way), and the
+            # FDA's device-type name for the code, which covers every row and
+            # shows when the record names no clinical problem at all.
+            "problem": commercial.problem_label(device, product_code),
+            "device_type": commercial.device_type(product_code),
             "pediatric_name": "yes" if name_hit else "",
             "pediatric_status": "label-positive-candidate" if candidate else "",
             "pediatric_evidence_pages": pages,
@@ -466,8 +433,8 @@ def fda_rows(fda: dict[str, Any], product_rows: list[dict[str, Any]] | None = No
         out.append(row(date, int(date[:4]) if date else None, r.get("device") or "",
                        r.get("company") or "", r.get("company") or "", submission,
                        r.get("product_code") or "", False))
-    out = _one_row_per_device(out) + _products_without_us_authorization()
-    return sorted(out, key=lambda r: r["date"], reverse=True)
+    out = _earlier_authorizations(out)
+    return sorted(out, key=lambda r: (r["date"], r["submission"]), reverse=True)
 
 
 # --------------------------------------------------------------------------- #
@@ -521,9 +488,10 @@ def build(out_dir: Path) -> dict[str, Any]:
         "counts": {
             **{k: len(v) for k, v in tables.items()},
             "products": len(product_rows),
-            "fda_pediatric": sum(r["pediatric"] == "yes" and r["us_status"] == "FDA-authorized" for r in tables["fda"]),
-            "fda_not_authorized": sum(r["us_status"] != "FDA-authorized" for r in tables["fda"]),
-            "fda_authorizations": sum(1 + len(r["earlier_submissions"]) for r in tables["fda"] if r["submission"]),
+            "fda_pediatric": sum(r["pediatric"] == "yes" for r in tables["fda"]),
+            "fda_problem": sum(bool(r["problem"]) and r["problem"] != commercial.SYSTEM_PROBLEM
+                               for r in tables["fda"]),
+            "fda_devices": len({_device_key(r["company"], r["device"]) for r in tables["fda"]}),
         },
         "snapshots": {
             "articles": mtime(config.UNIFIED_DB_CSV),

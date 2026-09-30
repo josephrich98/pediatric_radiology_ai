@@ -48,34 +48,26 @@ def _fda_row(date, submission, pediatric="", device="BoneView", company="Gleamer
             "pediatric_evidence": "label" if pediatric else ""}
 
 
-def test_repeat_authorizations_fold_into_the_latest():
-    rows = build_site._one_row_per_device([
+def test_every_authorization_is_a_row():
+    # The tab counts authorizations, like the slides (1,230 / 230): a device
+    # cleared twice is two rows, each naming the clearances before it.
+    rows = build_site._earlier_authorizations([
         _fda_row("2022-03-01", "K212365"),
         _fda_row("2023-03-02", "K222176", "yes"),
         _fda_row("2024-01-01", "K999999", device="Other"),
     ])
-    assert len(rows) == 2
-    bv = next(r for r in rows if r["device"] == "BoneView")
-    assert bv["submission"] == "K222176" and bv["earlier_submissions"] == ["K212365 (2022)"]
-    assert bv["pediatric"] == "yes" and "this authorization" in bv["pediatric_evidence"]
+    assert len(rows) == 3
+    by_sub = {r["submission"]: r for r in rows}
+    assert by_sub["K212365"]["earlier_submissions"] == []
+    assert by_sub["K222176"]["earlier_submissions"] == ["K212365 (2022)"]
+    assert by_sub["K999999"]["earlier_submissions"] == []
 
 
-def test_earlier_pediatric_label_carries_to_the_device():
-    rows = build_site._one_row_per_device([
+def test_pediatric_tick_is_the_authorizations_own():
+    rows = build_site._earlier_authorizations([
         _fda_row("2023-02-16", "K222755", "yes", device="uMR 680"),
         _fda_row("2025-09-25", "K252371", device="uMR  680 "),
     ])
-    assert len(rows) == 1 and rows[0]["submission"] == "K252371"
-    assert rows[0]["pediatric"] == "yes" and "K222755 (2023)" in rows[0]["pediatric_evidence"]
-
-
-def test_products_without_us_authorization_are_rows():
-    # BoneXpert is on the slides' product list but not on the FDA list; the
-    # site must still show it, marked as not authorized.
-    rows = build_site._products_without_us_authorization()
-    names = {r["device"] for r in rows}
-    assert "BoneXpert" in names
-    assert all(r["us_status"] == "not FDA-authorized" and not r["submission"] for r in rows)
-    flagged = {p["product"] for p in config.COMMERCIAL_PRODUCTS if p.get("no_us_authorization")}
-    assert names == flagged
-    assert all(not p["submission"] for p in config.COMMERCIAL_PRODUCTS if p.get("no_us_authorization"))
+    by_sub = {r["submission"]: r for r in rows}
+    assert by_sub["K222755"]["pediatric"] == "yes"
+    assert by_sub["K252371"]["pediatric"] == "" and by_sub["K252371"]["earlier_submissions"] == ["K222755 (2023)"]

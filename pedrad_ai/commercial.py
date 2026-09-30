@@ -45,6 +45,11 @@ _PROBLEM_RX: dict[str, list[re.Pattern[str]]] = {
 
 UNASSIGNED = "clinical problem not named"
 
+# What a whole scanner is for. A platform is authorized for imaging, not for a
+# clinical question, so it gets this instead of a problem rather than being
+# assigned the problem of whichever feature the submission happened to add.
+SYSTEM_PROBLEM = "imaging system (whole scanner)"
+
 
 def clinical_problem(device: str, product_code: str = "") -> str | None:
     """Clinical problem for one device, or ``None`` when neither the name nor
@@ -54,6 +59,29 @@ def clinical_problem(device: str, product_code: str = "") -> str | None:
         if any(p.search(name) for p in pats):
             return label
     return config.COMMERCIAL_PROBLEM_CODES.get((product_code or "").strip().upper())
+
+
+def device_type(product_code: str) -> str:
+    """The FDA's own device-type name for a product code, or ``""``.
+
+    Detail under the broad clinical problem: it covers every authorization (a
+    code is mandatory), and for the generic codes it is the evidence that the
+    FDA record names no clinical problem at all.
+    """
+    return config.COMMERCIAL_CODE_DEVICE_TYPES.get((product_code or "").strip().upper(), "")
+
+
+def problem_label(device: str, product_code: str = "") -> str:
+    """Display form of the clinical problem: the problem the name or the code
+    names, else ``SYSTEM_PROBLEM`` for a whole scanner, else ``""`` (the FDA
+    record names no clinical problem, which is not the same as the device
+    addressing none)."""
+    problem = clinical_problem(device, product_code)
+    if problem:
+        return problem
+    if (product_code or "").strip().upper() in config.COMMERCIAL_SYSTEM_CODES:
+        return SYSTEM_PROBLEM
+    return ""
 
 
 def pediatric_submissions(inventory: dict[str, Any] | None) -> set[str]:

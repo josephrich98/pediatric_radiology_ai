@@ -260,17 +260,24 @@ The questions it answers:
   description or topics — a general tool a pediatric study merely used is a
   no; the reason is in `pediatric_evidence`, shown as the tooltip).
   Newsletters is the trade-press table. Commercial is the FDA radiology-panel
-  authorization list, **one row per device**: the 1,230 authorizations fold
-  into 994 rows, a device authorized again (new version or indication) sitting
-  at its most recent one with the earlier submissions listed, because the site
-  answers "what is this device" while the slides count authorizations. The
-  pediatric yes / no is therefore the device's — set when *any* of its
-  authorizations screened label-positive, with `pediatric_evidence` (the
-  tooltip) naming which — so the 230 label-positive authorizations are 172
-  devices. A curated product with no US authorization at all
-  (`config.COMMERCIAL_PRODUCTS` with `no_us_authorization`: BoneXpert, Physis,
-  qXR-TB) is on the slides but cannot be on the FDA list, so it is added as a
-  row of its own marked `not FDA-authorized`; the rest of the curated
+  authorization list, **one row per authorization**, so the site and the
+  slides quote the same n: 1,230 rows (994 distinct devices), and the
+  pediatric yes / no is each authorization's own label-positive screen, 230
+  rows. A device authorized again (new version or indication) has a row per
+  authorization, each listing the ones before it in `earlier_submissions`.
+  What the device is *for* is two columns, at two grains: `problem`, the broad
+  clinical problem the slides also group on (`commercial.problem_label`: the
+  device name first, the product code second, `imaging system (whole scanner)`
+  for a `COMMERCIAL_SYSTEM_CODES` platform, and blank — 359 rows, mostly the
+  generic QIH and LLZ codes — when neither names one, never guessed), and
+  `device_type`, the FDA's own device-type name for the product code
+  (`config.COMMERCIAL_CODE_DEVICE_TYPES`, from the openFDA classification
+  endpoint), which covers every row and is the evidence that a record naming no
+  problem really names none. `tests/test_commercial.py` fails if a new snapshot
+  brings a product code the device-type table does not have.
+  Curated products with no US authorization (`config.COMMERCIAL_PRODUCTS` with
+  `no_us_authorization`: BoneXpert, Physis, qXR-TB) are on the slides only,
+  deliberately not rows here, so the tab stays exactly the FDA list. The curated
   `COMMERCIAL_PEDIATRIC` products are not a table of their own and ride along
   as the company-level `curated_product` column (`PRODUCT_SPLITS` still
   splits the grouped config entries, and `tests/test_build_site.py` fails if a

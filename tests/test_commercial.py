@@ -41,6 +41,30 @@ class ClinicalProblemTests(unittest.TestCase):
         self.assertEqual(commercial.clinical_problem("Auto-Seg", "QIH"), "measurement / quantification")
 
 
+class DisplayLabelTests(unittest.TestCase):
+    """The two columns the website's commercial tab shows: the broad problem
+    and the FDA's own device type behind it."""
+
+    def test_a_whole_scanner_is_labeled_as_one_rather_than_left_blank(self):
+        self.assertEqual(commercial.problem_label("uMR Astra", "LNH"), commercial.SYSTEM_PROBLEM)
+        # A scanner code still loses to a name that states a problem.
+        self.assertEqual(commercial.problem_label("Fetal EchoScan", "IYN"), "fetal / obstetric")
+
+    def test_software_naming_no_problem_stays_blank(self):
+        # QIH and LLZ carry no clinical problem, so a brand name that states
+        # none leaves the column empty rather than guessed at.
+        self.assertEqual(commercial.problem_label("ClariCT.AI", "LLZ"), "")
+
+    def test_every_product_code_in_the_snapshot_has_a_device_type(self):
+        path = config.PROCESSED_DIR / "fda_ai_devices.json"
+        if not path.exists():
+            self.skipTest("no FDA snapshot")
+        fda = utils.load_json(path)
+        missing = sorted({(d.get("product_code") or "").strip().upper()
+                          for d in fda["devices"]} - set(config.COMMERCIAL_CODE_DEVICE_TYPES))
+        self.assertEqual(missing, [], f"product codes with no FDA device type: {missing}")
+
+
 class PediatricJoinTests(unittest.TestCase):
     def test_only_label_positive_candidates_count_as_pediatric(self):
         fda = _devices({"submission": "K1", "product_code": "QIH"},

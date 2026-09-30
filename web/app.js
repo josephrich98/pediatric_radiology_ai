@@ -105,6 +105,14 @@
   const FDA_COLS = [
     { key: "device", label: "Device", show: true, cls: "title-cell" },
     { key: "company", label: "Company", show: true, facet: true, render: (r) => tag("company", r.company) },
+    // What the device is for. The broad problem is derived from the device
+    // name and the product code, the same assignment the slides group on; the
+    // device type is the FDA's own name for the product code, so it is on
+    // every row and says when the record names no clinical problem.
+    { key: "problem", label: "Clinical problem", type: "tags", show: true, facet: true,
+      render: (r) => tags("problem", r.problem, (v) => (v === "imaging system (whole scanner)" ? "gray" : "")) },
+    { key: "device_type", label: "FDA device type", show: true, cls: "wide", facet: true,
+      render: (r) => clamp(r.device_type) },
     { key: "date", label: "Decision date", type: "date", show: true, cls: "nobreak" },
     { key: "submission", label: "Submission", show: true, cls: "nobreak",
       render: (r) => (r.submission ? link(r.submission_url, r.submission) : r.submission_url ? link(r.submission_url, "vendor site") : DASH) },
@@ -174,8 +182,8 @@
       presets: [
         { id: "fda", label: "Commercial radiology AI devices", file: "fda" },
       ],
-      examples: ['pediatric:yes', 'company:="GE HealthCare"', 'date>=2025', 'fetal OR pediatric', 'us_status:="not FDA-authorized"'],
-      intro: (m) => `The FDA's list of AI-enabled medical devices, Radiology panel only (snapshot ${m.snapshots.fda}; <a href="${esc(m.fda_source)}" target="_blank" rel="noopener">source</a>), one row per device: a device the FDA authorized more than once (a new version or indication) is shown at its most recent authorization, with the earlier ones listed, so the ${Number(m.counts.fda_authorizations).toLocaleString()} authorizations make ${Number(m.counts.fda - m.counts.fda_not_authorized).toLocaleString()} rows. The FDA describes the list as noncomprehensive. The ${Number(m.counts.fda_not_authorized).toLocaleString()} rows marked <b>not FDA-authorized</b> are pediatric products on our curated list that have no US authorization (for example BoneXpert, CE-marked and US research use only). <b>Pediatric use</b> is yes for the ${Number(m.counts.fda_pediatric).toLocaleString()} authorized devices with at least one authorization whose linked label states a pediatric or fetal patient population or intended use (${m.snapshots.fda_pediatric} screen); hover the yes for which. About half are whole scanners whose labels list pediatric imaging as one clinical application, so confirm the current authorization before purchase. <b>Curated pediatric product</b> marks the ${Number(m.counts.products).toLocaleString()} products with a documented pediatric indication reviewed by hand on ${m.snapshots.products}; on an FDA row it is a company-level flag, not a claim about that row's authorization.`,
+      examples: ['pediatric:yes', 'company:="GE HealthCare"', 'date>=2025', 'problem:="fetal / obstetric"', 'earlier_submissions:*'],
+      intro: (m) => `The FDA's list of AI-enabled medical devices, Radiology panel only (snapshot ${m.snapshots.fda}; <a href="${esc(m.fda_source)}" target="_blank" rel="noopener">source</a>), one row per authorization, as counted on the slides: the ${Number(m.counts.fda).toLocaleString()} authorizations cover ${Number(m.counts.fda_devices).toLocaleString()} distinct devices, because a device authorized again (a new version or indication) has a row for each authorization, with the ones before it under <b>Earlier authorizations</b>. The FDA describes the list as noncomprehensive. <b>Pediatric use</b> is yes for the ${Number(m.counts.fda_pediatric).toLocaleString()} authorizations whose linked label states a pediatric or fetal patient population or intended use (${m.snapshots.fda_pediatric} screen); hover the yes for the evidence pages. About half are whole scanners whose labels list pediatric imaging as one clinical application, so confirm the current authorization before purchase. <b>Clinical problem</b> is the broad problem the device addresses, read off the device name first and the FDA product code second, the same assignment the slides group on: it is named for ${Number(m.counts.fda_problem).toLocaleString()} of the authorizations, whole scanners are marked as such, and the rest are products whose name and code name no problem at all (mostly the generic codes QIH and LLZ), left blank rather than guessed at. <b>FDA device type</b> is the detail under it, the FDA's own name for the product code, so it is on every row. <b>Curated pediatric product</b> marks the companies selling one of the ${Number(m.counts.products).toLocaleString()} products with a documented pediatric indication reviewed by hand on ${m.snapshots.products}; it is a company-level flag, not a claim about that row's authorization.`,
     },
     {
       id: "datasets", label: "Datasets",
@@ -380,7 +388,7 @@
     const byLabel = (a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base", numeric: true });
     const items = [...counts.values()].sort((a, b) =>
       (a.v === S.BLANK) - (b.v === S.BLANK)
-      || (col.type === "num" ? Number(b.label) - Number(a.label) : b.n - a.n || byLabel(a, b)));
+      || (col.type === "num" ? Number(b.label) - Number(a.label) : byLabel(a, b)));
     items.forEach((it, i) => { it.i = i; it.on = allowed(it.v); });
 
     fp = { col, btn, items, single: all.every((r) => S.cellValues(col, r).length <= 1) };
