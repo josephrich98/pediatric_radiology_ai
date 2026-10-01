@@ -1,10 +1,10 @@
 # Pediatric Radiology AI in the News: Newsletter and Trade-Press Watch
 
-_Auto-generated from the public archives of 7 newsletters / news sites, collected 2026-09-09. The peer-reviewed literature lags practice by a year or more; this is the companion view of what the field is talking about right now._
+_Auto-generated from the public archives of 7 newsletters / news sites, collected 2026-10-01. The peer-reviewed literature lags practice by a year or more; this is the companion view of what the field is talking about right now._
 
 ## Headline
 
-- **161** distinct pediatric-radiology-AI stories found across all archives.
+- **160** distinct pediatric-radiology-AI stories found across all archives.
 - 2025: **22** stories; 2026 year-to-date: **13**.
 - In The Imaging Wire (the deepest archive, 2018-2026), pediatric stories are **1.7%** of all radiology-AI stories — the trade-press analogue of the pediatric share of the literature.
 - In RSNA News, pediatric stories are **10.2%** of AI-titled articles.
@@ -15,13 +15,13 @@ Each source's public archive was enumerated in full (WordPress REST API, the RSN
 
 | Source | Archive | Coverage | Issues / articles | Stories | Radiology-AI stories | Pediatric radiology-AI | Pediatric share of AI stories |
 |:--|:--|:--|---:|---:|---:|---:|---:|
-| [The Imaging Wire](https://theimagingwire.com/newsletters/) | wordpress | 2018-03-22 → 2026-09-02 | 838 | 19327 | 6610 | 111 | 1.7% |
-| [RSNA News](https://www.rsna.org/news) | rsna_news | 2014-01-01 → 2026-09-01 | 1890 | 1872 | 246 | 25 | 10.2% |
-| [TLDR AI](https://tldr.tech/ai/archives) | tldr | 2024-01-02 → 2026-09-09 | 696 | 11645 | 23 | 1 | 4.3% |
-| [TLDR Tech](https://tldr.tech/tech/archives) | tldr | 2024-01-02 → 2026-09-09 | 702 | 10997 | 13 | 0 | 0.0% |
-| [Signify Research](https://www.signifyresearch.net/insights/) | wordpress | 2017-05-16 → 2026-08-10 | 649 | 875 | 199 | 1 | 0.5% |
-| [ESR / ECR](https://www.myesr.org/news/) | wordpress | 2019-02-14 → 2026-08-31 | 596 | 1350 | 857 | 23 | 2.7% |
-| [Radiology Business](https://radiologybusiness.com) | rss | 2026-08-11 → 2026-09-09 | 100 | 100 | 19 | 0 | 0.0% |
+| [The Imaging Wire](https://theimagingwire.com/newsletters/) | wordpress | 2018-03-22 → 2026-09-30 | 845 | 19565 | 6686 | 112 | 1.7% |
+| [RSNA News](https://www.rsna.org/news) | rsna_news | 2014-01-01 → 2026-09-01 | 1907 | 1889 | 246 | 25 | 10.2% |
+| [TLDR AI](https://tldr.tech/ai/archives) | tldr | 2024-01-02 → 2026-10-01 | 712 | 11941 | 24 | 1 | 4.2% |
+| [TLDR Tech](https://tldr.tech/tech/archives) | tldr | 2024-01-02 → 2026-10-01 | 718 | 11269 | 13 | 0 | 0.0% |
+| [Signify Research](https://www.signifyresearch.net/insights/) | wordpress | 2017-05-16 → 2026-09-22 | 650 | 878 | 199 | 1 | 0.5% |
+| [ESR / ECR](https://www.myesr.org/news/) | wordpress | 2019-02-14 → 2026-10-01 | 603 | 1886 | 1154 | 21 | 1.8% |
+| [Radiology Business](https://radiologybusiness.com) | rss | 2026-09-03 → 2026-10-01 | 100 | 100 | 23 | 0 | 0.0% |
 
 _Coverage notes:_
 
@@ -39,14 +39,14 @@ _Coverage notes:_
 | 2016 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
 | 2017 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
 | 2018 | 2 | 4 | 0 | 0 | 0 | 0 | 0 | 6 |
-| 2019 | 13 | 5 | 0 | 0 | 0 | 6 | 0 | 24 |
+| 2019 | 13 | 5 | 0 | 0 | 0 | 5 | 0 | 23 |
 | 2020 | 5 | 3 | 0 | 0 | 0 | 2 | 0 | 10 |
 | 2021 | 4 | 1 | 0 | 0 | 0 | 3 | 0 | 8 |
 | 2022 | 25 | 1 | 0 | 0 | 0 | 2 | 0 | 28 |
 | 2023 | 17 | 3 | 0 | 0 | 1 | 2 | 0 | 23 |
 | 2024 | 19 | 2 | 0 | 0 | 0 | 4 | 0 | 25 |
 | 2025 | 17 | 2 | 1 | 0 | 0 | 2 | 0 | 22 |
-| 2026 (YTD) | 9 | 2 | 0 | 0 | 0 | 2 | 0 | 13 |
+| 2026 (YTD) | 10 | 2 | 0 | 0 | 0 | 1 | 0 | 13 |
 
 Pediatric share of The Imaging Wire's radiology-AI stories, by year:
 
@@ -60,7 +60,7 @@ Pediatric share of The Imaging Wire's radiology-AI stories, by year:
 | 2023 | 857 | 17 | 2.0% |
 | 2024 | 1028 | 19 | 1.8% |
 | 2025 | 1073 | 17 | 1.6% |
-| 2026 (YTD) | 733 | 9 | 1.2% |
+| 2026 (YTD) | 809 | 10 | 1.2% |
 
 ![Pediatric radiology AI in the news](../figures/newsletter_watch.png)
 
@@ -72,30 +72,30 @@ Stories mentioning each company or tool, over all radiology-AI stories and the p
 
 | Company / tool | Radiology-AI stories | ...of which pediatric |
 |:--|---:|---:|
-| GE HealthCare | 225 | 10 |
+| GE HealthCare | 228 | 10 |
 | Nuance / Microsoft | 206 | 6 |
-| Qure.ai | 187 | 8 |
+| Qure.ai | 188 | 8 |
 | Blackford | 164 | 3 |
-| Siemens Healthineers | 153 | 3 |
-| DeepHealth / RadNet | 147 | 1 |
-| Philips | 141 | 8 |
-| Gleamer | 131 | 12 |
+| Siemens Healthineers | 155 | 3 |
+| DeepHealth / RadNet | 150 | 1 |
+| Philips | 140 | 8 |
+| Gleamer | 132 | 12 |
+| Lunit | 131 | 3 |
 | Google | 130 | 4 |
-| Lunit | 129 | 3 |
-| OpenAI / ChatGPT | 124 | 3 |
+| OpenAI / ChatGPT | 129 | 3 |
 | Arterys | 115 | 2 |
-| Bayer (Calantic) | 111 | 0 |
-| Aidoc | 110 | 0 |
-| Rad AI | 92 | 0 |
+| Aidoc | 111 | 0 |
+| Bayer (Calantic) | 110 | 0 |
+| Rad AI | 95 | 0 |
 | Annalise.ai | 86 | 1 |
 | Riverain | 83 | 0 |
 | Viz.ai | 81 | 0 |
 | Zebra / Nanox | 72 | 0 |
 | Canon Medical | 70 | 2 |
-| Enlitic | 68 | 0 |
+| Enlitic | 70 | 0 |
 | iCAD | 65 | 0 |
 | Nvidia | 58 | 2 |
-| Fujifilm | 52 | 3 |
+| Fujifilm | 53 | 3 |
 | Subtle Medical | 51 | 1 |
 
 ![Who the trade press talks about](../figures/newsletter_players.png)
@@ -107,16 +107,16 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
 | Topic | Stories |
 |:--|---:|
 | appendicitis / abdomen / ultrasound | 52 |
-| fetal / neonatal brain MRI | 39 |
-| funding / business | 37 |
-| regulatory / FDA clearance | 29 |
-| chest / pneumonia | 28 |
+| fetal / neonatal brain MRI | 40 |
+| funding / business | 36 |
+| regulatory / FDA clearance | 28 |
 | fracture / trauma / abuse | 26 |
-| CT dose / reconstruction | 23 |
-| cancer / oncology | 22 |
+| chest / pneumonia | 25 |
+| CT dose / reconstruction | 22 |
+| cancer / oncology | 21 |
 | bone age / skeletal maturity | 15 |
 | cardiac / echo | 11 |
-| scoliosis / MSK | 7 |
+| scoliosis / MSK | 6 |
 | LLMs / report generation | 3 |
 
 ## The stories (most recent first)
@@ -124,6 +124,8 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
 
 ### 2026
 
+- **2026-09-23** · The Imaging Wire · [Repeat MRI Scans Take Operational Toll](https://theimagingwire.com/newsletter/operational-toll-of-repeat-mri/) _[CT dose / reconstruction, fetal / neonatal brain MRI, funding / business]_  
+  …ncluded in the analysis, with the following findings…  4.8% of all MRI exams (4k) included at least one repeated sequence.  The highest repeat rate occurred in pediatrics and the lowest in breast MRI (9.9% and 3.5%, respectively).   Repeat acquisitions add…
 - **2026-08-25** · RSNA News · [AI Challenges Fuel Innovation Beyond the Leaderboard](https://www.rsna.org/news/2026/august/ai-challenges-fuel-innovation) _[bone age / skeletal maturity, fracture / trauma / abuse, chest / pneumonia, appendicitis / abdomen / ultrasound, funding / business]_  
   …ues from Brazil partnered with a team of computer scientists and AI engineers from Universidade Federal de Goiás in Brazil.  Dr. Kitamura describes RSNA’s 2017 Pediatric Bone Age Challenge as an exhilarating experience that combined earnest research and le…
 - **2026-08-16** · The Imaging Wire · [CT vs. MRI for Pediatric TBI, Helium Vulnerability, and Ditching the Disk](https://theimagingwire.com/newsletter/ct-vs-mri-for-pediatric-tbi-surveillance/)  
@@ -146,8 +148,6 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
   DL-Based CT Reduces Radiation Dose: New revelations on cancer risk from medical radiation have focused attention on dose reduction, especially for kids. In a new paper in European Journal of Radiology , researchers performed abdominal CT scans on 82 kids us…
 - **2026-01-28** · The Imaging Wire · [The Wire · AHA Publishes New Stroke Guidelines:](https://theimagingwire.com/newsletter/ct-lung-screening-for-non-smokers/) · paper: [Prabhakaran et al., 2026 (Stroke)](https://doi.org/10.1161/str.0000000000000513)  
   …ns of interest to the radiology community include a section on mobile stroke units (recommended), as well as the inclusion for the first time of guidelines for pediatric stroke (MRI is recommended for diagnosis). But the report declines to recommend the in…
-- **2026-01-28** · ESR / ECR · [Guerbet: Innovation and French Cooperation in the Spotlight at ECR 2026](https://www.myesr.org/guerbet-innovation-and-french-cooperation-in-the-spotlight-at-ecr-2026/) _[chest / pneumonia, CT dose / reconstruction, regulatory / FDA clearance, scoliosis / MSK]_  
-  …piclenol), our macrocyclic gadolinium-based contrast agent. If approved by the European Commission, Elucirem™ (gadopiclenol) will be indicated in adults and in children from birth, for contrast-enhanced magnetic resonance imaging (MRI) to improve detection…
 - **2026-01-07** · The Imaging Wire · [The Wire · BrightHeart Raises €11M:](https://theimagingwire.com/newsletter/top-2026-radiology-trends/) _[cardiac / echo, appendicitis / abdomen / ultrasound, regulatory / FDA clearance, funding / business]_  
   …ghtHeart Raises €11M: BrightHeart raised €11M ($12.9M) in a Series A round to further commercialize its AI technology for detecting congenital heart defects on prenatal ultrasound exams. The company has received five FDA clearances and is ramping up its pe…
 ### 2025
@@ -186,7 +186,7 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
   AI Detects Pediatric Epilepsy: In a new paper in JAMA Neurology , U.K. researchers developed a homegrown AI algorithm called MELD Graph to detect signs of epilepsy on pediatric bra…
 - **2025-02-14** · ESR / ECR · [Learn more about FUJIFILM’s latest innovations at ECR!](https://www.myesr.org/changing-mindsets-for-patients-and-the-planet/) _[cancer / oncology]_ · paper: [Iwan et al., 2020 (European Radiology)](https://doi.org/10.1007/s00330-020-07060-9)  
   …QUALITY  Learn about how reducing anxiety in the diagnostic process can make a huge difference to MRI patient wellbeing and to imaging results, especially with paediatric patients and those with claustrophobia.  “Claustrophobia is estimated to occur in 2.1…
-- **2025-02-06** · ESR / ECR · [Philips at #ECR2025: New AI-enabled systems, intelligent software, and imaging cloud services streamline radiology workflows, advance clinical insights](https://www.myesr.org/philips-at-ecr2025-new-ai-enabled-systems-intelligent-software-and-imaging-cloud-services-streamline-radiology-workflows-advance-clinical-insights/) _[CT dose / reconstruction, cardiac / echo, appendicitis / abdomen / ultrasound, regulatory / FDA clearance, funding / business]_  
+- **2025-02-06** · ESR / ECR · [Amsterdam, the Netherlands –](https://www.myesr.org/philips-at-ecr2025-new-ai-enabled-systems-intelligent-software-and-imaging-cloud-services-streamline-radiology-workflows-advance-clinical-insights/) _[CT dose / reconstruction, cardiac / echo, appendicitis / abdomen / ultrasound, regulatory / FDA clearance, funding / business]_  
   …ss the growing need for faster workflows and more efficient diagnostic processes. With over 100+ new image quality pre-sets for abdomen, vascular, small parts, pediatrics, and OB/GYN, both systems feature advanced automation and algorithms to deliver great…
 - **2025-02-02** · The Imaging Wire · [The Wire · Ultrasound AI Detects Fetal Defects:](https://theimagingwire.com/newsletter/pe-purchases-in-radiology/) _[fetal / neonatal brain MRI, cardiac / echo, appendicitis / abdomen / ultrasound, regulatory / FDA clearance]_  
   Ultrasound AI Detects Fetal Defects: BrightHeart’s AI algorithm for analyzing fetal ultrasound scans helped clinicians detect congenital heart defects. In a study presented at the Society…
@@ -305,7 +305,7 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
 - **2022-12-04** · The Imaging Wire · [The Wire · Pediatric Deprioritization:](https://theimagingwire.com/newsletter/rsna-2022-reflections-pediatric-deprioritization/) _[regulatory / FDA clearance]_  
   Pediatric Deprioritization: Most imaging AI solutions are only cleared for adult patients, and it appears that these adult AI solutions can inadvertently cause pediatric…
 - **2022-11-14** · ESR / ECR · [AI for radiological paediatric fracture assessment](https://www.myesr.org/ai-blog/artificial-intelligence-for-radiological-paediatric-fracture-assessment-a-systematic-review/) _[fracture / trauma / abuse]_  
-  …different appearances of the growing skeleton at different ages. In this systematic review, the authors reviewed the available literature on the use of AI for paediatric fracture detection. Additional Key points: Few articles (n=9) were available for revie…
+  …different appearances of the growing skeleton at different ages. In this systematic review, the authors reviewed the available literature on the use of AI for paediatric fracture detection.  Additional Key points:  Few articles (n=9) were available for rev…
 - **2022-10-23** · The Imaging Wire · [The Wire · Pediatric Thyroid Nodule Alternatives:](https://theimagingwire.com/newsletter/proactive-imaging-momentum-high-energy-spect-ct/) _[appendicitis / abdomen / ultrasound]_ · paper: [Yang et al., 2023 (American Journal of Roentgenology)](https://doi.org/10.2214/ajr.22.28231)  
   Pediatric Thyroid Nodule Alternatives: A Duke-led study highlighted TI-RADS and ultrasound AI’s advantages for classifying pediatric thyroid nodules , versus using radio…
 - **2022-10-16** · The Imaging Wire · [The Wire · Google’s Fetal Ultrasound AI:](https://theimagingwire.com/newsletter/comprehensive-brain-ct-ai-marrying-screenings/) _[fetal / neonatal brain MRI, appendicitis / abdomen / ultrasound]_ · paper: [Gomes et al., 2022 (Communications Medicine)](https://doi.org/10.1038/s43856-022-00194-5)  
@@ -368,7 +368,7 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
   …narrative reviews have the potential for bias, we hoped to minimise this risk by publishing our protocol. Furthermore, we are doing two “sister” reviews of the paediatric and adult literature; the paediatric paper is about to be submitted for peer review w…
 - **2021-04-19** · ESR / ECR · [Noise reduction approach in pediatric abdominal CT combining deep learning and dual-energy technique](https://www.myesr.org/ai-blog/noise-reduction-approach-in-pediatric-abdominal-ct-combining-deep-learning-and-dual-energy-technique/) _[CT dose / reconstruction, appendicitis / abdomen / ultrasound]_  
   …study aimed to evaluate the image quality of low iodine concentration, dual-energy CT (DECT) combined with a deep learning-based noise reduction technique for pediatric abdominal CT, compared with standard iodine concentration single-energy polychromatic C…
-- **2021-04-19** · ESR / ECR · [Article:](https://www.myesr.org/ai-blog/noise-reduction-approach-in-pediatric-abdominal-ct-combining-deep-learning-and-dual-energy-technique/) _[appendicitis / abdomen / ultrasound]_ · paper: [Lee et al., 2020 (European Radiology)](https://doi.org/10.1007/s00330-020-07349-9)  
+- **2021-04-19** · ESR / ECR · [Article:](https://www.myesr.org/ai-blog/noise-reduction-approach-in-pediatric-abdominal-ct-combining-deep-learning-and-dual-energy-technique/) _[appendicitis / abdomen / ultrasound]_  
   Article: Noise reduction approach in pediatric abdominal CT combining deep learning and dual-energy technique
 - **2021-03-19** · RSNA News · [RSNA To Host Webinar on Leveraging the Full Potential of AI](https://www.rsna.org/news/2021/march/radiologists-data-scientists-webinar) _[cancer / oncology]_  
   …d improve patient care.”  Other featured speakers include,   Marius George Linguraru, DPhil, MA, MSc , principal investigator in the Sheikh Zayed Institute for Pediatric Surgical Innovation at Children's National Hospital in Washington DC  Ronald M. Summer…
@@ -398,8 +398,8 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
 
 - **2019-12-23** · The Imaging Wire · [The Resource Wir e](https://theimagingwire.com/news/a-laser-ultrasound-first-breast-mri-radiomics-breakthrough/) _[appendicitis / abdomen / ultrasound, regulatory / FDA clearance]_ · paper: [Mullin, 2018 (Nature Medicine)](https://doi.org/10.1038/d41591-018-00003-4)  
   …etails the recent advances in Parkinson’s treatment, including the role of focused ultrasound treatment.   This Nuance video shares how Orlando’s Arnold Palmer Children’s Hospital used PowerShare to Ditch The Disk and improve patient care.  Did you know th…
-- **2019-12-19** · ESR / ECR · [AI shows potential in low-resource settings](https://www.myesr.org/ai-blog/ai-shows-potential-in-low-resource-settings/) _[chest / pneumonia, fetal / neonatal brain MRI, cancer / oncology, appendicitis / abdomen / ultrasound, funding / business]_  
-  …in your module to recognise what is your model for that age, and your module could suggest with AI which measurement is normal and which isn’t,” Malumba added. Foetal hydrocephalus, a condition that can only be confirmed with the help of diagnostic imaging…
+- **2019-12-19** · ESR / ECR · [Reducing maternal mortality](https://www.myesr.org/ai-blog/ai-shows-potential-in-low-resource-settings/) _[fetal / neonatal brain MRI, appendicitis / abdomen / ultrasound, funding / business]_  
+  …n your module to recognise what is your model for that age, and your module could suggest with AI which measurement is normal and which isn’t,” Malumba added.  Foetal hydrocephalus, a condition that can only be confirmed with the help of diagnostic imaging…
 - **2019-12-12** · The Imaging Wire · [The Resource Wire](https://theimagingwire.com/news/hardians-ai-roundup-siemens-new-cts-ai/) _[appendicitis / abdomen / ultrasound]_  
   …est ROI from their X-ray technology as radiography demands increase and budgets head the other direction.  This Nuance video shares how Orlando’s Arnold Palmer Children’s Hospital used PowerShare to #ditchthedisk and improve patient care.  The Focused Ultr…
 - **2019-12-11** · RSNA News · [Artificial Intelligence Boosts MRI Detection of ADHD](https://www.rsna.org/news/2019/november-december/ai-mri-for-adhd) _[fetal / neonatal brain MRI]_  
@@ -409,19 +409,17 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
 - **2019-11-25** · The Imaging Wire · [The Study](https://theimagingwire.com/news/pennpet-image-ensemble-ai/) _[bone age / skeletal maturity]_  
   The Study – The researchers used 48 submissions from the 2017 RSNA Pediatric Bone Age Machine Learning Challenge, creating various ensembles trained on 12,611 pediatric hand radiographs that were later tested on 200 test radiographs.
 - **2019-11-20** · RSNA News · [Ensembling Improves Machine Learning Model Performance](https://www.rsna.org/news/2019/november-december/ensembling-to-improve-model-performance) _[bone age / skeletal maturity]_  
-  November 20, 2019  Pan  Ensembles created using models submitted to the RSNA Pediatric Bone Age Machine Learning Challenge convincingly outperformed single-model prediction of bone age, according to a study published in Radiology: Artificial Inte…
+  November 20, 2019   Pan   Ensembles created using models submitted to the RSNA Pediatric Bone Age Machine Learning Challenge convincingly outperformed single-model prediction of bone age, according to a study published in Radiology: Artificial Inte…
 - **2019-08-22** · The Imaging Wire · [The Wire · University of Alberta spinoff, Medo.ai , shared an update on its still in-develo](https://theimagingwire.com/news/the-case-for-pocus-x-ray-shakeup-radiology-corporatization/) _[appendicitis / abdomen / ultrasound, scoliosis / MSK]_  
   …e 3D images from point-of-care ultrasound scans that are then uploaded for AI-based analysis. Medo.ai’s app will initially focus on diagnosing hip dysplasia in infants (easy to treat, but easy to miss) and the firm is already testing applications for other…
 - **2019-08-21** · RSNA News · [Quantitative Dynamic MRI Shows Promise for Children with Thoracic Insufficiency Syndrome](https://www.rsna.org/news/2019/august/thoracic-insufficiency-syndrome) _[chest / pneumonia, CT dose / reconstruction, scoliosis / MSK]_  
-  …the chest wall component of excursion overlaid in orange.  Tong, et al, Radiology 2019 © RSNA 2019  Study Highlights  Images from free-breathing dynamic MRI in pediatric patients with TIS (July 2009–August 2015) were retrospectively evaluated before and af…
-- **2019-07-15** · ESR / ECR · [Radiation dose in pregnancy](https://www.myesr.org/ai-blog/radiation-dose-in-pregnancy/) _[CT dose / reconstruction, funding / business]_  
-  Due to the high radiosensitivity of the fetus and embryo, diagnostic imaging procedures for pregnant patients raise health concerns. Therefore, the authors of this work set out to develop a methodology for…
-- **2019-07-04** · ESR / ECR · [AI-assisted education for rads: challenges and promises](https://www.myesr.org/ai-blog/ai-assisted-education-for-rads-challenges-and-promises/)  
-  …hair of the Radiology department and Vice Dean at Hadassah Hebrew University Medical Centre in Jerusalem, Israel. Personalised education “If we think about our children, schools haven’t changed that much in the last hundred years: children get up in the mo…
+  …he chest wall component of excursion overlaid in orange.  Tong, et al, Radiology 2019 © RSNA 2019   Study Highlights  Images from free-breathing dynamic MRI in pediatric patients with TIS (July 2009–August 2015) were retrospectively evaluated before and af…
+- **2019-07-04** · ESR / ECR · [Personalised education](https://www.myesr.org/ai-blog/ai-assisted-education-for-rads-challenges-and-promises/)  
+  Personalised education   “If we think about our children, schools haven’t changed that much in the last hundred years: children get up in the morning. They don’t want to get up in the morning. They go to school. T…
 - **2019-06-24** · The Imaging Wire · [The Imaging Wire · AI Benefits](https://theimagingwire.com/news/hologics-us-bid-image-segmentation-simplified-breast-mris-early-benefits/)  
   …ve potential time savings, the team hopes to make image segmentation more accessible in situations where sufficient training data is unavailable (e.g. uncommon pediatric brain conditions).
-- **2019-05-31** · ESR / ECR · [Artificial Intelligence: From Buzzword into Clinical Routine](https://www.myesr.org/ai-blog/artificial-intelligence-from-buzzword-into-clinical-routine/) _[chest / pneumonia, cancer / oncology, funding / business]_  
-  …Euros over a ten-year period. This is one of the findings of the “Sherlock in Health” [1] study, which concentrates on three particularly widespread diseases: childhood obesity, dementia, and breast cancer. As an evolutionary influence in healthcare, AI ha…
+- **2019-05-31** · ESR / ECR · [Artificial Intelligence: From Buzzword into Clinical Routine](https://www.myesr.org/ai-blog/artificial-intelligence-from-buzzword-into-clinical-routine/) _[cancer / oncology]_  
+  …uros over a ten-year period. This is one of the findings of the “ Sherlock in Health ” [1] study, which concentrates on three particularly widespread diseases: childhood obesity, dementia, and breast cancer. As an evolutionary influence in healthcare, AI h…
 - **2019-05-28** · The Imaging Wire · [The Wire · Frost & Sullivan reported that the global ultrasound market reached $6.12 billio](https://theimagingwire.com/news/hologic-meets-maria-dbt-doesnt-need-dm-questioning-mrs-progress/) _[fetal / neonatal brain MRI, cancer / oncology, appendicitis / abdomen / ultrasound, scoliosis / MSK]_  
   …ogy) will become more established by 2023, while AI applications will be increasingly common for premium ultrasound applications (e.g. detecting breast cancer, fetal image assessment, cardiology).
 - **2019-05-20** · The Imaging Wire · [The Wire · GE Healthcare and Boston Children’s Hospital are partnering to develop an AI-bas](https://theimagingwire.com/news/ai-not-a-threat-surprise-billing-targeted-ai-for-ug-rt/)  
@@ -457,7 +455,7 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
 - **2018-06-01** · RSNA News · [Standardized Data is Critical to Machine Learning](https://www.rsna.org/news/2018/june/standardized-data-is-critical-to-machine-learning) _[bone age / skeletal maturity, cancer / oncology, funding / business]_  
   …”  As a result, algorithms may not have a sufficient quantity of data sets to learn from, said Safwan Halabi, MD, clinical assistant professor of radiology and pediatric radiology at Stanford University, in Palo Alta, CA, and a member of the RSNA ML Challe…
 - **2018-02-07** · RSNA News · [RSNA ML Pediatric Bone Challenge Showcases Promising New Tools](https://www.rsna.org/news/2018/february/rsna-ml-pediatric-bone-challenge) _[bone age / skeletal maturity]_  
-  BY JENNIFER ALLYN  February 07, 2018  Flanders  Kalpathy Cramer  Halabi  Cicero  Bilbily  In designing an algorithm to predict skeletal age from pediatric hand x-rays, Mark Cicero, MD, and Alexander Bilbily, MD, demonstrated the potential of machine learnin…
+  BY JENNIFER ALLYN   February 07, 2018   Flanders   Kalpathy Cramer   Halabi   Cicero   Bilbily   In designing an algorithm to predict skeletal age from pediatric hand x-rays, Mark Cicero, MD, and Alexander Bilbily, MD, demonstrated the potential of machine…
 ### 2017
 
 - **2017-04-28** · RSNA News · [MRI Shows Early Brain Changes in Autistic Children](https://www.rsna.org/news/2017/april/mri_shows-early-brain-changes-in-autistic-children) _[fetal / neonatal brain MRI]_  

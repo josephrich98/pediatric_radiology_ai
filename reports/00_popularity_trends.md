@@ -2,14 +2,14 @@
 
 _Auto-generated from PubMed, PatentsView, DBLP, GitHub, and OpenAlex pulls. Counts reflect indexed records at collection time and undercount the most recent year (indexing/grant lag)._
 
-_Publication counts are **PubMed records plus preprints**: PubMed does not index arXiv and covers medRxiv only through the NIH preprint pilot, so the same queries, translated to arXiv API and Europe PMC (medRxiv) syntax, add the arXiv + medRxiv preprint layer (bioRxiv not searched): 4,777 radiology-AI and 130 pediatric preprints in 2025. The preprint query is an approximation (no MeSH expansion, stemming instead of truncation)._
+_Publication counts are **PubMed records plus preprints**: PubMed does not index arXiv and covers medRxiv only through the NIH preprint pilot, so the same queries, translated to arXiv API and Europe PMC (medRxiv) syntax, add the arXiv + medRxiv preprint layer (bioRxiv not searched): 4,781 radiology-AI and 131 pediatric preprints in 2025. The preprint query is an approximation (no MeSH expansion, stemming instead of truncation)._
 
 ## Headline
 
-- Radiology-AI publications grew from the 2008 baseline to **25608** records in 2025 (compound growth ≈ **23%/yr**).
+- Radiology-AI publications grew from the 2008 baseline to **25612** records in 2025 (compound growth ≈ **23%/yr**).
 - The AI share of all radiology publishing rose from **0.8%** to **13.5%**.
-- Pediatric work is **9.7%** of radiology AI in 2025 — a small but growing slice (**2478** records).
-- 2026 year-to-date (collected 2026-09-17): **19966** radiology-AI records, of which **1982** (9.9%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
+- Pediatric work is **9.7%** of radiology AI in 2025 — a small but growing slice (**2479** records).
+- 2026 year-to-date (collected 2026-10-01): **20379** radiology-AI records, of which **1990** (9.8%) are pediatric. Partial-year counts are not comparable to full years and lag indexing.
 
 ## Publication trend (PubMed)
 
@@ -42,9 +42,9 @@ pediatric_radiology_ai:
 | 2021 | 182338 | 12437 | 6.8% | 994 | 8.0% |
 | 2022 | 174037 | 14984 | 8.6% | 1096 | 7.3% |
 | 2023 | 166503 | 17105 | 10.3% | 1284 | 7.5% |
-| 2024 | 174299 | 20251 | 11.6% | 1805 | 8.9% |
-| 2025 | 190297 | 25608 | 13.5% | 2478 | 9.7% |
-| 2026 (YTD) | 144281 | 19966 | 13.8% | 1982 | 9.9% |
+| 2024 | 174300 | 20251 | 11.6% | 1805 | 8.9% |
+| 2025 | 190306 | 25612 | 13.5% | 2479 | 9.7% |
+| 2026 (YTD) | 144952 | 20379 | 14.1% | 1990 | 9.8% |
 
 ![Radiology AI publication trend](../figures/radiology_ai_trend.png)
 
@@ -56,8 +56,8 @@ pediatric_radiology_ai:
 
 - Recall: 26/30 landmark papers retrieved (86.7%); pediatric subset 11/11.
   Missed: nnU-Net (Nat Methods 2021); Litjens DL survey (Med Image Anal 2017); MedSAM (Nat Commun 2024); Kermany OCT / chest X-ray (Cell 2018) (methods papers naming no modality, or cross-domain papers removed by the non-radiology-imaging exclusion).
-- radiology_ai (2025): headline 20,831 records, strict 18,217; 76.3% of the headline count is confirmed by explicit title/abstract wording.
-- pediatric_radiology_ai (2025): headline 2,348 records, strict 1,898; 71.8% of the headline count is confirmed by explicit title/abstract wording.
+- radiology_ai (2025): headline 20,819 records, strict 18,212; 76.3% of the headline count is confirmed by explicit title/abstract wording.
+- pediatric_radiology_ai (2025): headline 2,343 records, strict 1,898; 72.0% of the headline count is confirmed by explicit title/abstract wording.
 - Term audit: bare `ultrasound` is auto-mapped to the *diagnostic imaging* MeSH subheading and bare `tomography` to a tree that includes optical coherence tomography. Query version 1 therefore counted about two-thirds of radiology-AI papers as ultrasound; version 2 (current) fields every modality term and excludes ophthalmic, dental, pathology and endoscopic imaging.
 
 Sample of records returned only by the headline (MeSH-expanded) query:
@@ -66,14 +66,14 @@ Sample of records returned only by the headline (MeSH-expanded) query:
 - Spatial radiomics-based interpretable multimodal machine learning model enhances outcomes prediction for minor stroke: A multicenter cohort study. (Journal of advanced research)
 - Evaluating the Performance and Fragility of Large Language Models on the Self-Assessment for Neurological Surgeons. (Neurosurgery)
 - GN-Net: A Geometric and Neighborhood-Aware Network for Predicting Intracranial Aneurysm Rupture Risk and Assisting Clinical Decision-Making. (Interdisciplinary sciences, computational life sciences)
+- PoCUS-first versus CT-only for non-traumatic abdominal pain: a propensity score-weighted cohort study on ED resource utilization. (Internal and emergency medicine)
 - Artificial intelligence in cerebral cavernous malformations: a scoping review. (Neurological research)
+- The Ups and Downs of Brain Stress: Extending the Triple Network Hypothesis. (Biological psychiatry. Cognitive neuroscience and neuroimaging)
 - Artificial Intelligence in Palliative Care: A Scoping Review of Current Applications, Challenges, and Future Directions. (The American journal of hospice & palliative care)
-- The neurophysiological correlates of altruism: A scoping review of fMRI, EEG, and autonomic studies. (Cognitive, affective & behavioral neuroscience)
-- Angiographic phenotypes predict FFR/iFR discordance in severe aortic stenosis: A cluster analysis. (Cardiovascular revascularization medicine : including molecular interventions)
-- Academic Journal Podcast and Generative Artificial Intelligence: Introducing KJR SummaryCast. (Korean journal of radiology)
 - Advancing Early Detection of Chronic Obstructive Pulmonary Disease Using Generative AI. (Radiology. Artificial intelligence)
 - Quantitative Pharmacokinetic Mapping with AI: Toward More Generalizable Response Prediction in Breast Cancer MRI. (Radiology. Artificial intelligence)
 - Artificial Intelligence-Based Multimodal Prediction of Postoperative Adjuvant Immunotherapy Benefit in Urothelial Carcinoma: Results From the Phase III, Multicenter, Randomized, IMvigor010 Trial. (MedComm)
+- Automatic quantitative analysis of atherosclerotic aortic plaques in patients with embolic cerebral infarction using deep learning. (The Korean journal of internal medicine)
 
 ## Where the AI work sits, by modality
 
@@ -81,7 +81,7 @@ Sample of records returned only by the headline (MeSH-expanded) query:
 
 | Modality | Radiology-AI records | Share of radiology AI |
 |:--|---:|---:|
-| MRI | 38950 | 28.2% |
+| MRI | 38950 | 28.1% |
 | CT | 33368 | 24.1% |
 | ultrasound | 13579 | 9.8% |
 | x-ray / radiography | 11886 | 8.6% |
@@ -96,9 +96,9 @@ Sample of records returned only by the headline (MeSH-expanded) query:
 
 | Task | Radiology-AI records | Share of radiology AI |
 |:--|---:|---:|
-| detection / diagnosis | 52222 | 37.8% |
-| outcome prediction | 29595 | 21.4% |
-| segmentation | 26645 | 19.3% |
+| detection / diagnosis | 52222 | 37.7% |
+| outcome prediction | 29595 | 21.3% |
+| segmentation | 26645 | 19.2% |
 | measurement / quantification | 19489 | 14.1% |
 | reconstruction / imputation | 16452 | 11.9% |
 | workflow / non-interpretive | 14094 | 10.2% |
@@ -152,7 +152,7 @@ Task categories are organised by what the model *produces*:
 | outcome prediction | 2439 | 19.9% |
 | segmentation | 2331 | 19.0% |
 | workflow / non-interpretive | 1595 | 13.0% |
-| reconstruction / imputation | 1208 | 9.9% |
+| reconstruction / imputation | 1208 | 9.8% |
 | foundation model / vision-language | 389 | 3.2% |
 | report generation / LLM | 322 | 2.6% |
 | agent / autonomous | 41 | 0.3% |
@@ -193,27 +193,6 @@ Task categories are organised by what the model *produces*:
 
 ## Conference and society attention to the domain
 
-### Machine-learning / computer-vision venues — radiology share
-
-**How obtained.** For each venue-year, a title sample (up to 500 papers) was pulled from DBLP and labelled with radiology / medical-imaging title keywords. The cell is the share of that venue's papers that are about medical imaging — a conservative lower bound, since title-only labelling misses papers that do not name a modality. ICCV is biennial (odd years).
-
-_Across every venue-year sampled, medical imaging is roughly 0-3% of these general ML/CV venues — a small, flat share of a rapidly growing whole._
-
-| Year | CVPR | ICCV | ICLR | ICML | NeurIPS |
-|---:|---:|---:|---:|---:|---:|
-| 2016 | 1.0% | – | 0.0% | 0.0% | 0.0% |
-| 2017 | 0.0% | 0.0% | 0.0% | 0.2% | 0.4% |
-| 2018 | 0.2% | – | 0.0% | 0.0% | 0.0% |
-| 2019 | 0.4% | 0.0% | 0.0% | 0.0% | 0.0% |
-| 2020 | 1.2% | – | 0.0% | 0.0% | 0.6% |
-| 2021 | 0.4% | 0.8% | 0.0% | 0.2% | 0.2% |
-| 2022 | 0.4% | – | 0.2% | 0.0% | 0.4% |
-| 2023 | 1.2% | 1.6% | 0.2% | 0.2% | 0.6% |
-| 2024 | 2.4% | – | 0.2% | 0.0% | 0.8% |
-| 2025 | 2.4% | 3.8% | 0.4% | 0.2% | 0.8% |
-
-![Radiology share of ML venues](../figures/ml_venue_radiology_share.png)
-
 ### Radiology societies — AI share of their journals
 
 **How obtained.** RSNA, ACR, ECR, and SPR meetings have no machine-readable program, so each society's engagement with AI is proxied by the AI share of its flagship journals in PubMed (RSNA: Radiology/RadioGraphics/Radiology:AI; ACR: JACR; ECR: European Radiology/Insights into Imaging; SPR: Pediatric Radiology).
@@ -230,7 +209,7 @@ _Across every venue-year sampled, medical imaging is roughly 0-3% of these gener
 | 2023 | 13.1% | 31.7% | 22.0% | 7.8% |
 | 2024 | 11.3% | 30.3% | 24.2% | 7.5% |
 | 2025 | 16.2% | 30.3% | 24.4% | 9.4% |
-| 2026 (YTD) | 20.0% | 31.8% | 24.5% | 16.0% |
+| 2026 (YTD) | 20.4% | 31.5% | 24.5% | 17.6% |
 
 ![AI share of radiology societies](../figures/society_ai_share.png)
 

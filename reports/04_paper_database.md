@@ -1,10 +1,10 @@
 # Pediatric radiology AI: paper database
 
-Generated 2026-09-17 from `data/processed/pedrad_paper_db.csv`.
+Generated 2026-10-01 from `data/processed/pedrad_paper_db.csv`.
 
 This table is the corpus of the systematic review (`reports/05_review_manuscript.md`): the 3,496 included primary studies, of which 816 name a model or product. It is not a selection of the literature — no citation floor is applied — so every proportion here is a proportion of the review's corpus and can be quoted next to the manuscript without reconciliation.
 
-6,995 records were retrieved and 393 conference proceedings set aside by the publication-form criterion, leaving 6,602 screened. 2,650 were screened out as adult-only, non-radiologic or without an AI component and 456 were in scope but were reviews, editorials or guidelines, which the eligibility criteria exclude. That leaves the 3,496 included primary studies in this table (3,122 from PubMed, 365 from Embase, 9 from OpenAlex).
+7,010 records were retrieved and 407 conference proceedings set aside by the publication-form criterion, leaving 6,603 screened. 2,651 were screened out as adult-only, non-radiologic or without an AI component and 456 were in scope but were reviews, editorials or guidelines, which the eligibility criteria exclude. That leaves the 3,496 included primary studies in this table (3,122 from PubMed, 365 from Embase, 9 from OpenAlex).
 
 Every screened record, including the excluded ones and the coded reason each was excluded, stays in `data/processed/pedrad_paper_db.json`; that store, not this table, is what an audit of the screening decisions reads.
 

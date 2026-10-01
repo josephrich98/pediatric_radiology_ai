@@ -1,6 +1,6 @@
 # Landscape analysis: reproducible supplementary tables
 
-Generated 2026-09-11 from **3,496 included primary-study records**; search cutoff September 9, 2026.
+Generated 2026-10-01 from **3,496 included primary-study records**; search cutoff September 9, 2026.
 
 Run `PYTHONPATH=. python scripts/review_stats.py` then `PYTHONPATH=. python scripts/build_landscape_review.py`. The latter verifies exact membership against the shared cohort and writes the source CSV SHA-256 to `data/processed/review_landscape_stats.json`.
 
