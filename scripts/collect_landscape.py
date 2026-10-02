@@ -19,15 +19,18 @@ from __future__ import annotations
 
 import re
 
-from pedrad_ai import cache, conferences, config, github_repos, semantic_scholar, utils
+from pedrad_ai import cache, conferences, config, github_repos, pubmed, semantic_scholar, utils
 
 def _is_relevant(paper: dict, pediatric: bool = False) -> bool:
     """Title-level filter (see config.PAPER_MEDICAL_SIGNAL / PAPER_EXCLUDE_DOMAIN).
 
     The pediatric list must actually be pediatric: the union search otherwise
-    floats in highly-cited adult papers (TotalSegmentator, etc.).
+    floats in highly-cited adult papers (TotalSegmentator, etc.). Reviews,
+    surveys and meta-analyses are dropped from every list.
     """
     title = paper.get("title") or ""
+    if semantic_scholar.is_review(paper):
+        return False
     if not conferences.is_radiology_paper(title):
         return False
     # Semantic Scholar occasionally carries a wrong year; a DOI that embeds a
@@ -40,6 +43,20 @@ def _is_relevant(paper: dict, pediatric: bool = False) -> bool:
     return True
 
 
+def _with_pubmed_types(papers: list[dict]) -> list[dict]:
+    """Attach PubMed publication types to every paper that has a PMID, so the
+    review filter uses PubMed's typing rather than Semantic Scholar's."""
+    types = pubmed.publication_types([p["pmid"] for p in papers if p.get("pmid")])
+    for p in papers:
+        if p.get("pmid") and str(p["pmid"]) in types:
+            p["pubmed_types"] = types[str(p["pmid"])]
+    return papers
+
+
+def _search(queries: list[str], start: int, end: int) -> list[dict]:
+    return _with_pubmed_types(semantic_scholar.union_search(queries, start, end))
+
+
 def collect_papers() -> None:
     # Union of modality/task-specific searches (Semantic Scholar bulk API, which
     # indexes arXiv / medRxiv preprints and has no daily budget), so landmark papers whose
@@ -48,10 +65,15 @@ def collect_papers() -> None:
         "radiology_ai": config.RADIOLOGY_AI_QUERIES,
         "pediatric_radiology_ai": config.PEDIATRIC_RADIOLOGY_AI_QUERIES,
     }
+    # The pediatric pool also takes the general queries: a pediatric paper whose
+    # title says "baby" or "infant" but whose abstract matches none of the
+    # pediatric queries (BIBSNet) is still found, and the title rule decides.
+    query_sets["pediatric_radiology_ai"] = (config.PEDIATRIC_RADIOLOGY_AI_QUERIES
+                                            + config.RADIOLOGY_AI_QUERIES)
     for name, queries in query_sets.items():
         print(f"Semantic Scholar: top-cited union ({len(queries)} queries) for {name!r}...")
         is_ped = name == "pediatric_radiology_ai"
-        papers = semantic_scholar.union_search(queries, config.START_YEAR, config.END_YEAR)
+        papers = _search(queries, config.START_YEAR, config.END_YEAR)
         papers = [p for p in papers if _is_relevant(p, pediatric=is_ped)][:50]
         utils.save_json(papers, config.PROCESSED_DIR / f"top_papers_{name}.json")
         if papers:
@@ -59,7 +81,7 @@ def collect_papers() -> None:
         # Per-era lists: citation counts favor old papers, so the recent era is
         # ranked on its own (top_papers_<name>_<era>.json, era label with '-').
         for label, start, end in config.ERAS:
-            era = semantic_scholar.union_search(queries, start, end)
+            era = _search(queries, start, end)
             era = [p for p in era if _is_relevant(p, pediatric=is_ped)][:50]
             utils.save_json(era, config.PROCESSED_DIR / f"top_papers_{name}_{label}.json")
             if era:
@@ -68,7 +90,7 @@ def collect_papers() -> None:
         # within one publication year raw citations are comparable, and the
         # slides show the FWCI next to them.
         for year in range(config.ERAS[-1][1], config.END_YEAR + 1):
-            yr = semantic_scholar.union_search(queries, year, year)
+            yr = _search(queries, year, year)
             yr = [p for p in yr if _is_relevant(p, pediatric=is_ped)][:50]
             utils.save_json(yr, config.PROCESSED_DIR / f"top_papers_{name}_{year}.json")
             if yr:

@@ -352,6 +352,23 @@ def problem_counts(
     return out
 
 
+def publication_types(pmids: list[str]) -> dict[str, list[str]]:
+    """PMID -> PubMed publication types (ESummary ``pubtype``), 200 ids a call."""
+    out: dict[str, list[str]] = {}
+    ids = sorted({str(p) for p in pmids if p})
+    pause = 0.12 if config.NCBI_API_KEY else 0.34
+    for i in range(0, len(ids), 200):
+        params = _base_params()
+        params.update({"id": ",".join(ids[i:i + 200]), "retmode": "json"})
+        try:
+            res = utils.http_get_json(ESUMMARY, params, pause=pause).get("result") or {}
+        except Exception:
+            continue
+        for pmid in res.get("uids") or []:
+            out[pmid] = list((res.get(pmid) or {}).get("pubtype") or [])
+    return out
+
+
 def pmid_for_doi(doi: str) -> str | None:
     """Resolve a DOI to a PMID via ESearch's [doi] field (None if not indexed)."""
     params = _base_params()

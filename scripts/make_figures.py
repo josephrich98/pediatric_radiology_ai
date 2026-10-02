@@ -53,6 +53,19 @@ def _save(fig, name):
     print(f"  wrote {name}")
 
 
+def _slide_type(ax, base=13):
+    """Larger type for the charts the deck shows full-frame (2026-10: they read
+    too small from the back of the room). Ticks, axis labels, title, legend."""
+    ax.tick_params(labelsize=base - 1)
+    ax.xaxis.label.set_size(base)
+    ax.yaxis.label.set_size(base)
+    ax.title.set_size(base + 1)
+    leg = ax.get_legend()
+    if leg:
+        for t in leg.get_texts():
+            t.set_fontsize(base - 1.5)
+
+
 def _style(ax):
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(axis="y", color="#e3e3e3", linewidth=0.6)
@@ -192,10 +205,10 @@ def crosstab_figure(tab, rows_are, title, fname, exclude_rows=()):
                 continue
             ax.barh(i, w, left=left, color=col_color[c], hatch=col_hatch.get(c), edgecolor="white", linewidth=0.8,
                     label=c if i == len(order) - 1 else None)
-            if w > 3.5:
-                ax.text(left + w / 2, i, f"{100 * v / s:.0f}%", ha="center", va="center", fontsize=7, color="white")
+            if w > 4.5:
+                ax.text(left + w / 2, i, f"{100 * v / s:.0f}%", ha="center", va="center", fontsize=10, color="white")
             left += w
-        ax.text(share + 0.4, i, f"{share:.0f}%", va="center", fontsize=9)
+        ax.text(share + 0.4, i, f"{share:.0f}%", va="center", fontsize=12)
     ax.set_yticks(list(y))
     ax.set_yticklabels(order)
     ax.set_xlabel("Percentage of papers")
@@ -204,6 +217,7 @@ def crosstab_figure(tab, rows_are, title, fname, exclude_rows=()):
     ax.set_xlim(0, max(100 * row_tot.get(r, 0) / total for r in order) * 1.12 + 3)
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels, fontsize=7.5, loc="lower right", frameon=False, ncol=1)
+    _slide_type(ax, 14)
     _save(fig, fname)
 
 
@@ -219,7 +233,7 @@ def problems_figure(prob, fname="ped_problems.png"):
     eras = [e["label"] for e in prob["eras"]]
     totals = prob["totals"]
     rows = sorted(prob["counts"].items(), key=lambda kv: kv[1].get(eras[-1], 0))
-    fig, ax = plt.subplots(figsize=(10, 6.4))
+    fig, ax = plt.subplots(figsize=(13, 7.8))
     h = 0.8 / len(eras)
     era_colors = [GRAY, GREEN, BLUE]
     for j, era in enumerate(eras):
@@ -228,15 +242,16 @@ def problems_figure(prob, fname="ped_problems.png"):
         ax.barh(ys, vals, height=h, color=era_colors[j % len(era_colors)], label=f"{era} (n = {totals.get(era, 0):,})")
         for y, v in zip(ys, vals):
             share = 100 * v / (totals.get(era) or 1)
-            ax.text(v + max(vals) * 0.01, y, f"{v:,} ({share:.0f}%)", va="center", fontsize=6.5)
+            ax.text(v + max(vals) * 0.01, y, f"{v:,} ({share:.0f}%)", va="center", fontsize=8)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([r for r, _ in rows], fontsize=8)
     src = "PubMed + preprints" if prob.get("preprint_totals") else "PubMed"
-    ax.set_xlabel(f"Pediatric radiology-AI papers naming the problem ({src}, title/abstract)")
-    ax.set_title("Which clinical problems pediatric radiology AI addresses, by era")
+    ax.set_xlabel(f"Pediatric radiology-AI papers naming the problem\n({src}, title/abstract)")
+    ax.set_title("Clinical problems addressed, by era")
     ax.spines[["top", "right"]].set_visible(False)
     ax.set_xlim(0, max(c.get(e, 0) for _, c in rows for e in eras) * 1.2)
     ax.legend(frameon=False, loc="lower right", fontsize=8)
+    _slide_type(ax, 13)
     _save(fig, fname)
 
 
@@ -532,7 +547,9 @@ def commercial_problem_figure(recs, fname="commercial_problems.png"):
     rows = [(k, v) for k, v in data["counts"].items()]
     if not rows:
         return
-    rows.sort(key=lambda kv: kv[1]["all"])
+    # Ordered by the pediatric series, largest at the top (barh draws index 0
+    # at the bottom); the whole-panel count breaks ties.
+    rows.sort(key=lambda kv: (kv[1]["pediatric"], kv[1]["all"]))
     tot_all, tot_ped = data["total"], data["total_pediatric"] or 1
     # Wide and short: the frame is 16:9, and a tall chart shrinks to a column
     # of unreadable type when it is scaled to the frame's height.
@@ -547,18 +564,19 @@ def commercial_problem_figure(recs, fname="commercial_problems.png"):
         ax.barh(ys, vals, height=h, color=color, label=label)
         for y, v in zip(ys, vals):
             ax.text(v + max(c["all"] for _, c in rows) * 0.01, y,
-                    f"{v:,} ({100 * v / total:.0f}%)", va="center", fontsize=6.5)
+                    f"{v:,} ({100 * v / total:.0f}%)", va="center", fontsize=9)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([r for r, _ in rows], fontsize=8)
     un = data["unassigned"]
     ax.set_xlabel(
         "FDA-authorized AI-enabled devices, Radiology panel\n"
         f"(a further {un['all']:,} devices, {un['pediatric']:,} of them pediatric-labeled, name no\n"
-        "clinical problem in the device name or product code and are not shown)", fontsize=8.5)
+        "clinical problem in the device name or product code and are not shown)")
     ax.set_title("Which clinical problems commercial radiology AI addresses")
     ax.spines[["top", "right"]].set_visible(False)
     ax.set_xlim(0, max(c["all"] for _, c in rows) * 1.25)
     ax.legend(frameon=False, loc="lower right", fontsize=8)
+    _slide_type(ax, 13)
     _save(fig, fname)
 
 
@@ -697,7 +715,7 @@ def _place_labels(ax, points, fontsize=7.0):
 
 
 def _journal_scatter(rows, *, upto, since, appear_at, xlim, ylim, impact_label,
-                     title, subtitle=None, fontsize=7.0):
+                     title, subtitle=None, fontsize=9.5):
     """One frame of the scatter. ``rows`` is already the plotted universe."""
     pts = []
     for r in rows:
@@ -721,7 +739,7 @@ def _journal_scatter(rows, *, upto, since, appear_at, xlim, ylim, impact_label,
     if title:
         ax.set_title(title, loc="left")
     if subtitle:
-        ax.set_title(subtitle, loc="right", fontsize=11, color="0.35")
+        ax.set_title(subtitle, loc="right", fontsize=13, color="0.35")
     # A log axis labelled only at 1 and 10 gives the reader nothing to place a
     # point against, and this range spans barely one decade: label the halves.
     lo, hi = xlim
@@ -733,6 +751,7 @@ def _journal_scatter(rows, *, upto, since, appear_at, xlim, ylim, impact_label,
     ax.grid(color="#e8e8e8", linewidth=0.6)
     ax.set_axisbelow(True)
     ax.legend(loc="upper left", frameon=False, fontsize=8)
+    _slide_type(ax, 13)
     if pts:
         _place_labels(ax, [(p[0], p[1], p[2]) for p in pts], fontsize=fontsize)
     return fig

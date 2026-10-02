@@ -1,0 +1,29 @@
+Store: 6995 screened papers, 4227 in the database
+Searching for candidates, 2024-2026...
+    conference papers: 1200 works (1200 new)
+    Lecture Notes in Computer Science: 245 works (103 new)
+Candidates: 5137 records identified, no impact floor (787 preprints, 1214 conference papers) — eligibility is decided at screening
+Outstanding: 1958 papers not yet read under prompt v1
+Fetching 250 records with abstracts...
+  66 of them have no abstract in PubMed (title-only records)
+Reading 250 abstracts with claude-sonnet-5 (effort=low, 4 at a time, ~$2.20)...
+  25/250  in:0 out:0 err:25
+  50/250  in:0 out:0 err:50
+  75/250  in:0 out:0 err:75
+  100/250  in:0 out:0 err:100
+  125/250  in:0 out:0 err:125
+  150/250  in:0 out:0 err:150
+  175/250  in:0 out:0 err:175
+  200/250  in:0 out:0 err:200
+  225/250  in:0 out:0 err:225
+  250/250  in:0 out:0 err:250
+Read 250 papers: 0 added, 0 screened out, 250 failed
+Tokens: 0 in (0 from cache), 0 out (~$0.00)
+
+3,496 included primary studies in the database (7,245 retrieved, 559 conference, 2,734 screened out, 456 non-primary)
+  sources: PubMed 3,122, Embase 365, OpenAlex 9
+  with a normalized impact: 1,669   top decile (14.11x average and up): 167
+  named models: 816   with a code URL: 92
+  release: unclear 2957, unreleased 212, open-source 168, commercial 159
+  modality: MRI 1590, ultrasound 828, x-ray / radiography 676, CT 325, nuclear / PET 53, other 45
+Wrote data/processed/pedrad_paper_db.json, data/processed/pedrad_paper_db.csv, data/processed/pedrad_paper_db_summary.json, reports/04_paper_database.md

@@ -179,6 +179,8 @@ REPO_NOTES: dict[str, tuple[str, str]] = {
 # https://github.com/MIC-DKFZ/nnUNet
 # https://doi.org/10.1038/s41467-024-44824-z
 # https://project-monai.github.io/MONAI/
+# https://huggingface.co/nvidia/NV-Reason-CT (checked 2026-09-30)
+# https://arxiv.org/abs/2609.27511
 WORTH_KNOWING: list[tuple[str, str, str]] = [
     ("Pediatric CT reconstruction (Brady et al., Radiology 2021)", "paper", "a concrete dose-reduction application: lower dose with improved image quality in the studied protocols"),
     ("RSNA Pediatric Bone Age Challenge (2017)", "benchmark / dataset", "a landmark pediatric benchmark; useful for understanding automated bone-age accuracy and its limits"),
@@ -190,6 +192,7 @@ WORTH_KNOWING: list[tuple[str, str, str]] = [
     ("nnU-Net", "research framework", "a strong baseline for training segmentation models; ask whether a new method improves on an appropriate comparator"),
     ("MedSAM / segment-anything models", "research models", "prompt-guided contours can assist annotation; radiologists still need to review and correct the output"),
     ("MONAI", "research framework", "infrastructure for imaging-AI development; useful when collaborating with a research team, rather than a ready-to-use diagnostic tool"),
+    ("NVIDIA NV-Reason-CT (2026)", "open research model", "a 3D CT vision-language model that drafts chest / abdominal CT findings with step-by-step reasoning and answers questions; open weights, research use only, not FDA-cleared, and no pediatric data or age range reported"),
 ]
 
 

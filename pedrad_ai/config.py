@@ -89,21 +89,34 @@ _RADIOLOGY_TERMS = (
     'colonoscop*[tiab] OR microscop*[tiab]))'
 )
 
-# Pediatric terms.
+# Pediatric terms. ``baby``/``babies`` are fielded: bare, PubMed maps them to
+# the Infant MeSH heading, which would pull in any paper indexed as infant.
 _PEDIATRIC_TERMS = (
     '(pediatric* OR paediatric* OR child* OR infant* OR neonat* OR adolescen* '
-    'OR "children\'s hospital")'
+    'OR baby[tiab] OR babies[tiab] OR "children\'s hospital")'
 )
+
+# Secondary literature is left out of the publication counts (2026-10): a
+# review re-counts primary work, and the journal, modality/task and clinical-
+# problem views are meant to describe what was built and tested. Applied to the
+# radiology series only; ``all_ai`` is a context series and also feeds the
+# society AI-fraction, whose denominator has no type filter.
+NOT_REVIEW = 'NOT ("Review"[pt] OR "Systematic Review"[pt] OR "Meta-Analysis"[pt])'
+
+
+def _primary(query: str) -> str:
+    return f"(({query}) {NOT_REVIEW})"
+
 
 QUERIES: dict[str, str] = {
     # The whole field, as a denominator.
-    "all_radiology": _RADIOLOGY_TERMS,
+    "all_radiology": _primary(_RADIOLOGY_TERMS),
     # Radiology AI: the numerator for "how popular is radiology AI".
-    "radiology_ai": f"{_RADIOLOGY_TERMS} AND {_AI_TERMS}",
+    "radiology_ai": _primary(f"{_RADIOLOGY_TERMS} AND {_AI_TERMS}"),
     # Pediatric radiology overall (denominator for the pediatric fraction).
-    "pediatric_radiology": f"{_RADIOLOGY_TERMS} AND {_PEDIATRIC_TERMS}",
+    "pediatric_radiology": _primary(f"{_RADIOLOGY_TERMS} AND {_PEDIATRIC_TERMS}"),
     # The intersection we ultimately care about.
-    "pediatric_radiology_ai": (
+    "pediatric_radiology_ai": _primary(
         f"{_RADIOLOGY_TERMS} AND {_AI_TERMS} AND {_PEDIATRIC_TERMS}"
     ),
     # All AI, to put medical imaging AI in context.
@@ -435,6 +448,9 @@ AI_TITLE_KEYWORDS = [
 PEDIATRIC_TITLE_KEYWORDS = [
     "pediatric", "paediatric", "child", "infant", "neonat", "adolescent",
     "fetal", "foetal", "newborn", "bone age",
+    # Whole-word matching: plurals and derived forms need their own entries.
+    "children", "childhood", "infants", "neonatal", "neonate", "neonates",
+    "adolescents", "adolescence", "newborns", "fetus", "fetuses", "baby", "babies",
 ]
 
 # --------------------------------------------------------------------------- #
@@ -1224,7 +1240,7 @@ PAPER_DB_START_YEAR = 2015
 _PEDIATRIC_TERMS_TIAB = (
     "(pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR "
     "neonat*[tiab] OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR "
-    "newborn*[tiab] OR preterm[tiab] OR \"children's hospital\"[tiab])"
+    "newborn*[tiab] OR preterm[tiab] OR baby[tiab] OR babies[tiab] OR \"children's hospital\"[tiab])"
 )
 PAPER_DB_QUERY = f"{STRICT_QUERIES['radiology_ai']} AND {_PEDIATRIC_TERMS_TIAB}"
 
@@ -1542,7 +1558,7 @@ PAPER_DB_CODE_HOSTS = [
 # enough to place it among the top publishers on the chart. Counting queries are
 # left alone so the headline series stay comparable across runs.
 JOURNAL_QUERY = (
-    f'{PAPER_DB_QUERY} NOT ("Retracted Publication"[pt] OR "Retraction of Publication"[pt])'
+    f'{PAPER_DB_QUERY} NOT ("Retracted Publication"[pt] OR "Retraction of Publication"[pt]) {NOT_REVIEW}'
 )
 JOURNAL_START_YEAR = 2015
 JOURNAL_END_YEAR = END_YEAR

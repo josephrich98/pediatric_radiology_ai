@@ -1,8 +1,8 @@
 {
-  "generated_on": "2026-09-11",
+  "generated_on": "2026-09-30",
   "search_cutoff": "2026-09-09",
   "source_csv": "data/processed/pedrad_paper_db.csv",
-  "source_sha256": "9e7dbc1d5f5c963ea4cf0a21672fabd851f48141cd04598e481005e594989fff",
+  "source_sha256": "90035c3f26b26f22a2fe2081b130ec6273e97b6646a7e034a0e22176d3a731f8",
   "definitions": {
     "topic_fields": [
       "title",
@@ -56,49 +56,50 @@
     "interpretation": "Exploratory, overlapping text mentions, not adjudicated diseases or confirmed dataset reuse; no match is not proof of absence."
   },
   "all": {
-    "n": 3496,
+    "n": 3528,
     "modality": {
-      "MRI": 1590,
-      "ultrasound": 828,
-      "x-ray / radiography": 676,
-      "CT": 325,
+      "MRI": 1604,
+      "ultrasound": 837,
+      "x-ray / radiography": 685,
+      "CT": 326,
       "nuclear / PET": 53,
-      "other": 45,
+      "other": 46,
       "multiple": 43,
-      "fluoroscopy": 13
+      "fluoroscopy": 13,
+      "mammography": 1
     },
     "task": {
-      "detection / diagnosis": 1337,
-      "measurement / quantification": 838,
-      "outcome prediction": 683,
-      "segmentation": 662,
-      "reconstruction / imputation": 277,
+      "detection / diagnosis": 1353,
+      "measurement / quantification": 849,
+      "outcome prediction": 686,
+      "segmentation": 668,
+      "reconstruction / imputation": 278,
       "workflow / non-interpretive": 167,
-      "other": 123,
+      "other": 124,
       "report generation / LLM": 28,
       "foundation model / vision-language": 26,
       "agent / autonomous": 2
     },
     "age_groups": {
-      "child": 1301,
-      "adolescent": 889,
-      "fetal": 786,
-      "infant": 515,
-      "pediatric (unspecified)": 498,
-      "neonate": 346,
-      "mixed pediatric and adult": 316
+      "child": 1313,
+      "adolescent": 900,
+      "fetal": 795,
+      "infant": 518,
+      "pediatric (unspecified)": 504,
+      "neonate": 348,
+      "mixed pediatric and adult": 319
     },
     "topics": {
-      "Fetal assessment / prenatal": 756,
-      "Brain development / cognition": 355,
-      "Autism / ADHD / psychiatric": 313,
-      "Cardiac / congenital heart": 239,
-      "Bone age / skeletal maturation": 176,
-      "Brain / CNS tumors": 162,
-      "Pulmonary infection": 161,
-      "Scoliosis / spine deformity": 142,
-      "Fracture / trauma / abuse": 138,
-      "Epilepsy": 81,
+      "Fetal assessment / prenatal": 764,
+      "Brain development / cognition": 357,
+      "Autism / ADHD / psychiatric": 314,
+      "Cardiac / congenital heart": 242,
+      "Bone age / skeletal maturation": 178,
+      "Brain / CNS tumors": 165,
+      "Pulmonary infection": 162,
+      "Scoliosis / spine deformity": 144,
+      "Fracture / trauma / abuse": 139,
+      "Epilepsy": 82,
       "Liver / biliary": 71,
       "Renal / urinary": 70,
       "Hip dysplasia": 60,
@@ -127,17 +128,17 @@
     },
     "preprints": 231,
     "release_status": {
-      "unclear": 2957,
-      "commercial": 159,
-      "open-source": 168,
+      "unclear": 2984,
+      "commercial": 163,
+      "open-source": 169,
       "unreleased": 212
     },
     "validation": {
-      "internal only": 2352,
-      "prospective": 115,
-      "none / not stated": 158,
-      "reader study": 217,
-      "external / multi-center": 654
+      "internal only": 2368,
+      "prospective": 118,
+      "none / not stated": 163,
+      "reader study": 220,
+      "external / multi-center": 659
     }
   },
   "eras": {
@@ -510,49 +511,50 @@
       }
     },
     "2026 YTD": {
-      "n": 686,
+      "n": 718,
       "modality": {
-        "MRI": 275,
-        "ultrasound": 170,
-        "x-ray / radiography": 152,
-        "CT": 74,
+        "MRI": 289,
+        "ultrasound": 179,
+        "x-ray / radiography": 161,
+        "CT": 75,
         "multiple": 13,
-        "other": 11,
+        "other": 12,
         "nuclear / PET": 8,
-        "fluoroscopy": 2
+        "fluoroscopy": 2,
+        "mammography": 1
       },
       "task": {
-        "detection / diagnosis": 257,
-        "measurement / quantification": 180,
-        "outcome prediction": 147,
-        "segmentation": 129,
-        "reconstruction / imputation": 58,
+        "detection / diagnosis": 273,
+        "measurement / quantification": 191,
+        "outcome prediction": 150,
+        "segmentation": 135,
+        "reconstruction / imputation": 59,
         "workflow / non-interpretive": 28,
-        "other": 24,
+        "other": 25,
         "report generation / LLM": 12,
         "foundation model / vision-language": 8,
         "agent / autonomous": 1
       },
       "age_groups": {
-        "child": 231,
-        "adolescent": 184,
-        "fetal": 152,
-        "pediatric (unspecified)": 117,
-        "infant": 111,
-        "mixed pediatric and adult": 58,
-        "neonate": 54
+        "child": 243,
+        "adolescent": 195,
+        "fetal": 161,
+        "pediatric (unspecified)": 123,
+        "infant": 114,
+        "mixed pediatric and adult": 61,
+        "neonate": 56
       },
       "topics": {
-        "Fetal assessment / prenatal": 141,
-        "Brain development / cognition": 61,
-        "Cardiac / congenital heart": 58,
-        "Autism / ADHD / psychiatric": 58,
-        "Fracture / trauma / abuse": 39,
-        "Pulmonary infection": 38,
-        "Scoliosis / spine deformity": 34,
-        "Brain / CNS tumors": 30,
-        "Bone age / skeletal maturation": 25,
-        "Epilepsy": 13,
+        "Fetal assessment / prenatal": 149,
+        "Brain development / cognition": 63,
+        "Cardiac / congenital heart": 61,
+        "Autism / ADHD / psychiatric": 59,
+        "Fracture / trauma / abuse": 40,
+        "Pulmonary infection": 39,
+        "Scoliosis / spine deformity": 36,
+        "Brain / CNS tumors": 33,
+        "Bone age / skeletal maturation": 27,
+        "Epilepsy": 14,
         "Acute abdomen": 13,
         "Hip dysplasia": 12,
         "Hydrocephalus": 12,
@@ -579,17 +581,17 @@
       },
       "preprints": 56,
       "release_status": {
-        "unclear": 549,
-        "commercial": 46,
-        "open-source": 41,
+        "unclear": 576,
+        "commercial": 50,
+        "open-source": 42,
         "unreleased": 50
       },
       "validation": {
-        "internal only": 415,
-        "prospective": 27,
-        "none / not stated": 45,
-        "reader study": 34,
-        "external / multi-center": 165
+        "internal only": 431,
+        "prospective": 30,
+        "none / not stated": 50,
+        "reader study": 37,
+        "external / multi-center": 170
       }
     }
   },
@@ -756,6 +758,20 @@
     ],
     [
       {
+        "record_id": "42040958",
+        "year": "2026",
+        "title": "Silent Verb Generation during fMRI Reveals Post-Radiotherapy Alterations in Cerebellar-Cerebral Language Regions in Patients Treated for Medulloblastoma.",
+        "doi": "10.21203/rs.3.rs-9372156/v1"
+      },
+      {
+        "record_id": "42738316",
+        "year": "2026",
+        "title": "Silent Verb Generation During fMRI Reveals Post-Radiotherapy Alterations in Cerebellar-Cerebral Language Regions in Patients Treated for Medulloblastoma.",
+        "doi": "10.3390/cancers18172795"
+      }
+    ],
+    [
+      {
         "record_id": "42190896",
         "year": "2026",
         "title": "Classification of familial and non-familial ADHD using auto-encoding network and binary hypothesis testing.",
@@ -808,6 +824,20 @@
         "year": "2025",
         "title": "A Multi-Task Deep Learning Model for Pediatric Echocardiography Analysis.",
         "doi": "10.1101/2025.10.27.25338912"
+      }
+    ],
+    [
+      {
+        "record_id": "42774684",
+        "year": "2026",
+        "title": "Deep learning-based detection of focal cortical dysplasia in children: External validation of the MELD Graph and 3D-nnUNet pipelines.",
+        "doi": "10.1016/j.ynirp.2026.100410"
+      },
+      {
+        "record_id": "emb:L2045422626",
+        "year": "2026",
+        "title": "Deep Learning-Based Detection of Focal Cortical Dysplasia in Children: External Validation of the MELD Graph and 3D-nnUNet pipelines",
+        "doi": "10.64898/2026.04.21.26351368"
       }
     ],
     [
@@ -1720,23 +1750,24 @@
     ]
   ],
   "title_collapsed_sensitivity": {
-    "n": 3414,
+    "n": 3444,
     "modality": {
-      "MRI": 1537,
-      "ultrasound": 812,
-      "x-ray / radiography": 667,
-      "CT": 321,
+      "MRI": 1549,
+      "ultrasound": 821,
+      "x-ray / radiography": 676,
+      "CT": 322,
       "nuclear / PET": 53,
-      "other": 45,
+      "other": 46,
       "multiple": 43,
-      "fluoroscopy": 13
+      "fluoroscopy": 13,
+      "mammography": 1
     },
     "task": {
-      "detection / diagnosis": 1314,
-      "measurement / quantification": 816,
-      "outcome prediction": 662,
-      "segmentation": 642,
-      "reconstruction / imputation": 268,
+      "detection / diagnosis": 1329,
+      "measurement / quantification": 827,
+      "outcome prediction": 665,
+      "segmentation": 647,
+      "reconstruction / imputation": 269,
       "workflow / non-interpretive": 166,
       "other": 120,
       "report generation / LLM": 28,
@@ -1744,24 +1775,24 @@
       "agent / autonomous": 2
     },
     "age_groups": {
-      "child": 1278,
-      "adolescent": 866,
-      "fetal": 768,
-      "infant": 506,
-      "pediatric (unspecified)": 482,
-      "neonate": 336,
-      "mixed pediatric and adult": 306
+      "child": 1288,
+      "adolescent": 876,
+      "fetal": 777,
+      "infant": 509,
+      "pediatric (unspecified)": 488,
+      "neonate": 338,
+      "mixed pediatric and adult": 309
     },
     "topics": {
-      "Fetal assessment / prenatal": 739,
-      "Brain development / cognition": 337,
-      "Autism / ADHD / psychiatric": 306,
-      "Cardiac / congenital heart": 231,
-      "Bone age / skeletal maturation": 174,
-      "Pulmonary infection": 160,
-      "Brain / CNS tumors": 154,
-      "Scoliosis / spine deformity": 139,
-      "Fracture / trauma / abuse": 138,
+      "Fetal assessment / prenatal": 747,
+      "Brain development / cognition": 339,
+      "Autism / ADHD / psychiatric": 307,
+      "Cardiac / congenital heart": 234,
+      "Bone age / skeletal maturation": 176,
+      "Pulmonary infection": 161,
+      "Brain / CNS tumors": 156,
+      "Scoliosis / spine deformity": 141,
+      "Fracture / trauma / abuse": 139,
       "Epilepsy": 80,
       "Liver / biliary": 71,
       "Renal / urinary": 70,
@@ -1789,25 +1820,25 @@
       "Regensburg appendicitis": 3,
       "Pediatric-CT-SEG": 2
     },
-    "preprints": 169,
+    "preprints": 167,
     "release_status": {
-      "unclear": 2939,
-      "commercial": 159,
-      "open-source": 162,
-      "unreleased": 154
+      "unclear": 2966,
+      "commercial": 163,
+      "open-source": 163,
+      "unreleased": 152
     },
     "validation": {
-      "internal only": 2304,
-      "prospective": 111,
-      "none / not stated": 153,
-      "reader study": 215,
-      "external / multi-center": 631
+      "internal only": 2319,
+      "prospective": 114,
+      "none / not stated": 158,
+      "reader study": 218,
+      "external / multi-center": 635
     }
   },
-  "topic_unmatched": 973,
+  "topic_unmatched": 983,
   "topic_by_modality": {
     "Brain development / cognition": {
-      "MRI": 335,
+      "MRI": 337,
       "ultrasound": 16,
       "x-ray / radiography": 1,
       "CT": 1,
@@ -1815,7 +1846,7 @@
       "fluoroscopy": 0
     },
     "Autism / ADHD / psychiatric": {
-      "MRI": 309,
+      "MRI": 310,
       "ultrasound": 1,
       "x-ray / radiography": 0,
       "CT": 2,
@@ -1823,8 +1854,8 @@
       "fluoroscopy": 0
     },
     "Fetal assessment / prenatal": {
-      "MRI": 229,
-      "ultrasound": 525,
+      "MRI": 231,
+      "ultrasound": 531,
       "x-ray / radiography": 2,
       "CT": 6,
       "nuclear / PET": 1,
@@ -1833,7 +1864,7 @@
     "Bone age / skeletal maturation": {
       "MRI": 7,
       "ultrasound": 2,
-      "x-ray / radiography": 167,
+      "x-ray / radiography": 169,
       "CT": 1,
       "nuclear / PET": 0,
       "fluoroscopy": 0
@@ -1841,7 +1872,7 @@
     "Pulmonary infection": {
       "MRI": 4,
       "ultrasound": 13,
-      "x-ray / radiography": 111,
+      "x-ray / radiography": 112,
       "CT": 34,
       "nuclear / PET": 0,
       "fluoroscopy": 0
@@ -1849,13 +1880,13 @@
     "Fracture / trauma / abuse": {
       "MRI": 20,
       "ultrasound": 7,
-      "x-ray / radiography": 91,
+      "x-ray / radiography": 92,
       "CT": 18,
       "nuclear / PET": 0,
       "fluoroscopy": 0
     },
     "Brain / CNS tumors": {
-      "MRI": 154,
+      "MRI": 157,
       "ultrasound": 1,
       "x-ray / radiography": 0,
       "CT": 6,
@@ -1864,14 +1895,14 @@
     },
     "Cardiac / congenital heart": {
       "MRI": 45,
-      "ultrasound": 164,
+      "ultrasound": 166,
       "x-ray / radiography": 8,
-      "CT": 19,
+      "CT": 20,
       "nuclear / PET": 0,
       "fluoroscopy": 2
     },
     "Epilepsy": {
-      "MRI": 78,
+      "MRI": 79,
       "ultrasound": 0,
       "x-ray / radiography": 0,
       "CT": 1,
@@ -1897,7 +1928,7 @@
     "Scoliosis / spine deformity": {
       "MRI": 4,
       "ultrasound": 5,
-      "x-ray / radiography": 109,
+      "x-ray / radiography": 111,
       "CT": 3,
       "nuclear / PET": 0,
       "fluoroscopy": 0
@@ -1953,57 +1984,57 @@
   },
   "age_by_modality": {
     "fetal": {
-      "MRI": 229,
-      "ultrasound": 560,
+      "MRI": 231,
+      "ultrasound": 567,
       "x-ray / radiography": 2,
       "CT": 6,
       "nuclear / PET": 0,
       "fluoroscopy": 0
     },
     "neonate": {
-      "MRI": 202,
+      "MRI": 203,
       "ultrasound": 76,
-      "x-ray / radiography": 48,
+      "x-ray / radiography": 49,
       "CT": 16,
       "nuclear / PET": 1,
       "fluoroscopy": 1
     },
     "infant": {
-      "MRI": 212,
-      "ultrasound": 101,
+      "MRI": 213,
+      "ultrasound": 102,
       "x-ray / radiography": 111,
-      "CT": 82,
+      "CT": 83,
       "nuclear / PET": 9,
       "fluoroscopy": 5
     },
     "child": {
-      "MRI": 703,
-      "ultrasound": 94,
-      "x-ray / radiography": 314,
-      "CT": 175,
+      "MRI": 711,
+      "ultrasound": 95,
+      "x-ray / radiography": 316,
+      "CT": 176,
       "nuclear / PET": 28,
       "fluoroscopy": 8
     },
     "adolescent": {
-      "MRI": 479,
+      "MRI": 486,
       "ultrasound": 38,
-      "x-ray / radiography": 269,
+      "x-ray / radiography": 273,
       "CT": 82,
       "nuclear / PET": 10,
       "fluoroscopy": 2
     },
     "pediatric (unspecified)": {
-      "MRI": 149,
-      "ultrasound": 54,
-      "x-ray / radiography": 180,
+      "MRI": 152,
+      "ultrasound": 55,
+      "x-ray / radiography": 183,
       "CT": 79,
       "nuclear / PET": 20,
       "fluoroscopy": 4
     },
     "mixed pediatric and adult": {
-      "MRI": 190,
+      "MRI": 192,
       "ultrasound": 21,
-      "x-ray / radiography": 61,
+      "x-ray / radiography": 62,
       "CT": 41,
       "nuclear / PET": 6,
       "fluoroscopy": 0

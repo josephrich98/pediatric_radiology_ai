@@ -349,6 +349,7 @@ class Frame:
     blocks: list
     title_slide: bool = False
     category: str = ""                   # Beamer [category=...], shown top-right
+    hidden: bool = False                 # \begin{frame}<0>: kept, not shown
 
 
 def parse_deck(tex: str, fig_dir: Path) -> tuple[str, str, str, str, list[Frame]]:
@@ -362,7 +363,7 @@ def parse_deck(tex: str, fig_dir: Path) -> tuple[str, str, str, str, list[Frame]
     author, date = _cmd("author"), _cmd("date")
     body = tex[tex.index(r"\begin{document}"):]
     frames: list[Frame] = []
-    frame_re = re.compile(r"\\frame\{\\titlepage\}|\\begin\{frame\}(?:\[[^\]]*\])?")
+    frame_re = re.compile(r"\\frame\{\\titlepage\}|\\begin\{frame\}(<[^>]*>)?(?:\[[^\]]*\])?")
     pos = 0
     while True:
         m = frame_re.search(body, pos)
@@ -381,7 +382,8 @@ def parse_deck(tex: str, fig_dir: Path) -> tuple[str, str, str, str, list[Frame]
             j = k + 1
         es, ee = find_env_end(body, "frame", j)
         frames.append(Frame(ftitle, parse_blocks(body[j:es], fig_dir=fig_dir),
-                            category=cat.group(1).strip() if cat else ""))
+                            category=cat.group(1).strip() if cat else "",
+                            hidden=m.group(1) == "<0>"))
         pos = ee
     return title, subtitle, author, date, frames
 
@@ -699,9 +701,16 @@ def build(tex_path: Path, out_path: Path) -> Path:
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
     blank = prs.slide_layouts[6]
-    total = len(frames)
-    for n, fr in enumerate(frames, start=1):
+    # A frame Beamer suppresses with <0> becomes a hidden PowerPoint slide:
+    # still in the file to unhide, skipped in the show and in the numbering.
+    total = sum(1 for fr in frames if not fr.hidden)
+    n = 0
+    for fr in frames:
         slide = prs.slides.add_slide(blank)
+        if fr.hidden:
+            slide._element.set("show", "0")
+        else:
+            n += 1
         if fr.title_slide:
             render_title_slide(slide, title, subtitle, author, date)
         else:
@@ -717,7 +726,8 @@ def build(tex_path: Path, out_path: Path) -> Path:
                 elif kind == "table":
                     tbl, widths, rh = payload
                     add_table(slide, x, y, w, h, tbl, widths, rh, scale_used)
-        add_page_number(slide, n, total)
+        if not fr.hidden:
+            add_page_number(slide, n, total)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(out_path))
     return out_path

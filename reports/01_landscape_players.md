@@ -300,7 +300,7 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 
 ### NeurIPS (Conference on Neural Information Processing Systems), 2023-2026
 
-58 radiology-AI works found (2023: 12, 2024: 17, 2025: 29); 0 pediatric.
+94 radiology-AI works found (2023: 12, 2024: 17, 2025: 29, 2026: 36); 1 pediatric.
 
 | Year | Citations | FWCI | Paper |
 |---:|---:|---:|:--|
@@ -385,7 +385,7 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 
 ### MICCAI (Medical Image Computing and Computer-Assisted Intervention), 2023-2026
 
-854 radiology-AI works found (2023: 236, 2024: 298, 2025: 320); 26 pediatric.
+1191 radiology-AI works found (2023: 236, 2024: 298, 2025: 320, 2026: 337); 38 pediatric.
 
 | Year | Citations | FWCI | Paper |
 |---:|---:|---:|:--|
@@ -475,7 +475,7 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 
 **How obtained.** The FDA publishes a spreadsheet of every AI-enabled device it has authorized ([source](https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-enabled-medical-devices)). Restricting to the *Radiology* lead panel gives products per year and clearances per company. The list carries no pediatric flag; device names were matched against pediatric terms and a curated list of products with pediatric indications was cross-checked against it.
 
-- 1,230 of 1,614 AI-enabled devices (76.2%) are in the Radiology panel (snapshot 2026-09-17).
+- 1,230 of 1,614 AI-enabled devices (76.2%) are in the Radiology panel (snapshot 2026-09-30).
 
 | Company | Radiology AI devices | Years | Examples |
 |:--|---:|:--|:--|
@@ -508,31 +508,31 @@ _Most-cited papers from OpenAlex; most-starred open-source tools from GitHub. Ci
 
 ### Which clinical problems the cleared products address
 
-The device list names no clinical problem, so one is read off the device name first and the FDA product code second: 542 of 1,230 devices name one, and the rest — scanner platforms and general image-processing software — are counted but not plotted. Of the 230 entries whose decision summary states a pediatric or fetal patient population, 110 are standalone software; the rest are scanners, which are labeled for pediatric imaging whatever their AI was built for. A population statement in a summary is not a pediatric indication and not pediatric evidence.
+The device list names no clinical problem, so one is read off the device name first and the FDA product code second: 541 of 1,230 devices name one, and the rest — scanner platforms and general image-processing software — are counted but not plotted. Of the 230 entries whose decision summary states a pediatric or fetal patient population, 110 are standalone software; the rest are scanners, which are labeled for pediatric imaging whatever their AI was built for. A population statement in a summary is not a pediatric indication and not pediatric evidence.
 
 ![Clinical problems addressed by cleared radiology AI](../figures/commercial_problems.png)
 
 | Clinical problem | Devices | Pediatric population stated |
 |:--|---:|---:|
 | radiation therapy planning | 79 | 3 |
-| triage / worklist prioritization | 70 | 22 |
+| triage / worklist prioritization | 69 | 22 |
 | image quality: dose, noise, speed | 52 | 3 |
-| chest / lung | 49 | 4 |
+| chest / lung | 51 | 4 |
 | stroke / intracranial bleed | 41 | 1 |
 | brain / neurologic | 40 | 3 |
 | cancer lesion detection | 38 | 1 |
 | cardiac / echo | 36 | 6 |
 | abdomen / pelvis | 28 | 3 |
-| fracture / trauma | 20 | 5 |
 | measurement / quantification | 20 | 4 |
 | spine / scoliosis | 19 | 8 |
 | breast | 18 | 1 |
+| fracture / trauma | 18 | 5 |
 | dental / craniofacial | 11 | 3 |
 | fetal / obstetric | 10 | 10 |
 | bone density / body composition | 7 | 1 |
 | tube / line placement | 3 | 1 |
 | bone age / growth | 1 | 1 |
-| _clinical problem not named_ | 688 | 150 |
+| _clinical problem not named_ | 689 | 150 |
 
 ### Devices whose names carry a pediatric term
 
@@ -577,7 +577,7 @@ The device list names no clinical problem, so one is read off the device name fi
 | 16 Bit | Physis | Hand X-ray bone-age estimation, GP atlas matching and report assistance | Pediatric tool; no FDA authorization identified. Company's FDA entry is Rho (low bone density, age 50+) | 1 entries, 2024–2024 | 0 (0 software) |
 | Visiana | BoneXpert | Hand X-ray bone age (GP / TW3), Bone Health Index; associated adult-height prediction tool | Designed for children; CE-marked; US research use only | not listed | — |
 
-Counts cover company-wide radiology entries in the FDA AI-enabled device list saved 2026-09-17; grouped vendors are summed. They include versions and unrelated products, not just the selected products or pediatric indications. Years are the range of decision years. The list is not exhaustive and may lag new authorizations. Functions / labeling checked 2026-09-16; features vary by market and version. The last column counts entries whose decision summary states a pediatric or fetal patient population (screened 2026-09-16), with standalone software in parentheses. See [verification and sources](commercial_software_verification.md).
+Counts cover company-wide radiology entries in the FDA AI-enabled device list saved 2026-09-30; grouped vendors are summed. They include versions and unrelated products, not just the selected products or pediatric indications. Years are the range of decision years. The list is not exhaustive and may lag new authorizations. Functions / labeling checked 2026-09-16; features vary by market and version. The last column counts entries whose decision summary states a pediatric or fetal patient population (screened 2026-09-16), with standalone software in parentheses. See [verification and sources](commercial_software_verification.md).
 
 ### Products a pediatric radiologist should know
 
@@ -615,7 +615,7 @@ This appendix screens **all 1,230 records in the Radiology lead panel** of the F
 
 - 283 records had a pediatric/fetal keyword in extracted evidence.
 - 230 are label-positive candidates; 53 require manual label review.
-- Evidence text was available for 1,588 records; 1 need OCR and 25 linked documents were unavailable.
+- Evidence text was available for 1,597 records; 4 need OCR and 13 linked documents were unavailable.
 - 1,230 Radiology-panel records were in the source CSV; data/raw/fda_pediatric_inventory/2026-09-16/ai_devices.csv.
 
 ### Label-positive candidates

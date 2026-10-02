@@ -169,6 +169,10 @@ def main() -> int:
     #    ordered by raw citations would never reach the current year.
     cmd = [py, str(SCRIPTS / "build_paper_db.py"), "--review", "--since", str(since),
            "--order", "rate"]
+    if not args.keep_cache:
+        # The marker sweep above misses the JSON ESearch answers the per-year
+        # candidate search caches, so ask the search itself to re-fetch them.
+        cmd.append("--refresh-search")
     if args.all:
         cmd.append("--all")
     elif args.limit is not None:

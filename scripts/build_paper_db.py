@@ -49,7 +49,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from pedrad_ai import config, extract, paper_db, utils
+from pedrad_ai import cache, config, extract, paper_db, utils
 
 # $ per million tokens, for the cost estimate only (Claude API list prices).
 PRICES = {
@@ -123,6 +123,10 @@ def main() -> int:
     ap.add_argument("--no-fwci", dest="with_fwci", action="store_false",
                     help="skip the OpenAlex lookup and take citations from iCite alone, when the "
                          "OpenAlex daily budget is needed elsewhere")
+    ap.add_argument("--refresh-search", action="store_true",
+                    help="re-fetch the cached candidate searches for --since..--until (cache "
+                         "refresh mode); a cached per-year ESearch otherwise hides every "
+                         "record indexed since the first pull")
     ap.add_argument("--dry-run", action="store_true", help="report what is outstanding, extract nothing")
     ap.add_argument("--pmid", action="append", default=[], help="extract specific PMID(s) only (repeatable)")
     ap.add_argument("--worklist", nargs="?", const=str(config.PAPER_DB_WORKLIST), default=None,
@@ -186,6 +190,11 @@ def main() -> int:
                       "year": None, "citations": None} for p in args.pmid}
         print(f"Candidates: {len(wanted)} PMID(s) given on the command line")
     else:
+        if args.refresh_search:
+            # The searches are year-scoped (WINDOW rules), so a window reaching
+            # back to --since re-fetches exactly them; fetched records stay cached.
+            cache.enable(window_years=(args.until or config.END_YEAR) - args.since + 1,
+                         export_env=False)
         print(f"Searching for candidates, {args.since}-{args.until}...")
         wanted = paper_db.collect_candidates(
             args.since, args.until,

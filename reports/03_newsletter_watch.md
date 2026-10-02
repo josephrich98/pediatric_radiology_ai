@@ -1,11 +1,11 @@
 # Pediatric Radiology AI in the News: Newsletter and Trade-Press Watch
 
-_Auto-generated from the public archives of 7 newsletters / news sites, collected 2026-09-09. The peer-reviewed literature lags practice by a year or more; this is the companion view of what the field is talking about right now._
+_Auto-generated from the public archives of 7 newsletters / news sites, collected 2026-09-30. The peer-reviewed literature lags practice by a year or more; this is the companion view of what the field is talking about right now._
 
 ## Headline
 
-- **161** distinct pediatric-radiology-AI stories found across all archives.
-- 2025: **22** stories; 2026 year-to-date: **13**.
+- **162** distinct pediatric-radiology-AI stories found across all archives.
+- 2025: **22** stories; 2026 year-to-date: **14**.
 - In The Imaging Wire (the deepest archive, 2018-2026), pediatric stories are **1.7%** of all radiology-AI stories — the trade-press analogue of the pediatric share of the literature.
 - In RSNA News, pediatric stories are **10.2%** of AI-titled articles.
 
@@ -15,13 +15,13 @@ Each source's public archive was enumerated in full (WordPress REST API, the RSN
 
 | Source | Archive | Coverage | Issues / articles | Stories | Radiology-AI stories | Pediatric radiology-AI | Pediatric share of AI stories |
 |:--|:--|:--|---:|---:|---:|---:|---:|
-| [The Imaging Wire](https://theimagingwire.com/newsletters/) | wordpress | 2018-03-22 → 2026-09-02 | 838 | 19327 | 6610 | 111 | 1.7% |
-| [RSNA News](https://www.rsna.org/news) | rsna_news | 2014-01-01 → 2026-09-01 | 1890 | 1872 | 246 | 25 | 10.2% |
-| [TLDR AI](https://tldr.tech/ai/archives) | tldr | 2024-01-02 → 2026-09-09 | 696 | 11645 | 23 | 1 | 4.3% |
-| [TLDR Tech](https://tldr.tech/tech/archives) | tldr | 2024-01-02 → 2026-09-09 | 702 | 10997 | 13 | 0 | 0.0% |
-| [Signify Research](https://www.signifyresearch.net/insights/) | wordpress | 2017-05-16 → 2026-08-10 | 649 | 875 | 199 | 1 | 0.5% |
-| [ESR / ECR](https://www.myesr.org/news/) | wordpress | 2019-02-14 → 2026-08-31 | 596 | 1350 | 857 | 23 | 2.7% |
-| [Radiology Business](https://radiologybusiness.com) | rss | 2026-08-11 → 2026-09-09 | 100 | 100 | 19 | 0 | 0.0% |
+| [The Imaging Wire](https://theimagingwire.com/newsletters/) | wordpress | 2018-03-22 → 2026-09-27 | 844 | 19533 | 6675 | 112 | 1.7% |
+| [RSNA News](https://www.rsna.org/news) | rsna_news | 2014-01-01 → 2026-09-01 | 1907 | 1889 | 246 | 25 | 10.2% |
+| [TLDR AI](https://tldr.tech/ai/archives) | tldr | 2024-01-02 → 2026-09-30 | 711 | 11923 | 24 | 1 | 4.2% |
+| [TLDR Tech](https://tldr.tech/tech/archives) | tldr | 2024-01-02 → 2026-09-30 | 717 | 11252 | 13 | 0 | 0.0% |
+| [Signify Research](https://www.signifyresearch.net/insights/) | wordpress | 2017-05-16 → 2026-09-22 | 650 | 878 | 199 | 1 | 0.5% |
+| [ESR / ECR](https://www.myesr.org/news/) | wordpress | 2019-02-14 → 2026-09-28 | 601 | 1363 | 862 | 23 | 2.7% |
+| [Radiology Business](https://radiologybusiness.com) | rss | 2026-09-01 → 2026-09-30 | 100 | 100 | 24 | 0 | 0.0% |
 
 _Coverage notes:_
 
@@ -46,7 +46,7 @@ _Coverage notes:_
 | 2023 | 17 | 3 | 0 | 0 | 1 | 2 | 0 | 23 |
 | 2024 | 19 | 2 | 0 | 0 | 0 | 4 | 0 | 25 |
 | 2025 | 17 | 2 | 1 | 0 | 0 | 2 | 0 | 22 |
-| 2026 (YTD) | 9 | 2 | 0 | 0 | 0 | 2 | 0 | 13 |
+| 2026 (YTD) | 10 | 2 | 0 | 0 | 0 | 2 | 0 | 14 |
 
 Pediatric share of The Imaging Wire's radiology-AI stories, by year:
 
@@ -60,7 +60,7 @@ Pediatric share of The Imaging Wire's radiology-AI stories, by year:
 | 2023 | 857 | 17 | 2.0% |
 | 2024 | 1028 | 19 | 1.8% |
 | 2025 | 1073 | 17 | 1.6% |
-| 2026 (YTD) | 733 | 9 | 1.2% |
+| 2026 (YTD) | 798 | 10 | 1.3% |
 
 ![Pediatric radiology AI in the news](../figures/newsletter_watch.png)
 
@@ -72,27 +72,27 @@ Stories mentioning each company or tool, over all radiology-AI stories and the p
 
 | Company / tool | Radiology-AI stories | ...of which pediatric |
 |:--|---:|---:|
-| GE HealthCare | 225 | 10 |
+| GE HealthCare | 228 | 10 |
 | Nuance / Microsoft | 206 | 6 |
 | Qure.ai | 187 | 8 |
 | Blackford | 164 | 3 |
-| Siemens Healthineers | 153 | 3 |
-| DeepHealth / RadNet | 147 | 1 |
+| Siemens Healthineers | 154 | 4 |
+| DeepHealth / RadNet | 150 | 1 |
 | Philips | 141 | 8 |
-| Gleamer | 131 | 12 |
+| Gleamer | 132 | 12 |
 | Google | 130 | 4 |
 | Lunit | 129 | 3 |
-| OpenAI / ChatGPT | 124 | 3 |
+| OpenAI / ChatGPT | 125 | 3 |
 | Arterys | 115 | 2 |
+| Aidoc | 111 | 0 |
 | Bayer (Calantic) | 111 | 0 |
-| Aidoc | 110 | 0 |
-| Rad AI | 92 | 0 |
+| Rad AI | 94 | 0 |
 | Annalise.ai | 86 | 1 |
 | Riverain | 83 | 0 |
 | Viz.ai | 81 | 0 |
 | Zebra / Nanox | 72 | 0 |
 | Canon Medical | 70 | 2 |
-| Enlitic | 68 | 0 |
+| Enlitic | 70 | 0 |
 | iCAD | 65 | 0 |
 | Nvidia | 58 | 2 |
 | Fujifilm | 52 | 3 |
@@ -107,12 +107,12 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
 | Topic | Stories |
 |:--|---:|
 | appendicitis / abdomen / ultrasound | 52 |
-| fetal / neonatal brain MRI | 39 |
-| funding / business | 37 |
+| fetal / neonatal brain MRI | 40 |
+| funding / business | 38 |
 | regulatory / FDA clearance | 29 |
 | chest / pneumonia | 28 |
 | fracture / trauma / abuse | 26 |
-| CT dose / reconstruction | 23 |
+| CT dose / reconstruction | 24 |
 | cancer / oncology | 22 |
 | bone age / skeletal maturity | 15 |
 | cardiac / echo | 11 |
@@ -124,6 +124,8 @@ Topic tags are keyword-based and overlapping (a story can carry several). Counts
 
 ### 2026
 
+- **2026-09-23** · The Imaging Wire · [Repeat MRI Scans Take Operational Toll](https://theimagingwire.com/newsletter/operational-toll-of-repeat-mri/) _[CT dose / reconstruction, fetal / neonatal brain MRI, funding / business]_  
+  …ncluded in the analysis, with the following findings…  4.8% of all MRI exams (4k) included at least one repeated sequence.  The highest repeat rate occurred in pediatrics and the lowest in breast MRI (9.9% and 3.5%, respectively).   Repeat acquisitions add…
 - **2026-08-25** · RSNA News · [AI Challenges Fuel Innovation Beyond the Leaderboard](https://www.rsna.org/news/2026/august/ai-challenges-fuel-innovation) _[bone age / skeletal maturity, fracture / trauma / abuse, chest / pneumonia, appendicitis / abdomen / ultrasound, funding / business]_  
   …ues from Brazil partnered with a team of computer scientists and AI engineers from Universidade Federal de Goiás in Brazil.  Dr. Kitamura describes RSNA’s 2017 Pediatric Bone Age Challenge as an exhilarating experience that combined earnest research and le…
 - **2026-08-16** · The Imaging Wire · [CT vs. MRI for Pediatric TBI, Helium Vulnerability, and Ditching the Disk](https://theimagingwire.com/newsletter/ct-vs-mri-for-pediatric-tbi-surveillance/)  

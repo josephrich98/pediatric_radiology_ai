@@ -252,7 +252,7 @@ The questions it answers:
 - `web/` — the static database website (`index.html`, `app.js`, `search.js`):
   **one table per tab, no sub-tabs.** Articles is the review corpus and nothing
   else — the builder ships only the `included study` rows of the unified table
-  (3,496 as of 2026-09-17), so the site and the manuscript quote the same n;
+  (3,528 as of 2026-09-30), so the site and the manuscript quote the same n;
   the other record types stay in `pediatric_radiology_ai.csv`. Open source
   software is the GitHub leaderboards plus every code link stated in a paper,
   with a **pediatric-use yes / no column** (`_repo_pediatric`: the pediatric-imaging /
@@ -388,7 +388,8 @@ stories. They are fine for a look, but a refresh that is meant to stick should r
 the collector unscoped.
 
 
-**`slides/pedrad_ai_slides.tex` is hand-owned. Never regenerate it.** It began
+**`slides/pedrad_ai_slides.tex` is hand-owned. Never regenerate it.** Slides are hidden with `\begin{frame}<0>` (Beamer skips them;
+`build_pptx.py` writes them as hidden PowerPoint slides). It began
 as `build_slides.py` output but has since been edited directly: slides deleted,
 frames retitled, categories renamed (`Journals/Preprints` -> `Journals`), order
 changed. None of that is expressed in the generator, which still emits the full
@@ -630,6 +631,16 @@ Rules now in force in `config.py`:
   (stemming instead of truncation, no MeSH), so
   preprint counts are indicative. The most-cited and venue tables include
   preprints natively (Semantic Scholar indexes arXiv and medRxiv).
+- **Reviews are excluded** (2026-10) from the counting queries
+  (`config.NOT_REVIEW`: Review, Systematic Review, Meta-Analysis [pt]) and from
+  `JOURNAL_QUERY`; `collect_preprints.py` strips the clause (`_untyped`) since
+  arXiv / Europe PMC have no [pt]. The most-cited lists drop reviews via
+  `semantic_scholar.is_review`: PubMed publication type when the paper has a
+  PMID (Semantic Scholar's own "Review" tag mislabels primary studies), else
+  the S2 type, plus title / review-journal rules. `REVIEW_QUERY` is untouched.
+- `PEDIATRIC_TITLE_KEYWORDS` match whole words, so plurals and "baby" are
+  listed explicitly; the pediatric most-cited pool also runs the general
+  queries so a pediatric-titled paper (BIBSNet) is not missed.
 - `pubmed.crosstab` builds the modality x task tables with one date-range
   query per cell (`data/processed/pubmed_crosstab.json`).
 

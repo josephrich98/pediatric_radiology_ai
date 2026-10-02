@@ -4,7 +4,7 @@ This appendix screens **all 1,230 records in the Radiology lead panel** of the F
 
 - 283 records had a pediatric/fetal keyword in extracted evidence.
 - 230 are label-positive candidates; 53 require manual label review.
-- Evidence text was available for 1,588 records; 1 need OCR and 25 linked documents were unavailable.
+- Evidence text was available for 1,597 records; 4 need OCR and 13 linked documents were unavailable.
 - 1,230 Radiology-panel records were in the source CSV; data/raw/fda_pediatric_inventory/2026-09-16/ai_devices.csv.
 
 ### Label-positive candidates

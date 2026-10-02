@@ -12,6 +12,8 @@ itself and caches aggressively. Set SEMANTIC_SCHOLAR_API_KEY to go faster.
 
 from __future__ import annotations
 
+import re
+
 from typing import Any
 
 from . import config, utils
@@ -99,6 +101,7 @@ def _clean_paper(p: dict[str, Any]) -> dict[str, Any]:
         "authors": authors[:8],
         "first_author": authors[0].split()[-1] if authors else None,
         "n_authors": len(authors),
+        "publication_types": p.get("publicationTypes") or [],
     }
 
 
@@ -174,7 +177,10 @@ def bulk_search(query: str, start: int, end: int, max_pages: int = 1) -> list[di
 
     One page is up to 1,000 works; for a most-cited table one page is enough.
     """
-    params: dict[str, Any] = {"query": query, "year": f"{start}-{end}", "fields": BULK_FIELDS, "sort": "citationCount:desc"}
+    # publicationTypes lets the most-cited tables drop reviews (is_review); it is
+    # kept off venue_search so the venue tables' cached pages stay valid.
+    params: dict[str, Any] = {"query": query, "year": f"{start}-{end}",
+                              "fields": BULK_FIELDS + ",publicationTypes", "sort": "citationCount:desc"}
     out: list[dict[str, Any]] = []
     token: str | None = None
     for _ in range(max_pages):
@@ -190,6 +196,39 @@ def bulk_search(query: str, start: int, end: int, max_pages: int = 1) -> list[di
         if not token:
             break
     return out
+
+
+# Titles that announce secondary literature. Semantic Scholar's publicationTypes
+# misses most arXiv surveys and many journal primers, so the type and the title
+# are both checked.
+_REVIEW_TITLE = re.compile(
+    r"\b(review|reviews|survey|meta-analysis|metaanalysis|primer|overview|bibliometric|"
+    r"state[- ]of[- ]the[- ]art|current applications|challenges and opportunities|"
+    r"opportunities and challenges|perspectives?|lessons learned|where (are|do) we|"
+    r"checklist|guidelines?|consensus|position (paper|statement)|evolution from)\b",
+    re.I,
+)
+
+
+def is_review(paper: dict[str, Any]) -> bool:
+    """A review, survey, meta-analysis or primer rather than a primary study.
+
+    ``pubmed_types`` is set by the caller (collect_landscape) for papers with a
+    PMID; see :func:`pubmed.publication_types`."""
+    # PubMed's publication type, when the paper has one, is authoritative and is
+    # what the PubMed counts filter on. Semantic Scholar's own "Review" tag is
+    # not: it marks primary studies such as Larson et al. (Radiology 2017) and
+    # Arnaout et al. (Nat Med 2021) as reviews.
+    pt = paper.get("pubmed_types")
+    if pt is not None:
+        if set(pt) & {"Review", "Systematic Review", "Meta-Analysis"}:
+            return True
+    elif set(paper.get("publication_types") or []) & {"Review", "MetaAnalysis"}:
+        return True
+    # Review journals (Nature Reviews *, Annual Review of *) publish nothing else.
+    if re.search(r"\b(nature reviews|annual review)\b", paper.get("venue") or "", re.I):
+        return True
+    return bool(_REVIEW_TITLE.search(paper.get("title") or ""))
 
 
 def union_search(queries: list[str], start: int, end: int, per_query: int = 200) -> list[dict[str, Any]]:

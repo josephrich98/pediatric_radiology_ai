@@ -85,6 +85,13 @@ def _sum_problems(a: dict[str, Any] | None, b: dict[str, Any] | None) -> dict[st
     }
 
 
+def _untyped(query: str) -> str:
+    """The PubMed query without its publication-type filter: arXiv and Europe PMC
+    have no [pt] field, and a translated "Review" would drop every abstract that
+    uses the word. Preprints carry no review type, so nothing is lost."""
+    return query.replace(f" {config.NOT_REVIEW}", "")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--quick", action="store_true", help="yearly counts only (no crosstab / problems)")
@@ -100,17 +107,17 @@ def main() -> None:
         print(f"{label} preprints: yearly counts per query...")
         src_out: dict[str, Any] = {"yearly": {}, "crosstab": {}, "problems": {}}
         for name, q in config.QUERIES.items():
-            series = mod.yearly_counts(translate(q))
+            series = mod.yearly_counts(translate(_untyped(q)))
             src_out["yearly"][name] = {str(y): n for y, n in series.items()}
             print(f"  {name}: {series.get(config.END_YEAR - 1, 0):,} preprints in {config.END_YEAR - 1}")
 
         if not args.quick:
             print(f"{label} preprints: modality x task cross-tabulations...")
             for name in ("radiology_ai", "pediatric_radiology_ai"):
-                src_out["crosstab"][name] = mod.crosstab(config.QUERIES[name], config.MODALITY_TERMS, config.TASK_TERMS)
+                src_out["crosstab"][name] = mod.crosstab(_untyped(config.QUERIES[name]), config.MODALITY_TERMS, config.TASK_TERMS)
                 print(f"  {name}: {src_out['crosstab'][name]['total']:,} preprints total")
             print(f"{label} preprints: pediatric clinical problems per era...")
-            src_out["problems"] = mod.problem_counts(config.QUERIES["pediatric_radiology_ai"], config.PEDIATRIC_PROBLEM_TERMS)
+            src_out["problems"] = mod.problem_counts(_untyped(config.QUERIES["pediatric_radiology_ai"]), config.PEDIATRIC_PROBLEM_TERMS)
             print(f"  totals: {src_out['problems']['totals']}")
 
         by_source[label] = src_out

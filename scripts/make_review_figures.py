@@ -126,13 +126,18 @@ def multi(rows, field):
 # --------------------------------------------------------------------------- #
 # 1. PRISMA flow
 # --------------------------------------------------------------------------- #
+FLOW_SCALE = 0.8
+
+
 def _flow_canvas():
     """A blank 10x10 diagram canvas plus the three primitives a flow needs.
 
     Shared so every selection flow in the deck -- studies, and the FDA device
     screen -- is drawn in one visual language.
     """
-    fig, ax = plt.subplots(figsize=(9.5, 8.2))
+    # The canvas is drawn in data units and the type in points, so a smaller
+    # canvas is larger type on the slide (2026-10: the flows read too small).
+    fig, ax = plt.subplots(figsize=(9.5 * FLOW_SCALE, 8.2 * FLOW_SCALE))
     ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis("off")
 
     def box(x, y, w, h, lines, face="#f4f7fb", edge=BLUE, fontsize=8.4, align="center"):
@@ -168,7 +173,7 @@ def prisma_figure(flow):
     """
     fig, ax, box, arrow, stage = _flow_canvas()
 
-    LX, LW, RX, RW = 1.1, 4.6, 6.05, 3.80   # left column, right column
+    LX, LW, RX, RW = 1.1, 4.1, 5.65, 4.55   # left column, right column
     MID = LX + LW / 2
 
     def lines_for(total_label, parts, width=46, order=None):
@@ -216,7 +221,7 @@ def prisma_figure(flow):
     if not removed and flow.get("duplicates"):
         removed = {"duplicate records": flow["duplicates"]}
     if removed:
-        right(8.65, lines_for("Removed before screening", removed),
+        right(8.65, lines_for("Removed before screening", removed, width=42),
               face="#f7f7f7", edge="#b0b0b0")
 
     # -- Screening ---------------------------------------------------------- #
@@ -224,7 +229,7 @@ def prisma_figure(flow):
     scr_bot, scr_top = left(6.45, ["Records screened (title / abstract)",
                                    f"n = {flow['screened']:,}"])
     arrow(MID, id_bot, MID, scr_top)
-    right(6.45, lines_for("Excluded at screening", flow["excluded_screening"]))
+    right(6.45, lines_for("Excluded at screening", flow["excluded_screening"], width=42))
 
     # -- Eligibility -------------------------------------------------------- #
     stage(4.30, "Eligibility")
@@ -233,7 +238,7 @@ def prisma_figure(flow):
     arrow(MID, scr_bot, MID, el_top)
     if flow.get("excluded_eligibility"):
         right(4.30, lines_for("Excluded, not primary research",
-                              flow["excluded_eligibility"]))
+                              flow["excluded_eligibility"], width=42))
 
     # -- Included ----------------------------------------------------------- #
     stage(2.00, "Included")
@@ -241,7 +246,7 @@ def prisma_figure(flow):
                              f"n = {flow['included']:,}"], face="#f1f9f5", edge=GREEN)
     arrow(MID, el_bot, MID, inc_top)
 
-    ax.set_xlim(0.0, 10.05); ax.set_ylim(0.95, 9.85)
+    ax.set_xlim(0.0, 10.4); ax.set_ylim(0.95, 9.85)
     ax.set_title("Study selection", fontsize=11, color=INK, loc="left", pad=6)
     note = flow.get("note", "")
     if note:
@@ -271,8 +276,8 @@ def fda_prisma_figure(flow):
         [f"FDA AI-enabled device list, {flow.get('snapshot') or 'undated'} snapshot",
          f"Authorizations identified: n = {n('identified'):,}",
          "510(k), De Novo and PMA records, all panels"])
-    box(6.2, 8.35, 3.3, 1.2,
-        [f"Removed: lead panel is not radiology: n = {removed:,}"] +
+    box(6.2, 7.95, 3.9, 1.7,
+        ["Removed, lead panel is not", f"radiology: n = {removed:,}"] +
         [f"  {k.lower()}: {v:,}" for k, v in head] + [f"  other panels: {rest:,}"],
         face="#f7f7f7", edge="#b0b0b0")
     arrow(5.7, 8.95, 6.2, 8.95)
@@ -280,14 +285,14 @@ def fda_prisma_figure(flow):
     stage(6.60, "Screening")
     box(1.1, 6.70, 4.6, 0.85, ["Radiology-panel records", f"n = {n('radiology'):,}"])
     arrow(3.4, 8.30, 3.4, 7.55)
-    box(6.2, 6.75, 3.3, 0.75, ["No machine-readable decision", f"summary retrieved: n = {n('no_document'):,}"],
+    box(6.2, 6.75, 3.9, 0.75, ["No machine-readable decision", f"summary retrieved: n = {n('no_document'):,}"],
         face="#fdf6f2", edge=ORANGE)
     arrow(5.7, 7.12, 6.2, 7.12)
 
     box(1.1, 5.10, 4.6, 0.85, ["Decision summaries read in full",
                                f"n = {n('documents_screened'):,}"])
     arrow(3.4, 6.70, 3.4, 5.95)
-    box(6.2, 5.05, 3.3, 0.95, ["No pediatric / fetal term in an",
+    box(6.2, 5.05, 3.9, 0.95, ["No pediatric / fetal term in an",
                                "intended-use or patient-population",
                                f"passage: n = {n('no_pediatric_evidence'):,}"],
         face="#fdf6f2", edge=ORANGE)
@@ -297,7 +302,7 @@ def fda_prisma_figure(flow):
     box(1.1, 3.50, 4.6, 0.85, ["Records with pediatric / fetal wording",
                                f"in the reviewed passage: n = {n('pediatric_evidence'):,}"])
     arrow(3.4, 5.10, 3.4, 4.35)
-    box(6.2, 3.25, 3.3, 1.35, [f"Retained for label review: n = {n('needs_label_review'):,}",
+    box(6.2, 3.25, 3.9, 1.35, [f"Retained for label review: n = {n('needs_label_review'):,}",
                                "  phantom or image-quality use only,",
                                "  validation-set mention only, or an",
                                "  explicit pediatric exclusion"],
@@ -315,7 +320,7 @@ def fda_prisma_figure(flow):
     # Five boxes instead of the study flow's four, so crop the canvas to the
     # drawn area rather than shrinking the type. The note is drawn inside the
     # axes because _save calls tight_layout, which would ignore figure margins.
-    ax.set_xlim(0.0, 9.62); ax.set_ylim(0.30, 9.85)
+    ax.set_xlim(0.0, 10.25); ax.set_ylim(0.30, 9.85)
     ax.set_title("FDA AI-enabled device list: which authorizations name children",
                  fontsize=11, color=INK, loc="left", pad=6)
     ax.text(0.05, 1.00,
