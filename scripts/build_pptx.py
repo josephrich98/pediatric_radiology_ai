@@ -10,6 +10,13 @@ re-creates each frame as a native PowerPoint slide:
 - ``columns`` are laid out side by side,
 - a small "n / N" page counter sits bottom-right, matching the Beamer footline.
 
+A hidden frame (``\\begin{frame}<0>``) becomes a hidden PowerPoint slide, except
+one that shows an image from a ``PRIVATE_FIGURE_DIRS`` folder: that frame is
+left out of the .pptx altogether, so the image is not in the committed file
+(a hidden slide still carries its pictures). Beamer already leaves a ``<0>``
+frame out of the PDF. ``scripts/hooks/pre-commit`` rebuilds the .pptx and
+refuses a commit that would publish a private image.
+
 It understands only the LaTeX subset the deck uses (the ``build_slides.py``
 template it grew from), so add a case here if a new construct appears in the .tex.
 
@@ -55,6 +62,10 @@ FONT = "Helvetica Neue"
 
 SIZE_PT = {"normal": 16, "large": 20, "small": 14, "footnotesize": 12, "scriptsize": 11, "tiny": 9}
 SIZE_WORDS = "tiny|scriptsize|footnotesize|small|normalsize|large"
+
+# Folders under figures/ whose images must never reach a committed deck
+# (gitignored; shown locally by removing the frame's <0>).
+PRIVATE_FIGURE_DIRS = ("sura_radiology_images",)
 
 
 # ------------------------------------------------------------- data model ---
@@ -350,6 +361,11 @@ class Frame:
     title_slide: bool = False
     category: str = ""                   # Beamer [category=...], shown top-right
     hidden: bool = False                 # \begin{frame}<0>: kept, not shown
+    private: bool = False                # shows an image from PRIVATE_FIGURE_DIRS
+
+
+def uses_private_figure(latex: str) -> bool:
+    return any(d + "/" in latex for d in PRIVATE_FIGURE_DIRS)
 
 
 def parse_deck(tex: str, fig_dir: Path) -> tuple[str, str, str, str, list[Frame]]:
@@ -383,7 +399,8 @@ def parse_deck(tex: str, fig_dir: Path) -> tuple[str, str, str, str, list[Frame]
         es, ee = find_env_end(body, "frame", j)
         frames.append(Frame(ftitle, parse_blocks(body[j:es], fig_dir=fig_dir),
                             category=cat.group(1).strip() if cat else "",
-                            hidden=m.group(1) == "<0>"))
+                            hidden=m.group(1) == "<0>",
+                            private=uses_private_figure(body[j:es])))
         pos = ee
     return title, subtitle, author, date, frames
 
@@ -703,6 +720,8 @@ def build(tex_path: Path, out_path: Path) -> Path:
     blank = prs.slide_layouts[6]
     # A frame Beamer suppresses with <0> becomes a hidden PowerPoint slide:
     # still in the file to unhide, skipped in the show and in the numbering.
+    # A hidden frame with a private image is dropped instead (module docstring).
+    frames = [fr for fr in frames if not (fr.hidden and fr.private)]
     total = sum(1 for fr in frames if not fr.hidden)
     n = 0
     for fr in frames:

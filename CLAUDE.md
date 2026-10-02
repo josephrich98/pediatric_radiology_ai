@@ -252,7 +252,7 @@ The questions it answers:
 - `web/` — the static database website (`index.html`, `app.js`, `search.js`):
   **one table per tab, no sub-tabs.** Articles is the review corpus and nothing
   else — the builder ships only the `included study` rows of the unified table
-  (3,528 as of 2026-09-30), so the site and the manuscript quote the same n;
+  (3,531 as of 2026-10-02), so the site and the manuscript quote the same n;
   the other record types stay in `pediatric_radiology_ai.csv`. Open source
   software is the GitHub leaderboards plus every code link stated in a paper,
   with a **pediatric-use yes / no column** (`_repo_pediatric`: the pediatric-imaging /
@@ -410,6 +410,18 @@ boxes, tables, columns), so figures can be moved and resized in PowerPoint. It
 only understands the LaTeX subset the deck uses; if a new construct is added to
 the `.tex`, add a case there too. Requires `python-pptx`
 (`pip install -e ".[slides]"`).
+
+**Private images never reach a commit.** `figures/sura_radiology_images/`
+(`build_pptx.PRIVATE_FIGURE_DIRS`) is gitignored, and the frames that show it
+are hidden with `<0>`: Beamer leaves them out of the PDF, and `build_pptx.py`
+drops a hidden frame with a private image entirely (an ordinary hidden slide
+still embeds its pictures). To present them locally, remove the `<0>` and
+recompile, but don't commit in that state. `scripts/hooks/pre-commit`
+(installed with `git config core.hooksPath scripts/hooks`) rebuilds the `.pptx`
+from the staged `.tex` and stages it whenever `slides/` or `figures/` changes.
+It refuses the commit if a private image would be published: an unhidden
+frame, a `.xdv` that references the folder (so the PDF was compiled with it
+shown), a `.pptx` that embeds one, or a force-added file.
 
 ### API etiquette and keys
 

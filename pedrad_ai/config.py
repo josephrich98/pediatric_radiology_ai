@@ -1324,8 +1324,12 @@ _REVIEW_PEDIATRIC_TIAB = (
     'OR newborn*[tiab] OR preterm[tiab] OR "premature infant"[tiab] OR "premature infants"[tiab] '
     'OR "premature birth"[tiab] OR "premature neonate"[tiab] OR "premature neonates"[tiab] '
     'OR prenatal[tiab] OR antenatal[tiab] OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab] '
-    "OR \"children's hospital\"[tiab] OR schoolchild*[tiab] OR toddler*[tiab])"
+    "OR \"children's hospital\"[tiab] OR schoolchild*[tiab] OR toddler*[tiab] "
+    "OR baby[tiab] OR babies[tiab])"
 )
+# baby/babies added 2026-10 after BIBSNet ("baby image brain segmentation")
+# was missed by the title rule of the most-cited lists. In PubMed it adds 17
+# records over 2005-2026; fielded, because bare "baby" maps to Infant[MeSH].
 # Bare `premature[tiab]` is deliberately absent: it retrieves premature
 # ventricular contractions and premature ovarian insufficiency in adults (83
 # records, near-zero yield). The phrase forms keep the neonatal sense.

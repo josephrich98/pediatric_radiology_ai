@@ -1,14 +1,14 @@
 # Pediatric radiology AI: paper database
 
-Generated 2026-09-30 from `data/processed/pedrad_paper_db.csv`.
+Generated 2026-10-02 from `data/processed/pedrad_paper_db.csv`.
 
-This table is the corpus of the systematic review (`reports/05_review_manuscript.md`): the 3,528 included primary studies, of which 823 name a model or product. It is not a selection of the literature — no citation floor is applied — so every proportion here is a proportion of the review's corpus and can be quoted next to the manuscript without reconciliation.
+This table is the corpus of the systematic review (`reports/05_review_manuscript.md`): the 3,531 included primary studies, of which 826 name a model or product. It is not a selection of the literature — no citation floor is applied — so every proportion here is a proportion of the review's corpus and can be quoted next to the manuscript without reconciliation.
 
-7,068 records were retrieved and 393 conference proceedings set aside by the publication-form criterion, leaving 6,675 screened. 2,684 were screened out as adult-only, non-radiologic or without an AI component and 463 were in scope but were reviews, editorials or guidelines, which the eligibility criteria exclude. That leaves the 3,528 included primary studies in this table (3,154 from PubMed, 365 from Embase, 9 from OpenAlex).
+7,085 records were retrieved and 396 conference proceedings set aside by the publication-form criterion, leaving 6,689 screened. 2,695 were screened out as adult-only, non-radiologic or without an AI component and 463 were in scope but were reviews, editorials or guidelines, which the eligibility criteria exclude. That leaves the 3,531 included primary studies in this table (3,157 from PubMed, 365 from Embase, 9 from OpenAlex).
 
 Every screened record, including the excluded ones and the coded reason each was excluded, stays in `data/processed/pedrad_paper_db.json`; that store, not this table, is what an audit of the screening decisions reads.
 
-Impact is reported five ways because no one measure covers the whole corpus. `citations` is the raw count and can only be compared within a year. `citations/yr` is that count divided by years since publication. `RCR` is iCite's relative citation ratio, where 1.0 is the median NIH-funded paper of the same field and year; it is undefined until a paper is about two years old and is computed for PubMed records only. `fwci` is OpenAlex's field-weighted citation impact, on the same 1.0-is-average scale, computed for anything with a DOI — including the Embase-only records, which have no PMID and therefore no RCR. `impact` is the column to sort on: FWCI where OpenAlex has it, RCR otherwise, blank until the paper has 5 raw citations (below that the ratio is dividing by a fraction of an expected citation and says nothing), with `impact_measure` naming which. 1,705 of 3,528 studies carry one. The top decile of those — 171 studies at or above 13.58x the average paper of their field and year — is the subset the slides name individually; the median included study sits near 2x.
+Impact is reported five ways because no one measure covers the whole corpus. `citations` is the raw count and can only be compared within a year. `citations/yr` is that count divided by years since publication. `RCR` is iCite's relative citation ratio, where 1.0 is the median NIH-funded paper of the same field and year; it is undefined until a paper is about two years old and is computed for PubMed records only. `fwci` is OpenAlex's field-weighted citation impact, on the same 1.0-is-average scale, computed for anything with a DOI — including the Embase-only records, which have no PMID and therefore no RCR. `impact` is the column to sort on: FWCI where OpenAlex has it, RCR otherwise, blank until the paper has 5 raw citations (below that the ratio is dividing by a fraction of an expected citation and says nothing), with `impact_measure` naming which. 1,707 of 3,531 studies carry one. The top decile of those — 171 studies at or above 13.58x the average paper of their field and year — is the subset the slides name individually; the median included study sits near 2x.
 
 Each row is read from the paper's abstract under a fixed schema, so a field is blank when the abstract does not state it — most notably the release column, which abstracts are usually silent about. Read "unclear" as "the paper does not say", not as "unavailable". Hand corrections in `data/paper_db_overrides.json` take precedence over the extracted value and are flagged in the `overridden_fields` column of the CSV.
 
@@ -18,7 +18,7 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 
 | Status | Papers |
 | --- | ---: |
-| unclear | 2984 |
+| unclear | 2987 |
 | unreleased | 212 |
 | open-source | 169 |
 | commercial | 163 |
@@ -27,9 +27,9 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 
 | Modality | Papers |
 | --- | ---: |
-| MRI | 1604 |
-| ultrasound | 837 |
-| x-ray / radiography | 685 |
+| MRI | 1605 |
+| ultrasound | 838 |
+| x-ray / radiography | 686 |
 | CT | 326 |
 | nuclear / PET | 53 |
 | other | 46 |
@@ -42,10 +42,10 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 | Task | Papers |
 | --- | ---: |
 | detection / diagnosis | 1353 |
-| measurement / quantification | 849 |
+| measurement / quantification | 851 |
 | outcome prediction | 686 |
-| segmentation | 668 |
-| reconstruction / imputation | 278 |
+| segmentation | 669 |
+| reconstruction / imputation | 279 |
 | workflow / non-interpretive | 167 |
 | other | 124 |
 | report generation / LLM | 28 |
@@ -56,11 +56,11 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 
 | Age group | Papers |
 | --- | ---: |
-| child | 1313 |
+| child | 1314 |
 | adolescent | 900 |
-| fetal | 795 |
-| infant | 518 |
-| pediatric (unspecified) | 504 |
+| fetal | 796 |
+| infant | 519 |
+| pediatric (unspecified) | 505 |
 | neonate | 348 |
 | mixed pediatric and adult | 319 |
 
@@ -68,10 +68,10 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 
 | Strongest validation claimed | Papers |
 | --- | ---: |
-| internal only | 2368 |
-| external / multi-center | 659 |
+| internal only | 2369 |
+| external / multi-center | 660 |
 | reader study | 220 |
-| none / not stated | 163 |
+| none / not stated | 164 |
 | prospective | 118 |
 
 ### Papers per year
@@ -91,21 +91,21 @@ Each row is read from the paper's abstract under a fixed schema, so a field is b
 | 2015 | 29 |
 | 2016 | 32 |
 | 2017 | 53 |
-| 2018 | 68 |
+| 2018 | 69 |
 | 2019 | 113 |
 | 2020 | 167 |
-| 2021 | 266 |
+| 2021 | 267 |
 | 2022 | 361 |
 | 2023 | 410 |
 | 2024 | 555 |
 | 2025 | 685 |
-| 2026 | 718 |
+| 2026 | 719 |
 
 ### Database of record
 
 | Search source | Papers |
 | --- | ---: |
-| PubMed | 3154 |
+| PubMed | 3157 |
 | Embase | 365 |
 | OpenAlex | 9 |
 

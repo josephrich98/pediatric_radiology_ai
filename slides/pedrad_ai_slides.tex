@@ -44,7 +44,7 @@
 \renewcommand{\arraystretch}{1.08}
 
 \title[Radiology AI]{Artificial Intelligence in Pediatric Radiology}
-\author{Joseph Rich, Dr.~Amit Sura}
+\author{Joseph Rich; Amit Sura, MD}
 \institute{CHLA Radiology Grand Rounds}
 \date{October 8, 2026}
 
@@ -74,7 +74,7 @@
 {\tiny\fontsize{6}{7.3}\selectfont\raggedright
 \textbf{radiology}: (radiology[tiab] OR radiological[tiab] OR radiograph*[tiab] OR "medical imaging"[tiab] OR "diagnostic imaging"[tiab] OR tomography[tiab] OR "magnetic resonance"[tiab] OR MRI[tiab] OR "MR imaging"[tiab] OR "MR images"[tiab] OR MRIs[tiab] OR "MR image"[tiab] OR "MR scan"[tiab] OR "MR scans"[tiab] OR "computed tomography"[tiab] OR CT[tiab] OR ultrasound[tiab] OR ultrasonograph*[tiab] OR sonograph*[tiab] OR echocardiograph*[tiab] OR mammograph*[tiab] OR "chest x-ray"[tiab] OR "x-ray"[tiab] OR fluoroscop*[tiab] OR scintigraph*[tiab] OR "positron emission"[tiab] OR PET[tiab] OR SPECT[tiab] OR angiograph*[tiab] OR neuroimaging[tiab] OR tractograph*[tiab] OR elastograph*[tiab] OR "fMRI"[tiab] OR "functional MRI"[tiab] OR "functional magnetic resonance"[tiab] OR connectome*[tiab] OR "diffusion tensor"[tiab] OR DTI[tiab] OR "bone age"[tiab] OR "skeletal age"[tiab] OR "skeletal maturity"[tiab] OR "barium enema"[tiab])\\[2pt]
 \textbf{AI}: ("artificial intelligence"[tiab] OR "machine learning"[tiab] OR "deep learning"[tiab] OR "convolutional neural network"[tiab] OR "convolutional neural networks"[tiab] OR "neural network"[tiab] OR "neural networks"[tiab] OR "computer-aided diagnosis"[tiab] OR "computer aided diagnosis"[tiab] OR "computer-aided detection"[tiab] OR radiomic*[tiab] OR "computer vision"[tiab] OR "large language model"[tiab] OR "large language models"[tiab] OR "foundation model"[tiab] OR "foundation models"[tiab] OR "transfer learning"[tiab] OR "vision transformer"[tiab] OR "self-supervised"[tiab] OR "random forest"[tiab] OR "support vector machine"[tiab] OR "gradient boosting"[tiab] OR "natural language processing"[tiab])\\[2pt]
-\textbf{pediatric}: (pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR neonat*[tiab] OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR fetus*[tiab] OR foetus*[tiab] OR newborn*[tiab] OR preterm[tiab] OR "premature infant"[tiab] OR "premature infants"[tiab] OR "premature birth"[tiab] OR "premature neonate"[tiab] OR "premature neonates"[tiab] OR prenatal[tiab] OR antenatal[tiab] OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab] OR "children's hospital"[tiab] OR schoolchild*[tiab] OR toddler*[tiab])
+\textbf{pediatric}: (pediatric*[tiab] OR paediatric*[tiab] OR child*[tiab] OR infant*[tiab] OR neonat*[tiab] OR adolescen*[tiab] OR fetal[tiab] OR foetal[tiab] OR fetus*[tiab] OR foetus*[tiab] OR newborn*[tiab] OR preterm[tiab] OR "premature infant"[tiab] OR "premature infants"[tiab] OR "premature birth"[tiab] OR "premature neonate"[tiab] OR "premature neonates"[tiab] OR prenatal[tiab] OR antenatal[tiab] OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab] OR "children's hospital"[tiab] OR schoolchild*[tiab] OR toddler*[tiab] OR baby[tiab] OR babies[tiab])
 \par}
 \end{frame}
 
@@ -89,34 +89,31 @@
 \begin{frame}[category=Journals]{Which journals publish pediatric radiology AI}
 \begin{center}\includegraphics[height=0.66\textheight,width=\textwidth,keepaspectratio]{journal_impact.png}\end{center}
 \vspace{-8pt}
-{\tiny x = OpenAlex 2-year mean citedness (a free JIF analogue; runs below the published JIF). y = cumulative pediatric radiology-AI papers 2015-2026 (PubMed, strict title/abstract query). The 29 journals with at least 25 of them are shown, carrying 1,511 of 4,399; the rest is a long tail. Largest: Scientific Reports (156); median impact 3.8, 1 at 10 or above -- this work lands mostly in mid-impact specialty and technical journals. A further 3 conference proceedings and preprint servers clear the threshold (95 papers) but have no impact number of any kind and are not plotted. The same chart animated year by year: \texttt{figures/journal\_impact.gif}.}
 \end{frame}
 
 \begin{frame}[category=Journals]{Pediatric radiology AI publications, stratified by modality and task}
 \begin{center}\includegraphics[height=0.47\textheight,width=\textwidth,keepaspectratio]{ped_modality_by_task.png}\end{center}
 \vspace{-6pt}
-{\tiny Same construction, restricted to the pediatric subset (9,762 papers incl. 608 preprints). Top pediatric modalities:
-MRI 41\%, CT 16\%, x-ray / radiography 13\%, ultrasound 12\%. Mammography is omitted: its 67 pediatric-query hits (of 9,762) are adult breast-imaging papers whose abstracts mention children.}
 \vspace{-2pt}
 \tiny
 \begin{columns}[T]
 \begin{column}{0.33\textwidth}
 \begin{itemize}
-\item \textbf{detection / diagnosis}: is a finding present now, and which one (label or box): fracture, pneumonia, tumor; includes triage and screening
-\item \textbf{segmentation}: outline a structure or lesion (a mask)
-\item \textbf{measurement / quantification}: a number from the image: bone age, Cobb angle, organ volume, fetal biometry
+\item \textbf{detection / diagnosis}: predict discrete disease labels (e.g., fracture, pneumonia, tumor, triage)
+\item \textbf{segmentation}: outline a structure or lesion
+\item \textbf{measurement / quantification}: measure a number from the image (e.g., bone age, Cobb angle, organ volume, fetal biometry)
 \end{itemize}
 \end{column}
 \begin{column}{0.33\textwidth}
 \begin{itemize}
 \item \textbf{outcome prediction}: a future risk, response, or survival estimate from the image (prognosis, radiomics signatures)
-\item \textbf{reconstruction / imputation}: a better or missing image: lower dose, faster scans, denoising, synthetic CT/MR
+\item \textbf{reconstruction / imputation}: generate a better or missing image
 \item \textbf{report generation / LLM}: text: draft, summarize, or extract from radiology reports
 \end{itemize}
 \end{column}
 \begin{column}{0.33\textwidth}
 \begin{itemize}
-\item \textbf{foundation model / vision-language}: a large pretrained model reused across tasks (segment-anything, self-supervised)
+\item \textbf{foundation model / vision-language}: a large pretrained model reused across tasks
 \item \textbf{agent / autonomous}: multi-step actions taken without a human in the loop
 \item \textbf{workflow / non-interpretive}: protocoling, scheduling, ordering, decision support, education
 \end{itemize}
@@ -130,20 +127,20 @@ MRI 41\%, CT 16\%, x-ray / radiography 13\%, ultrasound 12\%. Mammography is omi
 
 \begin{frame}[category=Journals]{Most-cited radiology AI papers, 2008-2022}
 \tiny
-\begin{adjustbox}{max totalsize={\textwidth}{0.64\textheight}}
+\begin{adjustbox}{max totalsize={\textwidth}{0.74\textheight}}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.459\textwidth}|>{\raggedright\arraybackslash}p{0.203\textwidth}|>{\raggedright\arraybackslash}p{0.338\textwidth}|}
-\hline \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} & \textbf{Venue} & \textbf{What it answers} \\ \hline
-5,797 & 443.4 & Swin-Unet: Unet-like Pure Transformer for Medical Image Segmentation (2021) & ECCV Workshops & \textit{segmentation} \\ \hline
-2,628 & 288.8 & Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images (2022) & BrainLes@MICCAI & \textit{segmentation} \\ \hline
-2,782 & 262.1 & COVID-Net: a tailored deep convolutional neural network design for detection of COVID-19 cases from chest X-ray images (2020) & Scientific Reports & \textit{classification}: Can a CNN detect COVID-19 on chest X-ray? (COVID-Net) \\ \hline
-3,710 & 230.9 & ChestX-Ray8: Hospital-Scale Chest X-Ray Database and Benchmarks on Weakly-Supervised Classification and Localization of Common Thorax Diseases (2017) & Computer Vision and Pattern Recognition & \textit{classification} \\ \hline
-10,389 & 219.2 & nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation (2020) & Nature Methods & \textit{segmentation}: Can one self-configuring method segment any organ or lesion without hand tuning? (nnU-Net) \\ \hline
-2,036 & 206.6 & Covid-19: automatic detection from X-ray images utilizing transfer learning with convolutional neural networks (2020) & Physical and Engineering Sciences in Medicine & \textit{classification}: Can transfer learning detect COVID-19 on X-ray with small data? \\ \hline
-5,662 & 156.0 & Computational Radiomics System to Decode the Radiographic Phenotype (2017) & Cancer Research & \textit{radiomics}: Can standardized image features (radiomics) be extracted reproducibly? (PyRadiomics) \\ \hline
-2,145 & 135.7 & MultiResUNet : Rethinking the U-Net Architecture for Multimodal Biomedical Image Segmentation (2019) & Neural Networks & \textit{segmentation}: Architecture variant of U-Net for multimodal segmentation \\ \hline
-2,126 & 119.7 & CE-Net: Context Encoder Network for 2D Medical Image Segmentation (2019) & IEEE Transactions on Medical Imaging & \textit{segmentation}: Architecture variant for 2D medical image segmentation (CE-Net) \\ \hline
-9,731 & 86.7 & UNet++: A Nested U-Net Architecture for Medical Image Segmentation (2018) & DLMIA/ML-CDS@MICCAI & \textit{segmentation} \\ \hline
+\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.34\textwidth}|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.40\textwidth}|}
+\hline \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} & \textbf{Venue} & \textbf{Clinical problem} & \textbf{What it answers} \\ \hline
+5,797 & 443.4 & Swin-Unet: Unet-like Pure Transformer for Medical Image Segmentation (2021) & ECCV Workshops & general (multi-organ CT, cardiac MRI) & \textit{segmentation}: Can a pure transformer, with no convolutions, outline abdominal organs on CT and heart chambers on MRI as well as a U-Net? \\ \hline
+2,628 & 288.8 & Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images (2022) & BrainLes@MICCAI & brain tumors (glioma) & \textit{segmentation}: Can a transformer encoder outline glioma subregions (enhancing tumor, edema, necrotic core) on multiparametric brain MRI? (BraTS 2021) \\ \hline
+2,782 & 262.1 & COVID-Net: a tailored deep convolutional neural network design for detection of COVID-19 cases from chest X-ray images (2020) & Scientific Reports & COVID-19 / pneumonia & \textit{diagnosis}: Can a purpose-built CNN tell COVID-19 pneumonia from other pneumonia and normal chest X-rays? (COVID-Net, open source) \\ \hline
+3,710 & 230.9 & ChestX-Ray8: Hospital-Scale Chest X-Ray Database and Benchmarks on Weakly-Supervised Classification and Localization of Common Thorax Diseases (2017) & Computer Vision and Pattern Recognition & thoracic disease on chest X-ray & \textit{diagnosis}: Can labels mined automatically from radiology reports train a model to classify and localize eight common thoracic findings? (NIH ChestX-ray dataset, 108,948 images) \\ \hline
+10,389 & 219.2 & nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation (2020) & Nature Methods & general (any organ or lesion) & \textit{segmentation}: Can one self-configuring method segment any organ or lesion without hand tuning? (nnU-Net) \\ \hline
+2,036 & 206.6 & Covid-19: automatic detection from X-ray images utilizing transfer learning with convolutional neural networks (2020) & Physical and Engineering Sciences in Medicine & COVID-19 / pneumonia & \textit{diagnosis}: Can CNNs pretrained on everyday photographs detect COVID-19 on chest X-ray from only a few hundred positive cases? \\ \hline
+5,662 & 156.0 & Computational Radiomics System to Decode the Radiographic Phenotype (2017) & Cancer Research & cancer (any site) & \textit{radiomics}: Can quantitative image features (shape, intensity, texture) be extracted in a standardized, reproducible way across sites? (PyRadiomics, open source) \\ \hline
+2,145 & 135.7 & MultiResUNet : Rethinking the U-Net Architecture for Multimodal Biomedical Image Segmentation (2019) & Neural Networks & general (multiple image types) & \textit{segmentation}: Does a redesigned U-Net segment more reliably across five biomedical image types, including brain MRI? \\ \hline
+2,126 & 119.7 & CE-Net: Context Encoder Network for 2D Medical Image Segmentation (2019) & IEEE Transactions on Medical Imaging & general (2D images: lung CT, retina) & \textit{segmentation}: Does adding a context-encoder module to a U-Net improve 2D segmentation of structures such as the lungs on CT and the optic disc and vessels on retinal images? \\ \hline
+9,731 & 86.7 & UNet++: A Nested U-Net Architecture for Medical Image Segmentation (2018) & DLMIA/ML-CDS@MICCAI & general (nodule, liver, polyp, nuclei) & \textit{segmentation}: Do nested, redesigned skip connections make U-Net more accurate on lung nodules, liver, colon polyps and cell nuclei? \\ \hline
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
@@ -216,20 +213,20 @@ MRI 41\%, CT 16\%, x-ray / radiography 13\%, ultrasound 12\%. Mammography is omi
 
 \begin{frame}[category=Journals]{Most-cited radiology AI papers, 2026 (year to date)}
 \tiny
-\begin{adjustbox}{max totalsize={\textwidth}{0.64\textheight}}
+\begin{adjustbox}{max totalsize={\textwidth}{0.74\textheight}}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.459\textwidth}|>{\raggedright\arraybackslash}p{0.203\textwidth}|>{\raggedright\arraybackslash}p{0.338\textwidth}|}
-\hline \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} & \textbf{Venue} & \textbf{What it answers} \\ \hline
-59 & 111.4 & A generalizable foundation model for analysis of human brain MRI & Nature Neuroscience & \textit{other} \\ \hline
-12 & 61.4 & Explainability-Aligned Reliability-Weighted Fuzzy Ensemble for Automated Cervical Cancer Classification & International Journal of Intelligent Systems & \textit{oncology} \\ \hline
-21 & 58.8 & A hybrid deep learning framework based on VGG19 and U-Net for accurate brain tumor segmentation in MRI images & Magnetic Resonance Letters & \textit{segmentation} \\ \hline
-14 & 50.1 & MedVersa: A Generalist Foundation Model for Diverse Medical Imaging Tasks & NEJM AI & \textit{other} \\ \hline
-15 & 49.5 & Explainable AI-driven MRI-based brain tumor classification: a novel deep learning approach & Frontiers Artif. Intell. & \textit{oncology} \\ \hline
-13 & 46.0 & A deep learning framework for breast cancer diagnosis using Swin Transformer and Dual-Attention Multi-scale Fusion Network & Scientific Reports & \textit{oncology} \\ \hline
-13 & 44.2 & Multi-class eye disease classification using deep learning EfficientNetB0 fusion techniques & Scientific Reports & \textit{classification} \\ \hline
-12 & 39.6 & 3D-UNet+: An enhanced 3D U-Net framework for brain tumor segmentation with systematic hyperparameter tuning & Neural computing \& applications (Print) & \textit{segmentation} \\ \hline
-13 & 30.9 & Deep Learning Approaches for Brain Tumor Classification in MRI Scans: An Analysis of Model Interpretability & Applied Sciences & \textit{oncology} \\ \hline
-19 & 27.1 & BIBSNet: A deep learning baby image brain segmentation network for MRI scans & Developmental Cognitive Neuroscience & \textit{segmentation}: Can one network segment infant brain MRI across the first years of life? (BIBSNet) \\ \hline
+\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.34\textwidth}|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.40\textwidth}|}
+\hline \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} & \textbf{Venue} & \textbf{Clinical problem} & \textbf{What it answers} \\ \hline
+59 & 111.4 & A generalizable foundation model for analysis of human brain MRI & Nature Neuroscience & brain (multiple disorders) & \textit{foundation model}: Can one model pretrained on large unlabeled brain MRI collections be adapted to many downstream brain tasks with little labeled data? \\ \hline
+12 & 61.4 & Explainability-Aligned Reliability-Weighted Fuzzy Ensemble for Automated Cervical Cancer Classification & International Journal of Intelligent Systems & cervical cancer & \textit{diagnosis}: Can a reliability-weighted ensemble of CNNs classify cervical cancer images and show which image regions drove each call? \\ \hline
+21 & 58.8 & A hybrid deep learning framework based on VGG19 and U-Net for accurate brain tumor segmentation in MRI images & Magnetic Resonance Letters & brain tumors & \textit{segmentation}: Does pairing a pretrained VGG19 encoder with a U-Net decoder give more accurate brain tumor outlines on MRI? \\ \hline
+14 & 50.1 & MedVersa: A Generalist Foundation Model for Diverse Medical Imaging Tasks & NEJM AI & general (multiple modalities) & \textit{foundation model}: Can a single generalist model handle many imaging tasks (report drafting, detection, segmentation) across chest X-ray, CT, MRI and dermatology images? \\ \hline
+15 & 49.5 & Explainable AI-driven MRI-based brain tumor classification: a novel deep learning approach & Frontiers Artif. Intell. & brain tumors & \textit{diagnosis}: Can a CNN classify brain tumor type on MRI and highlight the image regions behind each prediction? \\ \hline
+13 & 46.0 & A deep learning framework for breast cancer diagnosis using Swin Transformer and Dual-Attention Multi-scale Fusion Network & Scientific Reports & breast cancer & \textit{diagnosis}: Can a Swin Transformer with multi-scale attention fusion separate benign from malignant breast lesions on imaging? \\ \hline
+13 & 44.2 & Multi-class eye disease classification using deep learning EfficientNetB0 fusion techniques & Scientific Reports & eye disease (retinal images) & \textit{diagnosis}: Can fused EfficientNet models classify several eye diseases from retinal images? (Ophthalmic, outside radiology proper) \\ \hline
+12 & 39.6 & 3D-UNet+: An enhanced 3D U-Net framework for brain tumor segmentation with systematic hyperparameter tuning & Neural computing \& applications (Print) & brain tumors & \textit{segmentation}: Does systematic hyperparameter tuning of a 3D U-Net improve brain tumor segmentation on multiparametric MRI? \\ \hline
+13 & 30.9 & Deep Learning Approaches for Brain Tumor Classification in MRI Scans: An Analysis of Model Interpretability & Applied Sciences & brain tumors & \textit{diagnosis}: Which CNN brain tumor classifiers on MRI give explanations that point at the tumor rather than at irrelevant parts of the image? \\ \hline
+19 & 27.1 & BIBSNet: A deep learning baby image brain segmentation network for MRI scans & Developmental Cognitive Neuroscience & neurodevelopment (infant brain) & \textit{segmentation}: Can one network segment infant brain MRI (gray and white matter, deep structures) across the first years of life, when tissue contrast is still changing? (BIBSNet, open source) \\ \hline
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
@@ -237,20 +234,20 @@ MRI 41\%, CT 16\%, x-ray / radiography 13\%, ultrasound 12\%. Mammography is omi
 
 \begin{frame}[category=Journals]{Most-cited pediatric radiology AI papers, 2008-2022}
 \tiny
-\begin{adjustbox}{max totalsize={\textwidth}{0.64\textheight}}
+\begin{adjustbox}{max totalsize={\textwidth}{0.74\textheight}}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.459\textwidth}|>{\raggedright\arraybackslash}p{0.203\textwidth}|>{\raggedright\arraybackslash}p{0.338\textwidth}|}
-\hline \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} & \textbf{Venue} & \textbf{What it answers} \\ \hline
-426 & 310.7 & Performance of a Deep-Learning Neural Network Model in Assessing Skeletal Maturity on Pediatric Hand Radiographs. (2017) & Radiology & \textit{bone age}: Can a CNN assess skeletal maturity as accurately as radiologists? \\ \hline
-432 & 305.5 & Fully Automated Deep Learning System for Bone Age Assessment (2017) & Journal of digital imaging & \textit{bone age}: Fully automated bone age from hand radiographs \\ \hline
-407 & 206.8 & Deep learning for automated skeletal bone age assessment in X-ray images (2017) & Medical Image Anal. & \textit{bone age}: Deep learning for automated bone age (BoNet) \\ \hline
-144 & 69.0 & Computerized Bone Age Estimation Using Deep Learning Based Program: Evaluation of the Accuracy and Efficiency. (2017) & AJR. American journal of roentgenology & \textit{bone age}: Is a commercial deep-learning bone-age program accurate and faster in practice? \\ \hline
-353 & 55.0 & Standard Plane Localization in Fetal Ultrasound via Domain Transferred Deep Neural Networks (2015) & IEEE journal of biomedical and health informatics & \textit{fetal MRI} \\ \hline
-196 & 54.4 & Automatic Fetal Ultrasound Standard Plane Recognition Based on Deep Learning and IIoT (2021) & IEEE Transactions on Industrial Informatics & \textit{fetal MRI} \\ \hline
-449 & 35.4 & A transfer learning method with deep residual network for pediatric pneumonia diagnosis (2020) & Comput. Methods Programs Biomed. & \textit{pneumonia / COVID} \\ \hline
-236 & 28.9 & Evaluation of deep convolutional neural networks for automatic classification of common maternal fetal ultrasound planes (2020) & Scientific Reports & \textit{fetal MRI} \\ \hline
-460 & 26.4 & The RSNA Pediatric Bone Age Machine Learning Challenge. (2019) & Radiology & \textit{bone age}: How well can crowdsourced AI estimate bone age? (RSNA challenge, 260 teams) \\ \hline
-258 & 25.8 & An ensemble of neural networks provides expert-level prenatal detection of complex congenital heart disease (2021) & Nature Medicine & \textit{detection} \\ \hline
+\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.34\textwidth}|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.40\textwidth}|}
+\hline \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} & \textbf{Venue} & \textbf{Clinical problem} & \textbf{What it answers} \\ \hline
+426 & 310.7 & Performance of a Deep-Learning Neural Network Model in Assessing Skeletal Maturity on Pediatric Hand Radiographs. (2017) & Radiology & bone age / skeletal maturity & \textit{measurement}: Can a CNN read bone age from a hand radiograph as accurately as pediatric radiologists using the Greulich--Pyle atlas? \\ \hline
+432 & 305.5 & Fully Automated Deep Learning System for Bone Age Assessment (2017) & Journal of digital imaging & bone age / skeletal maturity & \textit{measurement}: Can a fully automated pipeline (find the hand, standardize the image, read it) assign bone age with no manual steps, fast enough for clinical use? \\ \hline
+407 & 206.8 & Deep learning for automated skeletal bone age assessment in X-ray images (2017) & Medical Image Anal. & bone age / skeletal maturity & \textit{measurement}: Can a deep network estimate bone age directly from radiographs, without hand-crafted features, across sexes and ethnicities? (BoNet) \\ \hline
+144 & 69.0 & Computerized Bone Age Estimation Using Deep Learning Based Program: Evaluation of the Accuracy and Efficiency. (2017) & AJR. American journal of roentgenology & bone age / skeletal maturity & \textit{measurement}: Is a commercial deep-learning bone-age program (VUNO) accurate, and does it shorten radiologist reading time? \\ \hline
+353 & 55.0 & Standard Plane Localization in Fetal Ultrasound via Domain Transferred Deep Neural Networks (2015) & IEEE journal of biomedical and health informatics & fetal anomalies / prenatal & \textit{detection}: Can a CNN find the frame showing the fetal abdominal standard plane (where biometry is measured) in an ultrasound video, using layers transferred from a photo-trained network to cope with little data? \\ \hline
+196 & 54.4 & Automatic Fetal Ultrasound Standard Plane Recognition Based on Deep Learning and IIoT (2021) & IEEE Transactions on Industrial Informatics & fetal anomalies / prenatal & \textit{detection}: Can deep learning recognize the standard fetal ultrasound views automatically, reducing dependence on sonographer experience? \\ \hline
+449 & 35.4 & A transfer learning method with deep residual network for pediatric pneumonia diagnosis (2020) & Comput. Methods Programs Biomed. & pneumonia / bronchiolitis / RSV / TB & \textit{diagnosis}: Can a residual CNN with transfer learning diagnose pneumonia on pediatric chest X-rays (children aged 1--5, Guangzhou dataset)? \\ \hline
+236 & 28.9 & Evaluation of deep convolutional neural networks for automatic classification of common maternal fetal ultrasound planes (2020) & Scientific Reports & fetal anomalies / prenatal & \textit{detection}: Can CNNs sort routine maternal--fetal ultrasound images into the standard planes (fetal brain, abdomen, femur, thorax, cervix) as well as a sonographer? (public FETAL\_PLANES\_DB) \\ \hline
+460 & 26.4 & The RSNA Pediatric Bone Age Machine Learning Challenge. (2019) & Radiology & bone age / skeletal maturity & \textit{bone age}: How well can crowdsourced AI estimate bone age? (RSNA challenge, 260 teams) \\ \hline
+258 & 25.8 & An ensemble of neural networks provides expert-level prenatal detection of complex congenital heart disease (2021) & Nature Medicine & congenital heart disease / cardiac & \textit{detection}: Can an ensemble of networks flag complex congenital heart disease on routine fetal screening ultrasound views as well as fetal cardiologists? \\ \hline
 \end{tabular}
 \end{adjustbox}
 \\[2pt]
@@ -323,20 +320,20 @@ MRI 41\%, CT 16\%, x-ray / radiography 13\%, ultrasound 12\%. Mammography is omi
 
 \begin{frame}[category=Journals]{Most-cited pediatric radiology AI papers, 2026 (year to date)}
 \tiny
-\begin{adjustbox}{max totalsize={\textwidth}{0.64\textheight}}
+\begin{adjustbox}{max totalsize={\textwidth}{0.74\textheight}}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.510\textwidth}|>{\raggedright\arraybackslash}p{0.225\textwidth}|>{\raggedright\arraybackslash}p{0.375\textwidth}|}
-\hline \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} & \textbf{Venue} & \textbf{What it answers} \\ \hline
-3 & 45.1 & Wavelet-Based Frequency Replacement and Edge Enhancement for Semi-Supervised Fetal Ultrasound Image Segmentation & Journal of ultrasound in medicine & \textit{segmentation} \\ \hline
-19 & 27.1 & BIBSNet: A deep learning baby image brain segmentation network for MRI scans & Developmental Cognitive Neuroscience & \textit{segmentation}: Can one network segment infant brain MRI across the first years of life? (BIBSNet) \\ \hline
-4 & 27.1 & Beyond Benchmarks of IUGC: Rethinking Requirements of Deep Learning Methods for Intrapartum Ultrasound Biometry from Fetal Ultrasound Videos & Medical Image Anal. & \textit{fetal MRI} \\ \hline
-3 & 26.2 & Zero-shot performance of a general-purpose vision-language model for pediatric appendicitis diagnosis. & Pediatric Radiology & \textit{classification} \\ \hline
-5 & 24.1 & Deep learning assessment of fetal brain maturation on 3D ultrasound volumes in early-onset fetal growth restriction & Ultrasound in Obstetrics and Gynecology & \textit{fetal ultrasound}: Can deep learning grade fetal brain maturation on 3D ultrasound in growth restriction? \\ \hline
-3 & 18.1 & A multi-task deep learning and radiomics framework for fetal anatomical structure detection and classification in ultrasound imaging & Scientific Reports & \textit{radiomics} \\ \hline
-2 & 18.1 & Deep learning-based cerebellar segmentation on T2-weighted fluid-attenuated inversion recovery magnetic resonance imaging for detecting cerebellar hypoplasia/atrophy in infants & Pediatric Radiology & \textit{segmentation} \\ \hline
-3 & 14.6 & Deep Learning-Based Multi-Class Pediatric Wrist Fracture Subtype Classification: A Pilot Study Comparing Convolutional Neural Network Architectures & Journal of Imaging & \textit{fracture} \\ \hline
-4 & 9.8 & Deep learning super-resolution of paediatric ultra-low-field MRI without paired high-field scans & bioRxiv & \textit{other} \\ \hline
-2 & 9.8 & Acquisition time/dose reduction in pediatric PET imaging using patch-based deep learning & EJNMMI Physics & \textit{reconstruction}: Can pediatric PET use one fifth of the counts with patch-based deep-learning denoising? \\ \hline
+\begin{tabular}{|r|r|>{\raggedright\arraybackslash}p{0.34\textwidth}|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.40\textwidth}|}
+\hline \textbf{Cites} & \textbf{FWCI} & \textbf{Paper} & \textbf{Venue} & \textbf{Clinical problem} & \textbf{What it answers} \\ \hline
+3 & 45.1 & Wavelet-Based Frequency Replacement and Edge Enhancement for Semi-Supervised Fetal Ultrasound Image Segmentation & Journal of ultrasound in medicine & fetal anomalies / prenatal & \textit{segmentation}: Can fetal head and pubic symphysis be segmented on ultrasound from only a few labeled images, using frequency and edge cues to learn from unlabeled ones? \\ \hline
+19 & 27.1 & BIBSNet: A deep learning baby image brain segmentation network for MRI scans & Developmental Cognitive Neuroscience & neurodevelopment (infant brain) & \textit{segmentation}: Can one network segment infant brain MRI (gray and white matter, deep structures) across the first years of life, when tissue contrast is still changing? (BIBSNet, open source) \\ \hline
+4 & 27.1 & Beyond Benchmarks of IUGC: Rethinking Requirements of Deep Learning Methods for Intrapartum Ultrasound Biometry from Fetal Ultrasound Videos & Medical Image Anal. & labor / intrapartum (prenatal) & \textit{measurement}: What do deep-learning methods need to measure labor progress automatically from intrapartum ultrasound video where trained sonographers are scarce? (IUGC challenge, 774 videos) \\ \hline
+3 & 26.2 & Zero-shot performance of a general-purpose vision-language model for pediatric appendicitis diagnosis. & Pediatric Radiology & appendicitis / intussusception / NEC & \textit{vision-language}: Can a general-purpose vision-language model (Llama 4), with no task-specific training, diagnose pediatric appendicitis from ultrasound images, report text and clinical data? (294 patients) \\ \hline
+5 & 24.1 & Deep learning assessment of fetal brain maturation on 3D ultrasound volumes in early-onset fetal growth restriction & Ultrasound in Obstetrics and Gynecology & fetal anomalies / prenatal & \textit{measurement}: Can deep learning grade fetal brain maturation on 3D ultrasound in early-onset growth restriction, and does a maturation delay predict neonatal complications? \\ \hline
+3 & 18.1 & A multi-task deep learning and radiomics framework for fetal anatomical structure detection and classification in ultrasound imaging & Scientific Reports & fetal anomalies / prenatal & \textit{detection}: Can one model locate and label nine fetal brain and craniofacial structures on first-trimester ultrasound to support early anomaly screening? (4,532 scans, 9 centers) \\ \hline
+2 & 18.1 & Deep learning-based cerebellar segmentation on T2-weighted fluid-attenuated inversion recovery magnetic resonance imaging for detecting cerebellar hypoplasia/atrophy in infants & Pediatric Radiology & neurodevelopment (cerebellar hypoplasia / atrophy) & \textit{segmentation}: Can automated cerebellar volume on infant T2-FLAIR MRI flag cerebellar hypoplasia or atrophy against age-expected size? \\ \hline
+3 & 14.6 & Deep Learning-Based Multi-Class Pediatric Wrist Fracture Subtype Classification: A Pilot Study Comparing Convolutional Neural Network Architectures & Journal of Imaging & fracture / trauma / abuse & \textit{diagnosis}: Which CNN architecture best tells pediatric wrist fracture subtypes (buckle, greenstick, Salter--Harris) apart on radiographs? (pilot, 940 images) \\ \hline
+4 & 9.8 & Deep learning super-resolution of paediatric ultra-low-field MRI without paired high-field scans & bioRxiv & brain MRI access (portable low-field) & \textit{reconstruction}: Can deep learning sharpen affordable ultra-low-field pediatric brain MRI toward high-field quality without paired high-field scans to train on? \\ \hline
+2 & 9.8 & Acquisition time/dose reduction in pediatric PET imaging using patch-based deep learning & EJNMMI Physics & radiation dose reduction (PET) & \textit{reconstruction}: Can pediatric PET use one fifth of the counts with patch-based deep-learning denoising? \\ \hline
 \end{tabular}
 \end{adjustbox}
 \\[1pt]
@@ -924,7 +921,7 @@ FeTA (fetal brain tissue annotation) & 2021--24 & fetal brain MRI & 280 volumes 
 \begin{center}\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{commercial_problems.png}\end{center}
 \end{frame}
 
-\begin{frame}<0>[category=Commercial Software]{Products a pediatric radiologist should know (part 1)}
+\begin{frame}[category=Commercial Software]{Products a pediatric radiologist should know (part 1)}
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.72\textheight}}
 \renewcommand{\arraystretch}{1.2}
@@ -947,7 +944,7 @@ CoLumbo & Smart Soft Healthcare & spine / scoliosis & Spine MRI segmentation, me
 \\[3pt]{\scriptsize Square brackets give the FDA submission supporting the pediatric claim and its decision year; a blank means no US authorization was identified for that product. ``Where it stands'' is our reading of deployment, not a measured adoption rate. A company's total of FDA AI entries is not a pediatric credential --- the large vendors' entries are mostly whole scanners whose labels list pediatric imaging as one clinical application (see the authorizations-per-company figure).}
 \end{frame}
 
-\begin{frame}<0>[category=Commercial Software]{Products a pediatric radiologist should know (part 2)}
+\begin{frame}[category=Commercial Software]{Products a pediatric radiologist should know (part 2)}
 \tiny
 \begin{adjustbox}{max totalsize={\textwidth}{0.68\textheight}}
 \renewcommand{\arraystretch}{1.2}
@@ -1091,7 +1088,7 @@ Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and ot
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Explore our database}
+\begin{frame}{Explore our database: https://pedrad-ai.vercel.app}
 % Placeholder image: overwrite figures/explore_database.png with the real one.
 \begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{explore_database.png}\end{center}
 \end{frame}
@@ -1111,6 +1108,38 @@ Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and ot
         label cases carefully, and work with other hospitals to test whether a model
         works beyond the site that built it.
 \end{itemize}
+\end{frame}
+
+\begin{frame}<0>{Finger radiograph (lateral)}
+\begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{sura_radiology_images/IMG_9827.jpeg}\end{center}
+\end{frame}
+
+\begin{frame}<0>{AZmed Rayvolve: fracture detection}
+\begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{sura_radiology_images/IMG_9828.jpeg}\end{center}
+\end{frame}
+
+\begin{frame}<0>{AI bone age (Greulich \& Pyle)}
+\begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{sura_radiology_images/IMG_9829.jpeg}\end{center}
+\end{frame}
+
+\begin{frame}<0>{AZmed Rayvolve: pangonometry (leg alignment)}
+\begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{sura_radiology_images/IMG_9830.jpeg}\end{center}
+\end{frame}
+
+\begin{frame}<0>{AZmed Rayvolve: profile spinometry}
+\begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{sura_radiology_images/IMG_9831.jpeg}\end{center}
+\end{frame}
+
+\begin{frame}<0>{AZmed Rayvolve: frontal spinometry (Cobb angle)}
+\begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{sura_radiology_images/IMG_9832.jpeg}\end{center}
+\end{frame}
+
+\begin{frame}<0>{AZmed Rayvolve: coxometry (hip angles)}
+\begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{sura_radiology_images/IMG_9833.jpeg}\end{center}
+\end{frame}
+
+\begin{frame}<0>{AZmed Rayvolve: shoulder dislocation detection}
+\begin{center}\includegraphics[height=0.80\textheight,width=\textwidth,keepaspectratio]{sura_radiology_images/IMG_9834.jpeg}\end{center}
 \end{frame}
 
 \end{document}

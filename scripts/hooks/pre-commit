@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+"""Pre-commit hook: rebuild the PowerPoint deck and keep private images out.
+
+Installed with ``git config core.hooksPath scripts/hooks``.
+
+1. When the commit touches ``slides/`` or ``figures/``, rebuild
+   ``slides/pedrad_ai_slides.pptx`` with ``build_pptx.py`` from the *staged*
+   .tex (so unstaged edits do not leak into the commit) and stage it.
+2. Refuse the commit if any staged file would publish an image from a
+   ``build_pptx.PRIVATE_FIGURE_DIRS`` folder:
+   - a file inside such a folder (e.g. ``git add -f``),
+   - a frame in the .tex that shows one without ``<0>`` (the PDF would carry it),
+   - a .xdv that references one (the PDF next to it was compiled with it shown),
+   - a .pptx that embeds one (compared by content hash).
+
+``git commit --no-verify`` skips the hook.
+"""
+from __future__ import annotations
+
+import hashlib
+import io
+import re
+import subprocess
+import sys
+import zipfile
+from pathlib import Path
+
+ROOT = Path(subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip())
+sys.path.insert(0, str(ROOT / "scripts"))
+
+TEX = "slides/pedrad_ai_slides.tex"
+PPTX = "slides/pedrad_ai_slides.pptx"
+
+
+def git(*args: str, binary: bool = False):
+    return subprocess.run(["git", *args], cwd=ROOT, check=True, capture_output=True,
+                          text=not binary).stdout
+
+
+def staged_paths() -> list[str]:
+    return [p for p in git("diff", "--cached", "--name-only", "--diff-filter=ACMR").splitlines() if p]
+
+
+def staged_blob(path: str) -> bytes:
+    return git("show", f":{path}", binary=True)
+
+
+def main() -> int:
+    try:
+        import build_pptx
+    except ImportError as e:
+        print(f"pre-commit: cannot import build_pptx ({e}); "
+              'install the slides extra: pip install -e ".[slides]"', file=sys.stderr)
+        return 1
+    private_dirs = build_pptx.PRIVATE_FIGURE_DIRS
+    paths = staged_paths()
+
+    if TEX in git("ls-files").splitlines() and any(p.startswith(("slides/", "figures/")) for p in paths):
+        # Build from the staged .tex, written next to the real one so its
+        # \graphicspath resolves the same way.
+        tmp = ROOT / "slides" / ".pre-commit-staged.tex"
+        tmp.write_bytes(staged_blob(TEX))
+        try:
+            build_pptx.build(tmp, ROOT / PPTX)
+        finally:
+            tmp.unlink(missing_ok=True)
+        git("add", PPTX)
+        print(f"pre-commit: rebuilt and staged {PPTX}")
+        paths = staged_paths()
+
+    private_hashes = {
+        hashlib.sha1(f.read_bytes()).hexdigest(): f.name
+        for d in private_dirs for f in (ROOT / "figures" / d).glob("*") if f.is_file()
+    }
+    problems: list[str] = []
+    for p in paths:
+        if any(f"{d}/" in p for d in private_dirs):
+            problems.append(f"{p}: file in a private folder")
+        elif p.endswith(".tex"):
+            tex = staged_blob(p).decode("utf-8", "replace")
+            for m in re.finditer(r"\\begin\{frame\}(<[^>]*>)?(?:\[[^\]]*\])?\{([^\n]*?)\}\s*\n(.*?)\\end\{frame\}",
+                                 tex, re.S):
+                if m.group(1) != "<0>" and build_pptx.uses_private_figure(m.group(3)):
+                    problems.append(f"{p}: frame '{m.group(2)}' shows a private image; hide it with <0>")
+        elif p.endswith(".xdv"):
+            blob = staged_blob(p)
+            if any(d.encode() in blob for d in private_dirs):
+                problems.append(f"{p}: compiled with a private image shown; hide the frame and rerun latexmk")
+        elif p.endswith(".pptx"):
+            with zipfile.ZipFile(io.BytesIO(staged_blob(p))) as z:
+                for name in z.namelist():
+                    if name.startswith("ppt/media/"):
+                        h = hashlib.sha1(z.read(name)).hexdigest()
+                        if h in private_hashes:
+                            problems.append(f"{p}: embeds {private_hashes[h]} as {name}")
+
+    if problems:
+        print("pre-commit: refusing to commit private images:", file=sys.stderr)
+        for msg in problems:
+            print(f"  - {msg}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

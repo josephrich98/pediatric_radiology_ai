@@ -122,7 +122,8 @@ ultrasound.
  OR newborn*[tiab] OR preterm[tiab] OR "premature infant"[tiab] OR "premature infants"[tiab]
  OR "premature birth"[tiab] OR "premature neonate"[tiab] OR "premature neonates"[tiab]
  OR prenatal[tiab] OR antenatal[tiab] OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab]
- OR "children's hospital"[tiab] OR schoolchild*[tiab] OR toddler*[tiab])
+ OR "children's hospital"[tiab] OR schoolchild*[tiab] OR toddler*[tiab]
+ OR baby[tiab] OR babies[tiab])
 ```
 
 **Final:** `Block1 AND Block2 AND Block3 AND 2005:2026[pdat]`
@@ -136,6 +137,7 @@ Changes from the previous query, each made for a measured reason:
 | `"large language model*"`, `"foundation model*"`, `"transfer learning"`, `"vision transformer"`, `"self-supervised"` | Method vocabulary that post-dates the original query. |
 | `"random forest"`, `"support vector machine"`, `"gradient boosting"`, `"computer-aided detection"`, `"computer aided diagnosis"` | Classical ML and radiomics, which dominate the pre-2018 literature (196 additional records). |
 | `fetus*`, `prenatal`, `antenatal`, `perinatal`, `"premature infant*"`, `youth`, `juvenile`, `toddler*`, `schoolchild*` | Pediatric vocabulary completeness. `prenatal`/`antenatal` matter most: the fetal literature frequently does not use the word "fetal" in the abstract. |
+| `baby`, `babies` (added 2026-10-02) | BIBSNet ("baby image brain segmentation network") showed that infant work can be titled with "baby". The terms add 17 PubMed records (6,081 → 6,098 on 2026-10-02), all screened: 5 in scope (2 of them MICCAI proceedings, excluded by publication form), 12 out (mostly "baby boomers", "baby lung", "mother-baby" endoscopes). Fielded, because bare `baby` maps to the Infant MeSH heading. **Not run in Embase**: the Embase export predates the change. |
 | Removed: bare `premature[tiab]` → phrase forms | Bare `premature` retrieves premature ventricular contractions and premature ovarian insufficiency in adults (83 records, near-zero yield). |
 
 ### 4.3 Other databases

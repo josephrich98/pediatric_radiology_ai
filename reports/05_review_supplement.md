@@ -62,7 +62,8 @@ The following three blocks were combined with `AND`, followed by `AND 2005:2026[
  OR "premature birth"[tiab] OR "premature neonate"[tiab]
  OR "premature neonates"[tiab] OR prenatal[tiab] OR antenatal[tiab]
  OR perinatal[tiab] OR youth[tiab] OR juvenile[tiab]
- OR "children's hospital"[tiab] OR schoolchild*[tiab] OR toddler*[tiab])
+ OR "children's hospital"[tiab] OR schoolchild*[tiab] OR toddler*[tiab]
+ OR baby[tiab] OR babies[tiab])
 ```
 
 ### Embase (Embase.com)
