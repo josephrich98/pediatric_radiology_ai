@@ -69,7 +69,7 @@ PRIVATE_FIGURE_DIRS = ("sura_radiology_images",)
 
 
 # ------------------------------------------------------------- data model ---
-Run = tuple[str, bool, bool]             # text, bold, italic
+Run = tuple[str, bool, bool, str | None]  # text, bold, italic, hyperlink
 Paragraph = list[Run]
 
 
@@ -157,7 +157,7 @@ def clean_text(s: str) -> str:
     # \renewcommand{\arraystretch}{0.92} lands on the slide as a stray "0.92".
     s = re.sub(r"\\renewcommand\{[^}]*\}\{[^}]*\}", "", s)
     s = re.sub(r"\\(setlength|fontsize)\{[^}]*\}\{[^}]*\}(\\selectfont)?", "", s)
-    s = re.sub(r"\\(hfill|centering|noindent|small|tiny|scriptsize|footnotesize|normalsize|large)\b", "", s)
+    s = re.sub(r"\\(hfill|centering|raggedright|noindent|small|tiny|scriptsize|footnotesize|normalsize|large)\b", "", s)
     s = s.replace("\\\\", " ")
     s = s.replace("---", "\u2014").replace("--", "\u2013")
     s = s.replace("``", "\u201c").replace("''", "\u201d").replace("`", "\u2018")
@@ -169,32 +169,39 @@ def clean_text(s: str) -> str:
     return s
 
 
-FMT_RE = re.compile(r"\\(textbf|textit|emph|textsc)\{")
+FMT_RE = re.compile(r"\\(textbf|textit|emph|textsc|href)\{")
 
 
-def tex_to_runs(s: str, bold: bool = False, italic: bool = False) -> Paragraph:
+def tex_to_runs(s: str, bold: bool = False, italic: bool = False, url: str | None = None) -> Paragraph:
     runs: Paragraph = []
     pos = 0
     while True:
         m = FMT_RE.search(s, pos)
         if not m:
-            runs.append((clean_text(s[pos:]), bold, italic))
+            runs.append((clean_text(s[pos:]), bold, italic, url))
             break
-        runs.append((clean_text(s[pos:m.start()]), bold, italic))
+        runs.append((clean_text(s[pos:m.start()]), bold, italic, url))
         close = find_matching(s, m.end() - 1)
         inner = s[m.end():close]
         cmd = m.group(1)
-        runs.extend(tex_to_runs(inner, bold or cmd == "textbf", italic or cmd in ("textit", "emph")))
+        if cmd == "href":
+            # \href{url}{text}: the first group is the target, the second the visible text
+            target = inner.replace("\\%", "%").replace("\\#", "#").replace("\\_", "_")
+            text_open = close + 1
+            close = find_matching(s, text_open)
+            runs.extend(tex_to_runs(s[text_open + 1:close], bold, italic, target))
+        else:
+            runs.extend(tex_to_runs(inner, bold or cmd == "textbf", italic or cmd in ("textit", "emph"), url))
         pos = close + 1
     # merge / drop empties, trim outer whitespace
     out: Paragraph = []
-    for t, b, i in runs:
+    for t, b, i, u in runs:
         if not t:
             continue
-        if out and out[-1][1:] == (b, i):
-            out[-1] = (out[-1][0] + t, b, i)
+        if out and out[-1][1:] == (b, i, u):
+            out[-1] = (out[-1][0] + t, b, i, u)
         else:
-            out.append((t, b, i))
+            out.append((t, b, i, u))
     if out:
         out[0] = (out[0][0].lstrip(), *out[0][1:])
         out[-1] = (out[-1][0].rstrip(), *out[-1][1:])
@@ -214,6 +221,7 @@ SPECIAL = re.compile(
     r"|\{\\(?P<gsize>" + SIZE_WORDS + r")\b"
     r"|\\(?P<size>" + SIZE_WORDS + r")\b"
     r"|\\centering\b"
+    r"|\\raggedright\b"
     r"|\\vspace\*?\{[^}]*\}"
 )
 
@@ -284,6 +292,9 @@ def parse_blocks(src: str, size: str = "normal", align: str = "left", fig_dir: P
             pos = m.end()
         elif m.group(0).startswith("\\centering"):
             align = "center"
+            pos = m.end()
+        elif m.group(0).startswith("\\raggedright"):
+            align = "left"
             pos = m.end()
         else:                                   # \vspace: ignore
             pos = m.end()
@@ -421,7 +432,7 @@ def text_height(block: Text, width_in: float, scale: float) -> float:
     indent = 0.3 if block.bullet else 0.0
     h = 0.0
     for para in block.paragraphs:
-        n = sum(len(t) for t, _, _ in para)
+        n = sum(len(t) for t, *_ in para)
         h += _lines(n, pt, width_in - indent - 0.2) * pt * 1.2 / 72 + pt * 0.35 / 72
     return h + 0.1
 
@@ -464,7 +475,7 @@ def _wrapped_lines(text: str, width_in: float, pt: float, em: float = CELL_CHAR_
 
 
 def _cell_text(cell: Paragraph) -> str:
-    return "".join(t for t, _, _ in cell)
+    return "".join(r[0] for r in cell)
 
 
 def table_widths(block: Table, width_in: float, scale: float) -> list[float]:
@@ -560,9 +571,11 @@ def _set_bullet(paragraph, kind: str, pt: float) -> None:
 
 
 def add_runs(paragraph, runs: Paragraph, pt: float, color=TEXT) -> None:
-    for text, bold, italic in runs:
+    for text, bold, italic, url in runs:
         r = paragraph.add_run()
         r.text = text
+        if url:
+            r.hyperlink.address = url
         r.font.size = Pt(pt)
         r.font.bold = bold
         r.font.italic = italic
@@ -618,7 +631,7 @@ def add_table(slide, x, y, w, h, block: Table, widths: list[float], row_h: list[
             p = cell.text_frame.paragraphs[0]
             cell.text_frame.word_wrap = True
             header = i == 0
-            add_runs(p, [(t, b or header, it) for t, b, it in cell_runs], pt,
+            add_runs(p, [(t, b or header, it, u) for t, b, it, u in cell_runs], pt,
                      color=RGBColor(0xFF, 0xFF, 0xFF) if header else TEXT)
             if block.colspec[j] is None:
                 p.alignment = PP_ALIGN.RIGHT

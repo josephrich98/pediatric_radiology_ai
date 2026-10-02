@@ -396,9 +396,14 @@ def spotlight_frames(manifest):
         bullets = "\n".join(f"\\item \\textbf{{{_tex(k)}}}: {_tex(v)}" for k, v in sp["bullets"])
         if e:
             src = e.get("source_url") or ""
-            host = src.split("/")[2] if src.startswith("http") else ""
+            ref = e.get("ref") or ""
+            # cite the paper, not the image CDN (cdn.ncbi.nlm.nih.gov is not a page anyone can open)
+            if ref.startswith("10."):
+                source = "\\href{https://doi.org/%s}{doi.org/%s}" % (ref, _tex(ref))
+            else:
+                source = _tex(src.split("/")[2] if src.startswith("http") else "")
             left = ("\\includegraphics[height=0.50\\textheight,width=\\textwidth,keepaspectratio]{examples/%s}\\\\[2pt]\n"
-                    "{\\tiny %s}\\\\{\\tiny source: %s}" % (e["file"], _tex(e["caption"]), _tex(host)))
+                    "{\\tiny\\raggedright %s\\\\source: %s\\par}" % (e["file"], _tex(e["caption"]), source))
         else:
             left = "{\\footnotesize (figure not fetched; run scripts/collect\\_examples.py)}"
         frames.append(

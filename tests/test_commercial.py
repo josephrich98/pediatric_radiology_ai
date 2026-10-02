@@ -112,8 +112,17 @@ class CuratedProductTests(unittest.TestCase):
     def test_every_cited_submission_is_in_the_snapshot(self):
         held = {d["submission"] for d in self.fda.get("devices", [])}
         missing = [p["product"] for p in config.COMMERCIAL_PRODUCTS
-                   if p.get("submission") and p["submission"] not in held]
+                   if p.get("submission") and p["submission"] not in held
+                   and not p.get("not_yet_on_fda_list")]
         self.assertEqual(missing, [], "cited FDA submissions absent from the saved list")
+
+    def test_pending_submissions_are_still_pending(self):
+        # A submission decided after the list's last update is exempt above;
+        # once a new snapshot carries it, the exemption must come off.
+        held = {d["submission"] for d in self.fda.get("devices", [])}
+        caught_up = [p["product"] for p in config.COMMERCIAL_PRODUCTS
+                     if p.get("not_yet_on_fda_list") and p.get("submission") in held]
+        self.assertEqual(caught_up, [], "now on the FDA list: drop not_yet_on_fda_list / decision_year")
 
     def test_product_rows_are_complete(self):
         fields = {"product", "vendor", "problem", "modality", "task", "pediatric", "standing"}

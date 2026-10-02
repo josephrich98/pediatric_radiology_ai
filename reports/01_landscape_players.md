@@ -575,7 +575,7 @@ The device list names no clinical problem, so one is read off the device name fi
 | Subtle Medical / AIRS Medical | SubtleMR, SwiftMR | MRI image post-processing: denoising / sharpening to support shorter acquisitions or better image quality | No adult-only restriction in reviewed US indications; SwiftMR 2026 validation includes ages 0--21 | 15 entries, 2018–2026 | 0 (0 software) |
 | Qure.ai | qXR / qER families | Chest X-ray detection / triage, TB screening, tube / heart measurements; head CT triage / quantification and CTA LVO | US eligibility varies by module; vendor reports CE-marked qXR TB use across ages 0--15 | 9 entries, 2020–2026 | 0 (0 software) |
 | 16 Bit | Physis | Hand X-ray bone-age estimation, GP atlas matching and report assistance | Pediatric tool; no FDA authorization identified. Company's FDA entry is Rho (low bone density, age 50+) | 1 entries, 2024–2024 | 0 (0 software) |
-| Visiana | BoneXpert | Hand X-ray bone age (GP / TW3), Bone Health Index; associated adult-height prediction tool | Designed for children; CE-marked; US research use only | not listed | — |
+| Visiana | BoneXpert | Hand X-ray bone age (GP / TW3), Bone Health Index; associated adult-height prediction tool | Designed for children; CE-marked; FDA 510(k) cleared 2026-09-22 (K262390) | not listed | — |
 
 Counts cover company-wide radiology entries in the FDA AI-enabled device list saved 2026-09-30; grouped vendors are summed. They include versions and unrelated products, not just the selected products or pediatric indications. Years are the range of decision years. The list is not exhaustive and may lag new authorizations. Functions / labeling checked 2026-09-16; features vary by market and version. The last column counts entries whose decision summary states a pediatric or fetal patient population (screened 2026-09-16), with standalone software in parentheses. See [verification and sources](commercial_software_verification.md).
 
@@ -585,7 +585,7 @@ One row per product rather than per company: tools in routine pediatric use, too
 
 | Product | Vendor | Clinical problem | What it does | Pediatric scope | FDA | Where it stands |
 |:--|:--|:--|:--|:--|:--|:--|
-| BoneXpert | Visiana | bone age / growth | Automated Greulich--Pyle and Tanner--Whitehouse bone age plus a Bone Health Index, from a hand radiograph | Built for children; CE-marked and in routine European use; US research use only | — | Widely deployed (Europe) |
+| BoneXpert | Visiana | bone age / growth | Automated Greulich--Pyle and Tanner--Whitehouse bone age plus a Bone Health Index, from a hand radiograph | Built for children; CE-marked and in routine European use; FDA 510(k) cleared September 2026 | K262390 (2026) | Widely deployed (Europe) |
 | BoneView | Gleamer | fracture / trauma | Fracture detection on trauma radiographs, presented as regions of interest alongside the image | US indication covers ages 2--21 for specified extremity views; pelvis, hip, femur, ribs and spine are adult-only | K222176 (2023) | Widely deployed |
 | Rayvolve (AZtrauma) | AZmed | fracture / trauma | Fracture and MSK finding detection on radiographs; sibling modules cover chest findings, measurements and bone age | US fracture indication from age 2; the bone-age module is CE-marked only | K240845 (2024) | Widely deployed |
 | TechCare Trauma | Milvue | fracture / trauma | Trauma radiograph triage: fractures, effusions and dislocations flagged for the reader | The decision summary states a pediatric population | K242171 (2025) | Early US deployments |

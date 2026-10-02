@@ -727,7 +727,7 @@ COMMERCIAL_PEDIATRIC: list[dict[str, str]] = [
      "fda_company": "AZmed", "url": "https://www.azmed.co/"},
     {"vendor": "Visiana", "product": "BoneXpert",
      "task": "Hand X-ray bone age (GP / TW3), Bone Health Index; associated adult-height prediction tool",
-     "pediatric": "Designed for children; CE-marked; US research use only", "modality": "x-ray",
+     "pediatric": "Designed for children; CE-marked; FDA 510(k) cleared 2026-09-22 (K262390)", "modality": "x-ray",
      "fda_company": "Visiana", "url": "https://bonexpert.com"},
     {"vendor": "16 Bit", "product": "Physis",
      "task": "Hand X-ray bone-age estimation, GP atlas matching and report assistance",
@@ -967,11 +967,16 @@ COMMERCIAL_CODE_DEVICE_TYPES: dict[str, str] = {
 # ``no_us_authorization`` marks a product with no US authorization at all (as
 # against one whose pediatric claim simply cites no submission); the website
 # lists those as rows of their own, since the FDA list cannot carry them.
+# ``not_yet_on_fda_list`` marks a submission confirmed in the FDA 510(k)
+# database but decided after the AI-enabled device list was last updated;
+# ``decision_year`` stands in for the year the list would supply. The test
+# fails once the list carries it, which is the cue to drop both keys.
 COMMERCIAL_PRODUCTS: list[dict[str, str]] = [
     {"product": "BoneXpert", "vendor": "Visiana", "problem": "bone age / growth", "modality": "x-ray",
      "task": "Automated Greulich--Pyle and Tanner--Whitehouse bone age plus a Bone Health Index, from a hand radiograph",
-     "pediatric": "Built for children; CE-marked and in routine European use; US research use only",
-     "standing": "Widely deployed (Europe)", "submission": "", "no_us_authorization": True},
+     "pediatric": "Built for children; CE-marked and in routine European use; FDA 510(k) cleared September 2026",
+     "standing": "Widely deployed (Europe)", "submission": "K262390", "decision_year": 2026,
+     "not_yet_on_fda_list": True},
     {"product": "BoneView", "vendor": "Gleamer", "problem": "fracture / trauma", "modality": "x-ray",
      "task": "Fracture detection on trauma radiographs, presented as regions of interest alongside the image",
      "pediatric": "US indication covers ages 2--21 for specified extremity views; pelvis, hip, femur, ribs and spine are adult-only",

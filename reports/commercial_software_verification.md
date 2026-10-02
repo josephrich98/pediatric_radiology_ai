@@ -47,7 +47,9 @@ Rayvolve encompasses **AZtrauma**, **AZchest**, **AZmeasure** and **AZboneage**.
 
 ### 3. Visiana — BoneXpert
 
-Expand beyond bone age: the software provides GP/TW3 assessment and a **Bone Health Index**; an associated tool predicts adult height. The [current manufacturer homepage](https://bonexpert.com/) explicitly labels US availability as research use only and other markets as CE-marked. The [clinical manual](https://www.bonexpert.com/docs/BoneXpertClinicalManual3_rev1.pdf) explains bone-age and cortical-bone measurements, and the [adult-height predictor manual](https://bonexpert.com/files/BoneXpert_AdultHeightPredictor_v3-005.pdf) documents prediction outputs. An absence from the FDA AI list alone would not establish US regulatory status; the vendor statement supplies that distinction.
+Expand beyond bone age: the software provides GP/TW3 assessment and a **Bone Health Index**; an associated tool predicts adult height. The [current manufacturer homepage](https://bonexpert.com/) explicitly labels US availability as research use only and other markets as CE-marked. The [clinical manual](https://www.bonexpert.com/docs/BoneXpertClinicalManual3_rev1.pdf) explains bone-age and cortical-bone measurements, and the [adult-height predictor manual](https://bonexpert.com/files/BoneXpert_AdultHeightPredictor_v3-005.pdf) documents prediction outputs. An absence from the FDA AI list alone would not establish US regulatory status; the vendor statement supplied that distinction until September 2026.
+
+**Update (2026-10-02):** BoneXpert is now FDA-cleared. The [510(k) database entry for K262390](https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPMN/pmn.cfm?ID=K262390) lists Visiana as applicant, product code QIH (Radiology panel), received 2026-07-13, decided substantially equivalent 2026-09-22. It is not yet on the FDA AI-enabled device list (snapshot of 2026-09-30, updated through June 2026), so `config.COMMERCIAL_PRODUCTS` marks it `not_yet_on_fda_list`. The Health AI Register already records the number. The vendor homepage's "research use only" wording predates the clearance. The cleared indication and age range have not yet been checked against the 510(k) summary.
 
 ### 4. 16 Bit — replace Rho with Physis
 
@@ -186,7 +188,7 @@ scanner caveat above. EOS, Sonio, Smart Soft and Milvue are software-only.
   from the decision summary text archived under
   `data/raw/fda_pediatric_inventory/2026-09-16/`.
 - **Pediatric scope without a submission** — no US authorization was identified.
-  BoneXpert (CE-marked, US research use only), Physis (Health Canada), qXR-TB
+  BoneXpert (CE-marked; FDA-cleared 2026-09-22 as K262390, see section 3), Physis (Health Canada), qXR-TB
   (vendor-reported CE Class IIb, ages 0–15) and the four scanner-maker
   reconstruction products carry claims verified in sections 3, 4, 7, 8 and 9
   above; they are repeated here, not independently re-verified.

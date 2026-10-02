@@ -253,6 +253,6 @@ def product_rows(recs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     rows = []
     for p in config.COMMERCIAL_PRODUCTS:
         rec = by_sub.get(p.get("submission") or "")
-        rows.append({**p, "year": rec.get("year") if rec else None,
+        rows.append({**p, "year": rec.get("year") if rec else p.get("decision_year"),
                      "fda_device": rec.get("device") if rec else ""})
     return rows
