@@ -121,7 +121,7 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}<0>[category=Journals]{Pediatric radiology AI publications, stratified by medical problem}
+\begin{frame}[category=Journals]{Pediatric radiology AI publications, stratified by medical problem}
 \begin{center}\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{ped_problems.png}\end{center}
 \end{frame}
 
@@ -379,7 +379,7 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}[category=Journals]{Deep-learning reconstruction shortens pediatric brain MRI}
+\begin{frame}<0>[category=Journals]{Deep-learning reconstruction shortens pediatric brain MRI}
 {\scriptsize Yoo et al., Korean Journal of Radiology 2025 (open access)\par}\vspace{2pt}
 \begin{columns}[T]
 \begin{column}{0.42\textwidth}\centering
@@ -869,20 +869,20 @@ FeTA (fetal brain tissue annotation) & 2021--24 & fetal brain MRI & 280 volumes 
 Departments commonly reported using AI, but pediatric data and workflow integration remain barriers to broader use.
 \end{frame}
 
-\begin{frame}<0>[category=Newsletters]{Story: challenges as pediatric data infrastructure}
+\begin{frame}<0>[category=Newsletters]{Public datasets from pediatric AI challenges}
 \relax
 {\scriptsize RSNA News, 25 August 2026: ``AI Challenges Fuel Innovation Beyond the Leaderboard''
 (\href{https://www.rsna.org/news/2026/august/ai-challenges-fuel-innovation}{rsna.org})\par}
 \medskip
 \small
 \begin{itemize}
-  \item \textbf{What happened}: RSNA looked back at a decade of its Kaggle AI Challenges and argued that the lasting product is not the winning model but the \textbf{curated multinational datasets with expert annotations}, which stay public after the leaderboard closes, plus the open-sourced top solutions.
-  \item \textbf{The pediatric one}: the \textbf{2017 Pediatric Bone Age Challenge} drew 700+ entries and remains one of the largest open pediatric imaging datasets (14,236 hand radiographs).
-  \item \textbf{The generalization lesson}: Kitamura's team placed third, then revalidated on Brazilian data and found performance did not transfer unchanged --- the same population-shift problem that makes adult-trained tools unsafe in children.
-  \item \textbf{The honest caveat}: Pan notes these algorithms target one urgent finding and behave as triage, not as a general assistant --- leaderboard rank does not predict clinical usefulness.
+  \item RSNA reviewed a decade of its Kaggle AI Challenges. The datasets, expert annotations, and open-source top solutions remain available after each competition ends.
+  \item The \textbf{2017 Pediatric Bone Age Challenge} drew 700+ entries and provided 14,236 hand radiographs, one of the largest open pediatric imaging datasets.
+  \item Kitamura's team placed third, but performance changed when they tested the model on Brazilian data. Results from one population may not transfer to another.
+  \item Pan notes that these algorithms generally target a single urgent finding for triage. Competition rankings alone do not establish clinical usefulness.
 \end{itemize}
 \medskip
-\textbf{Take-home}: challenges are how pediatric imaging has historically gotten public data. Contributing annotated pediatric cases is a concrete, low-cost way for a children's hospital to move the field.
+Hospitals can support this work by contributing carefully annotated pediatric cases.
 \end{frame}
 
 \begin{frame}[category=Commercial Software]{Radiology leads in FDA AI authorizations}
@@ -904,182 +904,155 @@ Departments commonly reported using AI, but pediatric data and workflow integrat
 \end{columns}
 \end{frame}
 
-\begin{frame}[category=Commercial Software]{A European cross-check: the Health AI Register}
+\begin{frame}[category=Commercial Software]{European radiology AI products: the Health AI Register}
 \noindent{\scriptsize Health AI Register, radiology products (\href{https://healthairegister.com/radiology/products/}{healthairegister.com}), accessed 2 October 2026, matched against this deck's FDA radiology-panel list\par}\vspace{2pt}
 \footnotesize
 \begin{itemize}\setlength{\itemsep}{1pt}
-\item \textbf{What it is}: an independent, curated register of AI \emph{software} for radiology that is CE-marked for the European market: \textbf{309 products from 121 companies}, each with its CE class, intended use and any FDA clearance. It leaves out scanners, which the FDA list includes.
-\item \textbf{Overlap}: 163 of the 309 (53\%) also report FDA clearance. About 135 of those tie to a specific authorization in the FDA list (35 by submission number, the rest by company and product name). The other 146 are CE-marked only.
-\item \textbf{Coverage the other way}: the register's companies hold only about 40\% of the 1,230 FDA radiology authorizations. Most of the rest are scanners and US- or Asia-only vendors.
-\item \textbf{Both lists lag}: BoneXpert was FDA-cleared on 22 September 2026 (K262390) and is not yet on the FDA list. The register still shows no US clearance for five products that the FDA list has (e.g., Gleamer BoneMetrics, Viz ANEURYSM).
+\item \textbf{The register}: an independent list of CE-marked radiology AI \emph{software}: \textbf{309 products from 121 companies}, each with its CE class, intended use and any FDA clearance. Unlike the FDA list, it excludes scanners.
+\item \textbf{Overlap}: 163 of the 309 (53\%) also report FDA clearance. About 135 match a specific authorization in the FDA list (35 by submission number, the rest by company and product name). The other 146 are CE-marked only.
+\item \textbf{FDA coverage}: companies in the register hold about 40\% of the 1,230 FDA radiology authorizations. Most of the rest are scanners and US- or Asia-only vendors.
+\item \textbf{Recent updates}: BoneXpert was FDA-cleared on 22 September 2026 (K262390) and is not yet on the FDA list. The register still shows no US clearance for five products that the FDA list has (e.g., Gleamer BoneMetrics, Viz ANEURYSM).
 \item \textbf{Pediatric}: four of the 35 number-matched products carry a pediatric label in the FDA list (AZtrauma, MediAI-BA, EchoConfidence, 1CMR PRO). Several pediatric tools are CE-marked only: Gleamer BoneAge, AZboneage, Milvue TechCare Kids, Med-BoneAge.
 \end{itemize}
 \smallskip
-\textbf{Take-home}: neither list is complete on its own. For a product of European origin, check both before concluding that it is or is not available.
+Check both lists when reviewing a European product; either may be missing recent authorizations.
 \end{frame}
 
-\begin{frame}[category=Commercial Software]{How many cleared devices actually name children?}
+\begin{frame}[category=Commercial Software]{How many FDA authorizations include pediatric labeling?}
 \begin{center}\includegraphics[height=0.72\textheight,width=\textwidth,keepaspectratio]{fda_pediatric_prisma.png}\end{center}
 \vspace{2pt}
-{\scriptsize 230 of the 1,230 radiology-panel authorizations (19\%) name a pediatric or fetal population in the labeling passage reviewed; 53 more name children only as a phantom, a validation set or an exclusion, and are kept for label review.}
+{\scriptsize 230 of the 1,230 radiology-panel authorizations (19\%) name a pediatric or fetal population in the labeling passage reviewed.}
 \end{frame}
 
 \begin{frame}<0>[category=Commercial Software]{Who is building commercial radiology AI}
 \begin{center}\includegraphics[height=0.58\textheight,width=\textwidth,keepaspectratio]{commercial_companies_by_year.png}\end{center}
 \end{frame}
 
-\begin{frame}[category=Commercial Software]{Which clinical problems the cleared products address}
+\begin{frame}[category=Commercial Software]{Pediatric radiology AI commercial products, stratified by medical problem}
 \begin{center}\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{commercial_problems.png}\end{center}
 \end{frame}
 
-\begin{frame}[category=Commercial Software]{Products a pediatric radiologist should know (part 1)}
-\tiny
-\begin{adjustbox}{max totalsize={\textwidth}{0.72\textheight}}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|>{\raggedright\arraybackslash}p{0.150\textwidth}|>{\raggedright\arraybackslash}p{0.130\textwidth}|>{\raggedright\arraybackslash}p{0.176\textwidth}|>{\raggedright\arraybackslash}p{0.378\textwidth}|>{\raggedright\arraybackslash}p{0.324\textwidth}|>{\raggedright\arraybackslash}p{0.176\textwidth}|}
-\hline \textbf{Product} & \textbf{Vendor} & \textbf{Clinical problem} & \textbf{What it does} & \textbf{Pediatric scope} & \textbf{Where it stands} \\ \hline
-BoneXpert & Visiana & bone age / growth & Automated Greulich--Pyle and Tanner--Whitehouse bone age plus a Bone Health Index, from a hand radiograph & Built for children; CE-marked and in routine European use; FDA 510(k) cleared September 2026 [K262390, 2026] & Widely deployed (Europe) \\ \hline
-BoneView & Gleamer & fracture / trauma & Fracture detection on trauma radiographs, presented as regions of interest alongside the image & US indication covers ages 2--21 for specified extremity views; pelvis, hip, femur, ribs and spine are adult-only [K222176, 2023] & Widely deployed \\ \hline
-Rayvolve (AZtrauma) & AZmed & fracture / trauma & Fracture and MSK finding detection on radiographs; sibling modules cover chest findings, measurements and bone age & US fracture indication from age 2; the bone-age module is CE-marked only [K240845, 2024] & Widely deployed \\ \hline
-TechCare Trauma & Milvue & fracture / trauma & Trauma radiograph triage: fractures, effusions and dislocations flagged for the reader & The decision summary states a pediatric population [K242171, 2025] & Early US deployments \\ \hline
-EFAI Bonesuite XR Bone Age Pro & Ever Fortune.AI & bone age / growth & Greulich--Pyle bone age from a PA left hand and wrist radiograph, as an adjunct to the radiologist & FDA-cleared for ages 2--16 --- the pediatric-specific US bone-age clearance [K234042, 2024] & FDA-cleared, early adoption \\ \hline
-Physis & 16 Bit & bone age / growth & Bone-age estimation with Greulich--Pyle atlas matching and draft report text & Pediatric tool; Health Canada licensed, no FDA authorization identified & Promising, limited US access \\ \hline
-Fetal EchoScan & BrightHeart & fetal / obstetric & Flags eight morphological findings suspicious for congenital heart disease on second-trimester views & Prenatal by definition: second-trimester exams, maternal age 18+ [K252294, 2025] & Early deployments / pilots \\ \hline
-Sonio Detect / Sonio Suspect & Sonio & fetal / obstetric & Checks that the required fetal views were obtained and are of usable quality (Detect); flags images suspicious for anomalies (Suspect) & Prenatal by definition; every FDA entry states a fetal population [K252433, 2026] & Early deployments / pilots \\ \hline
-Delivery Date AI & Ultrasound AI & fetal / obstetric & Predicts the delivery date from a second- or third-trimester ultrasound when dating is unreliable & Prenatal; the first De Novo of its kind (a new device class) [DEN250007, 2026] & Newly authorized, unproven in practice \\ \hline
-Swoop Portable MR + BrainInsight & Hyperfine & brain / neurologic & Bedside low-field brain MRI whose usable image quality comes from deep-learning reconstruction; BrainInsight adds automated volumes and midline shift & Decision summaries state a pediatric population; the natural use is the NICU and PICU, where transport is the risk [K253489, 2025] & In pediatric pilots \\ \hline
-spineEOS / VEA Align & EOS imaging (Alphatec) & spine / scoliosis & Automated 3D spine and lower-limb modeling from biplanar low-dose full-body radiographs & Scoliosis follow-up is repeated imaging of a growing child, so the dose saving compounds [K251747, 2025] & Widely deployed (pediatric orthopedics) \\ \hline
-CoLumbo & Smart Soft Healthcare & spine / scoliosis & Spine MRI segmentation, measurement and structured reporting, lumbar and cervical & Decision summaries state a pediatric population; no pediatric-specific performance reported [K254015, 2026] & Early deployments \\ \hline
+\begin{frame}[category=Commercial Software]{Commercial products for pediatric imaging}
+\small
+\begin{adjustbox}{max totalsize={\textwidth}{0.76\textheight}}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.20\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.39\textwidth}|}
+\hline \textbf{Clinical application} & \textbf{Representative products} & \textbf{Pediatric scope / key limitation} \\ \hline
+Bone age / growth & BoneXpert; EFAI Bone Age Pro; Physis & Built for children; authorized ages and US availability vary by product. \\ \hline
+Fracture detection & BoneView; Rayvolve; TechCare Trauma & Pediatric labeling varies by age and anatomy; BoneView and Rayvolve start at age 2. \\ \hline
+Fetal ultrasound & Fetal EchoScan; Sonio Detect / Suspect; Delivery Date AI & Prenatal tools for different tasks: anomaly detection, view quality, or delivery prediction. \\ \hline
+Faster MRI / lower-dose CT & GE, Siemens, Canon, Philips reconstruction; SubtleMR / SwiftMR & Pediatric protocols and evidence vary by product and version. \\ \hline
+Spine / scoliosis & spineEOS / VEA Align; CoLumbo; Acorn 3D & Measurement and planning tools; pediatric labeling does not establish pediatric performance. \\ \hline
+CT / CTA triage & Aidoc BriefCase; Viz LVO / ICH & Aidoc: pediatric statements, adult performance data. Viz: no pediatric statement found in reviewed summaries. \\ \hline
+Cardiac MRI & Arterys Cardio DL & Segmentation and quantification; US labeling includes neonates through adolescents. \\ \hline
 \end{tabular}
 \end{adjustbox}
-\\[3pt]{\scriptsize Square brackets give the FDA submission supporting the pediatric claim and its decision year; a blank means no US authorization was identified for that product. ``Where it stands'' is our reading of deployment, not a measured adoption rate. A company's total of FDA AI entries is not a pediatric credential --- the large vendors' entries are mostly whole scanners whose labels list pediatric imaging as one clinical application (see the authorizations-per-company figure).}
+\par\medskip
+{\footnotesize Selected examples. Pediatric applicability depends on the exact product, version, age, and anatomy. Full product details and FDA references are in the backup tables.}
 \end{frame}
 
-\begin{frame}[category=Commercial Software]{Products a pediatric radiologist should know (part 2)}
-\tiny
-\begin{adjustbox}{max totalsize={\textwidth}{0.68\textheight}}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|>{\raggedright\arraybackslash}p{0.150\textwidth}|>{\raggedright\arraybackslash}p{0.130\textwidth}|>{\raggedright\arraybackslash}p{0.176\textwidth}|>{\raggedright\arraybackslash}p{0.378\textwidth}|>{\raggedright\arraybackslash}p{0.324\textwidth}|>{\raggedright\arraybackslash}p{0.176\textwidth}|}
-\hline \textbf{Product} & \textbf{Vendor} & \textbf{Clinical problem} & \textbf{What it does} & \textbf{Pediatric scope} & \textbf{Where it stands} \\ \hline
-BriefCase-Triage (CARE modules) & Aidoc & triage / worklist prioritization & Worklist triage on CT and CTA: intracranial hemorrhage, pulmonary embolism, pneumothorax, cervical-spine and rib fractures, free gas and more & Most entries state a pediatric population; the evidence behind them is adult, so treat pediatric use as local validation work [K253578, 2026] & Widely deployed \\ \hline
-Viz LVO / Viz ICH & Viz.ai & stroke / intracranial bleed & Detects large-vessel occlusion and intracranial hemorrhage and pushes the case to the stroke team's phones & No pediatric population statement found in the screened summaries; pediatric stroke use would be off-label & Widely deployed (adult) \\ \hline
-qXR-TB & Qure.ai & chest / lung & Chest radiograph screening for tuberculosis, built for high-burden settings with few readers & Vendor reports CE-marked use from age 0--15; US eligibility varies by module & Deployed in global-health screening \\ \hline
-AIR Recon DL / TrueFidelity & GE HealthCare & image quality: dose, noise, speed & Deep-learning reconstruction: shorter MRI acquisitions at the same quality, and CT images at lower dose & Sold across ages; the pediatric benefit is fewer sedations and less dose, and it is the AI most children actually meet & Widely deployed \\ \hline
-Deep Resolve & Siemens Healthineers & image quality: dose, noise, speed & MRI deep-learning denoising and resolution enhancement that supports accelerated acquisition & Vendor publishes pediatric protocols; scan-time reduction is the pediatric argument & Widely deployed \\ \hline
-AiCE & Canon Medical & image quality: dose, noise, speed & Deep-learning reconstruction for both CT (noise, dose) and MRI (noise, resolution, scan time) & Vendor publishes pediatric CT galleries; protocol and version determine what is available & Widely deployed \\ \hline
-SmartSpeed / Precise Image & Philips & image quality: dose, noise, speed & MRI acceleration with deep-learning reconstruction (SmartSpeed); CT reconstruction at reduced dose (Precise Image) & Sold across ages; pediatric protocols are the vendor's own, not a separate indication & Widely deployed \\ \hline
-SubtleMR / SwiftMR & Subtle Medical / AIRS Medical & image quality: dose, noise, speed & Vendor-neutral MRI post-processing: denoising and sharpening so a shorter acquisition still reads & No adult-only restriction in the reviewed US indications; SwiftMR's 2026 validation includes ages 0--21 & Deployed, vendor-neutral retrofit \\ \hline
-Butterfly iQ3; Clarius Bladder AI & Butterfly Network / Clarius & point-of-care ultrasound & Handheld ultrasound with on-device AI: bladder volume, gestational age, ejection fraction, lung and nerve tools & The scanners are labeled for adult and pediatric imaging, but each AI tool carries its own age scope and most are adult-only; Clarius Bladder AI covers ages 2 and over [K232257, 2023] & Scanners widely deployed; AI tools mostly adult-scoped \\ \hline
-Arterys Cardio DL & Arterys (Tempus) & cardiac / echo & Cardiac MRI segmentation, flow and volume quantification with a cloud workflow & One of the earliest AI clearances to name neonates, infants, children and adolescents outright (2017) [K163253, 2017] & Historically important; now a Tempus product \\ \hline
-Acorn 3D & Mighty Oak Medical & spine / scoliosis & Automated vertebral segmentation from CT to build patient-specific 3D models and surgical guides & Decision summaries state a pediatric population; the use case is pediatric deformity surgery [K260322, 2026] & Niche, surgical \\ \hline
-Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and other findings on pediatric dental radiographs & The rare device whose name and indication are pediatric from the start [K243893, 2025] & Deployed in dentistry \\ \hline
-\end{tabular}
-\end{adjustbox}
-\\[3pt]{\scriptsize Square brackets give the FDA submission supporting the pediatric claim and its decision year; a blank means no US authorization was identified for that product. ``Where it stands'' is our reading of deployment, not a measured adoption rate. A company's total of FDA AI entries is not a pediatric credential --- the large vendors' entries are mostly whole scanners whose labels list pediatric imaging as one clinical application (see the authorizations-per-company figure).}
-\end{frame}
-
-\begin{frame}[category=Commercial Software]{Product 1: BoneXpert --- the most-validated pediatric AI you cannot buy}
+\begin{frame}[category=Commercial Software]{BoneXpert: automated bone age}
 \relax
 {\scriptsize Visiana, Denmark (\href{https://bonexpert.com/}{bonexpert.com}) --- bone age / growth\par}
 \medskip
 \small
 \begin{itemize}
-  \item \textbf{What it does}: automated Greulich--Pyle and Tanner--Whitehouse bone age from a single hand radiograph, plus a \textbf{Bone Health Index} from cortical thickness and an adult-height predictor. Not a second reader --- it replaces the manual rating.
-  \item \textbf{Why it is the benchmark}: designed for children from the start, in routine European clinical use since 2009, and the comparator nearly every academic bone-age paper measures itself against. It is the one pediatric AI with a decade of unglamorous production experience behind it.
-  \item \textbf{The catch}: CE-marked in Europe; in the United States the vendor labels it \textbf{research use only}. There is no FDA authorization. The only pediatric-specific US bone-age clearance is a different product, EFAI Bonesuite XR Bone Age Pro (ages 2--16, K234042, 2024).
-  \item \textbf{What it tells us about the market}: pediatric-native tools exist and work. The bottleneck is a US regulatory and commercial path, not the science.
+  \item \textbf{Function}: estimates bone age from a hand radiograph using Greulich--Pyle or Tanner--Whitehouse methods. Additional features include a Bone Health Index and adult-height prediction; availability varies by market.
+  \item \textbf{Clinical use}: developed for children and used routinely in Europe since 2009; often used as a comparator in bone-age studies.
+  \item \textbf{US clearance}: Visiana announced FDA 510(k) clearance in September 2026 (K262390) for Greulich--Pyle bone-age assessment in patients aged \textbf{2--21 years}.
+  \item \textbf{US availability}: release is planned for early October. The vendor states that some features, including the Bone Health Index, are unavailable in the US.
 \end{itemize}
 \medskip
-\textbf{Take-home}: when someone says ``there is no pediatric AI'', the accurate statement is that the best pediatric AI is not licensed here.
+{\scriptsize Source: \href{https://bonexpert.com/2026/09/30/visiana-receives-fda510k-clearance-for-bonexpert-bone-age-software/}{Visiana clearance announcement, 30 September 2026}.}
 \end{frame}
 
-\begin{frame}[category=Commercial Software]{Product 2: Rayvolve --- fracture detection with pediatric evidence}
+\begin{frame}[category=Commercial Software]{Rayvolve: pediatric fracture detection}
 \relax
 {\scriptsize AZmed, France (\href{https://www.azmed.co/}{azmed.co}) --- fracture / trauma; US pediatric fracture indication K240845 (2024)\par}
 \medskip
 \small
 \begin{itemize}
   \item \textbf{What it does}: flags fractures on trauma radiographs; sibling modules add chest findings, orthopedic measurements (leg alignment, Cobb angle, hip angles) and bone age. \textbf{US pediatric clearance is fracture detection from age 2}; bone age is CE-marked only.
-  \item \textbf{Independent pediatric validation}: 2,549 children in a pediatric ED (Dupuis et al., \textit{Diagn Interv Imaging} 2022): sensitivity 95.7\%, specificity 91.2\% --- but \textbf{significantly lower sensitivity under age 5 and in casted limbs}, the cases that matter most.
-  \item \textbf{Head to head with BoneView} (Robin et al., \textit{Pediatr Radiol} 2026, 366 children): AUC 0.87 vs 0.86; Rayvolve more specific (93\% vs 87\%), BoneView more sensitive (85\% vs 81\%); both helped junior residents. Neither is clearly better, but BoneView's US pediatric label excludes pelvis, hip, femur, ribs and spine.
-  \item \textbf{The failure mode to watch}: in a pediatric ED, readers abandoned a correct diagnosis after seeing AI output in 2\% of cases (Ziegner et al., \textit{Eur Radiol} 2025).
+  \item \textbf{Pediatric validation}: 2,549 children in a pediatric ED (Dupuis et al., \textit{Diagn Interv Imaging} 2022): sensitivity 95.7\%, specificity 91.2\%; sensitivity was \textbf{significantly lower in children under 5 and in casted limbs}.
+  \item \textbf{Comparison with BoneView} (Robin et al., \textit{Pediatr Radiol} 2026, 366 children): AUC 0.87 vs 0.86; Rayvolve more specific (93\% vs 87\%), BoneView more sensitive (85\% vs 81\%); both helped junior residents. BoneView's US pediatric label excludes pelvis, hip, femur, ribs and spine.
+  \item \textbf{Reader errors}: in a pediatric ED, readers abandoned a correct diagnosis after seeing AI output in 2\% of cases (Ziegner et al., \textit{Eur Radiol} 2025).
 \end{itemize}
 \medskip
-\textbf{Take-home}: fracture detection is the most mature pediatric AI market, and still needs local validation by age band and anatomy, plus a policy for reader--AI disagreement.
+Test fracture detection locally by age and anatomy, and decide how readers should handle disagreements with AI.
 \end{frame}
 
-\begin{frame}<0>[category=Commercial Software]{Product 2: BoneView --- read the anatomy, not just the age range}
+\begin{frame}<0>[category=Commercial Software]{BoneView: pediatric indications and performance}
 \relax
 {\scriptsize Gleamer, France --- fracture / trauma; US clearance K222176 (BoneView 1.1-US, 2023)\par}
 \medskip
 \small
 \begin{itemize}
   \item \textbf{What it does}: flags suspected fractures on trauma radiographs as regions of interest beside the image. The international suite also covers dislocations, effusions and focal bone lesions; \textbf{the US clearance is fracture detection only}.
-  \item \textbf{The indication is narrower than ``ages 2--21''}: K222176 permits ages 2--21 for \textbf{specified extremity views}, clavicle included. Pelvis, hip, femur, ribs and spine are \textbf{adult-only} in that summary --- a child with a suspected hip or rib fracture is outside the pediatric indication.
-  \item \textbf{What the real-life pediatric evidence shows}: the one pediatric ED evaluation of a cleared fracture detector (Ziegner et al., \textit{Eur Radiol} 2025, 1,672 radiographs) found 92\% stand-alone sensitivity but only \textbf{68\% for radial condyle fractures}, and residents' accuracy rose 88\% $\rightarrow$ 90\%.
-  \item \textbf{The failure mode to watch}: in 2\% of cases readers abandoned a correct diagnosis after seeing the AI.
+  \item \textbf{Pediatric indication}: K222176 covers ages 2--21 for \textbf{specified extremity views}, including the clavicle. Pelvis, hip, femur, ribs and spine are \textbf{adult-only} in that summary.
+  \item \textbf{Pediatric ED study}: Ziegner et al. (\textit{Eur Radiol} 2025, 1,672 radiographs) reported 92\% stand-alone sensitivity, falling to \textbf{68\% for radial condyle fractures}. Residents' accuracy rose from 88\% to 90\%.
+  \item \textbf{Reader errors}: in 2\% of cases readers abandoned a correct diagnosis after seeing the AI.
 \end{itemize}
 \medskip
-\textbf{Take-home}: the most mature pediatric AI market still needs local validation by anatomy, and a reader policy for disagreement.
+Check performance by anatomy and agree on how readers should handle disagreements with AI.
 \end{frame}
 
-\begin{frame}<0>[category=Commercial Software]{Product 3: Aidoc BriefCase --- a pediatric label is not pediatric evidence}
+\begin{frame}<0>[category=Commercial Software]{Aidoc BriefCase: pediatric labeling and validation}
 \relax
 {\scriptsize Aidoc, Israel --- CT/CTA triage and worklist prioritization; e.g.\ K253578 (2026)\par}
 \medskip
 \small
 \begin{itemize}
-  \item \textbf{What it does}: reads CT and CTA as they arrive and reorders the worklist --- intracranial hemorrhage, pulmonary embolism, pneumothorax, cervical-spine and rib fractures, free gas. Triage, not diagnosis, is the product.
-  \item \textbf{The number that matters here}: Aidoc holds \textbf{23 of the 230 pediatric-label-positive} radiology authorizations in our FDA screen, more than any other company.
-  \item \textbf{What that does and does not mean}: the decision summaries state a pediatric patient population, but the \textbf{performance data behind them is adult}. A population statement in an intended-use paragraph is a candidate for label review, not evidence of testing in children.
-  \item \textbf{Why it matters operationally}: triage silently changes the order a pediatric radiologist sees cases in. A model tuned on adult prevalence will mis-prioritize a pediatric list, and nobody sees the ranking it produced.
+  \item \textbf{Function}: analyzes incoming CT and CTA studies to prioritize the worklist. Findings include intracranial hemorrhage, pulmonary embolism, pneumothorax, cervical-spine and rib fractures, and free gas.
+  \item \textbf{FDA review}: Aidoc holds \textbf{23 of the 230 radiology authorizations with pediatric labeling} in our screen, more than any other company.
+  \item \textbf{Evidence}: the decision summaries include a pediatric population, but the \textbf{supporting performance data are from adults}. The population statement alone does not establish performance in children.
+  \item \textbf{Workflow}: triage changes which cases are read first. Priorities learned from adult populations may be inappropriate for a pediatric worklist.
 \end{itemize}
 \medskip
-\textbf{Take-home}: ``FDA-cleared, pediatric population included'' is this market's most common and most misleading claim. Ask for pediatric subgroup performance; usually there is none.
+Ask for pediatric subgroup results and assess the effect on the local worklist.
 \end{frame}
 
-\begin{frame}<0>[category=Commercial Software]{Product 4: deep-learning reconstruction --- the AI children actually meet}
+\begin{frame}<0>[category=Commercial Software]{Deep-learning reconstruction: scan time and dose}
 \relax
 {\scriptsize GE AIR Recon DL / TrueFidelity; Siemens Deep Resolve; Canon AiCE; Philips SmartSpeed / Precise Image\par}
 \medskip
 \small
 \begin{itemize}
-  \item \textbf{What it does}: reconstructs MRI and CT from noisier, faster or lower-dose raw data --- shorter MRI at comparable quality, CT at reduced dose. It is not interpretive: it makes the picture the radiologist then reads.
-  \item \textbf{Why it is the biggest pediatric win on this list}: a shorter MRI is \textbf{fewer sedations}; a lower-dose CT is \textbf{less radiation to a growing child}. Neither requires anyone to trust a diagnostic model.
-  \item \textbf{The regulatory shape is different}: these are sold across ages as part of the scanner, with vendor-published pediatric protocols rather than a pediatric indication. Philips holds 28 pediatric-label-positive entries, \textbf{one} of which is software; the rest are scanner labels listing pediatric imaging as an application.
-  \item \textbf{The caveat}: dose and time reductions are not fixed properties of the product name --- they depend on task, patient size and configuration, and must be measured locally.
+  \item \textbf{Function}: reconstructs MRI and CT images from faster acquisitions or lower-dose data while aiming to preserve diagnostic image quality.
+  \item \textbf{Potential pediatric benefits}: shorter MRI scans may reduce sedation needs; lower-dose CT reduces radiation exposure.
+  \item \textbf{Labeling}: these products are sold across ages as part of the scanner, with vendor-published pediatric protocols. Of Philips' 28 entries with pediatric labeling, \textbf{one} is software; the others are scanners listing pediatric imaging as an application.
+  \item \textbf{Local assessment}: dose and scan-time reductions depend on the task, patient size, and scanner configuration.
 \end{itemize}
 \medskip
-\textbf{Take-home}: most of the pediatric benefit already installed here is non-interpretive AI nobody calls AI, and it is where a validation program should start.
+Reconstruction tools already in use are a practical place to begin measuring local AI performance.
 \end{frame}
 
-\begin{frame}[category=Reviews]{Kamran review: broader research, stronger validation}
+\begin{frame}[category=Reviews]{Kamran review: pediatric AI research and gaps}
 \relax
 {\scriptsize Kamran et al., \textit{Pediatric Radiology} 2026
 (\href{https://doi.org/10.1007/s00247-025-06462-5}{doi 10.1007/s00247-025-06462-5})\par}
 \medskip
 \small
 \begin{itemize}
-  \item \textbf{A large but concentrated literature}: 789 pediatric-focused original articles (2005--August 2024); 91\% addressed image interpretation/diagnosis. Leading applications were bone age (88), pneumonia (65), and brain lesions/tumors (54).
-  \item \textbf{Generalizability needs stronger evidence}: 65\% relied on local hospital datasets. The authors call for diverse, multicenter datasets and prospective validation across pediatric ages, sites, and disease-prevalence settings.
-  \item \textbf{Broaden the research agenda}: communication, education, policy, and stakeholder perspectives were underrepresented. Include children, families, and clinical teams in development and evaluation.
+  \item \textbf{Studies reviewed}: 789 pediatric-focused original articles (2005--August 2024); 91\% addressed image interpretation/diagnosis. Leading applications were bone age (88), pneumonia (65), and brain lesions/tumors (54).
+  \item \textbf{Validation}: 65\% relied on local hospital datasets. The authors call for diverse, multicenter datasets and prospective validation across pediatric ages, sites, and disease-prevalence settings.
+  \item \textbf{Research gaps}: few studies addressed communication, education, policy, or the views of children, families, and clinical teams. The authors recommend involving these groups in development and evaluation.
 \end{itemize}
 \medskip
-\textbf{Take-home}: prioritize representative data, validation, and neglected clinical needs. This review maps research activity; it does not compare model accuracy or establish clinical readiness.
+The review describes what has been studied. It does not compare model accuracy or determine which tools are ready for clinical use.
 \end{frame}
 
-\begin{frame}[category=Reviews]{ACR white paper: the pediatric AI gap}
+\begin{frame}[category=Reviews]{ACR white paper: limited access to pediatric AI}
 \relax
 {\scriptsize Sammer et al., \textit{J Am Coll Radiol} 2023;20:730--737
 (\href{https://doi.org/10.1016/j.jacr.2023.06.003}{doi 10.1016/j.jacr.2023.06.003})\par}
 \medskip
 \small
 \begin{itemize}
-  \item \textbf{Scope}: ACR Pediatric AI Workgroup white paper framing limited access to pediatric AI as a health equity issue.
+  \item \textbf{Scope}: the ACR Pediatric AI Workgroup describes limited access to pediatric AI as a health equity issue.
   \item \textbf{Availability}: at the time of the review, only 6 of more than 200 FDA-cleared tools in the ACR catalog indicated pediatric use (about 3\%).
   \item \textbf{Why adult AI may fail}: growth, disease patterns, and imaging protocols differ; published studies show uneven performance across pediatric subgroups.
-  \item \textbf{Barriers}: scarce labeled pediatric data, consent and privacy concerns, and weak financial incentives for smaller pediatric markets.
-  \item \textbf{Recommendations}: validate in children, disclose age-specific evidence, fund pediatric development, involve families, and protect pediatric workflows. The authors introduce \textit{Image IntelliGently} to advance this work.
+  \item \textbf{Barriers}: scarce labeled pediatric data, consent and privacy concerns, and limited financial incentives in a smaller pediatric market.
+  \item \textbf{Recommendations}: validate in children, disclose age-specific evidence, fund pediatric development, involve families, and account for pediatric workflows. The paper introduces the \textit{Image IntelliGently} initiative.
 \end{itemize}
 \end{frame}
 
@@ -1088,24 +1061,24 @@ Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and ot
 {\scriptsize Shelmerdine et al., \textit{J Am Coll Radiol} 2026;23:89--101
 (\href{https://doi.org/10.1016/j.jacr.2025.08.019}{doi 10.1016/j.jacr.2025.08.019})\par}
 \medskip
-{\small ACR, ESPR, SPR, SLARP, AOSPR, and SPIN propose four pillars for safe adoption:\par}
+{\small ACR, ESPR, SPR, SLARP, AOSPR, and SPIN make recommendations in four areas:\par}
 \small
 \begin{itemize}
-  \item \textbf{Regulation and purchasing}: pediatric labeling and proposed safety ratings; diverse datasets, subgroup performance, transparency, and cybersecurity.
-  \item \textbf{Implementation and integration}: define a local clinical need, select tools validated in children, pilot before scaling, and involve pediatric specialists and families.
-  \item \textbf{Interpretation and postmarket surveillance}: retain human oversight; audit performance and patient outcomes; manage discrepancies, report adverse events, and address automation bias.
-  \item \textbf{Education}: foundational AI literacy for all staff, pediatric-specific training, continuing education, and patient/public engagement.
+  \item \textbf{Regulation and purchasing}: review pediatric labeling, proposed safety ratings, training data, subgroup performance, transparency, and cybersecurity.
+  \item \textbf{Implementation}: identify a clinical need, choose tools validated in children, run a local pilot, and involve pediatric specialists and families.
+  \item \textbf{Monitoring after adoption}: keep clinicians responsible for interpretation, track performance and patient outcomes, review disagreements, report adverse events, and watch for overreliance on AI.
+  \item \textbf{Education}: teach staff AI basics and pediatric applications, provide ongoing training, and involve patients and the public.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Why is radiology AI particularly challenging in pediatrics?}
+\begin{frame}{Why is pediatric radiology AI difficult?}
 \vspace{-4pt}
 \begin{itemize}
-  \item Small data
-  \item Difficulty conducting clinical trials (FDA protection of children)
+  \item Small datasets
+  \item Additional protections for children make clinical trials more complex
   \item Shortage of pediatric radiologists
-  \item Lower perceived ROI
-  \item Diffiulty of generalizing from adult-trained models
+  \item Lower expected financial return
+  \item Adult-trained models may perform poorly in children
   \begin{itemize}
     \item Different and more variable body sizes compared with adults
     \item Different diseases
@@ -1127,12 +1100,12 @@ Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and ot
 {\tiny Laborie et al., European Radiology 2026\par}\vspace{3pt}
 \scriptsize\setlength{\itemsep}{2pt}
 \begin{itemize}
-\item 20 studies (2014--2025) ran adult-trained models, unmodified, on pediatric images: radiography, CT, MRI, DEXA, ultrasound
+\item 20 studies (2014--2025) tested unmodified adult-trained models on pediatric images: radiography, CT, MRI, DEXA, ultrasound
 \item 18 of 20 found worse performance in children
-\item Detection degraded most: pulmonary nodule sensitivity fell from 68--100\% in adults to 26--68\% in children
-\item Segmentation: Dice drops $>$0.10 across organs and modalities
-\item Children $\leq$2 years had the largest deficits for every task type
-\item Take-home: do not assume an adult tool works in children; validate locally, fine-tune, or retrain first
+\item The largest declines were in detection: pulmonary nodule sensitivity fell from 68--100\% in adults to 26--68\% in children
+\item Segmentation: Dice scores fell by $>$0.10 across organs and modalities
+\item Performance declined most in children $\leq$2 years across all task types
+\item Test adult-trained tools in children before use; fine-tuning or retraining may be needed
 \end{itemize}
 \end{column}
 \end{columns}
@@ -1144,10 +1117,10 @@ Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and ot
 \medskip
 \small
 \begin{itemize}
-  \item Children get left behind in AI-assisted triage
-  \item Pediatric payments through CHIP are historically 30\% lower than adult Medicare, which may disincentivize pediatric AI development
-  \item There are mixed results when applying adult-trained AI to pediatric cases
-  \item As of 2023, Of >200 Al Software cleared by the Food and Drug Administration (FDA) via the Software as a Medical Device (SAMD) pathway that are currently listed in the online ACR Data Science Institute (DSI) catalog, only six (3\%) are intended for pediatric use
+  \item Children have limited access to AI-assisted triage
+  \item Pediatric payments through CHIP are historically 30\% lower than adult Medicare, which may discourage pediatric AI development
+  \item Adult-trained AI has shown mixed results in pediatric cases
+  \item In 2023, only six of more than 200 FDA-cleared AI tools in the ACR Data Science Institute catalog (3\%) were intended for pediatric use
   \item See the website for videos about reimbursement, challenges, and developments
 \end{itemize}
 \end{frame}
@@ -1157,20 +1130,20 @@ Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and ot
 \tiny{Equitable Use of AI: How Reimbursement may be Key to a More Equitable Future: A Focus on Pediatric AI. ACR.}
 \end{frame}
 
-\begin{frame}{Worth knowing as a radiologist}
+\begin{frame}{Resources for radiologists}
 \scriptsize\fontsize{7.6}{9}\selectfont
 \begin{itemize}
 \setlength{\itemsep}{0pt}
-\item \textbf{\href{https://doi.org/10.1148/rg.2017170077}{Deep Learning: A Primer for Radiologists}} (Radiographics paper, 2017): a helpful introduction to the principles and applications of deep learning in radiology; essential for understanding how AI tools work and their limitations
-\item \textbf{\href{https://www.rsna.org/rsnai/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017}{RSNA Pediatric Bone Age Challenge (2017)}} (benchmark / dataset): a landmark pediatric benchmark; useful for understanding automated bone-age accuracy and its limits
+\item \textbf{\href{https://doi.org/10.1148/rg.2017170077}{Deep Learning: A Primer for Radiologists}} (Radiographics paper, 2017): an introduction to how deep learning works, its radiology applications, and its limitations
+\item \textbf{\href{https://www.rsna.org/rsnai/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017}{RSNA Pediatric Bone Age Challenge (2017)}} (benchmark / dataset): a public dataset and benchmark for testing automated bone-age assessment
 \item \textbf{\href{https://www.gleamer.ai/solutions/boneview}{Gleamer BoneView} / \href{https://www.azmed.co/}{AZmed Rayvolve}} (clinical products): examples of fracture-detection assistance with pediatric indications; eligibility depends on age, anatomy, and product version
 \item \textbf{\href{https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-enabled-medical-devices}{FDA AI-enabled device list and linked labeling}} (regulatory resource): a starting point for checking authorized use and pediatric age ranges; the list is not exhaustive
 \item \textbf{\href{https://healthairegister.com/radiology/products/}{Health AI Register}} (product directory): commercial radiology AI products with CE / FDA status and intended use; confirm pediatric use in the labeling
 \item \textbf{\href{https://doi.org/10.1148/ryai.240300}{CLAIM checklist (2024 update)}} (reporting guideline): check whether data, reference standards, and testing are adequately described; reporting completeness alone does not establish clinical benefit
 \item \textbf{\href{https://github.com/wasserth/TotalSegmentator}{TotalSegmentator}} (research tool): automated CT / MR organ segmentation for volumes and body composition; check accuracy in children before trusting measurements
-\item \textbf{\href{https://github.com/MIC-DKFZ/nnUNet}{nnU-Net}} (research framework): a strong baseline for training segmentation models; ask whether a new method improves on an appropriate comparator
+\item \textbf{\href{https://github.com/MIC-DKFZ/nnUNet}{nnU-Net}} (research framework): a framework for training segmentation models and comparing new methods with an established baseline
 \item \textbf{\href{https://github.com/bowang-lab/MedSAM}{MedSAM / segment-anything models}} (research models): prompt-guided contours can assist annotation; radiologists still need to review and correct the output
-\item \textbf{\href{https://github.com/Project-MONAI/MONAI}{MONAI}} (research framework): infrastructure for imaging-AI development; useful when collaborating with a research team, rather than a ready-to-use diagnostic tool
+\item \textbf{\href{https://github.com/Project-MONAI/MONAI}{MONAI}} (research framework): software for developing and testing medical imaging AI with a research team
 \item \textbf{\href{https://huggingface.co/nvidia/NV-Reason-CT}{NVIDIA NV-Reason-CT}} (open research model, Sept 2026): a 3D CT vision-language model that drafts chest / abdominal CT findings with step-by-step reasoning and answers questions; open weights, research use only, not FDA-cleared, and no pediatric data or age range reported
 \end{itemize}
 \end{frame}
@@ -1182,18 +1155,64 @@ Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and ot
 \begin{frame}{Recommendations for pediatric radiologists}
 \begin{itemize}
   \setlength{\itemsep}{12pt}
-  \item AI development is constrained by scarce public datasets, fragmented institutional data, rare diseases, and heterogeneous reporting practices.
-  \item Choose one task worth improving in your practice: bone-age measurements,
+  \item Pediatric AI studies often have few cases, especially for rare diseases, with data spread across hospitals and inconsistent reporting.
+  \item Start with a specific task in your practice: bone-age measurements,
         fracture detection, or reducing CT dose / MRI scan time.
   \item Before adopting a tool, ask which children it was tested on. Check the
         intended age range and test it on your own cases, including younger children
         and unusual anatomy.
   \item In a local pilot, measure what changes with AI: reading time, missed findings,
         false alarms, dose, or scan time. Review errors and keep checking after rollout.
-  \item Help build the evidence we need: choose a pediatric problem you see often,
+  \item For research, choose a pediatric problem you see often,
         label cases carefully, and work with other hospitals to test whether a model
         works beyond the site that built it.
 \end{itemize}
+\end{frame}
+
+\begin{frame}<0>[category=Commercial Software]{Commercial product inventory: backup (part 1)}
+\tiny
+\begin{adjustbox}{max totalsize={\textwidth}{0.72\textheight}}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.150\textwidth}|>{\raggedright\arraybackslash}p{0.130\textwidth}|>{\raggedright\arraybackslash}p{0.176\textwidth}|>{\raggedright\arraybackslash}p{0.378\textwidth}|>{\raggedright\arraybackslash}p{0.324\textwidth}|>{\raggedright\arraybackslash}p{0.176\textwidth}|}
+\hline \textbf{Product} & \textbf{Vendor} & \textbf{Clinical problem} & \textbf{What it does} & \textbf{Pediatric scope} & \textbf{Clinical use} \\ \hline
+BoneXpert & Visiana & bone age / growth & Automated Greulich--Pyle and Tanner--Whitehouse bone age plus a Bone Health Index, from a hand radiograph & Built for children; CE-marked and in routine European use; FDA 510(k) cleared September 2026 [K262390, 2026] & Widely deployed (Europe) \\ \hline
+BoneView & Gleamer & fracture / trauma & Fracture detection on trauma radiographs, presented as regions of interest alongside the image & US indication covers ages 2--21 for specified extremity views; pelvis, hip, femur, ribs and spine are adult-only [K222176, 2023] & Widely deployed \\ \hline
+Rayvolve (AZtrauma) & AZmed & fracture / trauma & Fracture and MSK finding detection on radiographs; sibling modules cover chest findings, measurements and bone age & US fracture indication from age 2; the bone-age module is CE-marked only [K240845, 2024] & Widely deployed \\ \hline
+TechCare Trauma & Milvue & fracture / trauma & Trauma radiograph triage: fractures, effusions and dislocations flagged for the reader & The decision summary states a pediatric population [K242171, 2025] & Early US deployments \\ \hline
+EFAI Bonesuite XR Bone Age Pro & Ever Fortune.AI & bone age / growth & Greulich--Pyle bone age from a PA left hand and wrist radiograph, as an adjunct to the radiologist & FDA-cleared for ages 2--16 --- a pediatric-specific US bone-age clearance [K234042, 2024] & FDA-cleared, early adoption \\ \hline
+Physis & 16 Bit & bone age / growth & Bone-age estimation with Greulich--Pyle atlas matching and draft report text & Pediatric tool; Health Canada licensed, no FDA authorization identified & Limited US access \\ \hline
+Fetal EchoScan & BrightHeart & fetal / obstetric & Flags eight morphological findings suspicious for congenital heart disease on second-trimester views & Prenatal: second-trimester exams, maternal age 18+ [K252294, 2025] & Early deployments / pilots \\ \hline
+Sonio Detect / Sonio Suspect & Sonio & fetal / obstetric & Checks that the required fetal views were obtained and are of usable quality (Detect); flags images suspicious for anomalies (Suspect) & Prenatal; every FDA entry states a fetal population [K252433, 2026] & Early deployments / pilots \\ \hline
+Delivery Date AI & Ultrasound AI & fetal / obstetric & Predicts the delivery date from a second- or third-trimester ultrasound when dating is unreliable & Prenatal; the first De Novo of its kind (a new device class) [DEN250007, 2026] & Newly authorized; clinical experience limited \\ \hline
+Swoop Portable MR + BrainInsight & Hyperfine & brain / neurologic & Bedside low-field brain MRI with deep-learning reconstruction; BrainInsight measures brain volumes and midline shift & Decision summaries state a pediatric population; bedside imaging may reduce transport risks in the NICU and PICU [K253489, 2025] & In pediatric pilots \\ \hline
+spineEOS / VEA Align & EOS imaging (Alphatec) & spine / scoliosis & Automated 3D spine and lower-limb modeling from biplanar low-dose full-body radiographs & Lower-dose imaging for children who need repeated scoliosis follow-up [K251747, 2025] & Widely deployed (pediatric orthopedics) \\ \hline
+CoLumbo & Smart Soft Healthcare & spine / scoliosis & Spine MRI segmentation, measurement and structured reporting, lumbar and cervical & Decision summaries state a pediatric population; no pediatric-specific performance reported [K254015, 2026] & Early deployments \\ \hline
+\end{tabular}
+\end{adjustbox}
+\\[3pt]{\scriptsize Square brackets identify the FDA submission and decision year supporting the pediatric description. No brackets means no US authorization was identified. Clinical use reflects our assessment, not measured adoption. Many large-vendor authorizations cover whole scanners with pediatric imaging listed as one application.}
+\end{frame}
+
+\begin{frame}<0>[category=Commercial Software]{Commercial product inventory: backup (part 2)}
+\tiny
+\begin{adjustbox}{max totalsize={\textwidth}{0.68\textheight}}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.150\textwidth}|>{\raggedright\arraybackslash}p{0.130\textwidth}|>{\raggedright\arraybackslash}p{0.176\textwidth}|>{\raggedright\arraybackslash}p{0.378\textwidth}|>{\raggedright\arraybackslash}p{0.324\textwidth}|>{\raggedright\arraybackslash}p{0.176\textwidth}|}
+\hline \textbf{Product} & \textbf{Vendor} & \textbf{Clinical problem} & \textbf{What it does} & \textbf{Pediatric scope} & \textbf{Clinical use} \\ \hline
+BriefCase-Triage (CARE modules) & Aidoc & triage / worklist prioritization & Worklist triage on CT and CTA: intracranial hemorrhage, pulmonary embolism, pneumothorax, cervical-spine and rib fractures, free gas and more & Most entries state a pediatric population; the supporting performance data are from adults; pediatric use needs local validation [K253578, 2026] & Widely deployed \\ \hline
+Viz LVO / Viz ICH & Viz.ai & stroke / intracranial bleed & Detects large-vessel occlusion and intracranial hemorrhage and alerts the stroke team & No pediatric population statement found in the screened summaries; pediatric stroke use would be off-label & Widely deployed (adult) \\ \hline
+qXR-TB & Qure.ai & chest / lung & Chest radiograph screening for tuberculosis, built for high-burden settings with few readers & Vendor reports CE-marked use from age 0--15; US eligibility varies by module & Deployed in global-health screening \\ \hline
+AIR Recon DL / TrueFidelity & GE HealthCare & image quality: dose, noise, speed & Deep-learning reconstruction: shorter MRI acquisitions at the same quality, and CT images at lower dose & Sold across ages; potential pediatric benefits include less sedation and lower radiation dose & Widely deployed \\ \hline
+Deep Resolve & Siemens Healthineers & image quality: dose, noise, speed & MRI deep-learning denoising and resolution enhancement that supports accelerated acquisition & Vendor publishes pediatric protocols; shorter scans are the main potential pediatric benefit & Widely deployed \\ \hline
+AiCE & Canon Medical & image quality: dose, noise, speed & Deep-learning reconstruction for both CT (noise, dose) and MRI (noise, resolution, scan time) & Vendor publishes pediatric CT galleries; protocol and version determine what is available & Widely deployed \\ \hline
+SmartSpeed / Precise Image & Philips & image quality: dose, noise, speed & MRI acceleration with deep-learning reconstruction (SmartSpeed); CT reconstruction at reduced dose (Precise Image) & Sold across ages; pediatric protocols are the vendor's own, not a separate indication & Widely deployed \\ \hline
+SubtleMR / SwiftMR & Subtle Medical / AIRS Medical & image quality: dose, noise, speed & Vendor-neutral MRI post-processing: denoising and sharpening images from shorter acquisitions & No adult-only restriction in the reviewed US indications; SwiftMR's 2026 validation includes ages 0--21 & Deployed, vendor-neutral retrofit \\ \hline
+Butterfly iQ3; Clarius Bladder AI & Butterfly Network / Clarius & point-of-care ultrasound & Handheld ultrasound with on-device AI: bladder volume, gestational age, ejection fraction, lung and nerve tools & The scanners are labeled for adult and pediatric imaging, but each AI tool carries its own age scope and most are adult-only; Clarius Bladder AI covers ages 2 and over [K232257, 2023] & Scanners widely deployed; AI tools mostly for adults \\ \hline
+Arterys Cardio DL & Arterys (Tempus) & cardiac / echo & Cardiac MRI segmentation, flow and volume quantification with a cloud workflow & Cleared in 2017 with labeling that includes neonates, infants, children and adolescents [K163253, 2017] & Now a Tempus product \\ \hline
+Acorn 3D & Mighty Oak Medical & spine / scoliosis & Automated vertebral segmentation from CT to build patient-specific 3D models and surgical guides & Decision summaries state a pediatric population; used for planning pediatric deformity surgery [K260322, 2026] & Surgical planning \\ \hline
+Second Opinion Pediatric & Pearl & dental / craniofacial & Detects caries and other findings on pediatric dental radiographs & Specifically indicated for pediatric use [K243893, 2025] & Deployed in dentistry \\ \hline
+\end{tabular}
+\end{adjustbox}
+\\[3pt]{\scriptsize Square brackets identify the FDA submission and decision year supporting the pediatric description. No brackets means no US authorization was identified. Clinical use reflects our assessment, not measured adoption. Many large-vendor authorizations cover whole scanners with pediatric imaging listed as one application.}
 \end{frame}
 
 \begin{frame}<0>{Finger radiograph (lateral)}
